@@ -1,0 +1,151 @@
+﻿@page "/scheduler"
+@using BlazorTool.Client.Services
+
+<h3>Scheduler</h3>
+<div style="display: flex; gap: 10px;">
+    <div style="flex: 1;">
+        <TelerikScheduler Data="@AppointmentsScheduler"
+                          @bind-Date="@SchedulerStartDate"
+                          @bind-View="@SchedulerCurrentView"
+                          @ref="@SchedulerRef"
+                          OnUpdate="@UpdateAppointment"
+                          OnCreate="@AddAppointment"
+                          OnDelete="@DeleteAppointment"
+                          ConfirmDelete="true"
+                          AllowCreate="true"
+                          AllowDelete="true"
+                          AllowUpdate="true"
+                          Id="Scheduler1">
+            <SchedulerViews>
+                <SchedulerDayView StartTime="@DayStart" EndTime="@DayEnd" />
+                <SchedulerWeekView StartTime="@DayStart" EndTime="@DayEnd" />
+                <SchedulerMonthView />
+                <SchedulerTimelineView ColumnWidth=30 NumberOfDays=2 StartTime="@DayStart" EndTime="@DayEnd" />
+            </SchedulerViews>
+        </TelerikScheduler>
+    </div>
+    <div style="flex: 1;">
+        <TelerikGrid Data="@AppointmentsGrid"
+                     Id="Grid1"
+                     RowDraggable="true"
+                     @ref="@GridRef"
+                     OnRowDrop="@((GridRowDropEventArgs<SchedulerAppointment> args) => GridRowDrop(args))">
+            <GridSettings>
+                <GridRowDraggableSettings DragClueField="@nameof(SchedulerAppointment.Id)"></GridRowDraggableSettings>
+            </GridSettings>
+            <GridColumns>
+                <GridColumn Field="@nameof(SchedulerAppointment.Id)" Editable="false" Visible="false"></GridColumn>
+                <GridColumn Field="@nameof(SchedulerAppointment.Title)" Title="Title"></GridColumn>
+                <GridColumn Field="@nameof(SchedulerAppointment.Description)" Title="Description"></GridColumn>
+            </GridColumns>
+        </TelerikGrid>
+    </div>
+</div>
+
+@code {
+    private DateTime DayStart { get; set; } = DateTime.Today.AddHours(7);
+    private DateTime DayEnd { get; set; } = DateTime.Today.AddHours(18);
+    private DateTime SchedulerStartDate { get; set; } = DateTime.Now;
+    private SchedulerView SchedulerCurrentView { get; set; } = SchedulerView.Week;
+    private List<SchedulerAppointment> AppointmentsScheduler = new List<SchedulerAppointment>();
+    private List<SchedulerAppointment> AppointmentsGrid = new List<SchedulerAppointment>();
+    public TelerikGrid<SchedulerAppointment> GridRef { get; set; }
+    public TelerikScheduler<SchedulerAppointment> SchedulerRef { get; set; }
+    public AppointmentService appointmentServiceScheduler = new AppointmentService();
+    public AppointmentService appointmentServiceGrid = new AppointmentService();
+
+
+    public class SchedulerAppointment
+    {
+        public string Title { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public bool IsAllDay { get; set; }
+        public string Description { get; set; } = string.Empty;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        AppointmentsScheduler = appointmentServiceScheduler.GetAllAppointments();
+        AppointmentsGrid = appointmentServiceGrid.GetAllAppointments();
+    }
+
+    private void GridRowDrop(GridRowDropEventArgs<SchedulerAppointment> args)
+    {
+        foreach (var item in args.Items)
+        {
+            appointmentServiceGrid.DeleteAppointment(item.Id);
+            //AppointmentsGrid = appointmentServiceGrid.GetAllAppointments();
+        }
+
+        if (args.DestinationComponentId == "Scheduler1")
+        {
+            foreach (var item in args.Items)
+            {
+                DropAppointment(args.DestinationIndex, item);
+            }
+
+            SchedulerRef.Rebind();
+        }
+        // else if (args.DestinationComponentId == "Grid1")
+        // {
+        //     InsertItemsIntoGrid(args.Items, args.DestinationItem, args.DropPosition);
+        // }
+    }
+
+    private void DropAppointment(string index, SchedulerAppointment item)
+    {
+        var slot = SchedulerRef.GetTimeSlotFromDropIndex(index);
+
+        var appointment = item;
+        appointment.Start = slot.Start;
+        appointment.IsAllDay = slot.IsAllDay;
+        appointment.End = slot.End;
+
+        appointmentServiceScheduler.AddAppointment(appointment);
+
+    }
+
+    private void InsertItemsIntoGrid(IEnumerable<SchedulerAppointment> items, SchedulerAppointment destinationItem, GridRowDropPosition dropPosition)
+    {
+        var destinationIndex = 0;
+        if (destinationItem != null)
+        {
+            destinationIndex = AppointmentsGrid.IndexOf(destinationItem);
+            if (dropPosition == GridRowDropPosition.After)
+            {
+                destinationIndex += 1;
+            }
+        }
+
+        AppointmentsGrid.InsertRange(destinationIndex, items);
+    }
+
+    async Task UpdateAppointment(SchedulerUpdateEventArgs args)
+    {
+        appointmentServiceScheduler.UpdateAppointment((SchedulerAppointment)args.Item);
+        // Rebind the scheduler to reflect the changes
+        SchedulerRef.Rebind();
+    }
+
+    async Task AddAppointment(SchedulerCreateEventArgs args)
+    {
+        appointmentServiceScheduler.AddAppointment((SchedulerAppointment)args.Item);
+        SchedulerRef.Rebind();
+    }
+
+    async Task DeleteAppointment(SchedulerDeleteEventArgs args)
+    {
+        appointmentServiceScheduler.DeleteAppointment(((SchedulerAppointment)args.Item).Id);
+        SchedulerRef.Rebind();
+    }
+
+
+}
+
