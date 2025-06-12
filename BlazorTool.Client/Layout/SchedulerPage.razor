@@ -1,5 +1,7 @@
 ﻿@page "/scheduler"
+@using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
+@inject BlazorTool.Client.Services.ApiService apiService;
 
 <h3>Scheduler</h3>
 <div style="display: flex; gap: 10px;">
@@ -24,19 +26,19 @@
             </SchedulerViews>
         </TelerikScheduler>
     </div>
-    <div style="flex: 1;">
-        <TelerikGrid Data="@AppointmentsGrid"
+    <div style="flex: 2;">
+        <TelerikGrid Data="@OrdersForGrid"
                      Id="Grid1"
                      RowDraggable="true"
                      @ref="@GridRef"
-                     OnRowDrop="@((GridRowDropEventArgs<SchedulerAppointment> args) => GridRowDrop(args))">
+                     OnRowDrop="@((GridRowDropEventArgs<WorkOrder> args) => GridRowDrop(args))">
             <GridSettings>
-                <GridRowDraggableSettings DragClueField="@nameof(SchedulerAppointment.Id)"></GridRowDraggableSettings>
+                <GridRowDraggableSettings DragClueField="@nameof(WorkOrder.WorkOrderID)"></GridRowDraggableSettings>
             </GridSettings>
             <GridColumns>
-                <GridColumn Field="@nameof(SchedulerAppointment.Id)" Editable="false" Visible="false"></GridColumn>
-                <GridColumn Field="@nameof(SchedulerAppointment.Title)" Title="Title"></GridColumn>
-                <GridColumn Field="@nameof(SchedulerAppointment.Description)" Title="Description"></GridColumn>
+                <GridColumn Field="@nameof(WorkOrder.WorkOrderID)" Editable="false" Visible="false"></GridColumn>
+                <GridColumn Field="@nameof(WorkOrder.DepName)" Title="DepName"></GridColumn>
+                <GridColumn Field="@nameof(WorkOrder.WOState)" Title="State"></GridColumn>
             </GridColumns>
         </TelerikGrid>
     </div>
@@ -48,12 +50,10 @@
     private DateTime SchedulerStartDate { get; set; } = DateTime.Now;
     private SchedulerView SchedulerCurrentView { get; set; } = SchedulerView.Week;
     private List<SchedulerAppointment> AppointmentsScheduler = new List<SchedulerAppointment>();
-    private List<SchedulerAppointment> AppointmentsGrid = new List<SchedulerAppointment>();
-    public TelerikGrid<SchedulerAppointment> GridRef { get; set; }
+    private List<WorkOrder> OrdersForGrid = new List<WorkOrder>();
+    public TelerikGrid<WorkOrder> GridRef { get; set; }
     public TelerikScheduler<SchedulerAppointment> SchedulerRef { get; set; }
     public AppointmentService appointmentServiceScheduler = new AppointmentService();
-    public AppointmentService appointmentServiceGrid = new AppointmentService();
-
 
     public class SchedulerAppointment
     {
@@ -73,26 +73,26 @@
     private async Task LoadData()
     {
         AppointmentsScheduler = appointmentServiceScheduler.GetAllAppointments();
-        AppointmentsGrid = appointmentServiceGrid.GetAllAppointments();
+        OrdersForGrid = await apiService.GetWorkOrdersAsync(deviceID: 2);
     }
 
-    private void GridRowDrop(GridRowDropEventArgs<SchedulerAppointment> args)
+    private void GridRowDrop(GridRowDropEventArgs<WorkOrder> args)
     {
-        foreach (var item in args.Items)
-        {
-            appointmentServiceGrid.DeleteAppointment(item.Id);
-            //AppointmentsGrid = appointmentServiceGrid.GetAllAppointments();
-        }
+        // foreach (var item in args.Items)
+        // {
+        //     appointmentServiceGrid.DeleteAppointment(item.Id);
+        //     AppointmentsGrid = appointmentServiceGrid.GetAllAppointments();
+        // }
 
-        if (args.DestinationComponentId == "Scheduler1")
-        {
-            foreach (var item in args.Items)
-            {
-                DropAppointment(args.DestinationIndex, item);
-            }
+        // if (args.DestinationComponentId == "Scheduler1")
+        // {
+        //     foreach (var item in args.Items)
+        //     {
+        //         DropAppointment(args.DestinationIndex, item);
+        //     }
 
-            SchedulerRef.Rebind();
-        }
+        //     SchedulerRef.Rebind();
+        // }
         // else if (args.DestinationComponentId == "Grid1")
         // {
         //     InsertItemsIntoGrid(args.Items, args.DestinationItem, args.DropPosition);
@@ -112,19 +112,19 @@
 
     }
 
-    private void InsertItemsIntoGrid(IEnumerable<SchedulerAppointment> items, SchedulerAppointment destinationItem, GridRowDropPosition dropPosition)
+    private void InsertItemsIntoGrid(IEnumerable<WorkOrder> items, WorkOrder destinationItem, GridRowDropPosition dropPosition)
     {
         var destinationIndex = 0;
         if (destinationItem != null)
         {
-            destinationIndex = AppointmentsGrid.IndexOf(destinationItem);
+            destinationIndex = OrdersForGrid.IndexOf(destinationItem);
             if (dropPosition == GridRowDropPosition.After)
             {
                 destinationIndex += 1;
             }
         }
 
-        AppointmentsGrid.InsertRange(destinationIndex, items);
+        OrdersForGrid.InsertRange(destinationIndex, items);
     }
 
     async Task UpdateAppointment(SchedulerUpdateEventArgs args)

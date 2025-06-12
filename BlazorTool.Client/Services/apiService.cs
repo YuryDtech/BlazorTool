@@ -7,18 +7,18 @@ using BlazorTool.Client.Models;
 namespace BlazorTool.Client.Services
 
 {
-    public class apiService
+    public class ApiService
     {
         private readonly HttpClient _http;
         private readonly string _token;
 
-        public apiService(HttpClient http, string token)
+        public ApiService(HttpClient http, string token)
         {
             _http = http;
             _token = token;
         }
         public async Task<List<WorkOrder>> GetWorkOrdersAsync(
-                                        int? deviceID = null,
+                                        int deviceID,
                                         int? workOrderID = null,
                                         string? deviceName = null,
                                         bool? isDep = null,
@@ -32,7 +32,7 @@ namespace BlazorTool.Client.Services
         {
             var qs = new List<string>
             {
-                $"DeviceID={(deviceID?.ToString() ?? "")}",
+                $"DeviceID={deviceID.ToString()}",
                 $"WorkOrderID={(workOrderID?.ToString() ?? "")}",
                 $"DeviceName={Uri.EscapeDataString(deviceName ?? "")}",
                 $"IsDep={(isDep?.ToString() ?? "")}",
@@ -52,8 +52,9 @@ namespace BlazorTool.Client.Services
             var resp = await _http.SendAsync(req);
             resp.EnsureSuccessStatusCode();
 
-            return await resp.Content.ReadFromJsonAsync<List<WorkOrder>>()
-                   ?? new List<WorkOrder>();
+            var wrapper = await resp.Content
+                .ReadFromJsonAsync<WorkOrderResponse>();
+            return wrapper?.Data ?? new List<WorkOrder>();
         }
 
         public async Task<List<OrderStatus>> GetOrderStatusesAsync(
