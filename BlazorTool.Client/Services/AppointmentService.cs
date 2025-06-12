@@ -1,4 +1,4 @@
-﻿using static BlazorTool.Client.Layout.SchedulerPage;
+﻿using static BlazorTool.Client.Pages.SchedulerPage;
 namespace BlazorTool.Client.Services
 
 {

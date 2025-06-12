@@ -13,6 +13,11 @@ namespace BlazorTool.Client.Models
 
         [JsonPropertyName("errors")]
         public List<string> Errors { get; set; } = new();
+
+        public override string ToString()
+        {
+            return $"WorkOrderResponse: IsValid={IsValid}, Errors={string.Join(", ", Errors)}; data.count={Data.Count}";
+        }
     }
 
     public class WorkOrder

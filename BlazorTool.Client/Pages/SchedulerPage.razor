@@ -1,7 +1,9 @@
 ﻿@page "/scheduler"
+@rendermode InteractiveWebAssembly
+
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
-@inject BlazorTool.Client.Services.ApiService apiService;
+@inject BlazorTool.Client.Services.ApiServiceClient apiService1
 
 <h3>Scheduler</h3>
 <div style="display: flex; gap: 10px;">
@@ -73,7 +75,7 @@
     private async Task LoadData()
     {
         AppointmentsScheduler = appointmentServiceScheduler.GetAllAppointments();
-        OrdersForGrid = await apiService.GetWorkOrdersAsync(deviceID: 2);
+        OrdersForGrid = await apiService1.GetWorkOrdersAsync(deviceID: 2);
     }
 
     private void GridRowDrop(GridRowDropEventArgs<WorkOrder> args)
