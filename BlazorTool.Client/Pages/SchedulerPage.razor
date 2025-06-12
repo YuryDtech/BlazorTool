@@ -1,5 +1,4 @@
 ﻿@page "/scheduler"
-@rendermode InteractiveWebAssembly
 
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
@@ -41,6 +40,8 @@
                 <GridColumn Field="@nameof(WorkOrder.WorkOrderID)" Editable="false" Visible="false"></GridColumn>
                 <GridColumn Field="@nameof(WorkOrder.DepName)" Title="DepName"></GridColumn>
                 <GridColumn Field="@nameof(WorkOrder.WOState)" Title="State"></GridColumn>
+                <GridColumn Field="@nameof(WorkOrder.AssignedPerson)" Title="AssignedPerson"></GridColumn>
+
             </GridColumns>
         </TelerikGrid>
     </div>

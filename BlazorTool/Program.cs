@@ -9,7 +9,7 @@ var token = builder.Configuration["AuthToken"] ?? string.Empty;
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
-
+builder.Services.AddControllers();
 builder.Services.AddTelerikBlazor();
 builder.Services.AddHttpClient("API", client =>
 {
@@ -42,5 +42,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(BlazorTool.Client._Imports).Assembly);
+app.MapControllers();
 
 app.Run();
