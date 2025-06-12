@@ -18,17 +18,17 @@ namespace BlazorTool.Client.Services
             _token = token;
         }
         public async Task<List<WorkOrder>> GetWorkOrdersAsync(
-            int? deviceID = null,
-            int? workOrderID = null,
-            string? deviceName = null,
-            bool? isDep = null,
-            bool? isTakenPerson = null,
-            bool? active = null,
-            string lang = "pl-PL",
-            int? personID = null,
-            bool? isPlan = null,
-            bool? isWithPerson = null
-        )
+                                        int? deviceID = null,
+                                        int? workOrderID = null,
+                                        string? deviceName = null,
+                                        bool? isDep = null,
+                                        bool? isTakenPerson = null,
+                                        bool? active = null,
+                                        string lang = "pl-PL",
+                                        int? personID = null,
+                                        bool? isPlan = null,
+                                        bool? isWithPerson = null
+                                    )
         {
             var qs = new List<string>
             {
@@ -55,6 +55,35 @@ namespace BlazorTool.Client.Services
             return await resp.Content.ReadFromJsonAsync<List<WorkOrder>>()
                    ?? new List<WorkOrder>();
         }
-        
+
+        public async Task<List<OrderStatus>> GetOrderStatusesAsync(
+                                        int? deviceCategoryID = null,
+                                        int? personID = null,
+                                        string lang = "pl-PL",
+                                        bool? isEdit = null
+                                    )
+        {
+            var qs = new List<string>
+    {
+        $"DeviceCategoryID={(deviceCategoryID?.ToString() ?? "")}",
+        $"PersonID={(personID?.ToString() ?? "")}",
+        $"Lang={Uri.EscapeDataString(lang)}",
+        $"IsEdit={(isEdit?.ToString() ?? "")}"
+    };
+
+            var url = "wo/getdict?" + string.Join("&", qs);
+
+            using var req = new HttpRequestMessage(HttpMethod.Get, url);
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+
+            var resp = await _http.SendAsync(req);
+            resp.EnsureSuccessStatusCode();
+
+            var wrapper = await resp.Content
+                .ReadFromJsonAsync<OrderStatusResponse>();
+            return wrapper?.Data ?? new List<OrderStatus>();
+        }
+
+
     }
 }
