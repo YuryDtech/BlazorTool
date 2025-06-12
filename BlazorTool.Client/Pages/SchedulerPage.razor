@@ -28,7 +28,13 @@
         </TelerikScheduler>
     </div>
     <div style="flex: 2;">
-        <TelerikGrid Data="@OrdersForGrid"
+        @if (isOrdersLoading)
+        {
+            <div>data loading...</div>
+        }
+        else
+        {
+            <TelerikGrid Data="@OrdersForGrid"
                      Id="Grid1"
                      RowDraggable="true"
                      @ref="@GridRef"
@@ -44,6 +50,8 @@
 
             </GridColumns>
         </TelerikGrid>
+        }
+        
     </div>
 </div>
 
@@ -57,6 +65,7 @@
     public TelerikGrid<WorkOrder> GridRef { get; set; }
     public TelerikScheduler<SchedulerAppointment> SchedulerRef { get; set; }
     public AppointmentService appointmentServiceScheduler = new AppointmentService();
+    private bool isOrdersLoading = false;
 
     public class SchedulerAppointment
     {
@@ -76,7 +85,14 @@
     private async Task LoadData()
     {
         AppointmentsScheduler = appointmentServiceScheduler.GetAllAppointments();
+
+        isOrdersLoading = true;
+        StateHasChanged(); // Обновить UI для показа индикатора загрузки
+
         OrdersForGrid = await apiService1.GetWorkOrdersAsync(deviceID: 2);
+
+        isOrdersLoading = false;
+        StateHasChanged(); // Обновить UI для скрытия индикатора загрузки
     }
 
     private void GridRowDrop(GridRowDropEventArgs<WorkOrder> args)
