@@ -2,7 +2,7 @@
 
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
-@inject BlazorTool.Client.Services.ApiServiceClient apiService1
+@inject BlazorTool.Client.Services.ApiServiceClient apiService
 
 <h3>Scheduler</h3>
 <div style="display: flex; gap: 10px;">
@@ -45,9 +45,16 @@
             <GridColumns>
                 <GridColumn Field="@nameof(WorkOrder.WorkOrderID)" Editable="false" Visible="false"></GridColumn>
                 <GridColumn Field="@nameof(WorkOrder.DepName)" Title="DepName"></GridColumn>
+                <GridColumn Field="@nameof(WorkOrder.DeviceCategory)"></GridColumn>
+                <GridColumn Field="@nameof(WorkOrder.WOReason)"></GridColumn>
+                <GridColumn Field="@nameof(WorkOrder.ModPerson)"></GridColumn>
                 <GridColumn Field="@nameof(WorkOrder.WOState)" Title="State"></GridColumn>
+                <GridColumn Field="@nameof(WorkOrder.WOLevel)"></GridColumn>
                 <GridColumn Field="@nameof(WorkOrder.AssignedPerson)" Title="AssignedPerson"></GridColumn>
-
+                <GridColumn Field="@nameof(WorkOrder.AddDate)" ></GridColumn>
+                <GridColumn Field="@nameof(WorkOrder.StartDate)" Title="Start Date"></GridColumn>
+                <GridColumn Field="@nameof(WorkOrder.EndDate)" Title="End Date"></GridColumn> 
+                <GridColumn Field="@nameof(WorkOrder.CloseDate)"></GridColumn>
             </GridColumns>
         </TelerikGrid>
         }
@@ -66,6 +73,7 @@
     public TelerikScheduler<SchedulerAppointment> SchedulerRef { get; set; }
     public AppointmentService appointmentServiceScheduler = new AppointmentService();
     private bool isOrdersLoading = false;
+    private List<Device> devices = new List<Device>();
 
     public class SchedulerAppointment
     {
@@ -87,12 +95,11 @@
         AppointmentsScheduler = appointmentServiceScheduler.GetAllAppointments();
 
         isOrdersLoading = true;
-        StateHasChanged(); // Обновить UI для показа индикатора загрузки
-
-        OrdersForGrid = await apiService1.GetWorkOrdersAsync(deviceID: 2);
-
+        StateHasChanged(); 
+        devices = await apiService.GetAllDevicesCachedAsync(); 
+        OrdersForGrid = await apiService.GetWorkOrdersCachedAsync(devices.First().MachineID); 
         isOrdersLoading = false;
-        StateHasChanged(); // Обновить UI для скрытия индикатора загрузки
+        StateHasChanged(); 
     }
 
     private void GridRowDrop(GridRowDropEventArgs<WorkOrder> args)

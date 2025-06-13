@@ -4,8 +4,7 @@ using BlazorTool.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 var token = builder.Configuration["AuthToken"] ?? string.Empty;
-
-// Add services to the container.
+//TODO Get token from API
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();

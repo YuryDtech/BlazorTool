@@ -3,18 +3,6 @@ using System.Text.Json.Serialization;
 
 namespace BlazorTool.Client.Models
 {
-    public class OrderStatusResponse
-    {
-        [JsonPropertyName("data")]
-        public List<OrderStatus> Data { get; set; } = new();
-
-        [JsonPropertyName("isValid")]
-        public bool IsValid { get; set; }
-
-        [JsonPropertyName("errors")]
-        public List<string> Errors { get; set; } = new();
-    }
-
     public class OrderStatus
     {
         [JsonPropertyName("machineCategoryID")]

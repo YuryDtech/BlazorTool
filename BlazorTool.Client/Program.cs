@@ -10,6 +10,7 @@ builder.Services.AddScoped<ApiServiceClient>(sp => new ApiServiceClient(sp.GetRe
 
 #region DEV
 //builder.Logging.SetMinimumLevel(LogLevel.Debug);
+//TODO Authentication
 #endregion
 
 builder.Services.AddScoped<AppointmentService>();
