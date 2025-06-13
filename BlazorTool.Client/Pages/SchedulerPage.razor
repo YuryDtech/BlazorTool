@@ -1,8 +1,10 @@
-﻿@page "/scheduler"
+﻿@page "/"
 
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
+@using System.Text
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
+@rowStyles
 
 <h3>Scheduler</h3>
 <div style="display: flex; gap: 10px;">
@@ -36,8 +38,13 @@
         {
             <TelerikGrid Data="@OrdersForGrid"
                      Id="Grid1"
+                     
                      RowDraggable="true"
                      @ref="@GridRef"
+                         Sortable="true"
+                         Pageable="true"
+                         PageSize="12"
+                         OnRowRender="@OnRowRenderHandler"
                      OnRowDrop="@((GridRowDropEventArgs<WorkOrder> args) => GridRowDrop(args))">
             <GridSettings>
                 <GridRowDraggableSettings DragClueField="@nameof(WorkOrder.WorkOrderID)"></GridRowDraggableSettings>
@@ -48,7 +55,7 @@
                 <GridColumn Field="@nameof(WorkOrder.DeviceCategory)"></GridColumn>
                 <GridColumn Field="@nameof(WorkOrder.WOReason)"></GridColumn>
                 <GridColumn Field="@nameof(WorkOrder.ModPerson)"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.WOState)" Title="State"></GridColumn>
+                <GridColumn Field="@nameof(WorkOrder.WOState)"></GridColumn>
                 <GridColumn Field="@nameof(WorkOrder.WOLevel)"></GridColumn>
                 <GridColumn Field="@nameof(WorkOrder.AssignedPerson)" Title="AssignedPerson"></GridColumn>
                 <GridColumn Field="@nameof(WorkOrder.AddDate)" ></GridColumn>
@@ -74,6 +81,8 @@
     public AppointmentService appointmentServiceScheduler = new AppointmentService();
     private bool isOrdersLoading = false;
     private List<Device> devices = new List<Device>();
+    private Device selectedDevice = new Device();
+    private MarkupString rowStyles = new MarkupString();
 
     public class SchedulerAppointment
     {
@@ -97,11 +106,49 @@
         isOrdersLoading = true;
         StateHasChanged(); 
         devices = await apiService.GetAllDevicesCachedAsync(); 
-        OrdersForGrid = await apiService.GetWorkOrdersCachedAsync(devices.First().MachineID); 
+        if (selectedDevice == null && devices.Count > 0)
+        {
+            selectedDevice = devices.First();
+        }
+        else if (selectedDevice != null && !devices.Any(d => d.MachineID == selectedDevice.MachineID))
+        {
+            selectedDevice = devices.First();
+        }
+        OrdersForGrid = await apiService.GetWorkOrdersCachedAsync(selectedDevice?.MachineID ?? 1) ; 
+        rowStyles = RenderStatesStyle(OrdersForGrid);
         isOrdersLoading = false;
         StateHasChanged(); 
     }
 
+    #region Grid
+    void OnRowRenderHandler(GridRowRenderEventArgs args)
+    {
+        var item = args.Item as WorkOrder;
+
+        args.Class += "state-" + item.StateColor.TrimStart('#'); 
+    }
+
+    private MarkupString RenderStatesStyle(List<WorkOrder> orders)
+    {
+        var uniqueColors = orders
+           .Select(o => o.StateColor)
+           .Where(c => !string.IsNullOrWhiteSpace(c))
+           .Distinct();
+
+        var sb = new StringBuilder();
+        sb.AppendLine("<style>");
+        foreach (var color in uniqueColors)
+        {
+            var safeName = color.TrimStart('#');
+            sb.AppendLine($".k-grid .k-master-row.state-{safeName} {{");
+            sb.AppendLine($"    background-color: {color};");
+            sb.AppendLine("}");
+        }
+        sb.AppendLine("</style>");
+
+        return new MarkupString(sb.ToString());
+    }
+    #endregion
     private void GridRowDrop(GridRowDropEventArgs<WorkOrder> args)
     {
         // foreach (var item in args.Items)
