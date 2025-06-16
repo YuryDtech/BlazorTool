@@ -13,6 +13,4 @@ builder.Services.AddScoped<ApiServiceClient>(sp => new ApiServiceClient(sp.GetRe
 //TODO Authentication
 #endregion
 
-builder.Services.AddScoped<AppointmentService>();
-
 await builder.Build().RunAsync();

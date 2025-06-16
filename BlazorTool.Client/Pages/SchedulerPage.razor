@@ -9,6 +9,7 @@
 @using Telerik.DataSource.Extensions
 
 @inject ApiServiceClient apiService
+
 @rowStyles
 <h3>Scheduler</h3>
 
@@ -88,7 +89,7 @@
         var orders = (await apiService.GetWorkOrdersCachedAsync()); //Nie rozpoczete zlecenia
         UntakenOrders = orders.Where(x => x.TakeDate == null).ToList();
         TakenOrders = orders.Where(x => x.TakeDate != null).ToList();
-        Appointments = ConvertOrdersToAppointments(TakenOrders);
+        Appointments = TakenOrders.Select(o => new SchedulerAppointment(o)).ToList();
         isLoading = false;
     }
 
@@ -154,14 +155,7 @@
         return Task.CompletedTask;
     }
 
-    private List<SchedulerAppointment> ConvertOrdersToAppointments(List<WorkOrder> orders)
-    {
-        var appointments = new List<SchedulerAppointment>();
-        foreach (var order in orders)
-            appointments.Add(new SchedulerAppointment(order));
-
-        return appointments;
-    }
+    
 
     #region Grid Row Styles
     void OnRowRenderHandler(GridRowRenderEventArgs args)
