@@ -1,0 +1,210 @@
+﻿@page "/orders"
+
+@using BlazorTool.Client.Models
+@using BlazorTool.Client.Services
+@using System.Text
+@using System.Linq
+@using System.Diagnostics
+@using Telerik.DataSource.Extensions
+@inject BlazorTool.Client.Services.ApiServiceClient apiService
+@rowStyles
+
+<label>Devices:</label>
+@if (isDevicesLoading)
+{
+    <div>loading device list...</div>
+}else{
+    <TelerikListBox Data="@devices"
+                    Id="firstListbox"
+                    SelectionMode="@ListBoxSelectionMode.Multiple"
+                    SelectedItemsChanged="@((IEnumerable<Device> deviceList) => OnSelect(deviceList))"
+                    TextField="AssetNo"
+                    SelectedItems="@selectedDevices"
+                    Width="300px"
+    >
+        <ListBoxToolBarSettings>
+            <ListBoxToolBar Visible="false" />
+        </ListBoxToolBarSettings>
+    </TelerikListBox>
+    <TelerikFilter  ValueChanged="@OnValueChanged">
+        <FilterFields>
+            <FilterField Name="@nameof(WorkOrder.WOState)" Type="typeof(string)" />
+            <FilterField Name="@nameof(WorkOrder.DepName)" Type="typeof(string)" />
+            <FilterField Name="@nameof(WorkOrder.WOLevel)" Type="@typeof(string)" />
+            <FilterField Name="@nameof(WorkOrder.WOReason)" Type="typeof(string)"/>
+            <FilterField Name="@nameof(WorkOrder.ModPerson)" Type="typeof(string)"/>
+            <FilterField Name="@nameof(WorkOrder.AddDate)" Type="typeof(DateTime)"/>
+            <FilterField Name="@nameof(WorkOrder.CloseDate)" Type="typeof(DateTime)"/>
+        </FilterFields>
+    </TelerikFilter>
+}
+
+<h3>Orders</h3>
+@if (isOrdersLoading)
+{
+    <div>loading order list...</div>
+}
+else
+{
+    <TelerikGrid Data="@OrdersForGrid"
+                 Id="Grid1"
+                 RowDraggable="true"
+                 @ref="@GridRef"
+                 Sortable="true"
+                 Pageable="true"
+                 PageSize="20"
+                 OnRowRender="@OnRowRenderHandler"
+                     >
+        <GridSettings>
+            <GridRowDraggableSettings DragClueField="@nameof(WorkOrder.WorkOrderID)"></GridRowDraggableSettings>
+        </GridSettings>
+        <GridColumns>
+            <GridColumn Field="@nameof(WorkOrder.WorkOrderID)" Editable="false" Visible="false"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrder.DepName)" Title="DepName"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrder.DeviceCategory)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrder.WOReason)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrder.ModPerson)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrder.WOState)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrder.WOLevel)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrder.AssignedPerson)" Title="AssignedPerson"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrder.AddDate)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrder.StartDate)" Title="Start Date"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrder.EndDate)" Title="End Date"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrder.CloseDate)"></GridColumn>
+        </GridColumns>
+    </TelerikGrid>
+}
+
+
+@code {
+    private bool isOrdersLoading = false;
+    private bool isDevicesLoading = false;
+    private List<WorkOrder> OrdersForGrid = new List<WorkOrder>();
+    private IEnumerable<Device> selectedDevices = new List<Device>();
+    private MarkupString rowStyles = new MarkupString();
+    private List<Device> devices = new List<Device>();
+    public TelerikGrid<WorkOrder> GridRef { get; set; }
+    public CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor();
+
+    protected override async Task OnInitializedAsync()
+    {
+        isDevicesLoading = true;
+        StateHasChanged();
+        devices = await apiService.GetAllDevicesCachedAsync();
+        isDevicesLoading = false;
+        StateHasChanged();
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        isOrdersLoading = true;
+        //alue = GetCompositeFilterDescriptor();
+        StateHasChanged();
+        if (devices == null || devices.Count == 0)
+        {
+            return; // No devices available, exit early
+        }
+
+        if (selectedDevices == null || selectedDevices.Count() == 0)
+        {
+            selectedDevices = new List<Device>() { devices.FirstOrDefault() };
+        }
+
+        OrdersForGrid = await apiService.GetWorkOrdersCachedAsync(selectedDevices);
+        rowStyles = RenderStatesStyle(OrdersForGrid);
+        isOrdersLoading = false;
+        StateHasChanged();
+    }
+
+    private CompositeFilterDescriptor GetCompositeFilterDescriptor()
+    {
+        return new CompositeFilterDescriptor()
+        {
+            FilterDescriptors = new FilterDescriptorCollection
+        {
+            new FilterDescriptor
+            {
+                Member = "WOState",
+                MemberType = typeof(string),
+                Value = "W trakcie realizacji",
+                Operator = FilterOperator.IsEqualTo
+            },
+            new FilterDescriptor
+            {
+                Member = "DepName",
+                MemberType = typeof(string),
+                Value = "UR",
+                Operator = FilterOperator.IsEqualTo
+            }
+
+        }
+        };
+    }
+    private async void OnSelect(IEnumerable<Device> selectedItems)
+    {
+        selectedDevices = selectedItems;
+        await LoadData();
+        Debug.Print("selectedItems:");
+        foreach (var item in selectedItems)
+            Debug.Print(item.AssetNo);
+    }
+    async void OnValueChanged(CompositeFilterDescriptor filter)
+    {
+        Value = filter;
+        await LoadData();
+        ApplyFilter(Value);
+    }
+
+    void ApplyFilter(CompositeFilterDescriptor filter)
+    {
+        var dataSourceRequest = new DataSourceRequest { Filters = new List<IFilterDescriptor> { filter } };
+       var queryable = OrdersForGrid.AsQueryable();
+        var datasourceResult = OrdersForGrid.ToDataSourceResult(dataSourceRequest);
+
+        OrdersForGrid = datasourceResult.Data.Cast<WorkOrder>().ToList();
+        
+    }
+
+    void OnRowRenderHandler(GridRowRenderEventArgs args)
+    {
+        var item = args.Item as WorkOrder;
+
+        args.Class += "state-" + item?.StateColor.TrimStart('#');
+    }
+
+    private MarkupString RenderStatesStyle(List<WorkOrder> orders)
+    {
+        var uniqueColors = orders
+           .Select(o => o.StateColor)
+           .Where(c => !string.IsNullOrWhiteSpace(c))
+           .Distinct();
+
+        var sb = new StringBuilder();
+        sb.AppendLine("<style>");
+        foreach (var color in uniqueColors)
+        {
+            var safeName = color.TrimStart('#');
+            switch(safeName.ToLowerInvariant())
+            {
+                case "lime":
+                    safeName = "LightGreen";
+                    break;
+                case "red":
+                    safeName = "LightCoral";
+                    break;
+                case "yellow":
+                    safeName = "LightYellow";
+                    break;                
+                default:
+                    break;
+            } 
+            sb.AppendLine($".k-grid .k-master-row.state-{color} {{");
+            sb.AppendLine($"    background-color: {safeName};");
+            sb.AppendLine("}");
+        }
+        sb.AppendLine("</style>");
+
+        return new MarkupString(sb.ToString());
+    }
+}

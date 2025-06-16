@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/scheduler"
 
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
@@ -29,7 +29,7 @@
             </SchedulerViews>
         </TelerikScheduler>
     </div>
-    <div style="flex: 2;">
+    <div style="flex: 1;">
         @if (isOrdersLoading)
         {
             <div>data loading...</div>

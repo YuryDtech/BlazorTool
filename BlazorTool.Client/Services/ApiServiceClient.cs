@@ -36,6 +36,30 @@ namespace BlazorTool.Client.Services
             return list;
         }
 
+        public async Task<List<WorkOrder>> GetWorkOrdersCachedAsync(IEnumerable<Device> devices)
+        {
+            var result = new List<WorkOrder>();
+            if (devices == null || devices.Count() == 0)
+            {
+                return result;
+            }
+            foreach (var device in devices)
+            {
+                if (!_workOrdersCache.TryGetValue(device.MachineID, out var list))
+                {
+                    var fresh = await GetWorkOrdersAsync(device.MachineID);
+                    _workOrdersCache[device.MachineID] = fresh;
+                    result.AddRange(fresh);          
+                }
+                else
+                {
+                    result.AddRange(list);
+                }
+            }
+            return result;
+        }
+        
+
         public async Task<List<WorkOrder>> GetWorkOrdersAsync(
                                         int deviceID,
                                         int? workOrderID = null,
@@ -66,8 +90,8 @@ namespace BlazorTool.Client.Services
             Debug.Print("\n");
             Debug.Print("= = = = = = = = = = response WorkOrder.Count: " + wrapper?.Data.Count.ToString());
             Debug.Print("\n");
-            _workOrdersCache[deviceID] = wrapper?.Data ?? new List<WorkOrder>();
-            return wrapper?.Data ?? new List<WorkOrder>();
+            var result = wrapper?.Data ?? new List<WorkOrder>();
+            return result;
         }
 
         public async Task<List<OrderStatus>> GetOrderStatusesAsync(
@@ -86,7 +110,7 @@ namespace BlazorTool.Client.Services
 
             var url = "api/v1/wo/getdict?" + string.Join("&", qs);
             var wrapper = await _http.GetFromJsonAsync<ApiResponse<OrderStatus>>(url);
-            Debug.Print("\n= = = = = = = = = response Devices: " + wrapper?.ToString() + "\n");
+            Debug.Print("\n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
             return wrapper?.Data ?? new List<OrderStatus>();
         }
 
@@ -95,10 +119,9 @@ namespace BlazorTool.Client.Services
             if (!_devicesCache.Any())
             {
                 _devicesCache = await GetDevicesAsync();
-            }
-            var fresh = await GetDevicesAsync();
-            _devicesCache = fresh; 
-            return fresh;
+            }                
+            
+            return _devicesCache;
         }
 
         private async Task<List<Device>> GetDevicesAsync(
@@ -116,7 +139,7 @@ namespace BlazorTool.Client.Services
             if (machineIDs != null)
                 foreach (var id in machineIDs)
                     qp.Add($"MachineIDs={id}");
-
+            Debug.Print($"name:{name}\nMachineIDs.count={machineIDs?.Count()}");
             var url = "api/v1/device/getlist" + (qp.Count > 0 ? "?" + string.Join("&", qp) : "");
             var response = await _http.GetAsync(url);
             if (!response.IsSuccessStatusCode)
@@ -126,18 +149,7 @@ namespace BlazorTool.Client.Services
             }
             var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Device>>();
 
-            Debug.Print("\n= = = = = = = = = response Devices: " + wrapper?.ToString() + "\n");
-            // Cache the devices
-            if (wrapper?.Data != null && wrapper.Data.Count > 0)
-            {
-                foreach (var device in wrapper.Data)
-                {
-                    if (!_devicesCache.Any(d => d.MachineID == device.MachineID))
-                    {
-                        _devicesCache.Add(device);
-                    }
-                }
-            }
+            Debug.Print("\n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
             
             return wrapper?.Data ?? new List<Device>();
         }
