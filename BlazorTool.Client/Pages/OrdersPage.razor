@@ -99,7 +99,7 @@ else
     private async Task LoadData()
     {
         isOrdersLoading = true;
-        //alue = GetCompositeFilterDescriptor();
+        //Value = GetCompositeFilterDescriptor();
         StateHasChanged();
         if (devices == null || devices.Count == 0)
         {
@@ -145,7 +145,6 @@ else
     {
         selectedDevices = selectedItems;
         await LoadData();
-        Debug.Print("selectedItems:");
         foreach (var item in selectedItems)
             Debug.Print(item.AssetNo);
     }

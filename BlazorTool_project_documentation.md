@@ -2,6 +2,7 @@
  
 [ROOT] BlazorTool
 ├──  BlazorTool
+│        ├──  BlazorTool.csproj
 │        ├──  Program.cs
 │        ├──  Components
 │        │        ├──  App.razor
@@ -13,6 +14,7 @@
 │        ├──  Properties
 │        └──  Services
 └──  BlazorTool.Client
+        ├──  BlazorTool.Client.csproj
         ├──  Program.cs
         ├──  Routes.razor
         ├──  _Imports.razor
@@ -34,11 +36,36 @@
         └──  Services
                 ├──  ApiServiceClient.cs
                 └──  AppointmentService.cs
-===============================
+==============================
 
 # Содержимое файлов
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool\Program.cs
+## Файл: ..\..\BlazorTool\BlazorTool\BlazorTool.csproj
+```
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+        <ProjectReference Include="..\BlazorTool.Client\BlazorTool.Client.csproj" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.0" />
+        <PackageReference Include="Telerik.UI.for.Blazor" Version="6.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+</Project>
+
+```
+
+## Файл: ..\..\BlazorTool\BlazorTool\Program.cs
 ```csharp
 using BlazorTool.Client.Pages;
 using BlazorTool.Client.Services;
@@ -89,7 +116,7 @@ app.Run();
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool\Components\App.razor
+## Файл: ..\..\BlazorTool\BlazorTool\Components\App.razor
 ```
 <!DOCTYPE html>
 <html lang="en">
@@ -117,7 +144,7 @@ app.Run();
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool\Components\_Imports.razor
+## Файл: ..\..\BlazorTool\BlazorTool\Components\_Imports.razor
 ```
 @using System.Net.Http
 @using System.Net.Http.Json
@@ -132,8 +159,9 @@ app.Run();
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool\Controllers\DeviceController.cs
+## Файл: ..\..\BlazorTool\BlazorTool\Controllers\DeviceController.cs
 ```csharp
+using BlazorTool.Client.Models;
 using BlazorTool.Client.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -151,23 +179,12 @@ namespace BlazorTool.Controllers
         }
 
         [HttpGet("getlist")]
-        public async Task<IActionResult> GetList([FromQuery] WorkOrderQueryParameters q)
+        public async Task<IActionResult> GetList()
         {
             try
             {
-                var data = await _apiServiceClient.GetWorkOrdersAsync(
-                    deviceID: q.DeviceID,
-                    workOrderID: q.WorkOrderID,
-                    deviceName: q.DeviceName,
-                    isDep: q.IsDep,
-                    isTakenPerson: q.IsTakenPerson,
-                    active: q.Active,
-                    lang: q.Lang,
-                    personID: q.PersonID,
-                    isPlan: q.IsPlan,
-                    isWithPerson: q.IsWithPerson
-                );
-
+                // берём список устройств из ApiServiceClient
+                var data = await _apiServiceClient.GetAllDevicesCachedAsync();
                 return Ok(new
                 {
                     data,
@@ -179,26 +196,13 @@ namespace BlazorTool.Controllers
             {
                 return StatusCode(500, new
                 {
-                    data = Array.Empty<object>(),
+                    data = Array.Empty<Device>(),
                     isValid = false,
                     errors = new[] { ex.Message }
                 });
             }
         }
-
-        public class WorkOrderQueryParameters
-        {
-            public int DeviceID { get; set; }
-            public int? WorkOrderID { get; set; }
-            public string? DeviceName { get; set; }
-            public bool? IsDep { get; set; }
-            public bool? IsTakenPerson { get; set; }
-            public bool? Active { get; set; }
-            public string Lang { get; set; } = "pl-PL";
-            public int? PersonID { get; set; }
-            public bool? IsPlan { get; set; }
-            public bool? IsWithPerson { get; set; }
-        }
+        
 
         // GET api/<WoController>/5
         [HttpGet("{id}")]
@@ -229,7 +233,7 @@ namespace BlazorTool.Controllers
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool\Controllers\WoController.cs
+## Файл: ..\..\BlazorTool\BlazorTool\Controllers\WoController.cs
 ```csharp
 using BlazorTool.Client.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -327,7 +331,28 @@ namespace BlazorTool.Controllers
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Program.cs
+## Файл: ..\..\BlazorTool\BlazorTool.Client\BlazorTool.Client.csproj
+```
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+        <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
+        <PackageReference Include="Telerik.UI.for.Blazor" Version="6.2.0" />
+  </ItemGroup>
+
+</Project>
+
+```
+
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Program.cs
 ```csharp
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using BlazorTool.Client.Services;
@@ -350,7 +375,7 @@ await builder.Build().RunAsync();
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Routes.razor
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Routes.razor
 ```
 <Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
@@ -361,7 +386,7 @@ await builder.Build().RunAsync();
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\_Imports.razor
+## Файл: ..\..\BlazorTool\BlazorTool.Client\_Imports.razor
 ```
 @using System.Net.Http
 @using System.Net.Http.Json
@@ -379,7 +404,7 @@ await builder.Build().RunAsync();
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Layout\MainLayout.razor
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Layout\MainLayout.razor
 ```
 @inherits LayoutComponentBase
 
@@ -408,7 +433,7 @@ await builder.Build().RunAsync();
 </TelerikRootComponent>
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Layout\MainLayout.razor.css
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Layout\MainLayout.razor.css
 ```css
 .page {
     position: relative;
@@ -509,7 +534,7 @@ main {
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Layout\NavMenu.razor
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Layout\NavMenu.razor
 ```
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -544,7 +569,7 @@ main {
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Layout\NavMenu.razor.css
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Layout\NavMenu.razor.css
 ```css
 .navbar-toggler {
     appearance: none;
@@ -666,7 +691,7 @@ main {
 }
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Models\ApiResponse.cs
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Models\ApiResponse.cs
 ```csharp
 using System.Text.Json.Serialization;
 
@@ -687,7 +712,7 @@ namespace BlazorTool.Client.Models
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Models\Device.cs
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Models\Device.cs
 ```csharp
 using System.Text.Json.Serialization;
 
@@ -756,7 +781,7 @@ namespace BlazorTool.Client.Models
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Models\OrderStatus.cs
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Models\OrderStatus.cs
 ```csharp
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -784,7 +809,7 @@ namespace BlazorTool.Client.Models
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Models\WorkOrder.cs
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Models\WorkOrder.cs
 ```csharp
 using System;
 using System.Text.Json.Serialization;
@@ -818,13 +843,13 @@ namespace BlazorTool.Client.Models
         public string? WOReason { get; set; }
 
         [JsonPropertyName("add_Date")]
-        public DateTime AddDate { get; set; }
+        public DateTime? AddDate { get; set; }
 
         [JsonPropertyName("take_Date")]
         public DateTime? TakeDate { get; set; }
 
         [JsonPropertyName("close_Date")]
-        public DateTime CloseDate { get; set; }
+        public DateTime? CloseDate { get; set; }
 
         [JsonPropertyName("cost")]
         public decimal? Cost { get; set; }
@@ -836,10 +861,10 @@ namespace BlazorTool.Client.Models
         public int? PlanID { get; set; }
 
         [JsonPropertyName("state_Color")]
-        public string StateColor { get; set; }
+        public string? StateColor { get; set; }
 
         [JsonPropertyName("mod_Date")]
-        public DateTime ModDate { get; set; }
+        public DateTime? ModDate { get; set; }
 
         [JsonPropertyName("mod_Person")]
         public string? ModPerson { get; set; }
@@ -854,10 +879,10 @@ namespace BlazorTool.Client.Models
         public int? ActCount { get; set; }
 
         [JsonPropertyName("dep_Name")]
-        public string DepName { get; set; }
+        public string DepName { get; set; } = string.Empty;
 
         [JsonPropertyName("assigned_Person")]
-        public string? AssignedPerson { get; set; }
+        public string AssignedPerson { get; set; } = string.Empty;
 
         [JsonPropertyName("file_Count")]
         public int? FileCount { get; set; }
@@ -866,7 +891,7 @@ namespace BlazorTool.Client.Models
         public int? PartCount { get; set; }
 
         [JsonPropertyName("plan_Act_Count")]
-        public int PlanActCount { get; set; }
+        public int? PlanActCount { get; set; }
 
         [JsonPropertyName("start_Date")]
         public DateTime? StartDate { get; set; }
@@ -878,7 +903,7 @@ namespace BlazorTool.Client.Models
         public bool IsScheduledPlanned { get; set; }
 
         [JsonPropertyName("categoryID")]
-        public int CategoryID { get; set; }
+        public int? CategoryID { get; set; }
 
         [JsonPropertyName("reasonID")]
         public int? ReasonID { get; set; }
@@ -896,7 +921,7 @@ namespace BlazorTool.Client.Models
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Pages\Home.razor
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Pages\Home.razor
 ```
 @page "/"
 @inject NavigationManager NavigationManager
@@ -917,13 +942,16 @@ namespace BlazorTool.Client.Models
 }
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Pages\OrdersPage.razor
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Pages\OrdersPage.razor
 ```
 @page "/orders"
 
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
 @using System.Text
+@using System.Linq
+@using System.Diagnostics
+@using Telerik.DataSource.Extensions
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
 @rowStyles
 
@@ -933,9 +961,11 @@ namespace BlazorTool.Client.Models
     <div>loading device list...</div>
 }else{
     <TelerikListBox Data="@devices"
-                    SelectionMode="@ListBoxSelectionMode.Single"
+                    Id="firstListbox"
+                    SelectionMode="@ListBoxSelectionMode.Multiple"
+                    SelectedItemsChanged="@((IEnumerable<Device> deviceList) => OnSelect(deviceList))"
                     TextField="AssetNo"
-                    @bind-SelectedItems="@selectedDevices"
+                    SelectedItems="@selectedDevices"
                     Width="300px"
     >
         <ListBoxToolBarSettings>
@@ -1015,17 +1045,18 @@ else
     private async Task LoadData()
     {
         isOrdersLoading = true;
-        Value = GetCompositeFilterDescriptor();
+        //alue = GetCompositeFilterDescriptor();
         StateHasChanged();
         if (devices == null || devices.Count == 0)
         {
             return; // No devices available, exit early
         }
 
-        if (selectedDevices == null || selectedDevices.Count() == 0 && devices.Count > 0)
+        if (selectedDevices == null || selectedDevices.Count() == 0)
         {
             selectedDevices = new List<Device>() { devices.FirstOrDefault() };
         }
+
         OrdersForGrid = await apiService.GetWorkOrdersCachedAsync(selectedDevices);
         rowStyles = RenderStatesStyle(OrdersForGrid);
         isOrdersLoading = false;
@@ -1034,7 +1065,7 @@ else
 
     private CompositeFilterDescriptor GetCompositeFilterDescriptor()
     {
-       return new CompositeFilterDescriptor()
+        return new CompositeFilterDescriptor()
         {
             FilterDescriptors = new FilterDescriptorCollection
         {
@@ -1047,28 +1078,37 @@ else
             },
             new FilterDescriptor
             {
-                Member = "dep_Name",
+                Member = "DepName",
                 MemberType = typeof(string),
                 Value = "UR",
                 Operator = FilterOperator.IsEqualTo
             }
-                      
+
         }
         };
     }
-    void OnValueChanged(CompositeFilterDescriptor filter)
+    private async void OnSelect(IEnumerable<Device> selectedItems)
+    {
+        selectedDevices = selectedItems;
+        await LoadData();
+        foreach (var item in selectedItems)
+            Debug.Print(item.AssetNo);
+    }
+    async void OnValueChanged(CompositeFilterDescriptor filter)
     {
         Value = filter;
+        await LoadData();
         ApplyFilter(Value);
     }
 
     void ApplyFilter(CompositeFilterDescriptor filter)
     {
         var dataSourceRequest = new DataSourceRequest { Filters = new List<IFilterDescriptor> { filter } };
-
+       var queryable = OrdersForGrid.AsQueryable();
         var datasourceResult = OrdersForGrid.ToDataSourceResult(dataSourceRequest);
 
         OrdersForGrid = datasourceResult.Data.Cast<WorkOrder>().ToList();
+        
     }
 
     void OnRowRenderHandler(GridRowRenderEventArgs args)
@@ -1090,8 +1130,22 @@ else
         foreach (var color in uniqueColors)
         {
             var safeName = color.TrimStart('#');
-            sb.AppendLine($".k-grid .k-master-row.state-{safeName} {{");
-            sb.AppendLine($"    background-color: {color};");
+            switch(safeName.ToLowerInvariant())
+            {
+                case "lime":
+                    safeName = "LightGreen";
+                    break;
+                case "red":
+                    safeName = "LightCoral";
+                    break;
+                case "yellow":
+                    safeName = "LightYellow";
+                    break;                
+                default:
+                    break;
+            } 
+            sb.AppendLine($".k-grid .k-master-row.state-{color} {{");
+            sb.AppendLine($"    background-color: {safeName};");
             sb.AppendLine("}");
         }
         sb.AppendLine("</style>");
@@ -1102,236 +1156,176 @@ else
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Pages\SchedulerPage.razor
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Pages\SchedulerPage.razor
 ```
 @page "/scheduler"
 
+@using System.Linq
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
-@using System.Text
-@inject BlazorTool.Client.Services.ApiServiceClient apiService
-@rowStyles
+@using Telerik.Blazor.Components
+@using Telerik.Blazor.Components.Scheduler
+@using Telerik.DataSource.Extensions
+
+@inject ApiServiceClient apiService
 
 <h3>Scheduler</h3>
-<div style="display: flex; gap: 10px;">
-    <div style="flex: 1;">
-        <TelerikScheduler Data="@AppointmentsScheduler"
-                          @bind-Date="@SchedulerStartDate"
-                          @bind-View="@SchedulerCurrentView"
-                          @ref="@SchedulerRef"
-                          OnUpdate="@UpdateAppointment"
-                          OnCreate="@AddAppointment"
-                          OnDelete="@DeleteAppointment"
-                          ConfirmDelete="true"
+
+<div style="display:flex; gap:1rem;">
+    <div style="flex:1;">
+        <TelerikScheduler TItem="SchedulerAppointment"
+                          Id="Scheduler1"
+                          Data="@Appointments"
+                          @ref="SchedulerRef"
+                          @bind-Date="SchedulerDate"
+                          @bind-View="CurrentView"
                           AllowCreate="true"
-                          AllowDelete="true"
                           AllowUpdate="true"
-                          Id="Scheduler1">
+                          AllowDelete="true"
+                          OnCreate="@OnCreateAppointment"
+                          OnUpdate="@OnUpdateAppointment"
+                          OnDelete="@OnDeleteAppointment"
+                          IdField="Id"
+                          StartField="Start"
+                          EndField="End"
+                          TitleField="Title"
+                          DescriptionField="Description"
+                          IsAllDayField="IsAllDay">
             <SchedulerViews>
                 <SchedulerDayView StartTime="@DayStart" EndTime="@DayEnd" />
                 <SchedulerWeekView StartTime="@DayStart" EndTime="@DayEnd" />
                 <SchedulerMonthView />
-                <SchedulerTimelineView ColumnWidth=30 NumberOfDays=2 StartTime="@DayStart" EndTime="@DayEnd" />
             </SchedulerViews>
         </TelerikScheduler>
     </div>
-    <div style="flex: 1;">
-        @if (isOrdersLoading)
+
+    <div style="flex:1;">
+        @if (isLoading)
         {
-            <div>data loading...</div>
+            <p>Loading orders…</p>
         }
         else
         {
-            <TelerikGrid Data="@OrdersForGrid"
-                     Id="Grid1"
-                     
-                     RowDraggable="true"
-                     @ref="@GridRef"
-                         Sortable="true"
+            <TelerikGrid TItem="WorkOrder"
+                         Data="@Orders"
+                         RowDraggable="true"
+                         OnRowDrop="@GridRowDrop"
                          Pageable="true"
-                         PageSize="12"
-                         OnRowRender="@OnRowRenderHandler"
-                     OnRowDrop="@((GridRowDropEventArgs<WorkOrder> args) => GridRowDrop(args))">
-            <GridSettings>
-                <GridRowDraggableSettings DragClueField="@nameof(WorkOrder.WorkOrderID)"></GridRowDraggableSettings>
-            </GridSettings>
-            <GridColumns>
-                <GridColumn Field="@nameof(WorkOrder.WorkOrderID)" Editable="false" Visible="false"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.DepName)" Title="DepName"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.DeviceCategory)"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.WOReason)"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.ModPerson)"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.WOState)"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.WOLevel)"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.AssignedPerson)" Title="AssignedPerson"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.AddDate)" ></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.StartDate)" Title="Start Date"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.EndDate)" Title="End Date"></GridColumn> 
-                <GridColumn Field="@nameof(WorkOrder.CloseDate)"></GridColumn>
-            </GridColumns>
-        </TelerikGrid>
+                         Sortable="true"
+                         PageSize="18">
+                <GridSettings>
+                    <GridRowDraggableSettings DragClueField="@nameof(WorkOrder.WODesc)" />
+                </GridSettings>
+                <GridColumns>
+                    <GridColumn Field="@nameof(WorkOrder.AssetNo)" Title="Asset No" />
+                    <GridColumn Field="@nameof(WorkOrder.AssignedPerson)"/>
+                    <GridColumn Field="@nameof(WorkOrder.StartDate)" Title="Start Date" />
+                    <GridColumn Field="@nameof(WorkOrder.EndDate)" Title="End Date" />
+                    <GridColumn Field="@nameof(WorkOrder.WOState)" />
+                </GridColumns>
+            </TelerikGrid>
         }
-        
     </div>
 </div>
 
 @code {
-    private DateTime DayStart { get; set; } = DateTime.Today.AddHours(7);
-    private DateTime DayEnd { get; set; } = DateTime.Today.AddHours(18);
-    private DateTime SchedulerStartDate { get; set; } = DateTime.Now;
-    private SchedulerView SchedulerCurrentView { get; set; } = SchedulerView.Week;
-    private List<SchedulerAppointment> AppointmentsScheduler = new List<SchedulerAppointment>();
-    private List<WorkOrder> OrdersForGrid = new List<WorkOrder>();
-    public TelerikGrid<WorkOrder> GridRef { get; set; }
-    public TelerikScheduler<SchedulerAppointment> SchedulerRef { get; set; }
-    public AppointmentService appointmentServiceScheduler = new AppointmentService();
-    private bool isOrdersLoading = false;
-    private List<Device> devices = new List<Device>();
-    private Device selectedDevice = new Device();
-    private MarkupString rowStyles = new MarkupString();
+    private List<SchedulerAppointment> Appointments { get; set; } = new();
+    private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }
 
+    private DateTime SchedulerDate { get; set; } = DateTime.Today;
+    private SchedulerView CurrentView { get; set; } = SchedulerView.Week;
+    private DateTime DayStart => DateTime.Today.AddHours(8);
+    private DateTime DayEnd => DateTime.Today.AddHours(18);
+
+    private List<WorkOrder> Orders { get; set; } = new();
+    private bool isLoading { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        var devices = await apiService.GetAllDevicesCachedAsync();
+        var devId = devices.FirstOrDefault()?.MachineID ?? 1;
+        Orders = (await apiService.GetWorkOrdersCachedAsync(devId)).ToList();
+        isLoading = false;
+    }
+
+    // ==== Drag’n’Drop from Grid to Scheduler ====
+    private Task GridRowDrop(GridRowDropEventArgs<WorkOrder> args)
+    {
+        if (args.DestinationComponentId == "Scheduler1" && SchedulerRef != null)
+        {
+            var slot = SchedulerRef.GetTimeSlotFromDropIndex(args.DestinationIndex);
+            foreach (var wo in args.Items)
+            {
+                Appointments.Add(new SchedulerAppointment
+                {
+                    Id = wo.WorkOrderID.ToString(),
+                    Title = wo.AssetNo ?? $"WO {wo.WorkOrderID}",
+                    Start = slot.Start,
+                    End = slot.End,
+                    IsAllDay = slot.IsAllDay,
+                    Description = wo.WODesc ?? string.Empty
+                });
+            }
+            SchedulerRef.Rebind();
+        }
+        return Task.CompletedTask;
+    }
+
+    // ==== Scheduler CUD handlers ====
+    private Task OnCreateAppointment(SchedulerCreateEventArgs args)
+    {
+        if (args.Item is SchedulerAppointment newAppt && SchedulerRef != null)
+        {
+            Appointments.Add(newAppt);
+            SchedulerRef.Rebind();
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task OnUpdateAppointment(SchedulerUpdateEventArgs args)
+    {
+        if (args.Item is SchedulerAppointment updAppt)
+        {
+            var ex = Appointments.FirstOrDefault(a => a.Id == updAppt.Id);
+            if (ex != null)
+            {
+                ex.Title = updAppt.Title;
+                ex.Start = updAppt.Start;
+                ex.End = updAppt.End;
+                ex.Description = updAppt.Description;
+                ex.IsAllDay = updAppt.IsAllDay;
+                SchedulerRef?.Rebind();
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task OnDeleteAppointment(SchedulerDeleteEventArgs args)
+    {
+        if (args.Item is SchedulerAppointment delAppt)
+        {
+            Appointments.RemoveAll(a => a.Id == delAppt.Id);
+            SchedulerRef?.Rebind();
+        }
+        return Task.CompletedTask;
+    }
+
+    // ==== Appointment model ====
     public class SchedulerAppointment
     {
-        public string Title { get; set; }
         public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Title { get; set; } = string.Empty;
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public bool IsAllDay { get; set; }
         public string Description { get; set; } = string.Empty;
     }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadData();
-    }
-
-    private async Task LoadData()
-    {
-        AppointmentsScheduler = appointmentServiceScheduler.GetAllAppointments();
-
-        isOrdersLoading = true;
-        StateHasChanged(); 
-        devices = await apiService.GetAllDevicesCachedAsync(); 
-        if (selectedDevice == null && devices.Count > 0)
-        {
-            selectedDevice = devices.First();
-        }
-        else if (selectedDevice != null && !devices.Any(d => d.MachineID == selectedDevice.MachineID))
-        {
-            selectedDevice = devices.First();
-        }
-        OrdersForGrid = await apiService.GetWorkOrdersCachedAsync(selectedDevice?.MachineID ?? 1) ; 
-        rowStyles = RenderStatesStyle(OrdersForGrid);
-        isOrdersLoading = false;
-        StateHasChanged(); 
-    }
-
-    #region Grid
-    void OnRowRenderHandler(GridRowRenderEventArgs args)
-    {
-        var item = args.Item as WorkOrder;
-
-        args.Class += "state-" + item.StateColor.TrimStart('#'); 
-    }
-
-    private MarkupString RenderStatesStyle(List<WorkOrder> orders)
-    {
-        var uniqueColors = orders
-           .Select(o => o.StateColor)
-           .Where(c => !string.IsNullOrWhiteSpace(c))
-           .Distinct();
-
-        var sb = new StringBuilder();
-        sb.AppendLine("<style>");
-        foreach (var color in uniqueColors)
-        {
-            var safeName = color.TrimStart('#');
-            sb.AppendLine($".k-grid .k-master-row.state-{safeName} {{");
-            sb.AppendLine($"    background-color: {color};");
-            sb.AppendLine("}");
-        }
-        sb.AppendLine("</style>");
-
-        return new MarkupString(sb.ToString());
-    }
-    #endregion
-    private void GridRowDrop(GridRowDropEventArgs<WorkOrder> args)
-    {
-        // foreach (var item in args.Items)
-        // {
-        //     appointmentServiceGrid.DeleteAppointment(item.Id);
-        //     AppointmentsGrid = appointmentServiceGrid.GetAllAppointments();
-        // }
-
-        // if (args.DestinationComponentId == "Scheduler1")
-        // {
-        //     foreach (var item in args.Items)
-        //     {
-        //         DropAppointment(args.DestinationIndex, item);
-        //     }
-
-        //     SchedulerRef.Rebind();
-        // }
-        // else if (args.DestinationComponentId == "Grid1")
-        // {
-        //     InsertItemsIntoGrid(args.Items, args.DestinationItem, args.DropPosition);
-        // }
-    }
-
-    private void DropAppointment(string index, SchedulerAppointment item)
-    {
-        var slot = SchedulerRef.GetTimeSlotFromDropIndex(index);
-
-        var appointment = item;
-        appointment.Start = slot.Start;
-        appointment.IsAllDay = slot.IsAllDay;
-        appointment.End = slot.End;
-
-        appointmentServiceScheduler.AddAppointment(appointment);
-
-    }
-
-    private void InsertItemsIntoGrid(IEnumerable<WorkOrder> items, WorkOrder destinationItem, GridRowDropPosition dropPosition)
-    {
-        var destinationIndex = 0;
-        if (destinationItem != null)
-        {
-            destinationIndex = OrdersForGrid.IndexOf(destinationItem);
-            if (dropPosition == GridRowDropPosition.After)
-            {
-                destinationIndex += 1;
-            }
-        }
-
-        OrdersForGrid.InsertRange(destinationIndex, items);
-    }
-
-    async Task UpdateAppointment(SchedulerUpdateEventArgs args)
-    {
-        appointmentServiceScheduler.UpdateAppointment((SchedulerAppointment)args.Item);
-        // Rebind the scheduler to reflect the changes
-        SchedulerRef.Rebind();
-    }
-
-    async Task AddAppointment(SchedulerCreateEventArgs args)
-    {
-        appointmentServiceScheduler.AddAppointment((SchedulerAppointment)args.Item);
-        SchedulerRef.Rebind();
-    }
-
-    async Task DeleteAppointment(SchedulerDeleteEventArgs args)
-    {
-        appointmentServiceScheduler.DeleteAppointment(((SchedulerAppointment)args.Item).Id);
-        SchedulerRef.Rebind();
-    }
-
-
 }
-
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Services\ApiServiceClient.cs
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Services\ApiServiceClient.cs
 ```csharp
 using BlazorTool.Client.Models;
 using System.Collections.Generic;
@@ -1380,14 +1374,15 @@ namespace BlazorTool.Client.Services
             }
             foreach (var device in devices)
             {
-                if (!_workOrdersCache.ContainsKey(device.MachineID))
+                if (!_workOrdersCache.TryGetValue(device.MachineID, out var list))
                 {
                     var fresh = await GetWorkOrdersAsync(device.MachineID);
-                    _workOrdersCache.Add(device.MachineID, fresh);
+                    _workOrdersCache[device.MachineID] = fresh;
+                    result.AddRange(fresh);          
                 }
                 else
                 {
-                    result.AddRange(_workOrdersCache[device.MachineID]);
+                    result.AddRange(list);
                 }
             }
             return result;
@@ -1425,10 +1420,6 @@ namespace BlazorTool.Client.Services
             Debug.Print("= = = = = = = = = = response WorkOrder.Count: " + wrapper?.Data.Count.ToString());
             Debug.Print("\n");
             var result = wrapper?.Data ?? new List<WorkOrder>();
-            //if (_workOrdersCache.ContainsKey(deviceID))
-            //    _workOrdersCache[deviceID] = result;
-            //else 
-            //    _workOrdersCache.Add(deviceID, result);
             return result;
         }
 
@@ -1497,7 +1488,7 @@ namespace BlazorTool.Client.Services
 
 ```
 
-## Файл: ..\..\..\..\BlazorTool\BlazorTool.Client\Services\AppointmentService.cs
+## Файл: ..\..\BlazorTool\BlazorTool.Client\Services\AppointmentService.cs
 ```csharp
 using static BlazorTool.Client.Pages.SchedulerPage;
 namespace BlazorTool.Client.Services

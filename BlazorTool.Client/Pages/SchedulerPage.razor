@@ -1,131 +1,174 @@
 ﻿@page "/scheduler"
 
+@using System.Linq
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
 @using System.Text
-@inject BlazorTool.Client.Services.ApiServiceClient apiService
-@rowStyles
+@using Telerik.Blazor.Components
+@using Telerik.Blazor.Components.Scheduler
+@using Telerik.DataSource.Extensions
 
+@inject ApiServiceClient apiService
+@rowStyles
 <h3>Scheduler</h3>
-<div style="display: flex; gap: 10px;">
-    <div style="flex: 1;">
-        <TelerikScheduler Data="@AppointmentsScheduler"
-                          @bind-Date="@SchedulerStartDate"
-                          @bind-View="@SchedulerCurrentView"
-                          @ref="@SchedulerRef"
-                          OnUpdate="@UpdateAppointment"
-                          OnCreate="@AddAppointment"
-                          OnDelete="@DeleteAppointment"
-                          ConfirmDelete="true"
+
+<div style="display:flex; gap:1rem;">
+    <div style="flex:2;">
+        <TelerikScheduler TItem="SchedulerAppointment"
+                          Id="Scheduler1"
+                          Data="@Appointments"
+                          @ref="SchedulerRef"
+                          @bind-Date="SchedulerDate"
+                          @bind-View="CurrentView"
                           AllowCreate="true"
-                          AllowDelete="true"
                           AllowUpdate="true"
-                          Id="Scheduler1">
+                          AllowDelete="true"
+                          OnCreate="@OnCreateAppointment"
+                          OnUpdate="@OnUpdateAppointment"
+                          OnDelete="@OnDeleteAppointment"
+                          IdField="Id"
+                          StartField="Start"
+                          EndField="End"
+                          TitleField="Title"
+                          DescriptionField="Description"
+                          IsAllDayField="IsAllDay">
             <SchedulerViews>
                 <SchedulerDayView StartTime="@DayStart" EndTime="@DayEnd" />
                 <SchedulerWeekView StartTime="@DayStart" EndTime="@DayEnd" />
                 <SchedulerMonthView />
-                <SchedulerTimelineView ColumnWidth=30 NumberOfDays=2 StartTime="@DayStart" EndTime="@DayEnd" />
             </SchedulerViews>
         </TelerikScheduler>
     </div>
-    <div style="flex: 1;">
-        @if (isOrdersLoading)
+
+    <div style="flex:1;">
+        @if (isLoading)
         {
-            <div>data loading...</div>
+            <p>Loading orders…</p>
         }
         else
         {
-            <TelerikGrid Data="@OrdersForGrid"
-                     Id="Grid1"
-                     
-                     RowDraggable="true"
-                     @ref="@GridRef"
+            <TelerikGrid TItem="WorkOrder"
+                         Data="@UntakenOrders"
+                         RowDraggable="true"
+                         OnRowDrop="@GridRowDrop"
                          Sortable="true"
-                         Pageable="true"
-                         PageSize="12"
-                         OnRowRender="@OnRowRenderHandler"
-                     OnRowDrop="@((GridRowDropEventArgs<WorkOrder> args) => GridRowDrop(args))">
-            <GridSettings>
-                <GridRowDraggableSettings DragClueField="@nameof(WorkOrder.WorkOrderID)"></GridRowDraggableSettings>
-            </GridSettings>
-            <GridColumns>
-                <GridColumn Field="@nameof(WorkOrder.WorkOrderID)" Editable="false" Visible="false"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.DepName)" Title="DepName"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.DeviceCategory)"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.WOReason)"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.ModPerson)"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.WOState)"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.WOLevel)"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.AssignedPerson)" Title="AssignedPerson"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.AddDate)" ></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.StartDate)" Title="Start Date"></GridColumn>
-                <GridColumn Field="@nameof(WorkOrder.EndDate)" Title="End Date"></GridColumn> 
-                <GridColumn Field="@nameof(WorkOrder.CloseDate)"></GridColumn>
-            </GridColumns>
-        </TelerikGrid>
+                         OnRowRender="@OnRowRenderHandler">
+                <GridSettings>
+                    <GridRowDraggableSettings DragClueField="@nameof(WorkOrder.WorkOrderID)" />
+                </GridSettings>
+                <GridColumns>
+                    <GridColumn Field="@nameof(WorkOrder.AssetNo)" Title="Asset No" />
+                    <GridColumn Field="@nameof(WorkOrder.AssignedPerson)"/>
+                    <GridColumn Field="@nameof(WorkOrder.StartDate)" Title="Start Date" />
+                    <GridColumn Field="@nameof(WorkOrder.EndDate)" Title="End Date" />
+                    <GridColumn Field="@nameof(WorkOrder.WOState)" />
+                </GridColumns>
+            </TelerikGrid>
         }
-        
     </div>
 </div>
 
 @code {
-    private DateTime DayStart { get; set; } = DateTime.Today.AddHours(7);
-    private DateTime DayEnd { get; set; } = DateTime.Today.AddHours(18);
-    private DateTime SchedulerStartDate { get; set; } = DateTime.Now;
-    private SchedulerView SchedulerCurrentView { get; set; } = SchedulerView.Week;
-    private List<SchedulerAppointment> AppointmentsScheduler = new List<SchedulerAppointment>();
-    private List<WorkOrder> OrdersForGrid = new List<WorkOrder>();
-    public TelerikGrid<WorkOrder> GridRef { get; set; }
-    public TelerikScheduler<SchedulerAppointment> SchedulerRef { get; set; }
-    public AppointmentService appointmentServiceScheduler = new AppointmentService();
-    private bool isOrdersLoading = false;
-    private List<Device> devices = new List<Device>();
-    private Device selectedDevice = new Device();
-    private MarkupString rowStyles = new MarkupString();
 
-    public class SchedulerAppointment
-    {
-        public string Title { get; set; }
-        public string Id { get; set; } = Guid.NewGuid().ToString();
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public bool IsAllDay { get; set; }
-        public string Description { get; set; } = string.Empty;
-    }
+    private List<SchedulerAppointment> Appointments { get; set; } = new();
+    private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }
+
+    private DateTime SchedulerDate { get; set; } = DateTime.Today;
+    private SchedulerView CurrentView { get; set; } = SchedulerView.Week;
+    private DateTime DayStart => DateTime.Today.AddHours(8);
+    private DateTime DayEnd => DateTime.Today.AddHours(18);
+    private MarkupString rowStyles = new MarkupString(); //for rows colors
+    private List<WorkOrder> UntakenOrders { get; set; } = new();
+    private List<WorkOrder> TakenOrders { get; set; } = new();
+    private bool isLoading { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadData();
+        isLoading = true;
+        var orders = (await apiService.GetWorkOrdersCachedAsync()); //Nie rozpoczete zlecenia
+        UntakenOrders = orders.Where(x => x.TakeDate == null).ToList();
+        TakenOrders = orders.Where(x => x.TakeDate != null).ToList();
+        Appointments = ConvertOrdersToAppointments(TakenOrders);
+        isLoading = false;
     }
 
-    private async Task LoadData()
+    // ==== DragAndDrop from Grid to Scheduler ====
+    private Task GridRowDrop(GridRowDropEventArgs<WorkOrder> args)
     {
-        AppointmentsScheduler = appointmentServiceScheduler.GetAllAppointments();
-
-        isOrdersLoading = true;
-        StateHasChanged(); 
-        devices = await apiService.GetAllDevicesCachedAsync(); 
-        if (selectedDevice == null && devices.Count > 0)
+        if (args.DestinationComponentId == "Scheduler1" && SchedulerRef != null)
         {
-            selectedDevice = devices.First();
+            var slot = SchedulerRef.GetTimeSlotFromDropIndex(args.DestinationIndex);
+            foreach (var wo in args.Items)
+            {
+                Appointments.Add(new SchedulerAppointment
+                {
+                    Id = wo.WorkOrderID.ToString(),
+                    Title = wo.AssetNo ?? $"WO {wo.WorkOrderID}",
+                    Start = slot.Start,
+                    End = slot.End,
+                    IsAllDay = slot.IsAllDay,
+                    Description = wo.WODesc ?? string.Empty
+                });
+            }
+            SchedulerRef.Rebind();
         }
-        else if (selectedDevice != null && !devices.Any(d => d.MachineID == selectedDevice.MachineID))
-        {
-            selectedDevice = devices.First();
-        }
-        OrdersForGrid = await apiService.GetWorkOrdersCachedAsync(selectedDevice?.MachineID ?? 1) ; 
-        rowStyles = RenderStatesStyle(OrdersForGrid);
-        isOrdersLoading = false;
-        StateHasChanged(); 
+        return Task.CompletedTask;
     }
 
-    #region Grid
+    // ==== Scheduler CUD handlers ====
+    private Task OnCreateAppointment(SchedulerCreateEventArgs args)
+    {
+        if (args.Item is SchedulerAppointment newAppt && SchedulerRef != null)
+        {
+            Appointments.Add(newAppt);
+            SchedulerRef.Rebind();
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task OnUpdateAppointment(SchedulerUpdateEventArgs args)
+    {
+        if (args.Item is SchedulerAppointment updAppt)
+        {
+            var ex = Appointments.FirstOrDefault(a => a.Id == updAppt.Id);
+            if (ex != null)
+            {
+                ex.Title = updAppt.Title;
+                ex.Start = updAppt.Start;
+                ex.End = updAppt.End;
+                ex.Description = updAppt.Description;
+                ex.IsAllDay = updAppt.IsAllDay;
+                SchedulerRef?.Rebind();
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task OnDeleteAppointment(SchedulerDeleteEventArgs args)
+    {
+        if (args.Item is SchedulerAppointment delAppt)
+        {
+            Appointments.RemoveAll(a => a.Id == delAppt.Id);
+            SchedulerRef?.Rebind();
+        }
+        return Task.CompletedTask;
+    }
+
+    private List<SchedulerAppointment> ConvertOrdersToAppointments(List<WorkOrder> orders)
+    {
+        var appointments = new List<SchedulerAppointment>();
+        foreach (var order in orders)
+            appointments.Add(new SchedulerAppointment(order));
+
+        return appointments;
+    }
+
+    #region Grid Row Styles
     void OnRowRenderHandler(GridRowRenderEventArgs args)
     {
         var item = args.Item as WorkOrder;
 
-        args.Class += "state-" + item.StateColor.TrimStart('#'); 
+        args.Class += "state-" + item?.StateColor.TrimStart('#');
     }
 
     private MarkupString RenderStatesStyle(List<WorkOrder> orders)
@@ -140,8 +183,22 @@
         foreach (var color in uniqueColors)
         {
             var safeName = color.TrimStart('#');
-            sb.AppendLine($".k-grid .k-master-row.state-{safeName} {{");
-            sb.AppendLine($"    background-color: {color};");
+            switch (safeName.ToLowerInvariant())
+            {
+                case "lime":
+                    safeName = "LightGreen";
+                    break;
+                case "red":
+                    safeName = "LightCoral";
+                    break;
+                case "yellow":
+                    safeName = "LightYellow";
+                    break;
+                default:
+                    break;
+            }
+            sb.AppendLine($".k-grid .k-master-row.state-{color} {{");
+            sb.AppendLine($"    background-color: {safeName};");
             sb.AppendLine("}");
         }
         sb.AppendLine("</style>");
@@ -149,76 +206,4 @@
         return new MarkupString(sb.ToString());
     }
     #endregion
-    private void GridRowDrop(GridRowDropEventArgs<WorkOrder> args)
-    {
-        // foreach (var item in args.Items)
-        // {
-        //     appointmentServiceGrid.DeleteAppointment(item.Id);
-        //     AppointmentsGrid = appointmentServiceGrid.GetAllAppointments();
-        // }
-
-        // if (args.DestinationComponentId == "Scheduler1")
-        // {
-        //     foreach (var item in args.Items)
-        //     {
-        //         DropAppointment(args.DestinationIndex, item);
-        //     }
-
-        //     SchedulerRef.Rebind();
-        // }
-        // else if (args.DestinationComponentId == "Grid1")
-        // {
-        //     InsertItemsIntoGrid(args.Items, args.DestinationItem, args.DropPosition);
-        // }
-    }
-
-    private void DropAppointment(string index, SchedulerAppointment item)
-    {
-        var slot = SchedulerRef.GetTimeSlotFromDropIndex(index);
-
-        var appointment = item;
-        appointment.Start = slot.Start;
-        appointment.IsAllDay = slot.IsAllDay;
-        appointment.End = slot.End;
-
-        appointmentServiceScheduler.AddAppointment(appointment);
-
-    }
-
-    private void InsertItemsIntoGrid(IEnumerable<WorkOrder> items, WorkOrder destinationItem, GridRowDropPosition dropPosition)
-    {
-        var destinationIndex = 0;
-        if (destinationItem != null)
-        {
-            destinationIndex = OrdersForGrid.IndexOf(destinationItem);
-            if (dropPosition == GridRowDropPosition.After)
-            {
-                destinationIndex += 1;
-            }
-        }
-
-        OrdersForGrid.InsertRange(destinationIndex, items);
-    }
-
-    async Task UpdateAppointment(SchedulerUpdateEventArgs args)
-    {
-        appointmentServiceScheduler.UpdateAppointment((SchedulerAppointment)args.Item);
-        // Rebind the scheduler to reflect the changes
-        SchedulerRef.Rebind();
-    }
-
-    async Task AddAppointment(SchedulerCreateEventArgs args)
-    {
-        appointmentServiceScheduler.AddAppointment((SchedulerAppointment)args.Item);
-        SchedulerRef.Rebind();
-    }
-
-    async Task DeleteAppointment(SchedulerDeleteEventArgs args)
-    {
-        appointmentServiceScheduler.DeleteAppointment(((SchedulerAppointment)args.Item).Id);
-        SchedulerRef.Rebind();
-    }
-
-
 }
-

@@ -23,14 +23,40 @@ namespace BlazorTool.Client.Services
             _token = token;
         }
 
-        public async Task<List<WorkOrder>> GetWorkOrdersCachedAsync(int deviceId)
+        /// <summary>
+        /// Retrieves a list of work orders, either from a cache or by querying the API.
+        /// </summary>
+        /// <remarks>If the work orders for the specified device ID are not already cached, this method
+        /// queries the API and updates the cache. Subsequent calls for the same device ID will return cached results
+        /// unless the cache is empty.</remarks>
+        /// <param name="deviceId">The ID of the device for which to retrieve work orders. If <see langword="null"/>, retrieves all work
+        /// orders.</param>
+        /// <returns>A list of <see cref="WorkOrder"/> objects associated with the specified device ID, or all work orders if
+        /// <paramref name="deviceId"/> is <see langword="null"/>.</returns>
+        public async Task<List<WorkOrder>> GetWorkOrdersCachedAsync(int? deviceId = null)
        {
-            if (!_workOrdersCache.TryGetValue(deviceId, out var list)
+            if (deviceId == null)//get all WorkOrders
+            {
+                var allOrders = await GetWorkOrdersAsync();
+                //add to cache all work orders by deviceId
+                foreach (var order in allOrders)
+                {
+                    if (!_workOrdersCache.ContainsKey(order.MachineID))
+                    {
+                        _workOrdersCache.Add(order.MachineID, new List<WorkOrder>());
+                    }
+                    _workOrdersCache[order.MachineID].Add(order);
+                }
+                return allOrders;
+            }
+
+            //get work orders by deviceId from cache or from API
+            if (!_workOrdersCache.TryGetValue((int)deviceId, out var list)
                 || list == null
                 || list.Count == 0)
             {
                var fresh = await GetWorkOrdersAsync(deviceId);
-                _workOrdersCache[deviceId] = fresh;
+                _workOrdersCache[(int)deviceId] = fresh;
                 return fresh;
             }
             return list;
@@ -61,7 +87,7 @@ namespace BlazorTool.Client.Services
         
 
         public async Task<List<WorkOrder>> GetWorkOrdersAsync(
-                                        int deviceID,
+                                        int? deviceID = null,
                                         int? workOrderID = null,
                                         string? deviceName = null,
                                         bool? isDep = null,
@@ -73,7 +99,7 @@ namespace BlazorTool.Client.Services
                                         bool? isWithPerson = null)
         {
             var qp = new List<string>();
-            qp.Add($"DeviceID={deviceID}");
+            if (deviceID.HasValue) qp.Add($"DeviceID={deviceID.Value}"); 
             if (workOrderID.HasValue) qp.Add($"WorkOrderID={workOrderID.Value}");
             if (!string.IsNullOrWhiteSpace(deviceName)) qp.Add($"DeviceName={Uri.EscapeDataString(deviceName)}");
             if (isDep.HasValue) qp.Add($"IsDep={isDep.Value}");
