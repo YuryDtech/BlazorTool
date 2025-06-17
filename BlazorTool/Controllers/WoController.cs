@@ -1,5 +1,6 @@
 ﻿using BlazorTool.Client.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace BlazorTool.Controllers
 {
@@ -53,7 +54,7 @@ namespace BlazorTool.Controllers
 
         public class WorkOrderQueryParameters
         {
-            public int DeviceID { get; set; }
+            public int? DeviceID { get; set; }
             public int? WorkOrderID { get; set; }
             public string? DeviceName { get; set; }
             public bool? IsDep { get; set; }

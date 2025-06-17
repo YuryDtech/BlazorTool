@@ -1,9 +1,11 @@
 using BlazorTool.Client.Pages;
 using BlazorTool.Client.Services;
 using BlazorTool.Components;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 var token = builder.Configuration["AuthToken"] ?? string.Empty;
+if (string.IsNullOrEmpty(token)) Debug.Print("======= SERVER: token is empty");
 //TODO Get token from API
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()

@@ -7,6 +7,7 @@
 @using Telerik.Blazor.Components
 @using Telerik.Blazor.Components.Scheduler
 @using Telerik.DataSource.Extensions
+@inject IJSRuntime JSRuntime
 
 @inject ApiServiceClient apiService
 
@@ -75,20 +76,21 @@
     private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }
 
     private DateTime SchedulerDate { get; set; } = DateTime.Today;
-    private SchedulerView CurrentView { get; set; } = SchedulerView.Week;
+    private SchedulerView CurrentView { get; set; } = SchedulerView.Month;
     private DateTime DayStart => DateTime.Today.AddHours(8);
     private DateTime DayEnd => DateTime.Today.AddHours(18);
     private MarkupString rowStyles = new MarkupString(); //for rows colors
     private List<WorkOrder> UntakenOrders { get; set; } = new();
     private List<WorkOrder> TakenOrders { get; set; } = new();
+    private List<WorkOrder> _allOrders = new();
     private bool isLoading { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
-        var orders = (await apiService.GetWorkOrdersCachedAsync()); //Nie rozpoczete zlecenia
-        UntakenOrders = orders.Where(x => x.TakeDate == null).ToList();
-        TakenOrders = orders.Where(x => x.TakeDate != null).ToList();
+        _allOrders = (await apiService.GetWorkOrdersCachedAsync()); // Nie rozpoczete zlecenia
+        UntakenOrders = _allOrders.Where(x => x.TakeDate == null).ToList();
+        TakenOrders = _allOrders.Where(x => x.TakeDate != null).ToList();
         Appointments = TakenOrders.Select(o => new SchedulerAppointment(o)).ToList();
         isLoading = false;
     }
