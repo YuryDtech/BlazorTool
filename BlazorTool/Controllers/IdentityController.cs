@@ -72,7 +72,7 @@ namespace BlazorTool.Controllers
 
             var langCode = data?["langCode"]?.ToString() ?? "pl-PL";
             var token = data?["token"]?.ToString() ?? string.Empty; 
-            var expires = DateTime.Now.AddHours(8);
+            var expires = DateTime.Now.AddHours(1);
             return Ok(new { Token = token, LangCode = langCode, Expires = expires });     
         }
     }
