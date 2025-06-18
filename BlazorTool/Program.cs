@@ -14,22 +14,20 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.Services.AddMemoryCache();
 
-// 2) ???????????? HttpClient ??? ???????? Identity API
 builder.Services.AddHttpClient("API", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["API"]!);
 });
 
-// 3) ??????????????? ???????
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddControllers();
 builder.Services.AddTelerikBlazor();
 
-// 4) ???????? ????? ??? ??????
 using var provider = builder.Services.BuildServiceProvider();
 var cache = provider.GetRequiredService<IMemoryCache>();
 var httpFactory = provider.GetRequiredService<IHttpClientFactory>();
@@ -44,7 +42,6 @@ string token = await GetTokenAsync(cache, httpFactory, builder.Configuration, lo
 if (string.IsNullOrEmpty(token))
     Debug.Print("======= SERVER: token is empty");
 
-// 5) ????????????? HttpClient ??? ????????? API ? JWT
 builder.Services.AddHttpClient("API", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["API"]!);
@@ -57,7 +54,6 @@ builder.Services.AddScoped<ApiServiceClient>(sp =>
 
 var app = builder.Build();
 
-// Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
@@ -80,7 +76,6 @@ app.MapRazorComponents<App>()
 app.MapControllers();
 app.Run();
 
-// ??????????????? ????? ??? ????????? ?????? ?? ???????? API ? ???????????
 static async Task<string> GetTokenAsync(
     IMemoryCache cache,
     IHttpClientFactory httpFactory,
@@ -95,16 +90,13 @@ static async Task<string> GetTokenAsync(
 
     var client = httpFactory.CreateClient("API");
 
-    // ????????? Basic ??????????? ?? ????????
     var basicUser = config["ExternalApi:BasicAuthUsername"]!;
     var basicPass = config["ExternalApi:BasicAuthPassword"]!;
     var basicAuth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{basicUser}:{basicPass}"));
     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basicAuth);
 
-    // ???????? URL ? query-???????????
     var url = $"api/v1/identity/loginpassword?UserName={Uri.EscapeDataString(loginDto.Username)}&Password={Uri.EscapeDataString(loginDto.Password)}";
 
-    // ???? ??????? ???????? ???????? API
     var personId = int.Parse(config["ExternalApi:PersonID"]!);
     var personPass = config["ExternalApi:PersonPassword"] ?? loginDto.Password;
     var body = new { PersonID = personId, Password = personPass };
@@ -117,14 +109,12 @@ static async Task<string> GetTokenAsync(
     var response = await client.SendAsync(request);
     response.EnsureSuccessStatusCode();
 
-    // ?????? ????? ?? ???????? API
     var wrapper = await response.Content.ReadFromJsonAsync<SingleResponse<IdentityData>>();
     var token = wrapper?.Data?.Token ?? string.Empty;
     var expires = DateTime.UtcNow.AddHours(1);
-
-    // ???????? ????? ?? ????? ?????????
     var ttl = expires - DateTime.UtcNow;
     cache.Set(cacheKey, token, ttl);
 
     return token;
 }
+

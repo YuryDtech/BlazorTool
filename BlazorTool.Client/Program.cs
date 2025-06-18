@@ -66,3 +66,10 @@ static async Task<string> GetToken(ILocalStorageService localStorage, HttpClient
 
     return token;
 }
+
+public static class AppInfo
+{
+    public static string Version { get; } = ThisAssembly.AssemblyInformationalVersion;
+    public static string Name = "flexiCMMS alfa";
+    public static string BuildDate { get; } = ThisAssembly.GitCommitDate.ToString("yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture) + " UTC";
+}
