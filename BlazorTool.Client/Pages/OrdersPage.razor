@@ -165,6 +165,7 @@ else
         
     }
 
+    #region Grid Row Styles
     void OnRowRenderHandler(GridRowRenderEventArgs args)
     {
         var item = args.Item as WorkOrder;
@@ -206,4 +207,5 @@ else
 
         return new MarkupString(sb.ToString());
     }
+    #endregion
 }
