@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BlazorTool.Client.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
@@ -6,9 +7,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using System.Text.Json.Nodes;
 
 namespace BlazorTool.Controllers
 {
@@ -54,24 +55,9 @@ namespace BlazorTool.Controllers
             };
 
             var response = await client.SendAsync(request);
-            var responseString = await response.Content.ReadAsStringAsync();
-            if (!response.IsSuccessStatusCode)
-                return StatusCode((int)response.StatusCode, responseString);
-
-            // Попытка извлечь токен из ответа внешнего API
-            
-            JsonNode data = null;
-            try
-            {
-                var json = JsonNode.Parse(responseString);
-                data = json["data"];
-            }
-            catch {
-            return StatusCode(500, "Failed to parse response from external API.");
-            }
-
-            var langCode = data?["langCode"]?.ToString() ?? "pl-PL";
-            var token = data?["token"]?.ToString() ?? string.Empty; 
+            var wrapper = await response.Content.ReadFromJsonAsync<SingleResponse<IdentityData>>();
+            var token = wrapper?.Data?.Token ?? string.Empty;
+            var langCode = wrapper?.Data.LangCode ?? "pl-PL";
             var expires = DateTime.Now.AddHours(1);
             return Ok(new { Token = token, LangCode = langCode, Expires = expires });     
         }
