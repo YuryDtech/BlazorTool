@@ -309,6 +309,21 @@ namespace BlazorTool.Client.Services
                 }
             }
         }
+
+        public async Task<string> GetSettingAsync(string key)
+        {
+            var url = $"api/v1/settings/get?key={Uri.EscapeDataString(key)}";
+            var response = await _http.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                Debug.Print("\n= = = = = = = = = GetSettingAsync error: " + response.ReasonPhrase + "\n");
+                return string.Empty;
+            }
+        }
         #endregion
 
     }

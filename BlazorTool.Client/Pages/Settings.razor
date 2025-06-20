@@ -42,7 +42,7 @@
 
 @code{
     protected string? ApiAddress { get; set; }
-    protected string? SelectedLanguage { get; set; } = "en"; // Default to English
+    protected string? SelectedLanguage { get; set; } = "pl-pl"; 
 
     protected string? StatusMessage { get; set; }
     protected string? StatusMessageClass { get; set; } // e.g., "text-success" or "text-danger"
@@ -50,10 +50,14 @@
     protected override async Task OnInitializedAsync()
     {
         // TODO: Load saved settings (e.g., from localStorage or a service)
-        // For now, we can use some default values or leave them empty
-        // ApiAddress = await LoadSettingAsync("apiAddress");
-        // SelectedLanguage = await LoadSettingAsync("selectedLanguage") ?? "en";
+        await LoadSettingsAsync();
         await InvokeAsync(StateHasChanged); // Ensure UI updates if settings are loaded asynchronously
+    }
+
+    protected async Task LoadSettingsAsync()
+    {
+        ApiAddress = await LoadSettingAsync("apiAddress");
+        SelectedLanguage = await LoadSettingAsync("selectedLanguage") ?? "pl-pl"; // Set default if not found
     }
 
     protected async Task TestApiAddress()
@@ -116,8 +120,7 @@
 
     protected async Task<string?> LoadSettingAsync(string key)
     {
-        // Example: return await JSRuntime.InvokeAsync<string>("localStorage.getItem", key);
-        await Task.CompletedTask; // Replace with actual load logic
-        return null;
+        var result = await apiService.GetSettingAsync(key);
+        return result; 
     }
 }

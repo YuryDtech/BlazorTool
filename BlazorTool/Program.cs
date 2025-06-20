@@ -76,11 +76,7 @@ app.MapRazorComponents<App>()
 app.MapControllers();
 app.Run();
 
-static async Task<string> GetTokenAsync(
-    IMemoryCache cache,
-    IHttpClientFactory httpFactory,
-    IConfiguration config,
-    LoginRequest loginDto)
+static async Task<string> GetTokenAsync(IMemoryCache cache, IHttpClientFactory httpFactory, IConfiguration config, LoginRequest loginDto)
 {
     const string cacheKey = "ApiJwtToken";
     if (cache.TryGetValue(cacheKey, out string cachedToken))
