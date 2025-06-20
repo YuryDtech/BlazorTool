@@ -18,26 +18,18 @@ namespace BlazorTool.Controllers
 
         [HttpGet("get")]
         // GET: Settings var url = $"api/v1/settings/get?key=address}";
-        public ActionResult Get(string key)
+        public ActionResult Read(string key)
         {
             //read settings from server local file
-            var json = System.IO.File.ReadAllText(SettingsFilePath);
 
             
             return View();
         }
 
-
-        // GET: Settings/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Settings/Create
-        [HttpPost]
+        // POST: Settings/Set
+        [HttpPost("Set")]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Save(string key, string user)
         {
             try
             {
