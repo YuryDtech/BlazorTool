@@ -23,6 +23,8 @@ namespace BlazorTool.Client.Services
             _token = token;
         }
 
+
+        #region Orders
         /// <summary>
         /// Retrieves a list of work orders, either from a cache or by querying the API.
         /// </summary>
@@ -140,6 +142,19 @@ namespace BlazorTool.Client.Services
             return wrapper?.Data ?? new List<OrderStatus>();
         }
 
+        public async Task<WorkOrder?> GetWorkOrderByIdAsync(int workOrderID)
+        {
+            var orders = await GetWorkOrdersCachedAsync(workOrderID);
+            if (orders == null || orders.Count == 0)
+            {
+                Debug.Print("\n= = = = = = = = = No work order found for ID: " + workOrderID + "\n");
+                return null;
+            }
+            return orders.FirstOrDefault();
+        }
+        #endregion
+
+        #region Devices
         public async Task<List<Device>> GetAllDevicesCachedAsync()
         {
             if (!_devicesCache.Any())
@@ -179,6 +194,6 @@ namespace BlazorTool.Client.Services
             
             return wrapper?.Data ?? new List<Device>();
         }
-
+        #endregion
     }
 }

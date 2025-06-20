@@ -1,0 +1,256 @@
+﻿@page "/workorder/{WorkOrderId:int}"
+@using System.Text.Json.Serialization
+@using BlazorTool.Client.Models
+@inject BlazorTool.Client.Services.ApiServiceClient apiService
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Order №@(WorkOrder?.WorkOrderID)</PageTitle>
+
+<div class="work-order-container">
+    @if (!isLoading)
+    {
+        if(WorkOrder != null)
+        {
+            <TelerikCard Class="main-header-card">
+                <CardHeader>
+                    <div class="header-content">
+                        <div class="order-title">
+                            <h2>Order №@WorkOrder.WorkOrderID</h2>
+                            <TelerikBadge ThemeColor="@GetStateColor()" Size=@Telerik.Blazor.ThemeConstants.Switch.Size.Large>
+                                @WorkOrder.WOState
+                            </TelerikBadge>
+                        </div>
+                        <div class="asset-info">
+                            <strong>Device:</strong> @WorkOrder.AssetNo
+                            <br />
+                            <strong>Category:</strong> @WorkOrder.DeviceCategory
+                        </div>
+                    </div>
+                </CardHeader>
+            </TelerikCard>
+
+            <div class="cards-grid">
+                <TelerikCard Class="info-card">
+                    <CardHeader>
+                        <CardTitle>Description</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        <div class="field-group">
+                            <label>Description:</label>
+                            <div class="field-value">@(WorkOrder.WODesc ?? "Not specified")</div>
+                        </div>
+                        <div class="field-group">
+                            <label>Category:</label>
+                            <div class="field-value">@(WorkOrder.WOCategory ?? "Not specified")</div>
+                        </div>
+                        <div class="field-group">
+                            <label>Reason:</label>
+                            <div class="field-value">@(WorkOrder.WOReason ?? "Not specified")</div>
+                        </div>
+                        <div class="field-group">
+                            <label>Level:</label>
+                            <div class="field-value">@(WorkOrder.WOLevel ?? "Not specified")</div>
+                        </div>
+                    </CardBody>
+                </TelerikCard>
+
+                <!-- Dates -->
+                <TelerikCard Class="info-card">
+                    <CardHeader>
+                        <CardTitle>Dates</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        <div class="dates-grid">
+                            <div class="date-item">
+                                <label>Added:</label>
+                                <div class="date-value">@FormatDateTime(WorkOrder.AddDate)</div>
+                            </div>
+                            <div class="date-item">
+                                <label>Accepted for processing:</label>
+                                <div class="date-value">@FormatDateTime(WorkOrder.TakeDate)</div>
+                            </div>
+                            <div class="date-item">
+                                <label>Start:</label>
+                                <div class="date-value">@FormatDateTime(WorkOrder.StartDate)</div>
+                            </div>
+                            <div class="date-item">
+                                <label>End:</label>
+                                <div class="date-value">@FormatDateTime(WorkOrder.EndDate)</div>
+                            </div>
+                            <div class="date-item">
+                                <label>Closed:</label>
+                                <div class="date-value">@FormatDateTime(WorkOrder.CloseDate)</div>
+                            </div>
+                            <div class="date-item">
+                                <label>Person Take Date:</label>
+                                <div class="date-value">@FormatDateTime(WorkOrder.PersonTakeDate)</div>
+                            </div>
+                        </div>
+                    </CardBody>
+                </TelerikCard>
+
+                <!-- Executors -->
+                <TelerikCard Class="info-card">
+                    <CardHeader>
+                        <CardTitle>Executors</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        <div class="field-group">
+                            <label>Assigned Person:</label>
+                            <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.AssignedPerson) ? "Not specified" : WorkOrder.AssignedPerson)</div>
+                        </div>
+                        <div class="field-group">
+                            <label>Take Persons:</label>
+                            <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.TakePersons) ? "Not specified" : WorkOrder.TakePersons)</div>
+                        </div>
+                        <div class="field-group">
+                            <label>Department:</label>
+                            <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.DepName) ? "Not specified" : WorkOrder.DepName)</div>
+                        </div>
+                    </CardBody>
+                </TelerikCard>
+
+                <!-- Finances -->
+                <TelerikCard Class="info-card">
+                    <CardHeader>
+                        <CardTitle>Cost</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        <div class="cost-display">
+                            @if (WorkOrder.Cost.HasValue)
+                            {
+                                <span class="cost-amount">@WorkOrder.Cost.Value.ToString("C")</span>
+                            }
+                            else
+                            {
+                                <span class="cost-amount no-cost">Not specified</span>
+                            }
+                        </div>
+                    </CardBody>
+                </TelerikCard>
+            </div>
+
+            <!-- Statistics -->
+            <TelerikCard Class="stats-card">
+                <CardHeader>
+                    <CardTitle>Statistics</CardTitle>
+                </CardHeader>
+                <CardBody>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number">@(WorkOrder.ActCount ?? 0)</div>
+                            <div class="stat-label">Actions</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">@(WorkOrder.FileCount ?? 0)</div>
+                            <div class="stat-label">Files</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">@(WorkOrder.PartCount ?? 0)</div>
+                            <div class="stat-label">Parts</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">@(WorkOrder.PlanActCount ?? 0)</div>
+                            <div class="stat-label">PlanActCount</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">@(WorkOrder.IneffectiveCount ?? 0)</div>
+                            <div class="stat-label">Ineffective Count</div>
+                        </div>
+                    </div>
+                    <div class="planning-status">
+                         <p>Scheduled in the timetable</p>
+                        <TelerikSwitch @bind-Value="@WorkOrder.IsScheduledPlanned" 
+                                       Enabled="false" 
+                                       Size=@Telerik.Blazor.ThemeConstants.Switch.Size.Large>
+                       
+                        </TelerikSwitch>
+                    </div>
+                </CardBody>
+            </TelerikCard>
+
+            <!-- Modification Information -->
+            @if (WorkOrder.ModDate.HasValue || !string.IsNullOrEmpty(WorkOrder.ModPerson))
+            {
+                <TelerikCard Class="modification-card">
+                    <CardHeader>
+                        <CardTitle>Recent Changes</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        <div class="modification-info">
+                            <div class="field-group">
+                                <label>Change Date:</label>
+                                <div class="field-value">@FormatDateTime(WorkOrder.ModDate)</div>
+                            </div>
+                            <div class="field-group">
+                                <label>Modified By:</label>
+                                <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.ModPerson) ? "Not specified" : WorkOrder.ModPerson)</div>
+                            </div>
+                        </div>
+                    </CardBody>
+                </TelerikCard>
+            }
+        }
+        else
+        {
+            <p class="error">No workorder found for ID=@WorkOrderId</p>
+        }
+    }
+    else
+    {
+        <p>Loading order data...</p>
+        <TelerikLoader Visible="true" />
+    }
+</div>
+
+
+
+@code {
+    [Parameter] public int WorkOrderId { get; set; }
+    [Parameter] public WorkOrder? WorkOrder { get; set; }
+    bool isLoading = false;
+    bool isLoaded = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (isLoaded) return;
+        if (WorkOrder == null)
+        {
+            isLoading = true;
+            StateHasChanged();
+            await LoadOrderData(WorkOrderId);
+            isLoading = false;
+            isLoaded = true;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadOrderData(int orderId)
+    {
+       WorkOrder = await apiService.GetWorkOrderByIdAsync(orderId);
+    }
+
+    private string FormatDateTime(DateTime? dateTime)
+    {
+        if (!dateTime.HasValue)
+            return "Not specified";
+            
+        return dateTime.Value.ToString("dd.MM.yyyy HH:mm");
+    }
+
+    private string GetStateColor()
+    {
+        if (string.IsNullOrEmpty(WorkOrder?.StateColor))
+            return "primary";
+            
+        return WorkOrder.StateColor switch
+        {
+            "green" => "success",
+            "red" => "error",
+            "yellow" => "warning",
+            "blue" => "info",
+            _ => "primary"
+        };
+    }
+}
+
