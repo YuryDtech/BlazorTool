@@ -25,7 +25,7 @@
 
 .header-content {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     flex-wrap: wrap;
     gap: 20px;
@@ -55,7 +55,7 @@
 .cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+    gap: 16px;
     padding: 0 24px;
 }
 
@@ -73,13 +73,13 @@
     }
 
     .info-card .k-card-header {
-        padding: 16px 20px 12px;
+        padding: 12px 20px;
         border-bottom: 1px solid #e0e6ed;
         background: #f8f9fa;
     }
 
     .info-card .k-card-body {
-        padding: 20px;
+        padding: 16px;
     }
 
 .field-group {
@@ -94,16 +94,16 @@
         display: block;
         font-weight: 600;
         color: #495057;
-        margin-bottom: 6px;
-        font-size: 0.875rem;
+        margin-bottom: 4px;
+        font-size: 0.8rem;
     }
 
 .field-value {
     background-color: #f8f9fa;
-    padding: 10px 12px;
+    padding: 8px 10px;
     border-radius: 6px;
     border: 1px solid #e9ecef;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     min-height: 20px;
     word-wrap: break-word;
 }
@@ -111,23 +111,23 @@
 .dates-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 16px;
+    gap: 12px;
 }
 
 .date-item label {
     display: block;
     font-weight: 600;
     color: #495057;
-    margin-bottom: 6px;
-    font-size: 0.8rem;
+    margin-bottom: 4px;
+    font-size: 0.75rem;
 }
 
 .date-value {
     background-color: #f8f9fa;
-    padding: 8px 10px;
+    padding: 6px 8px;
     border-radius: 6px;
     border: 1px solid #e9ecef;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-align: center;
     white-space: nowrap;
 }
@@ -155,44 +155,44 @@
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     background: #ffffff;
-    margin: 0 24px;
+    margin: 0 16px;
 }
 
     .stats-card .k-card-header {
-        padding: 16px 20px 12px;
+        padding: 12px 20px;
         border-bottom: 1px solid #e0e6ed;
         background: #f8f9fa;
     }
 
     .stats-card .k-card-body {
-        padding: 20px;
+        padding: 16px;
     }
 
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 16px;
+    gap: 12px;
     margin-bottom: 24px;
 }
 
 .stat-item {
     text-align: center;
-    padding: 16px 12px;
+    padding: 12px 10px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: 8px;
     border: 1px solid #dee2e6;
 }
 
 .stat-number {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: #495057;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     display: block;
 }
 
 .stat-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: #6c757d;
     font-weight: 500;
     text-transform: uppercase;
@@ -224,17 +224,17 @@
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     background: #ffffff;
-    margin: 0 24px 24px;
+    margin: 0 16px 16px;
 }
 
     .modification-card .k-card-header {
-        padding: 16px 20px 12px;
+        padding: 12px 20px;
         border-bottom: 1px solid #e0e6ed;
         background: #f8f9fa;
     }
 
     .modification-card .k-card-body {
-        padding: 20px;
+        padding: 16px;
     }
 
 .modification-info {
