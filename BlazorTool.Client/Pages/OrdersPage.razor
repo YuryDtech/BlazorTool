@@ -54,6 +54,7 @@ else
                  Pageable="true"
                  PageSize="20"
                  OnRowRender="@OnRowRenderHandler"
+                 OnRowDoubleClick="@OnRowClick"
                      >
         <GridSettings>
             <GridRowDraggableSettings DragClueField="@nameof(WorkOrder.WorkOrderID)"></GridRowDraggableSettings>
@@ -73,6 +74,21 @@ else
             <GridColumn Field="@nameof(WorkOrder.CloseDate)"></GridColumn>
         </GridColumns>
     </TelerikGrid>
+
+    <TelerikWindow @bind-Visible="@isOrderCardOpen" 
+                  
+                   Modal="true">
+        <WindowTitle>
+        </WindowTitle>
+        <WindowContent>
+             <WorkOrderPage WorkOrderId="@selectedOrder.WorkOrderID" WorkOrder="@selectedOrder" />
+        </WindowContent>
+        <WindowActions>
+            <WindowAction Name="Close" />
+        </WindowActions>
+        <WindowFooter>
+        </WindowFooter>
+    </TelerikWindow>
 }
 
 
@@ -80,11 +96,13 @@ else
     private bool isOrdersLoading = false;
     private bool isDevicesLoading = false;
     private List<WorkOrder> OrdersForGrid = new List<WorkOrder>();
+    private WorkOrder selectedOrder;
     private IEnumerable<Device> selectedDevices = new List<Device>();
     private MarkupString rowStyles = new MarkupString();
     private List<Device> devices = new List<Device>();
     public TelerikGrid<WorkOrder> GridRef { get; set; }
     public CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor();
+    private bool isOrderCardOpen = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -158,11 +176,11 @@ else
     void ApplyFilter(CompositeFilterDescriptor filter)
     {
         var dataSourceRequest = new DataSourceRequest { Filters = new List<IFilterDescriptor> { filter } };
-       var queryable = OrdersForGrid.AsQueryable();
+        var queryable = OrdersForGrid.AsQueryable();
         var datasourceResult = OrdersForGrid.ToDataSourceResult(dataSourceRequest);
 
         OrdersForGrid = datasourceResult.Data.Cast<WorkOrder>().ToList();
-        
+
     }
 
     #region Grid Row Styles
@@ -171,6 +189,22 @@ else
         var item = args.Item as WorkOrder;
 
         args.Class += "state-" + item?.StateColor.TrimStart('#');
+    }
+
+    void OnRowClick(GridRowClickEventArgs args)
+    {
+        var item = args.Item as WorkOrder;
+        if (item != null)
+        {
+            selectedOrder = item;
+            isOrderCardOpen = true;
+            StateHasChanged();
+        }
+    }
+
+    void OnPopupClose()
+    {
+        isOrderCardOpen = false;
     }
 
     private MarkupString RenderStatesStyle(List<WorkOrder> orders)
