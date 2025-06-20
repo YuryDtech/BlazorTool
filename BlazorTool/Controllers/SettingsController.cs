@@ -1,6 +1,11 @@
-﻿using BlazorTool.Client.Services;
+﻿using BlazorTool.Client.Models;
+using BlazorTool.Client.Services;
+using BlazorTool.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.NetworkInformation;
+using System.Text.RegularExpressions;
+using static System.Net.WebRequestMethods;
 
 namespace BlazorTool.Controllers
 {
@@ -9,42 +14,103 @@ namespace BlazorTool.Controllers
     public class SettingsController : Controller
     {
         private readonly ApiServiceClient _apiServiceClient;
-        private const string SettingsFilePath = "settings.json"; 
+        private readonly HttpClient _http = new HttpClient();
+        private const string SettingsDirectory = "Settings";
 
         public SettingsController(ApiServiceClient apiServiceClient)
         {
             _apiServiceClient = apiServiceClient;
         }
 
-        [HttpGet("get")]
         // GET: Settings var url = $"api/v1/settings/get?key=address}";
-        public ActionResult Read(string key)
+        [HttpGet("get")]
+        public string Read(string key, string user)
         {
             //read settings from server local file
-
-            
-            return View();
+            string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SettingsDirectory, user + ".json");
+            var settings = new UserSettings(file);
+           return settings.GetSetting<string>(user, key) ?? string.Empty;
         }
 
-        // POST: Settings/Set
-        [HttpPost("Set")]
-        [ValidateAntiForgeryToken]
-        public ActionResult Save(string key, string user)
+        
+        [HttpPost("set")]
+        public bool Save([FromForm] string key, [FromForm] string value, [FromForm] string user)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SettingsDirectory, user + ".json");
+                var settings = new UserSettings(file);
+                settings.SetSetting(user, key, value);
+                return true;
             }
             catch
             {
-                return View();
+                return false;
             }
         }
 
-        // GET: Settings/Edit/5
-        public ActionResult Edit(int id)
+        [HttpPost("check")]
+        public async Task<IActionResult> CheckAsync([FromForm] string address)
         {
-            return View();
+            //make test request to the API address
+            try
+            {
+                string ipAddress = ExtractIpAddress(address);
+                if (string.IsNullOrEmpty(ipAddress))
+                {
+                    return Ok(new { success = false, message = "API address is invalid. No IP address found." });
+                }
+
+                Console.WriteLine("Pinging IP address: " + ipAddress);
+                if (PingIpAddress(ipAddress))
+                {
+                    Console.WriteLine("Ping successful.");
+                }
+                else
+                {
+                    return Ok(new { success = false, message = "API address is invalid. Ping failed." });
+                }
+
+                //combine url address
+                //TODO chenge cheking API
+                if (!address.StartsWith("http://")) address = "http://" + address;
+                if (!address.EndsWith("/")) address += "/";
+                var testUrl = address + "wo/getlist?Lang=pl-PL&DeviceID=0";
+                var response = await _http.GetAsync(testUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    return Ok(new { success = true, message = "API address is valid." });
+                }
+                else
+                {
+                    try
+                    {
+                        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                            return Ok(new { success = true, message = "API address is valid." });
+                        // Try to read the response content as JSON
+                        //if json valid and contains field Error - good
+                        var responseContent = await response.Content.ReadFromJsonAsync<SingleResponse<WorkOrder>>();
+                        if (responseContent == null)
+                            return Json(new { success = false, message = $"API address is invalid. Status code: {response.StatusCode}" });
+                        if (responseContent.Errors != null && responseContent.Errors.Count > 0)
+                        {
+                            return Json(new { success = true, message = "API address is valid" });
+                        }
+                        else
+                        {
+                            return Json(new { success = false, message = $"API address is invalid. Status code: {response.StatusCode}, Errors: {string.Join(", ", responseContent.Errors)}" });
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        return Json(new { success = false, message = $"API address is invalid. Status code: {response.StatusCode}" });
+                    }
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                return Json(new { success = false, message = $"API address is invalid. Error: {ex.Message}" });
+            }
         }
 
         // POST: Settings/Edit/5
@@ -80,6 +146,57 @@ namespace BlazorTool.Controllers
             catch
             {
                 return View();
+            }
+        }
+
+        public static string ExtractIpAddress(string apiAddress)
+        {
+            // Регулярное выражение для извлечения IPv4-адреса
+            Match match = Regex.Match(apiAddress, @"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
+            if (match.Success)
+            {
+                return match.Value;
+            }
+            return null;
+        }
+
+        public static bool PingIpAddress(string ipAddress)
+        {
+            using (Ping pingSender = new Ping())
+            {
+                try
+                {
+                    PingOptions options = new PingOptions();
+                    options.DontFragment = true;
+
+                    // Отправляем 32 байта данных
+                    string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+                    byte[] buffer = System.Text.Encoding.ASCII.GetBytes(data);
+                    int timeout = 1000;
+
+                    PingReply reply = pingSender.Send(ipAddress, timeout, buffer, options);
+
+                    if (reply.Status == IPStatus.Success)
+                    {
+                        Console.WriteLine($"  response from {reply.Address}: bytes={reply.Buffer.Length} timeout={reply.RoundtripTime}ms TTL={reply.Options.Ttl}");
+                        return true;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"  Ping failed. Status: {reply.Status}");
+                        return false;
+                    }
+                }
+                catch (PingException ex)
+                {
+                    Console.WriteLine($"  Ping error: {ex.Message}");
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"  Unknown error: {ex.Message}");
+                    return false;
+                }
             }
         }
     }

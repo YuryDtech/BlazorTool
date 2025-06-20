@@ -13,4 +13,12 @@ namespace BlazorTool.Client.Models
         [JsonPropertyName("errors")]
         public List<string> Errors { get; set; } = new();
     }
+
+    public class SimpleResponse
+    {
+        [JsonPropertyName("success")]
+        public bool Success { get; set; }
+        [JsonPropertyName("message")]
+        public string Message { get; set; }
+    }
 }

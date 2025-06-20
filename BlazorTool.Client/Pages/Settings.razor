@@ -2,7 +2,7 @@
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
 
 <h3>Settings</h3>
-
+user=@currentUser
 <div class="container">
     <div class="row mb-3">
         <div class="col-md-6">
@@ -19,8 +19,9 @@
             <label for="language" class="form-label">Language</label>
             <select id="language" class="form-select" @bind="SelectedLanguage">
                 <option value="en">English</option>
-                <option value="es">Español (Spanish)</option>
+                <option value="pl">Polski</option>
                 <option value="fr">Français (French)</option>
+                <option value="ru">Русский</option> <!-- Corrected value for Russian -->
                 {!-- Add more languages as needed --}
             </select>
         </div>
@@ -42,10 +43,11 @@
 
 @code{
     protected string? ApiAddress { get; set; }
-    protected string? SelectedLanguage { get; set; } = "pl-pl"; 
+    protected string? SelectedLanguage { get; set; } = "pl"; 
 
     protected string? StatusMessage { get; set; }
     protected string? StatusMessageClass { get; set; } // e.g., "text-success" or "text-danger"
+    string currentUser = "testUser"; // Placeholder for current user, replace with actual user logic"
 
     protected override async Task OnInitializedAsync()
     {
@@ -57,17 +59,17 @@
     protected async Task LoadSettingsAsync()
     {
         ApiAddress = await LoadSettingAsync("apiAddress");
-        SelectedLanguage = await LoadSettingAsync("selectedLanguage") ?? "pl-pl"; // Set default if not found
+        SelectedLanguage = await LoadSettingAsync("selectedLanguage") ?? "pl"; // Set default if not found
     }
 
-    protected async Task TestApiAddress()
+    protected async Task<bool> TestApiAddress()
     {
         StatusMessage = string.Empty;
         if (string.IsNullOrWhiteSpace(ApiAddress))
         {
             StatusMessage = "API Address cannot be empty.";
             StatusMessageClass = "text-danger";
-            return;
+            return false; 
         }
 
         try
@@ -77,33 +79,47 @@
             {
                 StatusMessage = response.Item2; 
                 StatusMessageClass = "text-danger";
-                return;
+                return false;
             }
             StatusMessage = $"Successfully connected to API at '{ApiAddress}'.";
             StatusMessageClass = "text-success";
+            return true;
         }
         catch (Exception ex)
         {
             StatusMessage = $"Error testing API address: {ex.Message}";
             StatusMessageClass = "text-danger";
+            return false;
         }
     }
 
     protected async Task SaveSettings()
     {
         StatusMessage = string.Empty;
-        // Placeholder for saving settings
-        // In a real app, you might use Blazored.LocalStorage, a custom service, or an API call.
         try
         {
-            // Simulate saving
-            await Task.Delay(500);
-            // await SaveSettingAsync("apiAddress", ApiAddress);
-            // await SaveSettingAsync("selectedLanguage", SelectedLanguage);
+            
+            var testResult = await TestApiAddress();
+            if (!testResult)
+            {
+                StatusMessage = "Wrong API address"; // corrected spelling of "address"
+                StatusMessageClass = "text-danger";
+                return;
+            }
 
-            StatusMessage = "Settings saved successfully!";
-            StatusMessageClass = "text-success";
-            Console.WriteLine($"Settings Saved: API Address = {ApiAddress}, Language = {SelectedLanguage}");
+            var s1 = await SaveSettingAsync("apiAddress", ApiAddress, currentUser);
+            var s2 = await SaveSettingAsync("selectedLanguage", SelectedLanguage, currentUser); 
+            if (s1 && s2)
+            {
+                StatusMessage = "Settings saved successfully!";
+                StatusMessageClass = "text-success";
+            }
+            else
+            {
+                StatusMessage = "Failed to save settings.";
+                StatusMessageClass = "text-danger";
+                return;
+            }
         }
         catch (Exception ex)
         {
@@ -112,15 +128,15 @@
         }
     }
 
-    protected async Task SaveSettingAsync(string key, string value)
+    protected async Task<bool> SaveSettingAsync(string key, string value, string user)
     {
-        // Example: await JSRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
-        await Task.CompletedTask; // Replace with actual save logic
+        var result = await apiService.SaveSettingAsync(key, value, user);
+        return result;
     }
 
     protected async Task<string?> LoadSettingAsync(string key)
     {
-        var result = await apiService.GetSettingAsync(key);
+        var result = await apiService.GetSettingAsync(key, currentUser);
         return result; 
     }
 }
