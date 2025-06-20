@@ -1,0 +1,123 @@
+﻿@page "/settings"
+@inject BlazorTool.Client.Services.ApiServiceClient apiService
+
+<h3>Settings</h3>
+
+<div class="container">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="apiUrl" class="form-label">API Address</label>
+            <div class="input-group">
+                <input type="text" id="apiUrl" class="form-control" @bind="ApiAddress" />
+                <button class="btn btn-outline-secondary" type="button" @onclick="TestApiAddress">Test API Address</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="language" class="form-label">Language</label>
+            <select id="language" class="form-select" @bind="SelectedLanguage">
+                <option value="en">English</option>
+                <option value="es">Español (Spanish)</option>
+                <option value="fr">Français (French)</option>
+                {!-- Add more languages as needed --}
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn btn-primary" @onclick="SaveSettings">Save Settings</button>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(StatusMessage))
+{
+    <div class="mt-3">
+        <p class="status-message @StatusMessageClass">@StatusMessage</p>
+    </div>
+}
+
+@code{
+    protected string? ApiAddress { get; set; }
+    protected string? SelectedLanguage { get; set; } = "en"; // Default to English
+
+    protected string? StatusMessage { get; set; }
+    protected string? StatusMessageClass { get; set; } // e.g., "text-success" or "text-danger"
+
+    protected override async Task OnInitializedAsync()
+    {
+        // TODO: Load saved settings (e.g., from localStorage or a service)
+        // For now, we can use some default values or leave them empty
+        // ApiAddress = await LoadSettingAsync("apiAddress");
+        // SelectedLanguage = await LoadSettingAsync("selectedLanguage") ?? "en";
+        await InvokeAsync(StateHasChanged); // Ensure UI updates if settings are loaded asynchronously
+    }
+
+    protected async Task TestApiAddress()
+    {
+        StatusMessage = string.Empty;
+        if (string.IsNullOrWhiteSpace(ApiAddress))
+        {
+            StatusMessage = "API Address cannot be empty.";
+            StatusMessageClass = "text-danger";
+            return;
+        }
+
+        try
+        {
+            var response = await apiService.CheckApiAddress(ApiAddress);
+            if (!response.Item1)
+            {
+                StatusMessage = response.Item2; 
+                StatusMessageClass = "text-danger";
+                return;
+            }
+            StatusMessage = $"Successfully connected to API at '{ApiAddress}'.";
+            StatusMessageClass = "text-success";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error testing API address: {ex.Message}";
+            StatusMessageClass = "text-danger";
+        }
+    }
+
+    protected async Task SaveSettings()
+    {
+        StatusMessage = string.Empty;
+        // Placeholder for saving settings
+        // In a real app, you might use Blazored.LocalStorage, a custom service, or an API call.
+        try
+        {
+            // Simulate saving
+            await Task.Delay(500);
+            // await SaveSettingAsync("apiAddress", ApiAddress);
+            // await SaveSettingAsync("selectedLanguage", SelectedLanguage);
+
+            StatusMessage = "Settings saved successfully!";
+            StatusMessageClass = "text-success";
+            Console.WriteLine($"Settings Saved: API Address = {ApiAddress}, Language = {SelectedLanguage}");
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error saving settings: {ex.Message}";
+            StatusMessageClass = "text-danger";
+        }
+    }
+
+    protected async Task SaveSettingAsync(string key, string value)
+    {
+        // Example: await JSRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
+        await Task.CompletedTask; // Replace with actual save logic
+    }
+
+    protected async Task<string?> LoadSettingAsync(string key)
+    {
+        // Example: return await JSRuntime.InvokeAsync<string>("localStorage.getItem", key);
+        await Task.CompletedTask; // Replace with actual load logic
+        return null;
+    }
+}

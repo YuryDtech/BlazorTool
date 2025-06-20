@@ -1,0 +1,65 @@
+﻿/* Styles for Settings.razor */
+
+/* Ensure the container takes up a reasonable width and is centered. */
+/* Using existing .container class from Bootstrap, so no specific style needed here unless overriding */
+
+/* Add some spacing to the top of the page */
+h3 {
+    margin-bottom: 1.5rem; /* Add space below the "Settings" title */
+}
+
+/* Style for the input group to ensure button is well-aligned */
+.input-group .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    /* Minor adjustment if needed for vertical alignment, but Bootstrap usually handles this */
+}
+
+/* Ensure labels have some bottom margin if they are above inputs on smaller screens */
+.form-label {
+    margin-bottom: 0.5rem;
+}
+
+/* Style for the status message area */
+.status-message { /* You would add this class to the <p> tag if you want specific styling */
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-top: 1rem;
+}
+
+    .status-message.text-success { /* Bootstrap class, but can be more specific */
+        background-color: #d1e7dd; /* Light green for success */
+        border-color: #badbcc;
+    }
+
+    .status-message.text-danger { /* Bootstrap class, but can be more specific */
+        background-color: #f8d7da; /* Light red for error */
+        border-color: #f5c2c7;
+    }
+
+/* Responsive adjustments:
+   Bootstrap's grid system (.row, .col-md-6) already handles much of the responsiveness.
+   Inputs and selects will stack on smaller screens by default.
+*/
+
+/* Example of a media query for very small screens if needed for specific adjustments */
+/* @media (max-width: 576px) { */
+/* .input-group { */
+/* display: flex; */
+/* flex-direction: column; */
+/* } */
+/* .input-group .form-control, */
+/* .input-group .btn { */
+/* width: 100%; */
+/* border-radius: 0.25rem !important; /* Reset radius for stacked items */
+/* margin-bottom: 0.5rem; */
+/* } */
+/* .input-group .btn { */
+/* margin-bottom: 0; */
+/* } */
+/* } */

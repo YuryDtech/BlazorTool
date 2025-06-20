@@ -1,10 +1,13 @@
 ﻿using BlazorTool.Client.Models;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Net.NetworkInformation;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 namespace BlazorTool.Client.Services
@@ -195,5 +198,118 @@ namespace BlazorTool.Client.Services
             return wrapper?.Data ?? new List<Device>();
         }
         #endregion
+
+        #region Other functions
+        public async Task<(bool, string)> CheckApiAddress(string address)
+        {
+            //make test request to the API address
+            try
+            {
+                string ipAddress = ExtractIpAddress(address);
+                if (string.IsNullOrEmpty(ipAddress))
+                {
+                    return (false, "API address is invalid. No IP address found.");
+                }
+
+                Console.WriteLine("Pinging IP address: " + ipAddress);
+                if (PingIpAddress(ipAddress))
+                {
+                    Console.WriteLine("Ping successful.");
+                }
+                else
+                {
+                    return (false, "API address is invalid. Ping failed.");
+                }
+
+                //combine url address
+                if (!address.StartsWith("http://")) address = "http://"+address;
+                if (!address.EndsWith("/")) address += "/";
+                var testUrl = address + "wo/getlist?Lang=pl-PL&DeviceID=0";
+                var response = await _http.GetAsync(testUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    return (true, "API address is valid.");
+                }
+                else
+                {
+                    try
+                    {
+                        // Try to read the response content as JSON
+                        //if json valid and contains field Error - good
+                        var responseContent = await response.Content.ReadFromJsonAsync<SingleResponse<WorkOrder>>();
+                        if (responseContent == null)
+                            return (false, $"API address is invalid. Status code: {response.StatusCode}");
+                        if (responseContent.Errors != null && responseContent.Errors.Count > 0)
+                        {
+                            return (true, $"API address is valid");
+                        }
+                        else
+                        {
+                            return (false, $"API address is invalid. Status code: {response.StatusCode}, Errors: {string.Join(", ", responseContent.Errors)}");
+                        }
+                    }catch(Exception)
+                    {                         
+                        return (false, $"API address is invalid. Status code: {response.StatusCode}"); 
+                    }
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                return (false, $"API address is invalid. Error: {ex.Message}");
+            }
+        }
+
+        public static string ExtractIpAddress(string apiAddress)
+        {
+            // Регулярное выражение для извлечения IPv4-адреса
+            Match match = Regex.Match(apiAddress, @"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
+            if (match.Success)
+            {
+                return match.Value;
+            }
+            return null;
+        }
+
+        public static bool PingIpAddress(string ipAddress)
+        {
+            using (Ping pingSender = new Ping())
+            {
+                try
+                {
+                    PingOptions options = new PingOptions();
+                    options.DontFragment = true; 
+
+                    // Отправляем 32 байта данных
+                    string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+                    byte[] buffer = System.Text.Encoding.ASCII.GetBytes(data);
+                    int timeout = 1000; 
+
+                    PingReply reply = pingSender.Send(ipAddress, timeout, buffer, options);
+
+                    if (reply.Status == IPStatus.Success)
+                    {
+                        Console.WriteLine($"  response from {reply.Address}: bytes={reply.Buffer.Length} timeout={reply.RoundtripTime}ms TTL={reply.Options.Ttl}");
+                        return true;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"  Ping failed. Status: {reply.Status}");
+                        return false;
+                    }
+                }
+                catch (PingException ex)
+                {
+                    Console.WriteLine($"  Ping error: {ex.Message}");
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"  Unknown error: {ex.Message}");
+                    return false;
+                }
+            }
+        }
+        #endregion
+
     }
 }
