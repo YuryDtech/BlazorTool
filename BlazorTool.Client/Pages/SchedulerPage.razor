@@ -3,6 +3,7 @@
 @using System.Linq
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
+@using BlazorTool.Client.Components
 @using System.Text
 @using System.Diagnostics
 @using Telerik.Blazor.Components
@@ -35,6 +36,7 @@
                           TitleField="Title"
                           DescriptionField="Description"
                           IsAllDayField="IsAllDay">
+
             <SchedulerViews>
                 <SchedulerDayView StartTime="@DayStart" EndTime="@DayEnd" />
                 <SchedulerWeekView StartTime="@DayStart" EndTime="@DayEnd" />
@@ -83,6 +85,21 @@
     </div>
 </div>
 
+<TelerikWindow @bind-Visible="@isOrderCardOpen" 
+                  
+                   Modal="true">
+        <WindowTitle>
+        </WindowTitle>
+        <WindowContent>
+             <WorkOrderComponent WorkOrderId="@selectedOrder.WorkOrderID" WorkOrder="@selectedOrder" />
+        </WindowContent>
+        <WindowActions>
+            <WindowAction Name="Close" />
+        </WindowActions>
+        <WindowFooter>
+        </WindowFooter>
+    </TelerikWindow>
+
 @code {
 
     private List<SchedulerAppointment> Appointments { get; set; } = new();
@@ -97,6 +114,7 @@
     private List<WorkOrder> TakenOrders { get; set; } = new();
     private List<WorkOrder> _allOrders = new();
     private bool isLoading { get; set; } = true;
+    private bool isOrderCardOpen { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
