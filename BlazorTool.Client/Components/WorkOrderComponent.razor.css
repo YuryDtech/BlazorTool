@@ -1,14 +1,14 @@
 ﻿.work-order-container {
-    max-width: 900px;
-    margin: 20px auto;
+    min-width: 1000px;
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 0px;
     background: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    max-height: 70vh;
 }
 
 .main-header-card {
@@ -28,12 +28,12 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 10px;
 }
 
 .order-title {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 16px;
     flex-wrap: wrap;
 }
@@ -134,11 +134,11 @@
 
 .cost-display {
     text-align: center;
-    padding: 24px 20px;
+    padding: 1px 20px;
 }
 
 .cost-amount {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #28a745;
     display: block;
@@ -155,36 +155,36 @@
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     background: #ffffff;
-    margin: 0 24px;
+    margin: 100px;
 }
 
     .stats-card .k-card-header {
-        padding: 16px 20px 12px;
+        padding: 1px 1px 1px;
         border-bottom: 1px solid #e0e6ed;
         background: #f8f9fa;
     }
 
     .stats-card .k-card-body {
-        padding: 20px;
+        padding: 10px;
     }
 
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: 5px;
+    margin-bottom: 10px;
 }
 
 .stat-item {
     text-align: center;
-    padding: 16px 12px;
+    padding: 2px 2px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: 8px;
     border: 1px solid #dee2e6;
 }
 
 .stat-number {
-    font-size: 1.8rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: #495057;
     margin-bottom: 6px;
@@ -192,23 +192,28 @@
 }
 
 .stat-label {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: #6c757d;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     line-height: 1.2;
 }
+.stat-label-cost {
+    font-size: 0.8rem;
+    color: black;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    line-height: 1.5;
+}
 
 .planning-status {
-    text-align: center;
-    padding: 20px;
+    text-align: left;
+    padding: 1px;
     background-color: #f8f9fa;
     border-radius: 8px;
     border: 1px solid #dee2e6;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     gap: 12px;
 }
 
@@ -250,6 +255,7 @@
     padding: 40px 20px;
     margin: 0;
 }
+
 
 @media (max-width: 768px) {
     .work-order-container {

@@ -1,5 +1,4 @@
-﻿@page "/workorder/{WorkOrderId:int}"
-@using System.Text.Json.Serialization
+﻿@using System.Text.Json.Serialization
 @using BlazorTool.Client.Models
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
 
@@ -12,21 +11,21 @@
         if(WorkOrder != null)
         {
     <!-- HEADER -->
-    <CardHeader Class="py-2 px-3">
-        <div class="row g-0 align-items-center">
-            <div class="col-6 text-center">
-                <h5 class="mb-1">Order №@WorkOrder.WorkOrderID</h5>
-                <TelerikBadge ThemeColor="@GetStateColor()"
-                              Size="@Telerik.Blazor.ThemeConstants.Switch.Size.Medium">
-                    @WorkOrder.WOState
-                </TelerikBadge>
-            </div>
-            <div class="col-6 text-end small">
-                <div><strong>Device:</strong> @WorkOrder.AssetNo</div>
-                <div><strong>Category:</strong> @WorkOrder.DeviceCategory</div>
-            </div>
-        </div>
-    </CardHeader>
+    <CardHeader Class="position-relative">
+    <h2 class="mb-1">Order №@WorkOrder.WorkOrderID</h2>
+    <div class="position-absolute top-50 start-50 translate-middle">
+      <TelerikBadge 
+        ThemeColor="@GetStateColor()" 
+        Size="@Telerik.Blazor.ThemeConstants.Switch.Size.Large">
+        @WorkOrder.WOState
+      </TelerikBadge>
+    </div>
+
+    <div class="position-absolute top-50 end-0 translate-middle-y small pe-3 ">
+      <div><strong>Device:</strong> @WorkOrder.AssetNo</div>
+      <div><strong>Category:</strong> @WorkOrder.DeviceCategory</div>
+    </div>
+  </CardHeader> 
 
     <!-- INFO CARDS GRID -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-3">
@@ -117,26 +116,7 @@
             </TelerikCard>
         </div>
 
-        <!-- Cost -->
-        <div class="col">
-            <TelerikCard Class="h-100">
-                <CardHeader Class="py-1 px-2">
-                    <CardTitle>Cost</CardTitle>
-                </CardHeader>
-                <CardBody Class="p-2 text-center">
-                    <div class="cost-display">
-                        @if (WorkOrder.Cost.HasValue)
-                        {
-                            <span class="cost-amount">@WorkOrder.Cost.Value.ToString("C")</span>
-                        }
-                        else
-                        {
-                            <span class="cost-amount no-cost">Not specified</span>
-                        }
-                    </div>
-                </CardBody>
-            </TelerikCard>
-        </div>
+       
     </div>
 
     <!-- Statistics -->
@@ -166,15 +146,19 @@
                     <div class="stat-number">@(WorkOrder.IneffectiveCount ?? 0)</div>
                     <div class="stat-label">Ineffective Count</div>
                 </div>
+                <div class="stat-item">
+                        @if (WorkOrder.Cost.HasValue)
+                        {
+                            <span class="cost-amount">@WorkOrder.Cost.Value.ToString("C")</span>
+                        }
+                        else
+                        {
+                            <span class="cost-amount no-cost">Not specified</span>
+                        }
+                        <div class="stat-label-cost">Cost</div>
+                    </div>
             </div>
-            <div class="planning-status">
-                <p>Scheduled in the timetable</p>
-                <TelerikSwitch @bind-Value="@WorkOrder.IsScheduledPlanned"
-                               Enabled="false"
-                               Size=@Telerik.Blazor.ThemeConstants.Switch.Size.Large>
-
-                </TelerikSwitch>
-            </div>
+            
         </CardBody>
     </TelerikCard>
 

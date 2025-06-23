@@ -2,6 +2,7 @@
 
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
+@using BlazorTool.Client.Components
 @using System.Text
 @using System.Linq
 @using System.Diagnostics
@@ -81,7 +82,7 @@ else
         <WindowTitle>
         </WindowTitle>
         <WindowContent>
-             <WorkOrderPage WorkOrderId="@selectedOrder.WorkOrderID" WorkOrder="@selectedOrder" />
+             <WorkOrderComponent WorkOrderId="@selectedOrder.WorkOrderID" WorkOrder="@selectedOrder" />
         </WindowContent>
         <WindowActions>
             <WindowAction Name="Close" />
