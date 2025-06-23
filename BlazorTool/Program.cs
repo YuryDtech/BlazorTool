@@ -51,7 +51,7 @@ builder.Services.AddHttpClient("API", client =>
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("API"));
 builder.Services.AddScoped<ApiServiceClient>(sp =>
     new ApiServiceClient(sp.GetRequiredService<HttpClient>(), token));
-
+builder.Services.AddScoped<AppointmentService>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

@@ -1,17 +1,19 @@
-﻿namespace BlazorTool.Client.Models
+﻿using Telerik.Blazor.Components.Scheduler.Models;
+
+namespace BlazorTool.Client.Models
 {
     public class SchedulerAppointment : WorkOrder
     {
-        public string AppointmentId { get; set; } = Guid.NewGuid().ToString();
-        public string Title { get; set; } = string.Empty;
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
+        public int AppointmentId { get => WorkOrderID; set => WorkOrderID = value; }
+        public string Title { get => AssetNo ?? string.Empty; set => AssetNo = value; }
+        public DateTime? Start { get => StartDate; set => StartDate = value; }
+        public DateTime? End { get => EndDate; set => EndDate = value; }
         public bool IsAllDay { get; set; }
-        public string Description { get; set; } = string.Empty;
+        public string Description { get => WODesc ?? string.Empty; set => WODesc = value; }
 
         public SchedulerAppointment()
         {
-            AppointmentId = Guid.NewGuid().ToString();
+            AppointmentId = 0;
             Title = string.Empty;
             Start = DateTime.Now;
             End = DateTime.Now.AddHours(5);
@@ -21,29 +23,18 @@
 
         public SchedulerAppointment(WorkOrder order)
         {
-            // Копируем все поля WorkOrder через рефлексию или руками
-            CopyFromWorkOrder(order);
+            CopyFromWorkOrder(order);         
+        }
 
-            AppointmentId = order.WorkOrderID.ToString();
-            Title = order.AssetNo ?? $"WO {order.WorkOrderID}";
-            Description = order.WODesc ?? string.Empty;
-
-            Start = order.StartDate
-                    ?? order.TakeDate
-                    ?? order.AddDate
-                    ?? DateTime.Now;
-
-            End = order.EndDate
-                  ?? order.CloseDate
-                  ?? Start.AddHours(1);
-
-            IsAllDay = false;
+        public SchedulerAppointment ShallowCopy()
+        {
+            return (SchedulerAppointment)this.MemberwiseClone();
         }
 
         private void CopyFromWorkOrder(WorkOrder order)
         {
-            // Копируем все поля вручную — только если явно нужно,
-            // иначе все public/protected поля наследуются автоматически!
+            this.IsAllDay = order.EndDate == null; 
+
             this.WorkOrderID = order.WorkOrderID;
             this.MachineID = order.MachineID;
             this.AssetNo = order.AssetNo;

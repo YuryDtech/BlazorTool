@@ -45,6 +45,11 @@ namespace BlazorTool.Client.Services
        {
             if (deviceId == null)//get all WorkOrders
             {
+                if (_workOrdersCache.Count > 0)
+                {
+                    Debug.Print("\n= = = = = = = = = Work orders found in cache: " + _workOrdersCache.Count + "\n");
+                    return _workOrdersCache.SelectMany(x => x.Value).ToList();
+                }
                 var allOrders = await GetWorkOrdersAsync();
                 //add to cache all work orders by deviceId
                 foreach (var order in allOrders)
@@ -93,7 +98,6 @@ namespace BlazorTool.Client.Services
             return result;
         }
         
-
         public async Task<List<WorkOrder>> GetWorkOrdersAsync(
                                         int? deviceID = null,
                                         int? workOrderID = null,
@@ -157,6 +161,85 @@ namespace BlazorTool.Client.Services
                 return null;
             }
             return orders.FirstOrDefault();
+        }
+
+        public async Task<bool> SaveWorkOrderAsync(WorkOrder workOrder)
+        {
+            //TODO : implement saving work order to API
+            //var url = "api/v1/wo/save";
+            //var content = new StringContent(JsonConvert.SerializeObject(workOrder), System.Text.Encoding.UTF8, "application/json");
+            //var response = await _http.PostAsync(url, content);
+            //if (response.IsSuccessStatusCode)
+            //{
+            //    Debug.Print("\n= = = = = = = = = Work order saved successfully.\n");
+            //    return true;
+            //}
+            //else
+            //{
+            //    Debug.Print("\n= = = = = = = = = SaveWorkOrderAsync error: " + response.ReasonPhrase + "\n");
+            //    return false;
+            //}
+            //for test save only cache
+            if (workOrder == null || workOrder.WorkOrderID <= 0)
+            {
+                Debug.Print("\n= = = = = = = = = Work order is null.\n");
+                return false;
+            }
+            if (!_workOrdersCache.ContainsKey(workOrder.MachineID))
+            {
+                //new machineID, add new list to cache
+                _workOrdersCache.Add(workOrder.MachineID, new List<WorkOrder>() { workOrder});
+                Debug.Print("\n= = = = = = = = = Work order was added to cache.\n");
+                return true;
+            }
+            
+            //existing machineID, check if work order already exists in cache
+            var ind = _workOrdersCache[workOrder.MachineID].FindIndex(x => x.WorkOrderID == workOrder.WorkOrderID);
+            if (ind >= 0)
+            {
+                //update existing work order in cache
+                _workOrdersCache[workOrder.MachineID][ind] = workOrder;
+                Debug.Print("\n= = = = = = = = = Work order was updated in cache. ");
+                Debug.Print($"Title={workOrder.AssetNo}, StartDate={workOrder.StartDate}, EndDate={workOrder.EndDate}===\n");
+                return true;
+            }
+         // new work - cant insert a new one
+         //_workOrdersCache[workOrder.MachineID].Add(workOrder);
+         Debug.Print("\n= = = = = = = = = Work order not found in base: " + workOrder.WorkOrderID + "\n");
+            return false;
+        }
+
+        public async Task<bool> DeleteWorkOrderAsync(int workOrderID, int MachineID)
+        {
+            //TODO : implement deleting work order from API
+            //var url = $"api/v1/wo/delete?workOrderID={workOrderID}";
+            //var response = await _http.DeleteAsync(url);
+            //if (response.IsSuccessStatusCode)
+            //{
+            //    Debug.Print("\n= = = = = = = = = Work order deleted successfully.\n");
+            //    return true;
+            //}
+            //else
+            //{
+            //    Debug.Print("\n= = = = = = = = = DeleteWorkOrderAsync error: " + response.ReasonPhrase + "\n");
+            //    return false;
+            //}
+            
+            if (!_workOrdersCache.ContainsKey(MachineID))
+            {
+                Debug.Print("\n= = = = = = = = = No work orders found for MachineID: " + MachineID + "\n");
+                return false;
+            }
+             
+            var WO_index = _workOrdersCache[MachineID].FindIndex(x => x.WorkOrderID == workOrderID);
+            if (WO_index < 0)
+            {
+                Debug.Print("\n= = = = = = = = = No work order found for ID: " + workOrderID + "\n");
+                return false;
+            }
+            _workOrdersCache[MachineID].RemoveAt(WO_index);
+            Debug.Print("\n= = = = = = = = = Work order deleted successfully for ID: " + workOrderID + "\n");
+            return true;
         }
         #endregion
 

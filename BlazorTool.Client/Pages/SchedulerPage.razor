@@ -12,12 +12,14 @@
 @inject IJSRuntime JSRuntime
 
 @inject ApiServiceClient apiService
+@inject AppointmentService ApptService
 
 @cellStyles
 <h3>Scheduler</h3>
 
 <div style="display:flex; gap:1rem;">
     <div style="flex:2;">
+        <p>Scheduled orders: @Appointments.Count()</p>
         <TelerikScheduler TItem="SchedulerAppointment"
                           Id="Scheduler1"
                           Data="@Appointments"
@@ -30,6 +32,7 @@
                           OnCreate="@OnCreateAppointment"
                           OnUpdate="@OnUpdateAppointment"
                           OnDelete="@OnDeleteAppointment"
+                          OnEdit="@EditHandler"
                           IdField="Id"
                           StartField="Start"
                           EndField="End"
@@ -52,12 +55,14 @@
         }
         else
         {
+            <p>Untaken orders: @UntakenOrders.Count()</p>
             <TelerikTooltip TargetSelector=".tooltip-target" Width="300px"/>
             <TelerikGrid TItem="WorkOrder"
                          Data="@UntakenOrders"
                          RowDraggable="true"
                          OnRowDrop="@GridRowDrop"
                          Sortable="true"
+                         Height="600"
                          
             >
 
@@ -65,7 +70,9 @@
                     <td class="tooltip-target" title="@order.WODesc">@order?.AssetNo</td>
                     <td class="tooltip-target" title="@order.WODesc">@order?.WOCategory</td>
                     <td class="tooltip-target" title="@order.WODesc">@order?.DeviceCategory</td>
-                    <td class="state-@order?.StateColor?.TrimStart('#') tooltip-target" title="@order?.WODesc">@order?.WOState</td>
+                    <td class="tooltip-target" title="@order.WODesc">@order?.StartDate</td>
+                    <td class="tooltip-target" title="@order.WODesc">@order?.EndDate</td>
+                    <td class="state-@order?.StateColor?.TrimStart('#') tooltip-target" title="@order?.WOState">@order?.WOState</td>
                 </RowTemplate>
 
                 <GridSettings>
@@ -74,9 +81,11 @@
                 
                 
                 <GridColumns>
-                    <GridColumn Field="@nameof(WorkOrder.AssetNo)" Title="Asset No" />
+                    <GridColumn Field="@nameof(WorkOrder.AssetNo)" />
                     <GridColumn Field="@nameof(WorkOrder.WOCategory)"/>
-                    <GridColumn Field="@nameof(WorkOrder.DeviceCategory)" Title="Start Date" />
+                    <GridColumn Field="@nameof(WorkOrder.DeviceCategory)" />
+                    <GridColumn Field="@nameof(WorkOrder.StartDate)" />
+                    <GridColumn Field="@nameof(WorkOrder.EndDate)" />
                     <GridColumn Field="@nameof(WorkOrder.WOState)" />
                 </GridColumns>
 
@@ -85,20 +94,17 @@
     </div>
 </div>
 
-<TelerikWindow @bind-Visible="@isOrderCardOpen" 
-                  
-                   Modal="true">
-        <WindowTitle>
-        </WindowTitle>
-        <WindowContent>
-             <WorkOrderComponent WorkOrderId="@selectedOrder.WorkOrderID" WorkOrder="@selectedOrder" />
-        </WindowContent>
-        <WindowActions>
-            <WindowAction Name="Close" />
-        </WindowActions>
-        <WindowFooter>
-        </WindowFooter>
-    </TelerikWindow>
+<TelerikWindow Modal="true" Size="WindowSize.Medium" Visible="@CustomEditFormShown">
+    <WindowTitle>Work Order</WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Close" OnClick="@CancelEditing" />
+    </WindowActions>
+    <WindowContent>
+        <AppointmentEditor Appointment="@CurrentAppointment" OnAppointmentChanged="@RefreshData" />
+        <br />
+        <WorkOrderComponent WorkOrderId="@CurrentAppointment.WorkOrderID" WorkOrder="@CurrentAppointment" />
+    </WindowContent>
+</TelerikWindow>
 
 @code {
 
@@ -114,13 +120,14 @@
     private List<WorkOrder> TakenOrders { get; set; } = new();
     private List<WorkOrder> _allOrders = new();
     private bool isLoading { get; set; } = true;
-    private bool isOrderCardOpen { get; set; } = false;
+    private bool CustomEditFormShown { get; set; } = false;
+    private SchedulerAppointment CurrentAppointment { get; set; } = new SchedulerAppointment();
 
     protected override async Task OnInitializedAsync()
     {
         var isWASM = JSRuntime is IJSInProcessRuntime;
         Debug.Print($"--- OnInitializedAsync. WASM = {isWASM}");
-            await LoadData();
+        await LoadData();
         // if (isWASM)
         // {
         //     // Load data only in WASM mode to avoid double loading in prerendering
@@ -139,77 +146,105 @@
         StateHasChanged();
         _allOrders = await apiService.GetWorkOrdersCachedAsync(); // Nie rozpoczete zlecenia
         UntakenOrders = _allOrders.Where(x => x.TakeDate == null).ToList();
-        TakenOrders = _allOrders.Where(x => x.TakeDate != null).ToList();
         cellStyles = RenderStatesStyle(_allOrders);
-        Appointments = TakenOrders.Select(o => new SchedulerAppointment(o)).ToList();
+        Appointments = await ApptService.GetTakenAppointments();
         isLoading = false;
         StateHasChanged();
-
+        Debug.Print($"--- LoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
     }
 
     // ==== DragAndDrop from Grid to Scheduler ====
-    private Task GridRowDrop(GridRowDropEventArgs<WorkOrder> args)
+    private async Task GridRowDrop(GridRowDropEventArgs<WorkOrder> args)
     {
         if (args.DestinationComponentId == "Scheduler1" && SchedulerRef != null)
         {
             var slot = SchedulerRef.GetTimeSlotFromDropIndex(args.DestinationIndex);
             foreach (var wo in args.Items)
             {
-                Appointments.Add(new SchedulerAppointment
-                {
-                    Id = wo.WorkOrderID.ToString(),
-                    Title = wo.AssetNo ?? $"WO {wo.WorkOrderID}",
-                    Start = slot.Start,
-                    End = slot.End,
-                    IsAllDay = slot.IsAllDay,
-                    Description = wo.WODesc ?? string.Empty
-                });
+                var newscheduler = new SchedulerAppointment(wo);
+                newscheduler.Start = slot.Start;
+                newscheduler.End = slot.End;
+                newscheduler.IsAllDay = slot.IsAllDay;
+                newscheduler.TakeDate = slot.Start;
+                Appointments.Add(newscheduler);
+                UntakenOrders.Remove(wo);
+                await ApptService.UpdateAppointment(newscheduler);
             }
+
             SchedulerRef.Rebind();
         }
-        return Task.CompletedTask;
     }
 
+    #region Scheduler 
     // ==== Scheduler CUD handlers ====
-    private Task OnCreateAppointment(SchedulerCreateEventArgs args)
+    private async Task OnCreateAppointment(SchedulerCreateEventArgs args)
     {
         if (args.Item is SchedulerAppointment newAppt && SchedulerRef != null)
         {
             Appointments.Add(newAppt);
+            await ApptService.UpdateAppointment(newAppt);
             SchedulerRef.Rebind();
         }
-        return Task.CompletedTask;
     }
 
-    private Task OnUpdateAppointment(SchedulerUpdateEventArgs args)
+    private async Task OnUpdateAppointment(SchedulerUpdateEventArgs args)
     {
         if (args.Item is SchedulerAppointment updAppt)
         {
-            var ex = Appointments.FirstOrDefault(a => a.Id == updAppt.Id);
-            if (ex != null)
+            var ind = Appointments.FindIndex(a => a.AppointmentId == updAppt.AppointmentId);
+            if (ind >= 0)
             {
-                ex.Title = updAppt.Title;
-                ex.Start = updAppt.Start;
-                ex.End = updAppt.End;
-                ex.Description = updAppt.Description;
-                ex.IsAllDay = updAppt.IsAllDay;
+                Appointments[ind] = updAppt.ShallowCopy(); 
+                await ApptService.UpdateAppointment(Appointments[ind]);
                 SchedulerRef?.Rebind();
             }
         }
-        return Task.CompletedTask;
     }
 
-    private Task OnDeleteAppointment(SchedulerDeleteEventArgs args)
+    private async Task OnDeleteAppointment(SchedulerDeleteEventArgs args)
     {
         if (args.Item is SchedulerAppointment delAppt)
         {
-            Appointments.RemoveAll(a => a.Id == delAppt.Id);
+            await ApptService.DeleteAppointment(delAppt); // Delete from service
+            Appointments.RemoveAll(a => a.AppointmentId == delAppt.AppointmentId);
             SchedulerRef?.Rebind();
         }
-        return Task.CompletedTask;
+    }
+
+    async void RefreshData()
+    {
+        //await ApptService.UpdateAppointment(CurrentAppointment); // Save changes to the service
+        CustomEditFormShown = false;
+        // CurrentAppointment = null;
+        //await LoadData(); 
+        SchedulerRef?.Rebind();
+    }
+
+    void EditHandler(SchedulerEditEventArgs args)
+    {
+        args.IsCancelled = true;//prevent built-in edit form from showing up
+        SchedulerAppointment item = args.Item as SchedulerAppointment;
+        CustomEditFormShown = true;
+        if (!args.IsNew) // an edit operation, otherwise - an insert operation
+        {
+            //copying is implemented in the appointment model and it is needed because
+            //this is a reference to the data collection so modifying it directly
+            //will immediately modify the data and no cancelling will be possible
+            CurrentAppointment = item;//.ShallowCopy();
+        }
+        else
+        {
+            CurrentAppointment = new SchedulerAppointment() { Start = args.Start, End = args.End, IsAllDay = args.IsAllDay };
+        }
+    }
+
+    void CancelEditing()
+    {
+        CustomEditFormShown = false;
     }
 
 
+    #endregion
 
     #region Grid Row Styles
     void OnRowRenderHandler(GridRowRenderEventArgs args)

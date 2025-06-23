@@ -1,5 +1,7 @@
-﻿using static BlazorTool.Client.Pages.SchedulerPage;
-using BlazorTool.Client.Models;
+﻿using BlazorTool.Client.Models;
+using System.Reflection.PortableExecutable;
+using System.Threading.Tasks;
+using static BlazorTool.Client.Pages.SchedulerPage;
 namespace BlazorTool.Client.Services
 
 {
@@ -7,6 +9,7 @@ namespace BlazorTool.Client.Services
     {
         private List<SchedulerAppointment> _appointments = new();
         private readonly ApiServiceClient _apiServiceClient;
+
         public AppointmentService(ApiServiceClient apiServiceClient)
         {
             _apiServiceClient = apiServiceClient;
@@ -17,43 +20,71 @@ namespace BlazorTool.Client.Services
             var orders = await _apiServiceClient.GetWorkOrdersCachedAsync();
             _appointments = ConvertAppointmentsFromOrders(orders);
         }
-        public List<SchedulerAppointment> GetAllAppointments()
+        public async Task<List<SchedulerAppointment>> GetAllAppointments()
         {
+            if (_appointments == null || !_appointments.Any())
+            {
+                var orders = await _apiServiceClient.GetWorkOrdersCachedAsync();
+                _appointments = GetAppointmentsFromOrders(orders);
+            }
             return _appointments;
         }
-        public SchedulerAppointment? GetAppointmentById(string id)
+
+        public async Task<List<SchedulerAppointment>> GetTakenAppointments()
         {
-            return _appointments.FirstOrDefault(x => x.Id == id);
+            if (_appointments == null || !_appointments.Any())
+            {
+                var orders = await _apiServiceClient.GetWorkOrdersCachedAsync();
+                _appointments = GetAppointmentsFromOrders(orders);
+            }
+            return _appointments.Where(x => x.TakeDate != null && x.Start != null).ToList();
         }
 
-        public void AddAppointment(SchedulerAppointment appointment)
+        public async Task<List<SchedulerAppointment>> GetUnTakenAppointments()
         {
-            appointment.Id = Guid.NewGuid().ToString();
-            _appointments.Add(appointment);
+            if (_appointments == null || !_appointments.Any())
+            {
+                var orders = await _apiServiceClient.GetWorkOrdersCachedAsync();
+                _appointments = GetAppointmentsFromOrders(orders);
+            }
+            return _appointments.Where(x => x.TakeDate == null || x.Start == null).ToList();
         }
-        public void UpdateAppointment(SchedulerAppointment appointment)
+
+        public SchedulerAppointment? GetAppointmentById(int id)
         {
-            var existingAppointment = _appointments.FirstOrDefault(x => x.Id == appointment.Id);
+            return _appointments.FirstOrDefault(x => x.AppointmentId == id);
+        }
+
+        public async Task AddAppointment(SchedulerAppointment appointment)
+        {
+            //na razie nie dodajemy nowych zadań, tylko aktualizujemy istniejące
+
+            //appointment.AppointmentId = 0;
+            //_appointments.Add(appointment);
+            //await _apiServiceClient.SaveWorkOrderAsync((WorkOrder)appointment);
+        }
+        public async Task UpdateAppointment(SchedulerAppointment appointment)
+        {
+            var existingAppointment = _appointments.FirstOrDefault(x => x.AppointmentId == appointment.AppointmentId);
             if (existingAppointment != null)
             {
-                existingAppointment.Title = appointment.Title;
-                existingAppointment.Start = appointment.Start;
-                existingAppointment.End = appointment.End;
-                existingAppointment.Description = appointment.Description;
-                existingAppointment.IsAllDay = appointment.IsAllDay;
+                existingAppointment = appointment.ShallowCopy();
+                await _apiServiceClient.SaveWorkOrderAsync((WorkOrder)existingAppointment);
             }
         }
-        public void DeleteAppointment(string id)
+
+        public async Task DeleteAppointment(SchedulerAppointment ap)
         {
-            var appointment = _appointments.FirstOrDefault(x => x.Id == id);
-            if (appointment != null)
+            if (ap != null)
             {
-                _appointments.Remove(appointment);
+                _appointments.Remove(ap);
+                await _apiServiceClient.DeleteWorkOrderAsync(ap.WorkOrderID, ap.MachineID);
             }
         }
 
         public void DeleteAllAppointments()
         {
+            //TODO delete start and end dates for all appointments
             _appointments.Clear();
         }
 

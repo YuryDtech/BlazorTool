@@ -32,7 +32,7 @@ builder.Services.AddScoped(sp =>
 
 builder.Services.AddScoped<ApiServiceClient>(sp =>
     new ApiServiceClient(sp.GetRequiredService<HttpClient>(), token));
-
+builder.Services.AddScoped<AppointmentService>();
 await builder.Build().RunAsync();
 
 static async Task<string> GetToken(ILocalStorageService localStorage, HttpClient loginClient, LoginRequest loginDto)
