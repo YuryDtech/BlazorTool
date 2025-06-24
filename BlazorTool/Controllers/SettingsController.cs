@@ -55,24 +55,24 @@ namespace BlazorTool.Controllers
             //make test request to the API address
             try
             {
-                string ipAddress = ExtractIpAddress(address);
-                if (string.IsNullOrEmpty(ipAddress))
-                {
-                    return Ok(new { success = false, message = "API address is invalid. No IP address found." });
-                }
+                //ping nie dziala na Linux
+                //string ipAddress = ExtractIpAddress(address);
+                //if (string.IsNullOrEmpty(ipAddress))
+                //{
+                //    return Ok(new { success = false, message = "API address is invalid. No IP address found." });
+                //}
 
-                Console.WriteLine("Pinging IP address: " + ipAddress);
-                if (PingIpAddress(ipAddress))
-                {
-                    Console.WriteLine("Ping successful.");
-                }
-                else
-                {
-                    return Ok(new { success = false, message = "API address is invalid. Ping failed." });
-                }
+                //Console.WriteLine("Pinging IP address: " + ipAddress);
+                //if (PingIpAddress(ipAddress))
+                //{
+                //    Console.WriteLine("Ping successful.");
+                //}
+                //else
+                //{
+                //    return Ok(new { success = false, message = "API address is invalid. Ping failed." });
+                //}
 
                 //combine url address
-                //TODO chenge cheking API
                 if (!address.StartsWith("http://")) address = "http://" + address;
                 if (!address.EndsWith("/")) address += "/";
                 var testUrl = address + "wo/getlist?Lang=pl-PL&DeviceID=0";
@@ -115,7 +115,6 @@ namespace BlazorTool.Controllers
 
         // POST: Settings/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
         {
             try
@@ -136,7 +135,6 @@ namespace BlazorTool.Controllers
 
         // POST: Settings/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
         {
             try
@@ -166,15 +164,9 @@ namespace BlazorTool.Controllers
             {
                 try
                 {
-                    PingOptions options = new PingOptions();
-                    options.DontFragment = true;
-
-                    // Отправляем 32 байта данных
-                    string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-                    byte[] buffer = System.Text.Encoding.ASCII.GetBytes(data);
                     int timeout = 1000;
 
-                    PingReply reply = pingSender.Send(ipAddress, timeout, buffer, options);
+                    PingReply reply = pingSender.Send(ipAddress, timeout);
 
                     if (reply.Status == IPStatus.Success)
                     {

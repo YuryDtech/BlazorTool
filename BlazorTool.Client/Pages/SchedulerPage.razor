@@ -95,7 +95,7 @@
 </div>
 
 <TelerikWindow Modal="true" Size="WindowSize.Medium" Visible="@CustomEditFormShown">
-    <WindowTitle>Work Order</WindowTitle>
+    <WindowTitle>Work Order #@CurrentAppointment.WorkOrderID</WindowTitle>
     <WindowActions>
         <WindowAction Name="Close" OnClick="@CancelEditing" />
     </WindowActions>
@@ -240,6 +240,7 @@
 
     void CancelEditing()
     {
+        //TODO undo changes if any
         CustomEditFormShown = false;
     }
 

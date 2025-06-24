@@ -4,14 +4,6 @@
 @using Telerik.Blazor.Components.Scheduler.Models
 @inject AppointmentService ApptService
 
-<style>
-    form label.width100 {
-        width: 100%;
-    }
-</style>
-
-<h4>Edit appointment</h4>
-
 <EditForm Model="@Appointment" OnValidSubmit="@SaveAppointment">
     <DataAnnotationsValidator />
     <label class="width100">
@@ -19,45 +11,58 @@
         <TelerikTextBox @bind-Value="@Appointment.Title" Width="100%" />
     </label>
     <br />
-
-        <label class="width100">
+     <div class="datetime-row">
+        <label>
             Start:<br />
             <TelerikDateTimePicker @bind-Value="@Appointment.Start" Width="100%" />
         </label>
-        <label class="width100">
+        <label>
             End:<br />
             <TelerikDateTimePicker @bind-Value="@Appointment.End" Width="100%" />
         </label>
-
+    </div>
     <ValidationSummary />
-
+      <div class="button-row">
     <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Save</TelerikButton>
 
     @* These buttons do not invoke validation, you can always delete an appointment or stop editing *@
     <TelerikButton OnClick="@CancelEditing" ButtonType="ButtonType.Button">Cancel</TelerikButton>
     <TelerikButton OnClick="@DeleteAppointment" ButtonType="ButtonType.Button">Delete</TelerikButton>
-
+    </div>
 </EditForm>
 
 @code{
     //communcation with the parent component where the scheduler is
     [Parameter] public SchedulerAppointment Appointment { get; set; }
-    [Parameter] public EventCallback<string> OnAppointmentChanged { get; set; }
+    [Parameter] public EventCallback<SchedulerAppointment?> OnAppointmentChanged { get; set; }
+    private DateTime? _start_Init_value;
+    private DateTime? _end_Init_value;
+    private string _title_Init_value;
 
-    async void SaveAppointment()
+    protected override void OnInitialized()
     {
-        ApptService.UpdateAppointment(Appointment);
-        await OnAppointmentChanged.InvokeAsync(Appointment.Title);
+        _start_Init_value = Appointment.Start;
+        _end_Init_value = Appointment.End;
+        _title_Init_value = Appointment.Title;
     }
 
-    async void DeleteAppointment()
+    async Task SaveAppointment()
     {
-        ApptService.DeleteAppointment(Appointment);
-        await OnAppointmentChanged.InvokeAsync(Appointment.Title);
+        await ApptService.UpdateAppointment(Appointment);
+        await OnAppointmentChanged.InvokeAsync(Appointment);
     }
 
-    async void CancelEditing()
+    async Task DeleteAppointment()
     {
-        await OnAppointmentChanged.InvokeAsync(Appointment.Title);
+        await ApptService.DeleteAppointment(Appointment);
+        await OnAppointmentChanged.InvokeAsync(Appointment);
+    }
+
+    async Task CancelEditing()
+    {
+        Appointment.Start = _start_Init_value;
+        Appointment.End = _end_Init_value;
+        Appointment.Title = _title_Init_value;
+        await OnAppointmentChanged.InvokeAsync(Appointment);
     }
 }

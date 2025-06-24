@@ -1,5 +1,6 @@
 ﻿@using System.Text.Json.Serialization
 @using BlazorTool.Client.Models
+@using System.Globalization
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
 
 
@@ -149,7 +150,8 @@
                 <div class="stat-item">
                         @if (WorkOrder.Cost.HasValue)
                         {
-                            <span class="cost-amount">@WorkOrder.Cost.Value.ToString("C")</span>
+                            <span class="cost-amount">@WorkOrder.Cost.Value.ToString("C2", new CultureInfo("pl-PL"))</span>
+                            @* <span class="cost-amount">@WorkOrder.Cost.Value.ToString("C")</span> *@
                         }
                         else
                         {
