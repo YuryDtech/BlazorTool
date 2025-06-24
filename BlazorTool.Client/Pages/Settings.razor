@@ -17,11 +17,11 @@
     <div class="row mb-3">
         <div class="col-md-6">
             <label for="language" class="form-label">Language</label>
-            <select id="language" class="form-select" @bind="SelectedLanguage">
-                <option value="en">English</option>
-                <option value="pl">Polski</option>
-                <option value="fr">Français (French)</option>
-                <option value="ru">Русский</option> <!-- Corrected value for Russian -->
+            <select id="language" class="form-select" @bind="@SelectedLanguage">
+                <option value="en-En">English</option>
+                <option value="pl-Pl">Polski</option>
+                <option value="fr-Fr">Français</option>
+                <option value="ru-Ru">Русский</option> 
                 {!-- Add more languages as needed --}
             </select>
         </div>
@@ -43,7 +43,7 @@
 
 @code{
     protected string? ApiAddress { get; set; }
-    protected string? SelectedLanguage { get; set; } = "pl"; 
+    protected string? SelectedLanguage { get; set; } = "pl-Pl"; 
 
     protected string? StatusMessage { get; set; }
     protected string? StatusMessageClass { get; set; } // e.g., "text-success" or "text-danger"
@@ -59,7 +59,7 @@
     protected async Task LoadSettingsAsync()
     {
         ApiAddress = await LoadSettingAsync("apiAddress");
-        SelectedLanguage = await LoadSettingAsync("selectedLanguage") ?? "pl"; // Set default if not found
+        SelectedLanguage = await LoadSettingAsync("selectedLanguage") ?? "pl-Pl"; // Set default if not found
     }
 
     protected async Task<bool> TestApiAddress()

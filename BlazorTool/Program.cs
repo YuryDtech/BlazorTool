@@ -1,6 +1,7 @@
 using BlazorTool.Client.Models;
 using BlazorTool.Client.Services;
 using BlazorTool.Components;
+using BlazorTool.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -12,46 +13,81 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddMemoryCache();
 
-builder.Services.AddHttpClient("API", client =>
+builder.Services.AddHttpClient("ExternalApiClient", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["API"]!);
+    // BaseAddress EXTERNAL API, where get token
+    client.BaseAddress = new Uri(builder.Configuration["ExternalApi:BaseUrl"]!);
 });
+
+// inject IHttpClientFactory & IMemoryCache
+builder.Services.AddSingleton(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var loginDto = new LoginRequest
+    {
+        Username = config["Auth:Username"]!, // Get from configuration
+        Password = config["Auth:Password"]!  // Get from configuration
+    };
+    return new ServerAuthTokenService(
+        sp.GetRequiredService<IMemoryCache>(),
+        sp.GetRequiredService<IHttpClientFactory>(),
+        config,
+        loginDto
+    );
+});
+builder.Services.AddScoped<ServerAuthHeaderHandler>();
+
+string? internalApiBaseUrl = null;
+if (builder.Environment.IsDevelopment())
+{
+    // ASPNETCORE_URLS "https://localhost:7282;http://localhost:5168")
+    var urls = builder.Configuration["ASPNETCORE_URLS"]?.Split(';', StringSplitOptions.RemoveEmptyEntries);
+    // 1st URL, "http://"
+    internalApiBaseUrl = urls?.FirstOrDefault(url => url.StartsWith("http://"));
+
+    if (string.IsNullOrEmpty(internalApiBaseUrl))
+    {
+        internalApiBaseUrl = urls?.FirstOrDefault();
+    }
+
+    if (string.IsNullOrEmpty(internalApiBaseUrl))
+    {
+        internalApiBaseUrl = "http://localhost:5168"; //default fallback URL
+        Debug.Print("======= SERVER: ASPNETCORE_URLS is empty or invalid, falling back to default http://localhost:5168");
+    }
+    else
+    {
+        Debug.Print($"======= SERVER: InternalApiClient BaseAddress set to {internalApiBaseUrl} from ASPNETCORE_URLS");
+    }
+}
+else //prodaction or other environment
+{
+    internalApiBaseUrl = builder.Configuration["HostAddress"] ?? throw new InvalidOperationException("HostAddress not configured for non-development environment.");
+}
+//internal controllers Blazor Host
+builder.Services.AddHttpClient("InternalApiClient", client =>
+{
+    client.BaseAddress = new Uri(internalApiBaseUrl);
+})
+.AddHttpMessageHandler<ServerAuthHeaderHandler>();
+
+builder.Services.AddScoped<ApiServiceClient>(sp =>
+    new ApiServiceClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("InternalApiClient")));
+
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddControllers();
 builder.Services.AddTelerikBlazor();
-
-using var provider = builder.Services.BuildServiceProvider();
-var cache = provider.GetRequiredService<IMemoryCache>();
-var httpFactory = provider.GetRequiredService<IHttpClientFactory>();
-
-var loginDto = new LoginRequest
-{ //TODO auth page
-    Username = "Romaniuk Krzysztof",//builder.Configuration["Auth:Username"]!,
-    Password = "q"//builder.Configuration["Auth:Password"]!
-};
-
-string token = await GetTokenAsync(cache, httpFactory, builder.Configuration, loginDto);
-if (string.IsNullOrEmpty(token))
-    Debug.Print("======= SERVER: token is empty");
-
-builder.Services.AddHttpClient("API", client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["API"]!);
-    client.DefaultRequestHeaders.Authorization =
-        new AuthenticationHeaderValue("Bearer", token);
-});
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("API"));
-builder.Services.AddScoped<ApiServiceClient>(sp =>
-    new ApiServiceClient(sp.GetRequiredService<HttpClient>(), token));
 builder.Services.AddScoped<AppointmentService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -75,42 +111,4 @@ app.MapRazorComponents<App>()
 
 app.MapControllers();
 app.Run();
-
-static async Task<string> GetTokenAsync(IMemoryCache cache, IHttpClientFactory httpFactory, IConfiguration config, LoginRequest loginDto)
-{
-    const string cacheKey = "ApiJwtToken";
-    if (cache.TryGetValue(cacheKey, out string cachedToken))
-    {
-        return cachedToken;
-    }
-
-    var client = httpFactory.CreateClient("API");
-
-    var basicUser = config["ExternalApi:BasicAuthUsername"]!;
-    var basicPass = config["ExternalApi:BasicAuthPassword"]!;
-    var basicAuth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{basicUser}:{basicPass}"));
-    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basicAuth);
-
-    var url = $"api/v1/identity/loginpassword?UserName={Uri.EscapeDataString(loginDto.Username)}&Password={Uri.EscapeDataString(loginDto.Password)}";
-
-    var personId = int.Parse(config["ExternalApi:PersonID"]!);
-    var personPass = config["ExternalApi:PersonPassword"] ?? loginDto.Password;
-    var body = new { PersonID = personId, Password = personPass };
-
-    var request = new HttpRequestMessage(HttpMethod.Post, url)
-    {
-        Content = JsonContent.Create(body)
-    };
-
-    var response = await client.SendAsync(request);
-    response.EnsureSuccessStatusCode();
-
-    var wrapper = await response.Content.ReadFromJsonAsync<SingleResponse<IdentityData>>();
-    var token = wrapper?.Data?.Token ?? string.Empty;
-    var expires = DateTime.UtcNow.AddHours(1);
-    var ttl = expires - DateTime.UtcNow;
-    cache.Set(cacheKey, token, ttl);
-
-    return token;
-}
 

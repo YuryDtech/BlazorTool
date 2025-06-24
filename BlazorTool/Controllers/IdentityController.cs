@@ -29,9 +29,7 @@ namespace BlazorTool.Controllers
         [HttpPost("loginpassword")]
         public async Task<IActionResult> LoginPassword([FromBody] BlazorTool.Client.Models.LoginRequest loginRequest)
         {
-            var client = _httpClientFactory.CreateClient("API");
-            var baseAddress = client.BaseAddress?.ToString().TrimEnd('/') ?? string.Empty;
-            var externalApiUrl = $"{baseAddress}/api/v1/identity/loginpassword?UserName={Uri.EscapeDataString(loginRequest.Username)}&Password={Uri.EscapeDataString(loginRequest.Password)}";
+            var client = _httpClientFactory.CreateClient("ExternalApiClient");
 
             // Basic Auth from appsettings.json (ExternalApi:)
             var basicAuthUsername = _configuration["ExternalApi:BasicAuthUsername"] ?? string.Empty;
@@ -41,7 +39,7 @@ namespace BlazorTool.Controllers
                 var basicAuth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{basicAuthUsername}:{basicAuthPassword}"));
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basicAuth);
             }
-
+            var externalApiRelativeUrl = $"api/v1/identity/loginpassword?UserName={Uri.EscapeDataString(loginRequest.Username)}&Password={Uri.EscapeDataString(loginRequest.Password)}";
             var personID = int.TryParse(_configuration["ExternalApi:PersonID"], out var id) ? id : 1;
             var personPassword = _configuration["ExternalApi:PersonPassword"] ?? loginRequest.Password;
 
@@ -49,16 +47,17 @@ namespace BlazorTool.Controllers
             var jsonBody = JsonSerializer.Serialize(body);
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, externalApiUrl)
+            var request = new HttpRequestMessage(HttpMethod.Post, externalApiRelativeUrl)
             {
                 Content = content   
             };
 
             var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
             var wrapper = await response.Content.ReadFromJsonAsync<SingleResponse<IdentityData>>();
             var token = wrapper?.Data?.Token ?? string.Empty;
             var langCode = wrapper?.Data.LangCode ?? "pl-PL";
-            var expires = DateTime.Now.AddHours(1);
+            var expires = DateTime.UtcNow.AddHours(2);
             return Ok(new { Token = token, LangCode = langCode, Expires = expires });     
         }
     }

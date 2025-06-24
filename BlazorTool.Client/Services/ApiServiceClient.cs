@@ -19,14 +19,11 @@ namespace BlazorTool.Client.Services
     public class ApiServiceClient
     {
         private readonly HttpClient _http;
-        private readonly string _token;
         private Dictionary<int, List<WorkOrder>> _workOrdersCache = new Dictionary<int, List<WorkOrder>>();
         private List<Device> _devicesCache = new List<Device>();
-        public ApiServiceClient(HttpClient http, string token)
+        public ApiServiceClient(HttpClient http)
         {
             _http = http;
-            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _token = token;
         }
 
 
@@ -306,15 +303,25 @@ namespace BlazorTool.Client.Services
         public async Task<string> GetSettingAsync(string key, string user)
         {
             var url = $"api/v1/settings/get?key={Uri.EscapeDataString(key)}&user={Uri.EscapeDataString(user)}";
-            var response = await _http.GetAsync(url);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                return await response.Content.ReadAsStringAsync();
+                var response = await _http.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                // Предполагаем, что GetSettingAsync возвращает простую строку
+                var settingValue = await response.Content.ReadAsStringAsync();
+
+                return settingValue;
             }
-            else
+            catch (HttpRequestException ex)
             {
-                Debug.Print("\n= = = = = = = = = GetSettingAsync error: " + response.ReasonPhrase + "\n");
-                return string.Empty;
+                Console.WriteLine($"Error in GetSettingAsync: {ex.Message}");
+                return $"Error: {ex.Message}";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error in GetSettingAsync: {ex.Message}");
+                return $"Error: {ex.Message}";
             }
         }
 

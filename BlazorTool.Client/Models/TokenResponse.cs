@@ -1,9 +1,16 @@
-﻿namespace BlazorTool.Client.Models
+﻿using System.Text.Json.Serialization;
+
+namespace BlazorTool.Client.Models
 {
     public class TokenResponse
     {
+        [JsonPropertyName("token")]
         public string Token { get; set; }
+        
+        [JsonPropertyName("langCode")]
         public string LangCode { get; set; }
-        public DateTime Expires { get; set; } //if neasary
+        
+        [JsonPropertyName("expires")]
+        public DateTime Expires { get; set; } 
     }
 }
