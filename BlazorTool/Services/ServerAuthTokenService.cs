@@ -29,17 +29,17 @@ namespace BlazorTool.Services
 
         public async Task<string> GetTokenAsync()
         {
-            if (_cache.TryGetValue(CacheKey, out string cachedToken))
+            if (_cache.TryGetValue(CacheKey, out string? cachedToken) && !string.IsNullOrEmpty(cachedToken))
             {
                 return cachedToken;
             }
 
             // Получаем HTTP-клиент, настроенный для внешнего API с Basic-аутентификацией
             // Используем здесь "ExternalApiClient"
-            var client = _httpClientFactory.CreateClient("ExternalApiClient");
+            var client = _httpClientFactory.CreateClient("ExternalApiBasicAuthClient");
 
             var basicUser = _configuration["ExternalApi:BasicAuthUsername"]!;
-            var basicPass = _configuration["ExternalApi:BasicAuthPassword"]; // ИСПРАВЛЕНИЕ: _configuration["ExternalApi:BasicAuthPassword"]
+            var basicPass = _configuration["ExternalApi:BasicAuthPassword"]!;
             var basicAuth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{basicUser}:{basicPass}"));
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basicAuth);
 

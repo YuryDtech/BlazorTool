@@ -29,7 +29,7 @@ namespace BlazorTool.Controllers
         [HttpPost("loginpassword")]
         public async Task<IActionResult> LoginPassword([FromBody] BlazorTool.Client.Models.LoginRequest loginRequest)
         {
-            var client = _httpClientFactory.CreateClient("ExternalApiClient");
+            var client = _httpClientFactory.CreateClient("ExternalApiBasicAuthClient");
 
             // Basic Auth from appsettings.json (ExternalApi:)
             var basicAuthUsername = _configuration["ExternalApi:BasicAuthUsername"] ?? string.Empty;

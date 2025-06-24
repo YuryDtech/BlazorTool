@@ -19,11 +19,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMemoryCache();
 
-builder.Services.AddHttpClient("ExternalApiClient", client =>
+builder.Services.AddHttpClient("ExternalApiBasicAuthClient", client =>
 {
     // BaseAddress EXTERNAL API, where get token
     client.BaseAddress = new Uri(builder.Configuration["ExternalApi:BaseUrl"]!);
 });
+
+builder.Services.AddHttpClient("ExternalApiBearerAuthClient", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ExternalApi:BaseUrl"]!);
+})
+.AddHttpMessageHandler<ServerAuthHeaderHandler>();
 
 // inject IHttpClientFactory & IMemoryCache
 builder.Services.AddSingleton(sp =>
@@ -31,8 +37,8 @@ builder.Services.AddSingleton(sp =>
     var config = sp.GetRequiredService<IConfiguration>();
     var loginDto = new LoginRequest
     {
-        Username = config["Auth:Username"]!, // Get from configuration
-        Password = config["Auth:Password"]!  // Get from configuration
+        Username = "Romaniuk Krzysztof", //TODO auth page, or use config["Auth:Username"]
+        Password = "q"                   
     };
     return new ServerAuthTokenService(
         sp.GetRequiredService<IMemoryCache>(),
@@ -74,11 +80,10 @@ else //prodaction or other environment
 builder.Services.AddHttpClient("InternalApiClient", client =>
 {
     client.BaseAddress = new Uri(internalApiBaseUrl);
-})
-.AddHttpMessageHandler<ServerAuthHeaderHandler>();
+});
 
 builder.Services.AddScoped<ApiServiceClient>(sp =>
-    new ApiServiceClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("InternalApiClient")));
+    new ApiServiceClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ExternalApiBearerAuthClient")));
 
 
 builder.Services.AddRazorComponents()
