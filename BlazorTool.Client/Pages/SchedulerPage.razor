@@ -62,7 +62,7 @@
                          RowDraggable="true"
                          OnRowDrop="@GridRowDrop"
                          Sortable="true"
-                         Height="600"
+                         Height="80vh"
                          
             >
 
@@ -179,6 +179,7 @@
     // ==== Scheduler CUD handlers ====
     private async Task OnCreateAppointment(SchedulerCreateEventArgs args)
     {
+
         if (args.Item is SchedulerAppointment newAppt && SchedulerRef != null)
         {
             Appointments.Add(newAppt);

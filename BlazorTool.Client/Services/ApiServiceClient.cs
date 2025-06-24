@@ -94,7 +94,30 @@ namespace BlazorTool.Client.Services
             }
             return result;
         }
-        
+
+        public async Task<List<WorkOrder>> GetWorkOrdersCachedAsync(IEnumerable<int> deviceIds)
+        {
+            var result = new List<WorkOrder>();
+            if (deviceIds == null || deviceIds.Count() == 0)
+            {
+                return result;
+            }
+            foreach (var deviceId in deviceIds)
+            {
+                if (!_workOrdersCache.TryGetValue(deviceId, out var list))
+                {
+                    var fresh = await GetWorkOrdersAsync(deviceId);
+                    _workOrdersCache[deviceId] = fresh;
+                    result.AddRange(fresh);
+                }
+                else
+                {
+                    result.AddRange(list);
+                }
+            }
+            return result;
+        }
+
         public async Task<List<WorkOrder>> GetWorkOrdersAsync(
                                         int? deviceID = null,
                                         int? workOrderID = null,

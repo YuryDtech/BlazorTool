@@ -14,30 +14,57 @@
 @if (isDevicesLoading)
 {
     <div>loading device list...</div>
-}else{
-    <TelerikListBox Data="@devices"
-                    Id="firstListbox"
-                    SelectionMode="@ListBoxSelectionMode.Multiple"
-                    SelectedItemsChanged="@((IEnumerable<Device> deviceList) => OnSelect(deviceList))"
-                    TextField="AssetNo"
-                    SelectedItems="@selectedDevices"
-                    Width="300px"
-    >
-        <ListBoxToolBarSettings>
-            <ListBoxToolBar Visible="false" />
-        </ListBoxToolBarSettings>
-    </TelerikListBox>
-    <TelerikFilter  ValueChanged="@OnValueChanged">
+}else
+{    
+<div>
+        <TelerikRadioGroup Data="@TagModes"
+                           @bind-Value="@TagMode"
+                           ValueField="@nameof(Tags.Mode)"
+                           TextField="@nameof(Tags.Description)"
+                           Layout="RadioGroupLayout.Horizontal">
+        </TelerikRadioGroup>
+        <TelerikButton OnClick="@selectAllDevices"
+                        ThemeColor="@ThemeConstants.Button.ThemeColor.Base">
+            Select All
+        </TelerikButton>
+
+    <TelerikMultiSelect Data="@devices"
+                        Value="@selectedDeviceIds"
+                        ValueField="@nameof(Device.MachineID)"
+                        TextField="@nameof(Device.AssetNo)"
+                        TagMode="@TagMode"
+                        MaxAllowedTags="@MaxAllowedTags"
+                        Placeholder="Select devices"
+                        AutoClose="false"
+                        ValueChanged="@( (List<int> newValues) => OnMultiValueChanged(newValues) )"
+                        Width="500px"
+                        ShowClearButton="true">
+    </TelerikMultiSelect>
+</div>
+<div>
+        <TelerikComboBox Data="@deviceCategories" TextField="DeviceCategory"
+                         Placeholder="Select category..." ShowClearButton="true" Filterable="true"
+                         ValueChanged="@((string cat) => OnCategoryChanged(cat))"
+        >
+        </TelerikComboBox>
+</div>
+    <div>
+        <TelerikComboBox Data="@deviceTypes" TextField="DeviceType"
+                         Placeholder="Select type..." ShowClearButton="true" Filterable="true"
+                         ValueChanged="@((string cat) => OnTypeChanged(cat))">
+        </TelerikComboBox>
+    </div>
+    @* <TelerikFilter ValueChanged="@OnValueChanged">
         <FilterFields>
             <FilterField Name="@nameof(WorkOrder.WOState)" Type="typeof(string)" />
             <FilterField Name="@nameof(WorkOrder.DepName)" Type="typeof(string)" />
-            <FilterField Name="@nameof(WorkOrder.WOLevel)" Type="@typeof(string)" />
+            <FilterField Name="@nameof(WorkOrder.WOLevel)" Type="typeof(string)" />
             <FilterField Name="@nameof(WorkOrder.WOReason)" Type="typeof(string)"/>
             <FilterField Name="@nameof(WorkOrder.ModPerson)" Type="typeof(string)"/>
             <FilterField Name="@nameof(WorkOrder.AddDate)" Type="typeof(DateTime)"/>
             <FilterField Name="@nameof(WorkOrder.CloseDate)" Type="typeof(DateTime)"/>
         </FilterFields>
-    </TelerikFilter>
+    </TelerikFilter> *@
 }
 
 <h3>Orders</h3>
@@ -99,17 +126,24 @@ else
     private List<WorkOrder> OrdersForGrid = new List<WorkOrder>();
     private WorkOrder selectedOrder;
     private IEnumerable<Device> selectedDevices = new List<Device>();
+    private List<int> selectedDeviceIds = new List<int>();
     private MarkupString rowStyles = new MarkupString();
     private List<Device> devices = new List<Device>();
+    List<string?> deviceCategories = new List<string?>();
+    List<string?> deviceTypes = new List<string?>();
     public TelerikGrid<WorkOrder> GridRef { get; set; }
     public CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor();
     private bool isOrderCardOpen = false;
+    private MultiSelectTagMode TagMode { get; set; } = MultiSelectTagMode.Single;
+    private int? MaxAllowedTags { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         isDevicesLoading = true;
         StateHasChanged();
         devices = await apiService.GetAllDevicesCachedAsync();
+        deviceCategories = devices.Select(d => d.DeviceCategory).Distinct().ToList();
+        deviceTypes = devices.Select(d => d.Type).Distinct().ToList();
         isDevicesLoading = false;
         StateHasChanged();
         await LoadData();
@@ -127,15 +161,29 @@ else
 
         if (selectedDevices == null || selectedDevices.Count() == 0)
         {
-            selectedDevices = new List<Device>() { devices.FirstOrDefault() };
+            // selectedDevices = new List<Device>() { devices.FirstOrDefault() };
+            selectedDevices = new List<Device>();
         }
-
+        if (selectedDeviceIds == null || selectedDeviceIds.Count == 0)
+        {
+            selectedDeviceIds = new List<int>();
+            // selectedDeviceIds = selectedDevices.Select(d => d.MachineID).ToList();
+        }
+        Debug.Print($"Selected devices count: {selectedDevices.Count()}");
         OrdersForGrid = await apiService.GetWorkOrdersCachedAsync(selectedDevices);
         rowStyles = RenderStatesStyle(OrdersForGrid);
         isOrdersLoading = false;
         StateHasChanged();
     }
 
+    private async void OnMultiValueChanged(List<int> newValues)
+    {
+        selectedDeviceIds = newValues;
+        selectedDevices = devices.Where(d => selectedDeviceIds.Contains(d.MachineID)).ToList();
+        await LoadData(); 
+    }
+
+    #region Filter Descriptor
     private CompositeFilterDescriptor GetCompositeFilterDescriptor()
     {
         return new CompositeFilterDescriptor()
@@ -174,6 +222,42 @@ else
         ApplyFilter(Value);
     }
 
+    async Task OnCategoryChanged(string? category)
+    {
+        if (string.IsNullOrEmpty(category))
+        {
+            return;
+        }
+        else
+        {
+            selectedDevices = devices.Where(d => d.DeviceCategory == category).ToList();
+            selectedDeviceIds = selectedDevices.Select(d => d.MachineID).ToList();
+        }
+        await LoadData();
+    }
+
+    async Task OnTypeChanged(string? type)
+    {
+        if (string.IsNullOrEmpty(type))
+        {
+            return;
+        }
+        else
+        {
+            
+            selectedDevices = devices.Where(d => d.Type == type).ToList();
+            selectedDeviceIds = selectedDevices.Select(d => d.MachineID).ToList();
+        }
+        await LoadData();
+    }
+
+    async Task selectAllDevices()
+    {
+        selectedDeviceIds = devices.Select(d => d.MachineID).ToList();
+        selectedDevices = devices.ToList();
+        await LoadData();
+    }
+
     void ApplyFilter(CompositeFilterDescriptor filter)
     {
         var dataSourceRequest = new DataSourceRequest { Filters = new List<IFilterDescriptor> { filter } };
@@ -183,6 +267,19 @@ else
         OrdersForGrid = datasourceResult.Data.Cast<WorkOrder>().ToList();
 
     }
+
+    private List<Tags> TagModes { get; set; } = new List<Tags>()
+    {
+        new Tags { Mode = MultiSelectTagMode.Single, Description = "Compact" },
+        new Tags { Mode = MultiSelectTagMode.Multiple, Description = "Extended" }
+    };
+
+    private class Tags
+    {
+        public MultiSelectTagMode Mode { get; set; }
+        public string Description { get; set; }
+    }
+    #endregion
 
     #region Grid Row Styles
     void OnRowRenderHandler(GridRowRenderEventArgs args)
