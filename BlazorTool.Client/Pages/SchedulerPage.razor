@@ -94,7 +94,7 @@
     </div>
 </div>
 
-<TelerikWindow Modal="true" Size="WindowSize.Medium" Visible="@CustomEditFormShown">
+<TelerikWindow Modal="false" Visible="@CustomEditFormShown" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
     <WindowTitle>Work Order #@CurrentAppointment.WorkOrderID</WindowTitle>
     <WindowActions>
         <WindowAction Name="Close" OnClick="@CancelEditing" />

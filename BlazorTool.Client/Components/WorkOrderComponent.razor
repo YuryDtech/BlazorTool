@@ -14,15 +14,15 @@
     <!-- HEADER -->
     <CardHeader Class="position-relative">
     <h2 class="mb-1">Order №@WorkOrder.WorkOrderID</h2>
-    <div class="position-absolute top-50 start-50 translate-middle">
-      <TelerikBadge 
-        ThemeColor="@GetStateColor()" 
-        Size="@Telerik.Blazor.ThemeConstants.Switch.Size.Large">
-        @WorkOrder.WOState
-      </TelerikBadge>
-    </div>
 
-    <div class="position-absolute top-50 end-0 translate-middle-y small pe-3 ">
+    <!-- Status-->
+<div class="position-absolute top-50 end-0 translate-middle-y p-2">
+    <span class="badge @GetStateColor(@WorkOrder.StateColor) fs-3">
+        @WorkOrder.WOState
+    </span>
+</div>
+
+    <div class="position-absolute top-50 end-50 translate-middle-y  fs-5 ">
       <div><strong>Device:</strong> @WorkOrder.AssetNo</div>
       <div><strong>Category:</strong> @WorkOrder.DeviceCategory</div>
     </div>
@@ -36,7 +36,7 @@
                 <CardHeader Class="py-1 px-2">
                     <CardTitle>Description</CardTitle>
                 </CardHeader>
-                <CardBody Class="p-2">
+                <CardBody Class="p-2 card-body-description">
                     <div class="field-group">
                         <label>Description:</label>
                         <div class="field-value">@(WorkOrder.WODesc ?? "Not specified")</div>
@@ -52,6 +52,29 @@
                     <div class="field-group">
                         <label>Level:</label>
                         <div class="field-value">@(WorkOrder.WOLevel ?? "Not specified")</div>
+                    </div>
+                </CardBody>
+            </TelerikCard>
+        </div>
+
+        <!-- Executors -->
+        <div class="col">
+            <TelerikCard Class="h-100">
+                <CardHeader Class="py-1 px-2">
+                    <CardTitle>Executors</CardTitle>
+                </CardHeader>
+                <CardBody Class="p-2">
+                    <div class="field-group">
+                        <label>Assigned Person:</label>
+                        <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.AssignedPerson) ? "Not specified" : WorkOrder.AssignedPerson)</div>
+                    </div>
+                    <div class="field-group">
+                        <label>Take Persons:</label>
+                        <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.TakePersons) ? "Not specified" : WorkOrder.TakePersons)</div>
+                    </div>
+                    <div class="field-group">
+                        <label>Department:</label>
+                        <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.DepName) ? "Not specified" : WorkOrder.DepName)</div>
                     </div>
                 </CardBody>
             </TelerikCard>
@@ -93,30 +116,6 @@
                 </CardBody>
             </TelerikCard>
         </div>
-
-        <!-- Executors -->
-        <div class="col">
-            <TelerikCard Class="h-100">
-                <CardHeader Class="py-1 px-2">
-                    <CardTitle>Executors</CardTitle>
-                </CardHeader>
-                <CardBody Class="p-2">
-                    <div class="field-group">
-                        <label>Assigned Person:</label>
-                        <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.AssignedPerson) ? "Not specified" : WorkOrder.AssignedPerson)</div>
-                    </div>
-                    <div class="field-group">
-                        <label>Take Persons:</label>
-                        <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.TakePersons) ? "Not specified" : WorkOrder.TakePersons)</div>
-                    </div>
-                    <div class="field-group">
-                        <label>Department:</label>
-                        <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.DepName) ? "Not specified" : WorkOrder.DepName)</div>
-                    </div>
-                </CardBody>
-            </TelerikCard>
-        </div>
-
        
     </div>
 
@@ -234,18 +233,17 @@
         return dateTime.Value.ToString("dd.MM.yyyy HH:mm");
     }
 
-    private string GetStateColor()
+    private string GetStateColor(string? StateColor)
     {
-        if (string.IsNullOrEmpty(WorkOrder?.StateColor))
+        if (string.IsNullOrEmpty(StateColor))
             return "primary";
             
-        return WorkOrder.StateColor switch
+        return StateColor.ToLower() switch
         {
-            "green" => "success",
-            "red" => "error",
-            "yellow" => "warning",
-            "blue" => "info",
-            _ => "primary"
+            "lime" => "bg-success",
+            "red" => "bg-danger",
+            "yellow" => "bg-warning",
+            _ => "bg-dark"
         };
     }
 }

@@ -7,6 +7,7 @@
 @using System.Linq
 @using System.Diagnostics
 @using Telerik.DataSource.Extensions
+@using Telerik.Blazor
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
 @rowStyles
 
@@ -16,55 +17,46 @@
     <div>loading device list...</div>
 }else
 {    
-<div>
-        <TelerikRadioGroup Data="@TagModes"
-                           @bind-Value="@TagMode"
-                           ValueField="@nameof(Tags.Mode)"
-                           TextField="@nameof(Tags.Description)"
-                           Layout="RadioGroupLayout.Horizontal">
-        </TelerikRadioGroup>
-        <TelerikButton OnClick="@selectAllDevices"
-                        ThemeColor="@ThemeConstants.Button.ThemeColor.Base">
-            Select All
-        </TelerikButton>
-
-    <TelerikMultiSelect Data="@devices"
-                        Value="@selectedDeviceIds"
-                        ValueField="@nameof(Device.MachineID)"
-                        TextField="@nameof(Device.AssetNo)"
-                        TagMode="@TagMode"
-                        MaxAllowedTags="@MaxAllowedTags"
-                        Placeholder="Select devices"
-                        AutoClose="false"
-                        ValueChanged="@( (List<int> newValues) => OnMultiValueChanged(newValues) )"
-                        Width="500px"
-                        ShowClearButton="true">
-    </TelerikMultiSelect>
-</div>
-<div>
-        <TelerikComboBox Data="@deviceCategories" TextField="DeviceCategory"
-                         Placeholder="Select category..." ShowClearButton="true" Filterable="true"
-                         ValueChanged="@((string cat) => OnCategoryChanged(cat))"
-        >
-        </TelerikComboBox>
-</div>
+<div class="filter-controls-row">
     <div>
-        <TelerikComboBox Data="@deviceTypes" TextField="DeviceType"
-                         Placeholder="Select type..." ShowClearButton="true" Filterable="true"
-                         ValueChanged="@((string cat) => OnTypeChanged(cat))">
-        </TelerikComboBox>
+            <TelerikRadioGroup Data="@TagModes"
+                               @bind-Value="@TagMode"
+                               ValueField="@nameof(Tags.Mode)"
+                               TextField="@nameof(Tags.Description)"
+                               Layout="RadioGroupLayout.Horizontal">
+            </TelerikRadioGroup>
+            <TelerikButton OnClick="@selectAllDevices"
+                            ThemeColor="@ThemeConstants.Button.ThemeColor.Base">
+                Select All
+            </TelerikButton>
+
+        <TelerikMultiSelect Data="@devices"
+                            @bind-Value="@selectedDeviceIds"
+                            ValueField="@nameof(Device.MachineID)"
+                            TextField="@nameof(Device.AssetNo)"
+                            TagMode="@TagMode"
+                            MaxAllowedTags="@MaxAllowedTags"
+                            Placeholder="Select devices"
+                            AutoClose="false"
+                                OnClose="@OnMultiValueClosed"
+                            Width="500px"
+                            ShowClearButton="true">
+        </TelerikMultiSelect>
     </div>
-    @* <TelerikFilter ValueChanged="@OnValueChanged">
-        <FilterFields>
-            <FilterField Name="@nameof(WorkOrder.WOState)" Type="typeof(string)" />
-            <FilterField Name="@nameof(WorkOrder.DepName)" Type="typeof(string)" />
-            <FilterField Name="@nameof(WorkOrder.WOLevel)" Type="typeof(string)" />
-            <FilterField Name="@nameof(WorkOrder.WOReason)" Type="typeof(string)"/>
-            <FilterField Name="@nameof(WorkOrder.ModPerson)" Type="typeof(string)"/>
-            <FilterField Name="@nameof(WorkOrder.AddDate)" Type="typeof(DateTime)"/>
-            <FilterField Name="@nameof(WorkOrder.CloseDate)" Type="typeof(DateTime)"/>
-        </FilterFields>
-    </TelerikFilter> *@
+    <div>
+            <TelerikComboBox Data="@deviceCategories" TextField="DeviceCategory"
+                             Placeholder="Select category..." ShowClearButton="true" Filterable="true"
+                             ValueChanged="@((string cat) => OnCategoryChanged(cat))"
+            >
+            </TelerikComboBox>
+    </div>
+    <div>
+            <TelerikComboBox Data="@deviceTypes" TextField="DeviceType"
+                             Placeholder="Select type..." ShowClearButton="true" Filterable="true"
+                             ValueChanged="@((string cat) => OnTypeChanged(cat))">
+            </TelerikComboBox>
+        </div>
+</div>
 }
 
 <h3>Orders</h3>
@@ -103,8 +95,8 @@ else
         </GridColumns>
     </TelerikGrid>
 
-    <TelerikWindow @bind-Visible="@isOrderCardOpen" 
-                  
+    <TelerikWindow @bind-Visible="@isOrderCardOpen"
+                   CloseOnOverlayClick="true"
                    Modal="true">
         <WindowTitle>
         </WindowTitle>
@@ -175,13 +167,52 @@ else
         isOrdersLoading = false;
         StateHasChanged();
     }
-
-    private async void OnMultiValueChanged(List<int> newValues)
+    
+    #region Filter events
+    //Select devives from MultiSelect
+    private async void OnMultiValueClosed()
     {
-        selectedDeviceIds = newValues;
         selectedDevices = devices.Where(d => selectedDeviceIds.Contains(d.MachineID)).ToList();
         await LoadData(); 
     }
+
+    async Task OnCategoryChanged(string? category)
+    {
+        if (string.IsNullOrEmpty(category))
+        {
+            return;
+        }
+        else
+        {
+            selectedDevices = devices.Where(d => d.DeviceCategory == category).ToList();
+            selectedDeviceIds = selectedDevices.Select(d => d.MachineID).ToList();
+        }
+        await LoadData();
+    }
+
+    async Task OnTypeChanged(string? type)
+    {
+        if (string.IsNullOrEmpty(type))
+        {
+            return;
+        }
+        else
+        {
+            
+            selectedDevices = devices.Where(d => d.Type == type).ToList();
+            selectedDeviceIds = selectedDevices.Select(d => d.MachineID).ToList();
+        }
+        await LoadData();
+    }
+
+    async Task selectAllDevices()
+    {
+        selectedDeviceIds = devices.Select(d => d.MachineID).ToList();
+        selectedDevices = devices.ToList();
+        await LoadData();
+    }
+
+    #endregion
 
     #region Filter Descriptor
     private CompositeFilterDescriptor GetCompositeFilterDescriptor()
@@ -222,41 +253,6 @@ else
         ApplyFilter(Value);
     }
 
-    async Task OnCategoryChanged(string? category)
-    {
-        if (string.IsNullOrEmpty(category))
-        {
-            return;
-        }
-        else
-        {
-            selectedDevices = devices.Where(d => d.DeviceCategory == category).ToList();
-            selectedDeviceIds = selectedDevices.Select(d => d.MachineID).ToList();
-        }
-        await LoadData();
-    }
-
-    async Task OnTypeChanged(string? type)
-    {
-        if (string.IsNullOrEmpty(type))
-        {
-            return;
-        }
-        else
-        {
-            
-            selectedDevices = devices.Where(d => d.Type == type).ToList();
-            selectedDeviceIds = selectedDevices.Select(d => d.MachineID).ToList();
-        }
-        await LoadData();
-    }
-
-    async Task selectAllDevices()
-    {
-        selectedDeviceIds = devices.Select(d => d.MachineID).ToList();
-        selectedDevices = devices.ToList();
-        await LoadData();
-    }
 
     void ApplyFilter(CompositeFilterDescriptor filter)
     {

@@ -98,6 +98,11 @@
         font-size: 0.875rem;
     }
 
+.card-body-description div {
+    padding: 2px 12px;
+    margin-bottom: 2px;
+}
+
 .field-value {
     background-color: #f8f9fa;
     padding: 10px 12px;
@@ -107,6 +112,7 @@
     min-height: 20px;
     word-wrap: break-word;
 }
+
 
 .dates-grid {
     display: grid;
