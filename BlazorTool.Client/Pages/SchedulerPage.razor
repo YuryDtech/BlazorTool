@@ -16,10 +16,37 @@
 
 @cellStyles
 <h3>Scheduler</h3>
-
+<div class="filter-controls-row">
+    <div>
+        @* <TelerikMultiSelect Data="@selectedAssignedPersons"
+                            TagMode="@MultiSelectTagMode.Multiple"
+                            Placeholder="Select assigned persons"
+                            AutoClose="false"
+                            OnClose="@OnMultiValueClosed"
+                            Width="400px"
+                            ShowClearButton="true">
+        </TelerikMultiSelect> *@
+    </div>
+    @* <div>
+        <TelerikComboBox Data="@deviceCategories" TextField="DeviceCategory"
+                         Placeholder="Select category..." ShowClearButton="true" Filterable="true"
+                         ValueChanged="@((string cat) => OnCategoryChanged(cat))">
+        </TelerikComboBox>
+    </div>
+    <div>
+        <TelerikComboBox Data="@deviceTypes" TextField="DeviceType"
+                         Placeholder="Select type..." ShowClearButton="true" Filterable="true"
+                         ValueChanged="@((string cat) => OnTypeChanged(cat))">
+        </TelerikComboBox>
+    </div> *@
+</div>
 <div style="display:flex; gap:1rem;">
     <div style="flex:2;">
-        <p>Scheduled orders: @Appointments.Count()</p>
+        <div style="display:flex; flex-direction: row; gap:10px">
+            <div><p>Scheduled orders: @Appointments.Count()</p></div>
+            <div><TelerikButton OnClick="@HardLoadData" Size="Small" ThemeColor="@ThemeConstants.Button.ThemeColor.Tertiary">Reload all data</TelerikButton></div>
+        </div>
+        
         <TelerikScheduler TItem="SchedulerAppointment"
                           Id="Scheduler1"
                           Data="@Appointments"
@@ -38,12 +65,16 @@
                           EndField="End"
                           TitleField="Title"
                           DescriptionField="Description"
-                          IsAllDayField="IsAllDay">
+                          IsAllDayField="IsAllDay"
+                          Height="80vh"
+                          >
 
             <SchedulerViews>
                 <SchedulerDayView StartTime="@DayStart" EndTime="@DayEnd" />
                 <SchedulerWeekView StartTime="@DayStart" EndTime="@DayEnd" />
-                <SchedulerMonthView />
+                <SchedulerMonthView ItemsPerSlot=4>
+                   
+                </SchedulerMonthView>
             </SchedulerViews>
         </TelerikScheduler>
     </div>
@@ -69,7 +100,7 @@
                 <RowTemplate Context="order">
                     <td class="tooltip-target" title="@order.WODesc">@order?.AssetNo</td>
                     <td class="tooltip-target" title="@order.WODesc">@order?.WOCategory</td>
-                    <td class="tooltip-target" title="@order.WODesc">@order?.DeviceCategory</td>
+                    <td class="tooltip-target" title="@order.WODesc">@order?.AssignedPerson</td>
                     <td class="tooltip-target" title="@order.WODesc">@order?.StartDate</td>
                     <td class="tooltip-target" title="@order.WODesc">@order?.EndDate</td>
                     <td class="state-@order?.StateColor?.TrimStart('#') tooltip-target" title="@order?.WOState">@order?.WOState</td>
@@ -83,7 +114,7 @@
                 <GridColumns>
                     <GridColumn Field="@nameof(WorkOrder.AssetNo)" />
                     <GridColumn Field="@nameof(WorkOrder.WOCategory)"/>
-                    <GridColumn Field="@nameof(WorkOrder.DeviceCategory)" />
+                    <GridColumn Field="@nameof(WorkOrder.AssignedPerson)" />
                     <GridColumn Field="@nameof(WorkOrder.StartDate)" />
                     <GridColumn Field="@nameof(WorkOrder.EndDate)" />
                     <GridColumn Field="@nameof(WorkOrder.WOState)" />
@@ -122,35 +153,47 @@
     private bool isLoading { get; set; } = true;
     private bool CustomEditFormShown { get; set; } = false;
     private SchedulerAppointment CurrentAppointment { get; set; } = new SchedulerAppointment();
+    private List<string> selectedAssignedPersons = new();
 
     protected override async Task OnInitializedAsync()
     {
         var isWASM = JSRuntime is IJSInProcessRuntime;
         Debug.Print($"--- OnInitializedAsync. WASM = {isWASM}");
         await LoadData();
-        // if (isWASM)
-        // {
-        //     // Load data only in WASM mode to avoid double loading in prerendering
-        //     await LoadData();
-        // }
-        // else
-        // {
-        //     // In server-side mode, we can skip loading data here
-        //     await LoadData();
-        // } 
     }
 
+    private async Task HardLoadData()
+    {
+        Debug.Print("--- HardLoadData called.");
+        isLoading = true;
+        StateHasChanged();
+        _allOrders = await apiService.GetWorkOrdersAsync(); 
+        await GetData();
+        isLoading = false;
+        StateHasChanged();
+        Debug.Print($"--- HardLoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
+    }
     private async Task LoadData()
     {
         isLoading = true;
         StateHasChanged();
         _allOrders = await apiService.GetWorkOrdersCachedAsync(); // Nie rozpoczete zlecenia
-        UntakenOrders = _allOrders.Where(x => x.TakeDate == null).ToList();
-        cellStyles = RenderStatesStyle(_allOrders);
-        Appointments = await ApptService.GetTakenAppointments();
+        await GetData(); 
         isLoading = false;
         StateHasChanged();
         Debug.Print($"--- LoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
+    }
+
+    private async Task GetData()
+    {
+        UntakenOrders = _allOrders.Where(x => x.TakeDate == null).ToList();
+        cellStyles = RenderStatesStyle(_allOrders);
+        Appointments = await ApptService.GetTakenAppointments();
+        selectedAssignedPersons = _allOrders
+            .Where(x => !string.IsNullOrEmpty(x.AssignedPerson))
+            .Select(x => x.AssignedPerson)
+            .Distinct()
+            .ToList();
     }
 
     // ==== DragAndDrop from Grid to Scheduler ====
@@ -210,6 +253,15 @@
             Appointments.RemoveAll(a => a.AppointmentId == delAppt.AppointmentId);
             SchedulerRef?.Rebind();
         }
+    }
+
+    private void OnDateClick(int day)
+    {
+        // var currentDate = DateTime.Now;
+        // var navigateDate = new DateTime(currentDate.Year, currentDate.Month, day);
+
+        // CurrView = SchedulerView.Day;
+        // SelectedDate = navigateDate;
     }
 
     async void RefreshData()
