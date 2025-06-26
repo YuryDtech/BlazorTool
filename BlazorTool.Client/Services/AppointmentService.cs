@@ -30,7 +30,7 @@ namespace BlazorTool.Client.Services
             return _appointments;
         }
 
-        public async Task<List<SchedulerAppointment>> GetTakenAppointments(List<WorkOrder>? orders)
+        public async Task<List<SchedulerAppointment>> GetTakenAppointments(List<WorkOrder>? orders = null)
         {
                 if (_appointments == null || !_appointments.Any())
                 {

@@ -10,7 +10,6 @@
 @using Telerik.Blazor.Components.Scheduler
 @using Telerik.DataSource.Extensions
 @inject IJSRuntime JSRuntime
-
 @inject ApiServiceClient apiService
 @inject AppointmentService ApptService
 
@@ -23,18 +22,19 @@
                             TagMode="@MultiSelectTagMode.Multiple"
                             Placeholder="Select assigned persons"
                             AutoClose="false"
-                            OnChange="@OnMultiValueClosed"
+                            OnClose="@OnAssignedPersonsClosed"
                             Width="400px"
                             ShowClearButton="true">
         </TelerikMultiSelect>
     </div>
-    @* <div>
-        <TelerikComboBox Data="@deviceCategories" TextField="DeviceCategory"
-                         Placeholder="Select category..." ShowClearButton="true" Filterable="true"
-                         ValueChanged="@((string cat) => OnCategoryChanged(cat))">
+     <div>
+        <TelerikComboBox Data="@departments" TextField="Department"
+                         Placeholder="Select department..." Filterable="false" 
+                         AllowCustom="false" Value="@selectedDepartment"
+                         ValueChanged="@((string dep) => OnDepartmentChanged(dep))">
         </TelerikComboBox>
-    </div>
-    <div>
+   </div>
+   @*  <div>
         <TelerikComboBox Data="@deviceTypes" TextField="DeviceType"
                          Placeholder="Select type..." ShowClearButton="true" Filterable="true"
                          ValueChanged="@((string cat) => OnTypeChanged(cat))">
@@ -140,7 +140,8 @@
 
 @code {
 
-    private List<SchedulerAppointment> Appointments { get; set; } = new();
+    private List<SchedulerAppointment> Appointments { get; set; } = new();    
+    private List<SchedulerAppointment> _allAppointments { get; set; } = new();    
     private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }
 
     private DateTime SchedulerDate { get; set; } = DateTime.Today;
@@ -156,6 +157,8 @@
     private SchedulerAppointment CurrentAppointment { get; set; } = new SchedulerAppointment();
     private List<string> selectedAssignedPersons = new();
     private List<string> allPersons = new();
+    private List<string> departments = new(); 
+    private string selectedDepartment = "All";
 
     protected override async Task OnInitializedAsync()
     {
@@ -169,38 +172,43 @@
         Debug.Print("--- HardLoadData called.");
         isLoading = true;
         StateHasChanged();
-        _allOrders = await apiService.GetWorkOrdersAsync(); 
-        await DisplayAppointments(_allOrders);
-        isLoading = false;
-        StateHasChanged();
+        _allOrders = await apiService.GetWorkOrdersAsync(); //frop API, not cache
+        await LoadData();
         Debug.Print($"--- HardLoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
     }
+
     private async Task LoadData()
     {
+        Debug.Print("--- LoadData called.");
         isLoading = true;
         StateHasChanged();
         allPersons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList();
         _allOrders = await apiService.GetWorkOrdersCachedAsync();
-        await DisplayAppointments( _allOrders); 
-        DisplayOrders(_allOrders);
+        _allAppointments = await ApptService.GetTakenAppointments(_allOrders);
+        departments = new List<string> { "All" };
+        departments.AddRange(_allOrders.Where(d => !string.IsNullOrWhiteSpace(d.DepName)).Select(x => x.DepName).Distinct().ToList());
+        DisplayAppointments(); 
+        DisplayOrders();
         isLoading = false;
         StateHasChanged();
         Debug.Print($"--- LoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
     }
 
-    private async Task DisplayAppointments(List<WorkOrder> orders)
+    private void DisplayAppointments()
     {
-        selectedAssignedPersons = orders
-            .Where(x => !string.IsNullOrEmpty(x.AssignedPerson))
-            .Select(x => x.AssignedPerson)
-            .Distinct()
-            .ToList();
-        Appointments = await ApptService.GetTakenAppointments(orders);
+        var appointments = FilterAppointments();
+        // selectedAssignedPersons = appointments
+        //     .Where(x => !string.IsNullOrEmpty(x.AssignedPerson))
+        //     .Select(x => x.AssignedPerson)
+        //     .Distinct()
+        //     .ToList();
+        Appointments = appointments;        
     }
 
-
-    private void DisplayOrders(List<WorkOrder> orders)
+    
+    private void DisplayOrders()
     {
+        var orders = FilterOrders();
         UntakenOrders = orders.Where(x => string.IsNullOrEmpty(x.AssignedPerson) && x.WOState?.ToLowerInvariant() != "zakończony").ToList();
         cellStyles = RenderStatesStyle(orders);
     }
@@ -231,11 +239,40 @@
     }
 
     #region filters
-    private async Task OnMultiValueClosed()
+    private void OnAssignedPersonsClosed()
     {
-        var filteredOrders = _allOrders.Where(x => selectedAssignedPersons.Contains(x.AssignedPerson)).ToList();
-        await DisplayAppointments(filteredOrders);
+        DisplayAppointments();
     }
+
+    private void OnDepartmentChanged(string dep)
+    {
+        selectedDepartment = dep;
+        DisplayAppointments();
+    }
+
+    private List<SchedulerAppointment> FilterAppointments()
+    {
+        var filteredAppointments = new List<SchedulerAppointment>(_allAppointments);
+        if (!string.IsNullOrEmpty(selectedDepartment) && selectedDepartment != "All")
+        {
+            // Filter appointments based on the selected department
+            filteredAppointments = filteredAppointments.Where(a => a.DepName == selectedDepartment).ToList();
+        }
+        if (selectedAssignedPersons.Count > 0)
+        {
+            // Filter appointments based on the selected assigned persons
+            filteredAppointments = filteredAppointments.Where(a => selectedAssignedPersons.Contains(a.AssignedPerson)).ToList();
+        }
+
+
+        return filteredAppointments; 
+    }
+
+    private List<WorkOrder> FilterOrders()
+    {
+        return _allOrders; // Return all orders if no filtering is applied
+    }
+
     #endregion
 
     #region Scheduler 

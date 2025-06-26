@@ -269,6 +269,7 @@ namespace BlazorTool.Client.Services
         public async Task<List<Person>> GetAllPersons()
         {
             var url = "api/v1/other/getuserslist";
+            Debug.Print("====== Start GetAllPersons() request: " + _http.BaseAddress + url);
             var response = await _http.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {

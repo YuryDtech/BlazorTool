@@ -48,11 +48,11 @@ h1:focus {
 
 .filter-controls-row {
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: 1rem;
     flex-wrap: wrap;
     flex-direction: row;
-    align-content: flex-end;
+    align-content: center;
     justify-content: flex-start;
     background-color: antiquewhite;
     margin-bottom: 10px;
