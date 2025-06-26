@@ -30,9 +30,8 @@ builder.Services.AddScoped<AuthHeaderHandler>(sp =>
 
 builder.Services.AddHttpClient("ServerApi", client =>
 {
-    // BaseAddress ??? ????? HttpClient'? (??????? ????? ?????????????? ApiServiceClient)
-    // ?????? ????????? ?? ??? Host-??????.
-    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+    var serverBaseUrl = builder.Configuration["InternalApiBaseUrl"] ?? builder.HostEnvironment.BaseAddress;
+    client.BaseAddress = new Uri(serverBaseUrl);
 })
 .AddHttpMessageHandler<AuthHeaderHandler>();
 
@@ -40,6 +39,10 @@ builder.Services.AddScoped<ApiServiceClient>(sp =>
     new ApiServiceClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ServerApi")));
 
 builder.Services.AddScoped<AppointmentService>();
+
+
+Debug.Print("======= APPLICATION (Client) STARTING...");
+
 await builder.Build().RunAsync();
 
 public static class AppInfo

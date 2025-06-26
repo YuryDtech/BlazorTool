@@ -1,11 +1,12 @@
 using BlazorTool.Client.Models;
 using BlazorTool.Client.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration; // To access configuration for Basic Auth credentials
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.Configuration; // To access configuration for Basic Auth credentials
 
 namespace BlazorTool.Controllers
 {
@@ -15,13 +16,11 @@ namespace BlazorTool.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
-        private readonly ApiServiceClient _apiServiceClient;
 
-        public PersonController(IHttpClientFactory httpClientFactory, IConfiguration configuration, ApiServiceClient apiServiceClient)
+        public PersonController(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
-            _apiServiceClient = apiServiceClient;
         }
 
         [HttpGet("getuserslist")]
@@ -48,14 +47,12 @@ namespace BlazorTool.Controllers
                 var byteArray = Encoding.UTF8.GetBytes($"{username}:{password}");
                 basicAuthClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 
-                var persons = await _apiServiceClient.GetAllPersons(basicAuthClient);
+                // Directly call the external API using the basicAuthClient
+                //var externalApiResponse = await basicAuthClient.GetAsync("api/v1/other/getuserslist");
+                var wrapper = await basicAuthClient.GetFromJsonAsync<ApiResponse<Person>>("api/v1/other/getuserslist");
+                //externalApiResponse.EnsureSuccessStatusCode(); // Throws an exception if the HTTP response status is an error code.
 
-                return Ok(new ApiResponse<Person>
-                {
-                    Data = persons ?? new List<Person>(),
-                    IsValid = true,
-                    Errors = new List<string>()
-                });
+                return Ok(wrapper);
             }
             catch (HttpRequestException ex)
             {
@@ -64,6 +61,15 @@ namespace BlazorTool.Controllers
                     Data = new List<Person>(),
                     IsValid = false,
                     Errors = new List<string> { $"Error calling external API: {ex.Message}" }
+                });
+            }
+            catch (JsonException ex)
+            {
+                return StatusCode(500, new ApiResponse<Person>
+                {
+                    Data = new List<Person>(),
+                    IsValid = false,
+                    Errors = new List<string> { $"Error deserializing external API response: {ex.Message}" }
                 });
             }
             catch (Exception ex)

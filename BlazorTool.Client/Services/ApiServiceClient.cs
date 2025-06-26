@@ -18,7 +18,7 @@ namespace BlazorTool.Client.Services
 {
     public class ApiServiceClient
     {
-        private HttpClient _http;
+        private readonly HttpClient _http;
         private Dictionary<int, List<WorkOrder>> _workOrdersCache = new Dictionary<int, List<WorkOrder>>();
         private List<Device> _devicesCache = new List<Device>();
         public ApiServiceClient(HttpClient http)
@@ -266,21 +266,21 @@ namespace BlazorTool.Client.Services
         #endregion
 
         #region users
-        public async Task<List<Person>> GetAllPersons(HttpClient? client = null)
+        public async Task<List<Person>> GetAllPersons()
         {
-            var httpClientToUse = client ?? _http;
             var url = "api/v1/other/getuserslist";
-            var response = await httpClientToUse.GetAsync(url);
+            var response = await _http.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
                 Debug.Print("\n= = = = = = = = = Users response error: " + response.ReasonPhrase + "\n");
                 return new List<Person>();
             }
             var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Person>>();
-            Debug.Print("\n= = = = = = = = = response Users: " + wrapper?.Data.Count.ToString() + "\n");
+            Debug.Print($"\n= = = = = = = = = response {_http.BaseAddress}{url} \n====== Users: " + wrapper?.Data.Count.ToString() + "\n");
             return wrapper?.Data ?? new List<Person>();
         }
         #endregion
+
         #region Devices
         public async Task<List<Device>> GetAllDevicesCachedAsync()
         {

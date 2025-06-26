@@ -50,32 +50,8 @@ builder.Services.AddSingleton(sp =>
 builder.Services.AddScoped<ServerAuthHeaderHandler>();
 
 string? internalApiBaseUrl = null;
-if (builder.Environment.IsDevelopment())
-{
-    // ASPNETCORE_URLS "https://localhost:7282;http://localhost:5168")
-    var urls = builder.Configuration["ASPNETCORE_URLS"]?.Split(';', StringSplitOptions.RemoveEmptyEntries);
-    // 1st URL, "http://"
-    internalApiBaseUrl = urls?.FirstOrDefault(url => url.StartsWith("http://"));
 
-    if (string.IsNullOrEmpty(internalApiBaseUrl))
-    {
-        internalApiBaseUrl = urls?.FirstOrDefault();
-    }
-
-    if (string.IsNullOrEmpty(internalApiBaseUrl))
-    {
-        internalApiBaseUrl = "http://localhost:5168"; //default fallback URL
-        Debug.Print("======= SERVER: ASPNETCORE_URLS is empty or invalid, falling back to default http://localhost:5168");
-    }
-    else
-    {
-        Debug.Print($"======= SERVER: InternalApiClient BaseAddress set to {internalApiBaseUrl} from ASPNETCORE_URLS");
-    }
-}
-else //prodaction or other environment
-{
-    internalApiBaseUrl = builder.Configuration["HostAddress"] ?? throw new InvalidOperationException("HostAddress not configured for non-development environment.");
-}
+internalApiBaseUrl = getLocalServerAddress(builder);
 //internal controllers Blazor Host
 builder.Services.AddHttpClient("InternalApiClient", client =>
 {
@@ -117,3 +93,35 @@ app.MapRazorComponents<App>()
 app.MapControllers();
 app.Run();
 
+static string getLocalServerAddress(WebApplicationBuilder builder)
+{
+    string? internalApiBaseUrl;
+    if (builder.Environment.IsDevelopment())
+    {
+        // ASPNETCORE_URLS "https://localhost:7282;http://localhost:5168")
+        var urls = builder.Configuration["ASPNETCORE_URLS"]?.Split(';', StringSplitOptions.RemoveEmptyEntries);
+        // 1st URL, "http://"
+        internalApiBaseUrl = urls?.FirstOrDefault(url => url.StartsWith("http://"));
+
+        if (string.IsNullOrEmpty(internalApiBaseUrl))
+        {
+            internalApiBaseUrl = urls?.FirstOrDefault();
+        }
+
+        if (string.IsNullOrEmpty(internalApiBaseUrl))
+        {
+            internalApiBaseUrl = "http://localhost:5168"; //default fallback URL
+            Debug.Print("======= SERVER: ASPNETCORE_URLS is empty or invalid, falling back to default http://localhost:5168");
+        }
+        else
+        {
+            Debug.Print($"======= SERVER: InternalApiClient BaseAddress set to {internalApiBaseUrl} from ASPNETCORE_URLS");
+        }
+    }
+    else //prodaction or other environment
+    {
+        internalApiBaseUrl = builder.Configuration["HostAddress"] ?? throw new InvalidOperationException("HostAddress not configured for non-development environment.");
+    }
+    builder.Configuration["InternalApiBaseUrl"] = internalApiBaseUrl; // Store for later use if needed
+    return internalApiBaseUrl;
+}

@@ -170,7 +170,7 @@
         isLoading = true;
         StateHasChanged();
         _allOrders = await apiService.GetWorkOrdersAsync(); 
-        await GetData(_allOrders);
+        await DisplayAppointments(_allOrders);
         isLoading = false;
         StateHasChanged();
         Debug.Print($"--- HardLoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
@@ -181,23 +181,32 @@
         StateHasChanged();
         allPersons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList();
         _allOrders = await apiService.GetWorkOrdersCachedAsync();
-        await GetData( _allOrders); 
+        await DisplayAppointments( _allOrders); 
+        DisplayOrders(_allOrders);
         isLoading = false;
         StateHasChanged();
         Debug.Print($"--- LoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
     }
 
-    private async Task GetData(List<WorkOrder> orders)
+    private async Task DisplayAppointments(List<WorkOrder> orders)
     {
-        UntakenOrders = orders.Where(x => x.TakeDate == null).ToList();
-        cellStyles = RenderStatesStyle(orders); 
-        Appointments = await ApptService.GetTakenAppointments(orders);
         selectedAssignedPersons = orders
             .Where(x => !string.IsNullOrEmpty(x.AssignedPerson))
             .Select(x => x.AssignedPerson)
             .Distinct()
             .ToList();
+        Appointments = await ApptService.GetTakenAppointments(orders);
     }
+
+
+    private void DisplayOrders(List<WorkOrder> orders)
+    {
+        UntakenOrders = orders.Where(x => string.IsNullOrEmpty(x.AssignedPerson) && x.WOState?.ToLowerInvariant() != "zakończony").ToList();
+        cellStyles = RenderStatesStyle(orders);
+    }
+
+
+
 
     // ==== DragAndDrop from Grid to Scheduler ====
     private async Task GridRowDrop(GridRowDropEventArgs<WorkOrder> args)
@@ -225,7 +234,7 @@
     private async Task OnMultiValueClosed()
     {
         var filteredOrders = _allOrders.Where(x => selectedAssignedPersons.Contains(x.AssignedPerson)).ToList();
-        await GetData(filteredOrders);
+        await DisplayAppointments(filteredOrders);
     }
     #endregion
 
