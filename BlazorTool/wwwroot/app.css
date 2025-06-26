@@ -56,5 +56,6 @@ h1:focus {
     justify-content: flex-start;
     background-color: antiquewhite;
     margin-bottom: 10px;
-    padding-bottom: 13px;
+    padding-block: 10px;
+    padding-inline-start: 10px;
 }

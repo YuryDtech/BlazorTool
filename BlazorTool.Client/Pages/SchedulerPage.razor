@@ -18,14 +18,15 @@
 <h3>Scheduler</h3>
 <div class="filter-controls-row">
     <div>
-        @* <TelerikMultiSelect Data="@selectedAssignedPersons"
+        <TelerikMultiSelect Data="@allPersons"
+                            @bind-Value="@selectedAssignedPersons"
                             TagMode="@MultiSelectTagMode.Multiple"
                             Placeholder="Select assigned persons"
                             AutoClose="false"
-                            OnClose="@OnMultiValueClosed"
+                            OnChange="@OnMultiValueClosed"
                             Width="400px"
                             ShowClearButton="true">
-        </TelerikMultiSelect> *@
+        </TelerikMultiSelect>
     </div>
     @* <div>
         <TelerikComboBox Data="@deviceCategories" TextField="DeviceCategory"
@@ -154,6 +155,7 @@
     private bool CustomEditFormShown { get; set; } = false;
     private SchedulerAppointment CurrentAppointment { get; set; } = new SchedulerAppointment();
     private List<string> selectedAssignedPersons = new();
+    private List<string> allPersons = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -168,7 +170,7 @@
         isLoading = true;
         StateHasChanged();
         _allOrders = await apiService.GetWorkOrdersAsync(); 
-        await GetData();
+        await GetData(_allOrders);
         isLoading = false;
         StateHasChanged();
         Debug.Print($"--- HardLoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
@@ -177,19 +179,20 @@
     {
         isLoading = true;
         StateHasChanged();
-        _allOrders = await apiService.GetWorkOrdersCachedAsync(); // Nie rozpoczete zlecenia
-        await GetData(); 
+        allPersons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList();
+        _allOrders = await apiService.GetWorkOrdersCachedAsync();
+        await GetData( _allOrders); 
         isLoading = false;
         StateHasChanged();
         Debug.Print($"--- LoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
     }
 
-    private async Task GetData()
+    private async Task GetData(List<WorkOrder> orders)
     {
-        UntakenOrders = _allOrders.Where(x => x.TakeDate == null).ToList();
-        cellStyles = RenderStatesStyle(_allOrders);
-        Appointments = await ApptService.GetTakenAppointments();
-        selectedAssignedPersons = _allOrders
+        UntakenOrders = orders.Where(x => x.TakeDate == null).ToList();
+        cellStyles = RenderStatesStyle(orders); 
+        Appointments = await ApptService.GetTakenAppointments(orders);
+        selectedAssignedPersons = orders
             .Where(x => !string.IsNullOrEmpty(x.AssignedPerson))
             .Select(x => x.AssignedPerson)
             .Distinct()
@@ -217,6 +220,14 @@
             SchedulerRef.Rebind();
         }
     }
+
+    #region filters
+    private async Task OnMultiValueClosed()
+    {
+        var filteredOrders = _allOrders.Where(x => selectedAssignedPersons.Contains(x.AssignedPerson)).ToList();
+        await GetData(filteredOrders);
+    }
+    #endregion
 
     #region Scheduler 
     // ==== Scheduler CUD handlers ====

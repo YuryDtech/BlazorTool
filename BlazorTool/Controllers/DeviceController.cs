@@ -20,7 +20,6 @@ namespace BlazorTool.Controllers
         {
             try
             {
-                // берём список устройств из ApiServiceClient
                 var data = await _apiServiceClient.GetAllDevicesCachedAsync();
                 return Ok(new
                 {

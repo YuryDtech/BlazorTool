@@ -30,14 +30,17 @@ namespace BlazorTool.Client.Services
             return _appointments;
         }
 
-        public async Task<List<SchedulerAppointment>> GetTakenAppointments()
+        public async Task<List<SchedulerAppointment>> GetTakenAppointments(List<WorkOrder>? orders)
         {
-            if (_appointments == null || !_appointments.Any())
-            {
-                var orders = await _apiServiceClient.GetWorkOrdersCachedAsync();
-                _appointments = GetAppointmentsFromOrders(orders);
-            }
-            return _appointments.Where(x => x.TakeDate != null && x.Start != null).ToList();
+                if (_appointments == null || !_appointments.Any())
+                {
+                    if (orders == null)
+                    orders = await _apiServiceClient.GetWorkOrdersCachedAsync();
+
+                    _appointments = GetAppointmentsFromOrders(orders);
+                }
+                return _appointments.Where(x => !string.IsNullOrWhiteSpace(x.AssignedPerson)).ToList();
+                //return _appointments.Where(x => x.TakeDate != null && x.Start != null).ToList();
         }
 
         public async Task<List<SchedulerAppointment>> GetUnTakenAppointments()
