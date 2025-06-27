@@ -1,6 +1,31 @@
 ﻿@page "/changelog"
+@inject HttpClient Http
+
 <h3>Changelog Page</h3>
 
-@code {
+@if (!string.IsNullOrEmpty(changelogContent))
+{
+    <div class="changelog-content">
+        <pre>@changelogContent</pre>
+    </div>
+}
+else
+{
+    <p>Loading changelog...</p>
+}
 
+@code {
+    private string changelogContent;
+    private string changelogUrl = "CHANGELOG.md";
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            changelogContent = await Http.GetStringAsync("CHANGELOG.md");
+        }
+        catch (Exception ex)
+        {
+            changelogContent = $"Error loading changelog: {ex.Message}";
+        }
+    }
 }

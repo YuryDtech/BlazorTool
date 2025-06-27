@@ -40,6 +40,13 @@ builder.Services.AddScoped<ApiServiceClient>(sp =>
 
 builder.Services.AddScoped<AppointmentService>();
 
+builder.Services.AddScoped(sp => {
+    var serverBaseUrl = builder.Configuration["InternalApiBaseUrl"] ?? builder.HostEnvironment.BaseAddress;
+    return new HttpClient { BaseAddress = new Uri(serverBaseUrl) };
+});
+
+
+
 
 Console.WriteLine("======= APPLICATION (Client) STARTING...");
 

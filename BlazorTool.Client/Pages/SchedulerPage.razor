@@ -181,7 +181,7 @@
 
     private async Task LoadData()
     {
-        Console.WriteLine("--- LoadData called."); // Updated from Debug.Print
+        Console.WriteLine("--- LoadData called.");
         isLoading = true;
         StateHasChanged();
         allPersons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList();

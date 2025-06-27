@@ -19,5 +19,16 @@
   <ItemGroup>
     <Folder Include="Models\" />
   </ItemGroup>
-
+  <Target Name="CopyChangelogToWwwRoot" BeforeTargets="Build">
+    <ItemGroup>
+      <!-- Указываем исходный файл. Путь относительный к файлу .csproj -->
+      <ChangelogFile Include="..\CHANGELOG.md" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(ChangelogFile)"
+      DestinationFolder="$(MSBuildProjectDirectory)\wwwroot"
+      SkipUnchangedFiles="true" 
+      />
+    <Message Text="CHANGELOG.md скопирован в wwwroot." Importance="high" />
+  </Target>
 </Project>
