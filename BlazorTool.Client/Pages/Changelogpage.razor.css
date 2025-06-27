@@ -1,0 +1,19 @@
+﻿body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f4f8; /* Светло-серый фон */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Минимальная высота body равна высоте окна просмотра */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Убедитесь, что основной контейнер занимает всю ширину и высоту окна просмотра */
+.full-width-container {
+    width: 100vw; /* Занимает всю ширину окна просмотра */
+    height: 100vh; /* Занимает всю высоту окна просмотра */
+    display: flex;
+    align-items: stretch; /* Растягивает дочерние элементы по высоте */
+}

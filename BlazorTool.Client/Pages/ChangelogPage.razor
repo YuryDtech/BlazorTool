@@ -6,7 +6,16 @@
 @if (!string.IsNullOrEmpty(changelogContent))
 {
     <div class="changelog-content">
-        <pre>@changelogContent</pre>
+        <div class="full-width-container flex flex-col md:flex-row">
+            <div class="w-full md:w-1/2 bg-blue-100 flex items-center justify-center p-4 border-r-2 border-blue-300 md:border-b-0 border-b-2 overflow-hidden">
+                <pre>@changelogContent</pre>
+            </div>
+
+            <div class="w-full md:w-1/2 bg-green-100 flex items-center justify-center p-4 overflow-hidden">
+                <pre>@changelogContent_PL</pre>
+            </div>
+        </div>
+        
     </div>
 }
 else
@@ -16,12 +25,16 @@ else
 
 @code {
     private string changelogContent;
+    private string changelogContent_PL;
     private string changelogUrl = "CHANGELOG.md";
+    private string changelogUrl_PL = "CHANGELOG_PL.md";
     protected override async Task OnInitializedAsync()
     {
+    
         try
         {
-            changelogContent = await Http.GetStringAsync("CHANGELOG.md");
+            changelogContent = await Http.GetStringAsync(changelogUrl);
+            changelogContent_PL = await Http.GetStringAsync(changelogUrl_PL);
         }
         catch (Exception ex)
         {
