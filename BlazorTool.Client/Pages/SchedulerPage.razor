@@ -87,7 +87,7 @@
         }
         else
         {
-            <p>Untaken orders: @UntakenOrders.Count()</p>
+            <p>Untaken orders (no assigned persons): @UntakenOrders.Count()</p>
             <TelerikTooltip TargetSelector=".tooltip-target" Width="300px"/>
             <TelerikGrid TItem="WorkOrder"
                          Data="@UntakenOrders"
@@ -163,23 +163,25 @@
     protected override async Task OnInitializedAsync()
     {
         var isWASM = JSRuntime is IJSInProcessRuntime;
-        Debug.Print($"--- OnInitializedAsync. WASM = {isWASM}");
-        await LoadData();
+        Console.WriteLine($"--- Initialized SCHEDULER PAGE. WASM = {isWASM}");
+        await HardLoadData();
     }
 
     private async Task HardLoadData()
     {
-        Debug.Print("--- HardLoadData called.");
+        Console.WriteLine("--- HardLoadData called.");
         isLoading = true;
         StateHasChanged();
-        _allOrders = await apiService.GetWorkOrdersAsync(); //frop API, not cache
+        allPersons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList(); //TODO remove while made cache persons
+        _allOrders = await apiService.GetWorkOrdersAsync(); //from API, not cache
         await LoadData();
-        Debug.Print($"--- HardLoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
+        
+        Console.WriteLine($"--- HardLoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
     }
 
     private async Task LoadData()
     {
-        Debug.Print("--- LoadData called.");
+        Console.WriteLine("--- LoadData called."); // Updated from Debug.Print
         isLoading = true;
         StateHasChanged();
         allPersons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList();
@@ -191,7 +193,7 @@
         DisplayOrders();
         isLoading = false;
         StateHasChanged();
-        Debug.Print($"--- LoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
+        Console.WriteLine($"--- LoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
     }
 
     private void DisplayAppointments()

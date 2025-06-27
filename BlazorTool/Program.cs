@@ -111,11 +111,11 @@ static string getLocalServerAddress(WebApplicationBuilder builder)
         if (string.IsNullOrEmpty(internalApiBaseUrl))
         {
             internalApiBaseUrl = "http://localhost:5168"; //default fallback URL
-            Debug.Print("======= SERVER: ASPNETCORE_URLS is empty or invalid, falling back to default http://localhost:5168");
+            Console.WriteLine("======= SERVER: ASPNETCORE_URLS is empty or invalid, falling back to default http://localhost:5168");
         }
         else
         {
-            Debug.Print($"======= SERVER: InternalApiClient BaseAddress set to {internalApiBaseUrl} from ASPNETCORE_URLS");
+            Console.WriteLine($"======= SERVER: InternalApiClient BaseAddress set to {internalApiBaseUrl} from ASPNETCORE_URLS");
         }
     }
     else //prodaction or other environment

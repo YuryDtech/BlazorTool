@@ -45,7 +45,7 @@ namespace BlazorTool.Client.Services
             {
                 if (_workOrdersCache.Count > 0)
                 {
-                    Debug.Print("\n= = = = = = = = = Work orders found in cache: " + _workOrdersCache.Count + "\n");
+                    Console.WriteLine("Work orders found in cache: " + _workOrdersCache.Count + "\n");
                     return _workOrdersCache.SelectMany(x => x.Value).ToList();
                 }
                 var allOrders = await GetWorkOrdersAsync();
@@ -146,9 +146,9 @@ namespace BlazorTool.Client.Services
             var url = "api/v1/wo/getlist?" + string.Join("&", qp);
 
             var wrapper = await _http.GetFromJsonAsync<ApiResponse<WorkOrder>>(url);
-            Debug.Print("\n");
-            Debug.Print("= = = = = = = = = = response WorkOrder.Count: " + wrapper?.Data.Count.ToString());
-            Debug.Print("\n");
+            Console.WriteLine("\n");
+            Console.WriteLine("= = = = = = = = = = response WorkOrder.Count: " + wrapper?.Data.Count.ToString());
+            Console.WriteLine("\n");
             var result = wrapper?.Data ?? new List<WorkOrder>();
             return result;
         }
@@ -170,7 +170,7 @@ namespace BlazorTool.Client.Services
 
             var url = "api/v1/wo/getdict?" + string.Join("&", qs);
             var wrapper = await _http.GetFromJsonAsync<ApiResponse<OrderStatus>>(url);
-            Debug.Print("\n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
+            Console.WriteLine("\n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
             return wrapper?.Data ?? new List<OrderStatus>();
         }
 
@@ -179,7 +179,7 @@ namespace BlazorTool.Client.Services
             var orders = await GetWorkOrdersCachedAsync(workOrderID);
             if (orders == null || orders.Count == 0)
             {
-                Debug.Print("\n= = = = = = = = = No work order found for ID: " + workOrderID + "\n");
+                Console.WriteLine("= = = = = = = = = No work order found for ID: " + workOrderID);
                 return null;
             }
             return orders.FirstOrDefault();
@@ -204,14 +204,14 @@ namespace BlazorTool.Client.Services
             //for test save only cache
             if (workOrder == null || workOrder.WorkOrderID <= 0)
             {
-                Debug.Print("\n= = = = = = = = = Work order is null.\n");
+                Console.WriteLine("= = = = = = = = = Work order is null.\n");
                 return false;
             }
             if (!_workOrdersCache.ContainsKey(workOrder.MachineID))
             {
                 //new machineID, add new list to cache
                 _workOrdersCache.Add(workOrder.MachineID, new List<WorkOrder>() { workOrder});
-                Debug.Print("\n= = = = = = = = = Work order was added to cache.\n");
+                Console.WriteLine("= = = = = = = = = Work order was added to cache.");
                 return true;
             }
             
@@ -221,13 +221,13 @@ namespace BlazorTool.Client.Services
             {
                 //update existing work order in cache
                 _workOrdersCache[workOrder.MachineID][ind] = workOrder;
-                Debug.Print("\n= = = = = = = = = Work order was updated in cache. ");
-                Debug.Print($"Title={workOrder.AssetNo}, StartDate={workOrder.StartDate}, EndDate={workOrder.EndDate}===\n");
+                Console.WriteLine("= = = = = = = = = Work order was updated in cache. ");
+                Console.WriteLine(" === Title={workOrder.AssetNo}, StartDate={workOrder.StartDate}, EndDate={workOrder.EndDate}===");
                 return true;
             }
          // new work - cant insert a new one
          //_workOrdersCache[workOrder.MachineID].Add(workOrder);
-         Debug.Print("\n= = = = = = = = = Work order not found in base: " + workOrder.WorkOrderID + "\n");
+         Console.WriteLine("= = = = = = = = = Work order not found in base: " + workOrder.WorkOrderID);
             return false;
         }
 
@@ -249,18 +249,18 @@ namespace BlazorTool.Client.Services
             
             if (!_workOrdersCache.ContainsKey(MachineID))
             {
-                Debug.Print("\n= = = = = = = = = No work orders found for MachineID: " + MachineID + "\n");
+                Console.WriteLine("\n= = = = = = = = = No work orders found for MachineID: " + MachineID + "\n");
                 return false;
             }
              
             var WO_index = _workOrdersCache[MachineID].FindIndex(x => x.WorkOrderID == workOrderID);
             if (WO_index < 0)
             {
-                Debug.Print("\n= = = = = = = = = No work order found for ID: " + workOrderID + "\n");
+                Console.WriteLine("\n= = = = = = = = = No work order found for ID: " + workOrderID + "\n");
                 return false;
             }
             _workOrdersCache[MachineID].RemoveAt(WO_index);
-            Debug.Print("\n= = = = = = = = = Work order deleted successfully for ID: " + workOrderID + "\n");
+            Console.WriteLine("\n= = = = = = = = = Work order deleted successfully for ID: " + workOrderID + "\n");
             return true;
         }
         #endregion
@@ -269,15 +269,15 @@ namespace BlazorTool.Client.Services
         public async Task<List<Person>> GetAllPersons()
         {
             var url = "api/v1/other/getuserslist";
-            Debug.Print("====== Start GetAllPersons() request: " + _http.BaseAddress + url);
+            Console.WriteLine("====== Start GetAllPersons() request: " + _http.BaseAddress + url);
             var response = await _http.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
-                Debug.Print("\n= = = = = = = = = Users response error: " + response.ReasonPhrase + "\n");
+                Console.WriteLine("\n= = = = = = = = = Users response error: " + response.ReasonPhrase + "\n");
                 return new List<Person>();
             }
             var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Person>>();
-            Debug.Print($"\n= = = = = = = = = response {_http.BaseAddress}{url} \n====== Users: " + wrapper?.Data.Count.ToString() + "\n");
+            Console.WriteLine($"\n= = = = = = = = = response {_http.BaseAddress}{url} \n====== Users: " + wrapper?.Data.Count.ToString() + "\n");
             return wrapper?.Data ?? new List<Person>();
         }
         #endregion
@@ -308,17 +308,17 @@ namespace BlazorTool.Client.Services
             if (machineIDs != null)
                 foreach (var id in machineIDs)
                     qp.Add($"MachineIDs={id}");
-            Debug.Print($"name:{name}\nMachineIDs.count={machineIDs?.Count()}");
+            Console.WriteLine($" ====    name:{name} MachineIDs.count={machineIDs?.Count()}");
             var url = "api/v1/device/getlist" + (qp.Count > 0 ? "?" + string.Join("&", qp) : "");
             var response = await _http.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
-                Debug.Print("\n= = = = = = = = =Devices response error: " + response.ReasonPhrase + "\n");
+                Console.WriteLine("\n= = = = = = = = Devices response error: " + response.ReasonPhrase + "\n");
                 return new List<Device>();
             }
             var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Device>>();
 
-            Debug.Print("\n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
+            Console.WriteLine("\n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
             
             return wrapper?.Data ?? new List<Device>();
         }
@@ -335,7 +335,7 @@ namespace BlazorTool.Client.Services
             var response = await _http.PostAsync(url, content);
             if (!response.IsSuccessStatusCode)
             {
-                Debug.Print("\n= = = = = = = = = CheckApiAddress error: " + response.ReasonPhrase + "\n");
+                Console.WriteLine("\n= = = = = = = = = CheckApiAddress error: " + response.ReasonPhrase + "\n");
                 return (false, "API address is invalid. " + response.ReasonPhrase);
             }
             var wrapper = await response.Content.ReadFromJsonAsync<SimpleResponse>();

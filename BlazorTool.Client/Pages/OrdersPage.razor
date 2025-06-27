@@ -131,6 +131,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("Initialized ORDERS PAGE");
         isDevicesLoading = true;
         StateHasChanged();
         devices = await apiService.GetAllDevicesCachedAsync();
@@ -161,7 +162,7 @@ else
             selectedDeviceIds = new List<int>();
             // selectedDeviceIds = selectedDevices.Select(d => d.MachineID).ToList();
         }
-        Debug.Print($"Selected devices count: {selectedDevices.Count()}");
+        Console.WriteLine($"Selected devices count: {selectedDevices.Count()}");
         OrdersForGrid = await apiService.GetWorkOrdersCachedAsync(selectedDevices);
         rowStyles = RenderStatesStyle(OrdersForGrid);
         isOrdersLoading = false;

@@ -41,7 +41,7 @@ builder.Services.AddScoped<ApiServiceClient>(sp =>
 builder.Services.AddScoped<AppointmentService>();
 
 
-Debug.Print("======= APPLICATION (Client) STARTING...");
+Console.WriteLine("======= APPLICATION (Client) STARTING...");
 
 await builder.Build().RunAsync();
 
