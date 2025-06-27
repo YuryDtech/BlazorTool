@@ -369,3 +369,4 @@ ProjectToMdBuilder .lnk
 /.gemini
 /commit_message.txt
 /gemini.md
+/BlazorTool/wwwroot/CHANGELOG.md
