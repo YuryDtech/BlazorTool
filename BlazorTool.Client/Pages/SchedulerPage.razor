@@ -16,33 +16,43 @@
 @cellStyles
 <h3>Scheduler</h3>
 <div class="filter-controls-row">
-    <div>
-        <TelerikMultiSelect Data="@allPersons"
-                            @bind-Value="@selectedAssignedPersons"
-                            TagMode="@MultiSelectTagMode.Multiple"
-                            Placeholder="Select assigned persons"
-                            AutoClose="false"
-                            OnClose="@OnAssignedPersonsClosed"
-                            Width="400px"
-                            ShowClearButton="true">
-        </TelerikMultiSelect>
+    <div style="flex-basis: 66%; flex-shrink:1; flex-grow:0; border-right: outset; display: flex; align-items: top; gap: 1rem;">
+        <div Width="100px">
+            <TelerikMultiSelect Data="@allPersons"
+                                @bind-Value="@selectedAssignedPersons"
+                                TagMode="@MultiSelectTagMode.Multiple"
+                                Placeholder="Select assigned persons"
+                                AutoClose="false"
+                                OnClose="@OnAssignedPersonsClosed"
+                                OnChange="@OnPersonSelectChanged"
+                                Width="400px"
+                                ShowClearButton="true"
+                                Size="sm">
+                                
+            </TelerikMultiSelect>
+        </div>
+        <div>
+            <TelerikComboBox Data="@departments" TextField="Department"
+                             Placeholder="Select department..." Filterable="false"
+                             AllowCustom="false" Value="@selectedDepartment"
+                             ValueChanged="@((string dep) => OnDepartmentChanged(dep))"
+                             Size="sm">
+            </TelerikComboBox>
+        </div>
     </div>
-     <div>
-        <TelerikComboBox Data="@departments" TextField="Department"
-                         Placeholder="Select department..." Filterable="false" 
-                         AllowCustom="false" Value="@selectedDepartment"
-                         ValueChanged="@((string dep) => OnDepartmentChanged(dep))">
-        </TelerikComboBox>
-   </div>
-   @*  <div>
-        <TelerikComboBox Data="@deviceTypes" TextField="DeviceType"
-                         Placeholder="Select type..." ShowClearButton="true" Filterable="true"
-                         ValueChanged="@((string cat) => OnTypeChanged(cat))">
-        </TelerikComboBox>
-    </div> *@
+    <div style="flex-basis: 33%; flex-shrink:1; flex-grow:0">
+        <div>
+            <TelerikComboBox Data="@deviceCategories" TextField="DeviceType"
+                             Value = "selectedCategory"
+                             Placeholder="Select device category..." Filterable="true"
+                             ValueChanged="@((string cat) => OnCategoryChanged(cat))">
+            </TelerikComboBox>
+        </div>
+    </div>
+
 </div>
 <div style="display:flex; gap:1rem;">
-    <div style="flex:2;">
+    <div style="flex-basis: 66%; flex-shrink:1; flex-grow:0;">
         <div style="display:flex; flex-direction: row; gap:10px">
             <div><p>Scheduled orders: @Appointments.Count()</p></div>
             <div><TelerikButton OnClick="@HardLoadData" Size="Small" ThemeColor="@ThemeConstants.Button.ThemeColor.Tertiary">Reload all data</TelerikButton></div>
@@ -80,14 +90,20 @@
         </TelerikScheduler>
     </div>
 
-    <div style="flex:1;">
+    <div style="flex-basis: 33%; flex-shrink:1; flex-grow:0">
         @if (isLoading)
         {
             <p>Loading orders…</p>
         }
         else
         {
-            <p>Untaken orders (no assigned persons): @UntakenOrders.Count()</p>
+            <div style="display:flex; justify-content:space-between; align-items: center">
+                <p mb-0>Untaken orders (no assigned persons): @UntakenOrders.Count()</p>
+                <div style="display:flex; align-items:center; gap: 5px;">
+                    <TelerikCheckBox Size="lg" OnChange="@DisplayOrders" Id="OrdersCheckBox" @bind-Value="@isCBAllOrdersSelected" />
+                    <label for="OrdersCheckBox">show completed orders </label>
+                </div>
+            </div>
             <TelerikTooltip TargetSelector=".tooltip-target" Width="300px"/>
             <TelerikGrid TItem="WorkOrder"
                          Data="@UntakenOrders"
@@ -140,6 +156,8 @@
 
 @code {
 
+
+
     private List<SchedulerAppointment> Appointments { get; set; } = new();    
     private List<SchedulerAppointment> _allAppointments { get; set; } = new();    
     private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }
@@ -159,6 +177,9 @@
     private List<string> allPersons = new();
     private List<string> departments = new(); 
     private string selectedDepartment = "All";
+    private bool isCBAllOrdersSelected = false; //show executed orders in grid
+    private List<string?> deviceCategories = new();//for Orders grid filter
+    private string selectedCategory = "All";
 
     protected override async Task OnInitializedAsync()
     {
@@ -175,7 +196,7 @@
         allPersons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList(); //TODO remove while made cache persons
         _allOrders = await apiService.GetWorkOrdersAsync(); //from API, not cache
         await LoadData();
-        
+
         Console.WriteLine($"--- HardLoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
     }
 
@@ -189,6 +210,8 @@
         _allAppointments = await ApptService.GetTakenAppointments(_allOrders);
         departments = new List<string> { "All" };
         departments.AddRange(_allOrders.Where(d => !string.IsNullOrWhiteSpace(d.DepName)).Select(x => x.DepName).Distinct().ToList());
+        deviceCategories = new List<string?> { "All" };
+        deviceCategories.AddRange(_allOrders.Select(x => x.DeviceCategory).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct());
         DisplayAppointments(); 
         DisplayOrders();
         isLoading = false;
@@ -196,6 +219,9 @@
         Console.WriteLine($"--- LoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
     }
 
+    /// <summary>
+    /// Displays the appointments in the scheduler, filtering by selected assigned persons and department.
+    /// </summary>
     private void DisplayAppointments()
     {
         var appointments = FilterAppointments();
@@ -207,11 +233,15 @@
         Appointments = appointments;        
     }
 
-    
+    /// <summary>
+    /// Displays the work orders in the grid, filtering by selected category and state.
+    /// </summary>
     private void DisplayOrders()
     {
         var orders = FilterOrders();
-        UntakenOrders = orders.Where(x => string.IsNullOrEmpty(x.AssignedPerson) && x.WOState?.ToLowerInvariant() != "zakończony").ToList();
+        UntakenOrders = orders.Where(x => string.IsNullOrEmpty(x.AssignedPerson) &&
+        (selectedCategory == "All" || x.DeviceCategory == selectedCategory) &&
+        (x.WOState?.ToLowerInvariant() != "zakończony") || isCBAllOrdersSelected).ToList();
         cellStyles = RenderStatesStyle(orders);
     }
 
@@ -248,7 +278,18 @@
 
     private void OnDepartmentChanged(string dep)
     {
-        selectedDepartment = dep;
+        selectedDepartment = dep ?? "All";
+        DisplayAppointments();
+    }
+
+    private void OnCategoryChanged(string cat)
+    {
+        selectedCategory = cat ?? "All"; 
+        DisplayOrders();
+    }
+
+    private void OnPersonSelectChanged(object args)
+    {
         DisplayAppointments();
     }
 
