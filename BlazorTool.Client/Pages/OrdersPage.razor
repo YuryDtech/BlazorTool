@@ -66,9 +66,9 @@
 }
 else
 {
-    <TelerikGrid Data="@OrdersForGrid"
+    <TelerikGrid Data="@OrderDevicesForGrid"
                  Id="Grid1"
-                 RowDraggable="true"
+                 RowDraggable="false"
                  @ref="@GridRef"
                  Sortable="true"
                  Pageable="true"
@@ -77,21 +77,21 @@ else
                  OnRowDoubleClick="@OnRowClick"
                      >
         <GridSettings>
-            <GridRowDraggableSettings DragClueField="@nameof(WorkOrder.WorkOrderID)"></GridRowDraggableSettings>
         </GridSettings>
         <GridColumns>
-            <GridColumn Field="@nameof(WorkOrder.WorkOrderID)" Editable="false" Visible="false"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrder.DepName)" Title="DepName"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrder.DeviceCategory)"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrder.WOReason)"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrder.ModPerson)"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrder.WOState)"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrder.WOLevel)"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrder.AssignedPerson)" Title="AssignedPerson"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrder.AddDate)"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrder.StartDate)" Title="Start Date"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrder.EndDate)" Title="End Date"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrder.CloseDate)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.WorkOrderID)" Editable="false" Visible="false"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.DepName)" Title="DepName"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.DeviceName)" Title="Device"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.DeviceCategory)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.WOReason)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.ModPerson)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.WOState)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.WOLevel)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.AssignedPerson)" Title="AssignedPerson"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.AddDate)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.StartDate)" Title="Start Date"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.EndDate)" Title="End Date"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.CloseDate)"></GridColumn>
         </GridColumns>
     </TelerikGrid>
 
@@ -101,7 +101,7 @@ else
         <WindowTitle>
         </WindowTitle>
         <WindowContent>
-             <WorkOrderComponent WorkOrderId="@selectedOrder.WorkOrderID" WorkOrder="@selectedOrder" />
+             <WorkOrderComponent WorkOrder="@selectedOrder" />
         </WindowContent>
         <WindowActions>
             <WindowAction Name="Close" />
@@ -116,6 +116,7 @@ else
     private bool isOrdersLoading = false;
     private bool isDevicesLoading = false;
     private List<WorkOrder> OrdersForGrid = new List<WorkOrder>();
+    private List<WorkOrderView> OrderDevicesForGrid = new List<WorkOrderView>();
     private WorkOrder selectedOrder;
     private IEnumerable<Device> selectedDevices = new List<Device>();
     private List<int> selectedDeviceIds = new List<int>();
@@ -123,7 +124,7 @@ else
     private List<Device> devices = new List<Device>();
     List<string?> deviceCategories = new List<string?>();
     List<string?> deviceTypes = new List<string?>();
-    public TelerikGrid<WorkOrder> GridRef { get; set; }
+    public TelerikGrid<WorkOrderView> GridRef { get; set; }
     public CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor();
     private bool isOrderCardOpen = false;
     private MultiSelectTagMode TagMode { get; set; } = MultiSelectTagMode.Single;
@@ -164,11 +165,61 @@ else
         }
         Console.WriteLine($"Selected devices count: {selectedDevices.Count()}");
         OrdersForGrid = await apiService.GetWorkOrdersCachedAsync(selectedDevices);
+        OrderDevicesForGrid = OrdersForGrid.Select(o => new WorkOrderView(o, GetDeviceNameByOrder(o))).ToList();
         rowStyles = RenderStatesStyle(OrdersForGrid);
         isOrdersLoading = false;
         StateHasChanged();
     }
-    
+
+    private string GetDeviceNameByOrder(WorkOrder order)
+    {
+        return devices.First(d => d.MachineID == order.MachineID)?.AssetNo ?? string.Empty;
+    }
+
+    public class WorkOrderView : WorkOrder
+    {
+        public string DeviceName { get; set; }
+
+        public WorkOrderView(WorkOrder order, string deviceName)
+        {
+            this.WorkOrderID = order.WorkOrderID;
+            this.MachineID = order.MachineID;
+            this.AssetNo = order.AssetNo;
+            this.DeviceCategory = order.DeviceCategory;
+            this.WODesc = order.WODesc;
+            this.WOCategory = order.WOCategory;
+            this.WOState = order.WOState;
+            this.WOReason = order.WOReason;
+            this.AddDate = order.AddDate;
+            this.TakeDate = order.TakeDate;
+            this.CloseDate = order.CloseDate;
+            this.Cost = order.Cost;
+            this.TakePersons = order.TakePersons;
+            this.PlanID = order.PlanID;
+            this.StateColor = order.StateColor;
+            this.ModDate = order.ModDate;
+            this.ModPerson = order.ModPerson;
+            this.WOLevel = order.WOLevel;
+            this.LevelID = order.LevelID;
+            this.ActCount = order.ActCount;
+            this.DepName = order.DepName;
+            this.AssignedPerson = order.AssignedPerson;
+            this.FileCount = order.FileCount;
+            this.PartCount = order.PartCount;
+            this.PlanActCount = order.PlanActCount;
+            this.StartDate = order.StartDate;
+            this.EndDate = order.EndDate;
+            this.IsScheduledPlanned = order.IsScheduledPlanned;
+            this.CategoryID = order.CategoryID;
+            this.ReasonID = order.ReasonID;
+            this.IneffectiveCount = order.IneffectiveCount;
+            this.PersonTakeDate = order.PersonTakeDate;
+            this.DeviceCategoryID = order.DeviceCategoryID;
+
+            this.DeviceName = deviceName;
+        }
+    }
+
     #region Filter events
     //Select devives from MultiSelect
     private async void OnMultiValueClosed()
@@ -281,14 +332,14 @@ else
     #region Grid Row Styles
     void OnRowRenderHandler(GridRowRenderEventArgs args)
     {
-        var item = args.Item as WorkOrder;
+        var item = args.Item as WorkOrderView;
 
-        args.Class += "state-" + item?.StateColor.TrimStart('#');
+        args.Class += "state-" + item?.StateColor?.TrimStart('#');
     }
 
     void OnRowClick(GridRowClickEventArgs args)
     {
-        var item = args.Item as WorkOrder;
+        var item = args.Item as WorkOrderView;
         if (item != null)
         {
             selectedOrder = item;
@@ -337,4 +388,5 @@ else
         return new MarkupString(sb.ToString());
     }
     #endregion
+
 }

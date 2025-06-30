@@ -40,16 +40,26 @@
             </TelerikComboBox>
         </div>
     </div>
-    <div style="flex-basis: 33%; flex-shrink:1; flex-grow:0">
-        <div>
+    @* device categories filter *@
+    <div style="flex-basis: 32%; flex-shrink:1; display: flex;  flex-grow:0; align-items: center; gap: 1rem;">
+        <label>Device category: </label>
+        <div Width="20%">
             <TelerikComboBox Data="@deviceCategories" TextField="DeviceType"
-                             Value = "selectedCategory"
+                             Value="@selectedCategory"
                              Placeholder="Select device category..." Filterable="true"
                              ValueChanged="@((string cat) => OnCategoryChanged(cat))">
             </TelerikComboBox>
         </div>
+        @* <div>
+            <TelerikComboBox Data="@deviceCategories" TextField="DeviceType"
+                             Value="@selectedCategory"
+                             Placeholder="Select device category..." Filterable="true"
+                             ValueChanged="@((string cat) => OnCategoryChanged(cat))">
+            </TelerikComboBox>
+        </div> *@
     </div>
-
+    
+    @*end device categories filter *@
 </div>
 <div style="display:flex; gap:1rem;">
     <div style="flex-basis: 66%; flex-shrink:1; flex-grow:0;">
@@ -111,8 +121,8 @@
                          OnRowDrop="@GridRowDrop"
                          Sortable="true"
                          Height="80vh"
-                         
-            >
+                         FilterMode="@GridFilterMode.FilterMenu"
+                         OnRowDoubleClick="@OnRowClick">
 
                 <RowTemplate Context="order">
                     <td class="tooltip-target" title="@order.WODesc">@order?.AssetNo</td>
@@ -142,15 +152,23 @@
     </div>
 </div>
 
-<TelerikWindow Modal="false" Visible="@CustomEditFormShown" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
-    <WindowTitle>Work Order #@CurrentAppointment.WorkOrderID</WindowTitle>
+<TelerikWindow Modal="false" Visible="@customEditFormShown" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
+    <WindowTitle>Appointment #@CurrentAppointment.WorkOrderID</WindowTitle>
     <WindowActions>
         <WindowAction Name="Close" OnClick="@CancelEditing" />
     </WindowActions>
     <WindowContent>
         <AppointmentEditor Appointment="@CurrentAppointment" OnAppointmentChanged="@RefreshData" />
-        <br />
-        <WorkOrderComponent WorkOrderId="@CurrentAppointment.WorkOrderID" WorkOrder="@CurrentAppointment" />
+    </WindowContent>
+</TelerikWindow>
+
+<TelerikWindow Modal="false" Visible="@isOrderCardOpen" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
+    <WindowTitle>WorkOrder #@CurrentOrder.WorkOrderID</WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Close" OnClick="@CancelEditing" />
+    </WindowActions>
+    <WindowContent>
+        <WorkOrderComponent WorkOrder="@CurrentOrder" />
     </WindowContent>
 </TelerikWindow>
 
@@ -171,8 +189,10 @@
     private List<WorkOrder> TakenOrders { get; set; } = new();
     private List<WorkOrder> _allOrders = new();
     private bool isLoading { get; set; } = true;
-    private bool CustomEditFormShown { get; set; } = false;
+    private bool customEditFormShown { get; set; } = false;
+    private bool isOrderCardOpen = false;
     private SchedulerAppointment CurrentAppointment { get; set; } = new SchedulerAppointment();
+    private WorkOrder CurrentOrder { get; set; }
     private List<string> selectedAssignedPersons = new();
     private List<string> allPersons = new();
     private List<string> departments = new(); 
@@ -349,6 +369,7 @@
     {
         if (args.Item is SchedulerAppointment delAppt)
         {
+            //TODO not delete Order, but change status(Assigned Person, Date...)
             await ApptService.DeleteAppointment(delAppt); // Delete from service
             Appointments.RemoveAll(a => a.AppointmentId == delAppt.AppointmentId);
             SchedulerRef?.Rebind();
@@ -363,21 +384,24 @@
         // CurrView = SchedulerView.Day;
         // SelectedDate = navigateDate;
     }
-
-    async void RefreshData()
+    
+    async void RefreshData(SchedulerAppointment editedAppointment)
     {
-        //await ApptService.UpdateAppointment(CurrentAppointment); // Save changes to the service
-        CustomEditFormShown = false;
-        // CurrentAppointment = null;
-        //await LoadData(); 
-        SchedulerRef?.Rebind();
+        if (editedAppointment == null)//was removed
+        {
+
+        }
+        customEditFormShown = false;
+        isOrderCardOpen = false;
+        await LoadData();
+        // SchedulerRef?.Rebind();
     }
 
     void EditHandler(SchedulerEditEventArgs args)
     {
         args.IsCancelled = true;//prevent built-in edit form from showing up
         SchedulerAppointment item = args.Item as SchedulerAppointment;
-        CustomEditFormShown = true;
+        customEditFormShown = true;
         if (!args.IsNew) // an edit operation, otherwise - an insert operation
         {
             //copying is implemented in the appointment model and it is needed because
@@ -394,13 +418,15 @@
     void CancelEditing()
     {
         //TODO undo changes if any
-        CustomEditFormShown = false;
+        customEditFormShown = false;
+        isOrderCardOpen = false;
     }
 
 
-    #endregion
-
+    #endregion    
+    
     #region Grid Row Styles
+
     void OnRowRenderHandler(GridRowRenderEventArgs args)
     {
         // var item = args.Item as WorkOrder;
@@ -409,8 +435,17 @@
         // " tooltip-target";
 
     }
-
-
+    void OnRowClick(GridRowClickEventArgs args)
+    {
+        var item = args.Item as WorkOrder;
+        if (item != null)
+        {
+            CurrentOrder = item;
+            isOrderCardOpen = true;
+            StateHasChanged();
+        }
+    }
+    #endregion
     private MarkupString RenderStatesStyle(List<WorkOrder> orders)
     {
         var uniqueColors = orders
@@ -445,5 +480,5 @@
 
         return new MarkupString(sb.ToString());
     }
-    #endregion
+   
 }

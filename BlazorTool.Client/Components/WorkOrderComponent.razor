@@ -7,9 +7,7 @@
 <PageTitle>Order №@(WorkOrder?.WorkOrderID)</PageTitle>
 
 <div class="work-order-container">
-    @if (!isLoading)
-    {
-        if(WorkOrder != null)
+  @if(WorkOrder != null)
         {
     <!-- HEADER -->
     <CardHeader Class="position-relative">
@@ -187,43 +185,33 @@
     }
     else
     {
-    <p class="error">No workorder found for ID=@WorkOrderId</p>
+    <p class="error">No workorder found for ID=@WorkOrder.WorkOrderID</p>
     }
-    }
-    else
-    {
-    <p>Loading order data...</p>
-    <TelerikLoader Visible="true" />
-    }
+
 </div>
 
 
 
 
 @code {
-    [Parameter] public int WorkOrderId { get; set; }
     [Parameter] public WorkOrder? WorkOrder { get; set; }
-    bool isLoading = false;
-    bool isLoaded = false;
+    // [Parameter] public IEnumerable<Person>? ListPersons { get; set; }
+    // [Parameter] public bool isEditable { get; set; } = false;
+    // bool isLoading = false;
+    // bool isLoaded = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (isLoaded) return;
-        if (WorkOrder == null)
-        {
-            isLoading = true;
-            StateHasChanged();
-            await LoadOrderData(WorkOrderId);
-            isLoading = false;
-            isLoaded = true;
-            StateHasChanged();
-        }
-    }
-
-    private async Task LoadOrderData(int orderId)
-    {
-       WorkOrder = await apiService.GetWorkOrderByIdAsync(orderId);
-    }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     if (isLoaded) return;
+    //     if (WorkOrder == null)
+    //     {
+    //         isLoading = true;
+    //         StateHasChanged();
+    //         isLoading = false;
+    //         isLoaded = true;
+    //         StateHasChanged();
+    //     }
+    // }
 
     private string FormatDateTime(DateTime? dateTime)
     {

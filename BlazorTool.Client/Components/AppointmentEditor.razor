@@ -30,6 +30,8 @@
     <TelerikButton OnClick="@DeleteAppointment" ButtonType="ButtonType.Button">Delete</TelerikButton>
     </div>
 </EditForm>
+<br />
+<WorkOrderComponent WorkOrder="@Appointment"></WorkOrderComponent>
 
 @code{
     //communcation with the parent component where the scheduler is
@@ -55,7 +57,7 @@
     async Task DeleteAppointment()
     {
         await ApptService.DeleteAppointment(Appointment);
-        await OnAppointmentChanged.InvokeAsync(Appointment);
+        await OnAppointmentChanged.InvokeAsync(null);
     }
 
     async Task CancelEditing()
