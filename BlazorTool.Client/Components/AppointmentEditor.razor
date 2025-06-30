@@ -31,12 +31,15 @@
     </div>
 </EditForm>
 <br />
-<WorkOrderComponent WorkOrder="@Appointment"></WorkOrderComponent>
+<WorkOrderComponent WorkOrder="@Appointment" ListPersons=@ListPersons ListDepartments="@ListDepartments" isEditable=@isEditable></WorkOrderComponent>
 
 @code{
     //communcation with the parent component where the scheduler is
     [Parameter] public SchedulerAppointment Appointment { get; set; }
     [Parameter] public EventCallback<SchedulerAppointment?> OnAppointmentChanged { get; set; }
+    [Parameter] public List<string>? ListPersons { get; set; }
+    [Parameter] public bool isEditable { get; set; } = false;
+    [Parameter] public List<string>? ListDepartments { get; set; }
     private DateTime? _start_Init_value;
     private DateTime? _end_Init_value;
     private string _title_Init_value;

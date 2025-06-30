@@ -18,7 +18,7 @@
 <div class="filter-controls-row">
     <div style="flex-basis: 66%; flex-shrink:1; flex-grow:0; border-right: outset; display: flex; align-items: top; gap: 1rem;">
         <div Width="100px">
-            <TelerikMultiSelect Data="@allPersons"
+            <TelerikMultiSelect Data="@Persons"
                                 @bind-Value="@selectedAssignedPersons"
                                 TagMode="@MultiSelectTagMode.Multiple"
                                 Placeholder="Select assigned persons"
@@ -32,7 +32,7 @@
             </TelerikMultiSelect>
         </div>
         <div>
-            <TelerikComboBox Data="@departments" TextField="Department"
+            <TelerikComboBox Data="@Departments" TextField="Department"
                              Placeholder="Select department..." Filterable="false"
                              AllowCustom="false" Value="@selectedDepartment"
                              ValueChanged="@((string dep) => OnDepartmentChanged(dep))"
@@ -44,7 +44,7 @@
     <div style="flex-basis: 32%; flex-shrink:1; display: flex;  flex-grow:0; align-items: center; gap: 1rem;">
         <label>Device category: </label>
         <div Width="20%">
-            <TelerikComboBox Data="@deviceCategories" TextField="DeviceType"
+            <TelerikComboBox Data="@DeviceCategories" TextField="DeviceType"
                              Value="@selectedCategory"
                              Placeholder="Select device category..." Filterable="true"
                              ValueChanged="@((string cat) => OnCategoryChanged(cat))">
@@ -158,7 +158,7 @@
         <WindowAction Name="Close" OnClick="@CancelEditing" />
     </WindowActions>
     <WindowContent>
-        <AppointmentEditor Appointment="@CurrentAppointment" OnAppointmentChanged="@RefreshData" />
+        <AppointmentEditor Appointment="@CurrentAppointment" isEditable=true ListPersons=@Persons ListDepartments="@Departments" OnAppointmentChanged="@RefreshData" />
     </WindowContent>
 </TelerikWindow>
 
@@ -194,11 +194,11 @@
     private SchedulerAppointment CurrentAppointment { get; set; } = new SchedulerAppointment();
     private WorkOrder CurrentOrder { get; set; }
     private List<string> selectedAssignedPersons = new();
-    private List<string> allPersons = new();
-    private List<string> departments = new(); 
+    private List<string> Persons = new();
+    private List<string> Departments = new(); 
     private string selectedDepartment = "All";
     private bool isCBAllOrdersSelected = false; //show executed orders in grid
-    private List<string?> deviceCategories = new();//for Orders grid filter
+    private List<string?> DeviceCategories = new();//for Orders grid filter
     private string selectedCategory = "All";
 
     protected override async Task OnInitializedAsync()
@@ -213,7 +213,7 @@
         Console.WriteLine("--- HardLoadData called.");
         isLoading = true;
         StateHasChanged();
-        allPersons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList(); //TODO remove while made cache persons
+        Persons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList(); //TODO remove while made cache persons
         _allOrders = await apiService.GetWorkOrdersAsync(); //from API, not cache
         await LoadData();
 
@@ -225,13 +225,13 @@
         Console.WriteLine("--- LoadData called.");
         isLoading = true;
         StateHasChanged();
-        allPersons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList();
+        Persons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList();
         _allOrders = await apiService.GetWorkOrdersCachedAsync();
         _allAppointments = await ApptService.GetTakenAppointments(_allOrders);
-        departments = new List<string> { "All" };
-        departments.AddRange(_allOrders.Where(d => !string.IsNullOrWhiteSpace(d.DepName)).Select(x => x.DepName).Distinct().ToList());
-        deviceCategories = new List<string?> { "All" };
-        deviceCategories.AddRange(_allOrders.Select(x => x.DeviceCategory).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct());
+        Departments = new List<string> { "All" };
+        Departments.AddRange(_allOrders.Where(d => !string.IsNullOrWhiteSpace(d.DepName)).Select(x => x.DepName).Distinct().ToList());
+        DeviceCategories = new List<string?> { "All" };
+        DeviceCategories.AddRange(_allOrders.Select(x => x.DeviceCategory).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct());
         DisplayAppointments(); 
         DisplayOrders();
         isLoading = false;

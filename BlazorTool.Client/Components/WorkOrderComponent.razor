@@ -37,7 +37,11 @@
                 <CardBody Class="p-2 card-body-description">
                     <div class="field-group">
                         <label>Description:</label>
-                        <div class="field-value">@(WorkOrder.WODesc ?? "Not specified")</div>
+                        
+                                <TelerikTextArea @bind-Value="@WorkOrder.WODesc"
+                                                 ReadOnly=@(isEditable == false) 
+                                                 Size="sm"
+                                             ResizeMode="@TextAreaResizeMode.Auto" />
                     </div>
                     <div class="field-group">
                         <label>Category:</label>
@@ -64,7 +68,15 @@
                 <CardBody Class="p-2">
                     <div class="field-group">
                         <label>Assigned Person:</label>
-                        <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.AssignedPerson) ? "Not specified" : WorkOrder.AssignedPerson)</div>
+                            <TelerikComboBox Data="@ListPersons"
+                                             Value="@WorkOrder.AssignedPerson"
+                                             Placeholder="Select person..."
+                                             ValueChanged="@((string name) => OnAssignedPersonChanged(name))"
+                                             Width="100%"
+                                             ReadOnly=@(isEditable == false)
+                                             ShowClearButton=false
+                                                 >
+                            </TelerikComboBox>
                     </div>
                     <div class="field-group">
                         <label>Take Persons:</label>
@@ -72,7 +84,17 @@
                     </div>
                     <div class="field-group">
                         <label>Department:</label>
-                        <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.DepName) ? "Not specified" : WorkOrder.DepName)</div>
+                                <TelerikComboBox Data="@ListDepartments"
+                                                 Value="@WorkOrder.DepName"
+                                                 Placeholder="Select department..."
+                                                 ValueChanged="@((string name) => OnDepartmentChanged(name))"
+                                                 Width="100%"
+                                                 ReadOnly=@(isEditable == false)
+                                                 ShowClearButton=false
+                                
+                                >
+                                                 
+                                </TelerikComboBox>
                     </div>
                 </CardBody>
             </TelerikCard>
@@ -195,23 +217,35 @@
 
 @code {
     [Parameter] public WorkOrder? WorkOrder { get; set; }
-    // [Parameter] public IEnumerable<Person>? ListPersons { get; set; }
-    // [Parameter] public bool isEditable { get; set; } = false;
+    [Parameter] public List<string>? ListPersons { get; set; }
+    [Parameter] public List<string>? ListDepartments { get; set; }
+    [Parameter] public bool isEditable { get; set; } = false;
     // bool isLoading = false;
     // bool isLoaded = false;
 
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     if (isLoaded) return;
-    //     if (WorkOrder == null)
-    //     {
-    //         isLoading = true;
-    //         StateHasChanged();
-    //         isLoading = false;
-    //         isLoaded = true;
-    //         StateHasChanged();
-    //     }
-    // }
+    protected override async Task OnInitializedAsync()
+    {
+        if (ListPersons == null)
+        {
+            ListPersons = new List<string>() { "Not assigned" };
+        }else
+        {
+            ListPersons.Add("Not assigned");
+        }
+
+        if (ListDepartments != null)
+        {
+            if (ListDepartments.Contains("All"))
+            {
+                ListDepartments.Remove("All");
+            }
+            ListDepartments.Add("Not assigned");
+        }
+        else 
+        {
+            ListDepartments = new List<string>() { "Not assigned" };
+        }
+    }
 
     private string FormatDateTime(DateTime? dateTime)
     {
@@ -219,6 +253,24 @@
             return "Not specified";
             
         return dateTime.Value.ToString("dd.MM.yyyy HH:mm");
+    }
+
+    private async Task OnAssignedPersonChanged(object newValue)
+    {
+        var personName = newValue as string;
+        if (WorkOrder != null && !string.IsNullOrEmpty(personName))
+        {
+            WorkOrder.AssignedPerson = personName == "Not assigned" ? string.Empty : personName;
+        }
+    }
+
+    private async Task OnDepartmentChanged(object newValue)
+    {
+        var departmentName = newValue as string; // Updated variable name
+        if (WorkOrder != null && !string.IsNullOrEmpty(departmentName))
+        {
+            WorkOrder.DepName = departmentName == "Not assigned" ? string.Empty : departmentName;
+        }
     }
 
     private string GetStateColor(string? StateColor)
