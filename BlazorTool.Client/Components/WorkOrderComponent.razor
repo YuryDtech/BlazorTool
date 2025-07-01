@@ -45,7 +45,15 @@
                     </div>
                     <div class="field-group">
                         <label>Category:</label>
-                        <div class="field-value">@(WorkOrder.WOCategory ?? "Not specified")</div>
+                            <TelerikComboBox Data="@ListDicts?.Where(c => c.ListType == listTypeForCategory).Select(n => n.Name).ToList()"
+                                                 Value="@WorkOrder.WOCategory"
+                                                 Placeholder="Select WO category..."
+                                                 ValueChanged="@((string name) => OnCategoryChanged(name))"
+                                                 Width="100%"
+                                                 ReadOnly=@(isEditable == false)
+                                                 ShowClearButton=false
+                                                 AllowCustom=true>
+                                </TelerikComboBox>
                     </div>
                     <div class="field-group">
                         <label>Reason:</label>
@@ -53,7 +61,15 @@
                     </div>
                     <div class="field-group">
                         <label>Level:</label>
-                        <div class="field-value">@(WorkOrder.WOLevel ?? "Not specified")</div>
+                            <TelerikComboBox Data="@ListDicts?.Where(c => c.ListType == listTypeForLevel).Select(n => n.Name).ToList()"
+                                             Value="@WorkOrder.WOLevel"
+                                             Placeholder="Select WO level..."
+                                             ValueChanged="@((string name) => OnLevelChanged(name))"
+                                             Width="100%"
+                                             ReadOnly=@(isEditable == false)
+                                             ShowClearButton=false
+                                             AllowCustom=true>
+                            </TelerikComboBox>
                     </div>
                 </CardBody>
             </TelerikCard>
@@ -219,18 +235,25 @@
     [Parameter] public WorkOrder? WorkOrder { get; set; }
     [Parameter] public List<string>? ListPersons { get; set; }
     [Parameter] public List<string>? ListDepartments { get; set; }
+    [Parameter] public List<Dict>? ListDicts { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
     // bool isLoading = false;
     // bool isLoaded = false;
+    private int listTypeForCategory = 1;
+    private int listTypeForLevel = 2;
+    private int listTypeForReason = 3;
+    private int listTypeForState = 4;
+    private int listTypeForDepartment = 5;
+    private string notAssigned = "Not assigned";
+    private string notSpecified = "Not specified";
 
     protected override async Task OnInitializedAsync()
     {
-        string notAssigned = "Not assigned";
         if (ListPersons == null && !string.IsNullOrEmpty(WorkOrder?.AssignedPerson))
         {
             ListPersons = new List<string>() { WorkOrder.AssignedPerson };
         }
-        
+
         ListPersons?.Add(notAssigned);
 
         if (ListDepartments != null)
@@ -246,22 +269,64 @@
         }
 
         ListDepartments?.Add(notAssigned);
+
+        if (ListDicts == null)
+        {
+            ListDicts = new List<Dict>(){new Dict()
+            {
+                    Name = WorkOrder?.WOCategory ?? notSpecified,
+                    ListType = listTypeForCategory
+                },
+                    new Dict()
+                {
+                    Name = WorkOrder?.WOLevel ?? notSpecified,
+                    ListType = listTypeForLevel
+                },
+                    new Dict()
+                {
+                    Name = WorkOrder?.WOReason ?? notSpecified,
+                    ListType = listTypeForReason
+                },
+                    new Dict()
+                {
+                    Name = WorkOrder?.WOState ?? notSpecified,
+                    ListType = listTypeForState
+                },
+                    new Dict()
+                {
+                    Name = WorkOrder?.DepName ?? notSpecified,
+                    ListType = listTypeForDepartment
+
+                } 
+            };
+        }
     }
 
-    private string FormatDateTime(DateTime? dateTime)
-    {
-        if (!dateTime.HasValue)
-            return "Not specified";
-            
-        return dateTime.Value.ToString("dd.MM.yyyy HH:mm");
-    }
 
+    #region Event Handlers
     private async Task OnAssignedPersonChanged(object newValue)
     {
         var personName = newValue as string;
         if (WorkOrder != null && !string.IsNullOrEmpty(personName))
         {
-            WorkOrder.AssignedPerson = personName == "Not assigned" ? string.Empty : personName;
+            WorkOrder.AssignedPerson = personName == notAssigned ? string.Empty : personName;
+        }
+    }
+
+    private async Task OnCategoryChanged(object newValue)
+    {
+        var categoryName = newValue as string;
+        if (WorkOrder != null && !string.IsNullOrEmpty(categoryName))
+        {
+            WorkOrder.WOCategory = categoryName;
+            if (ListDicts?.Any(d => d.Name == categoryName && d.ListType == listTypeForCategory) == false)
+            {
+                ListDicts?.Add(new Dict
+                {
+                    Name = categoryName,
+                    ListType = listTypeForCategory
+                });            
+            }
         }
     }
 
@@ -270,9 +335,28 @@
         var departmentName = newValue as string; // Updated variable name
         if (WorkOrder != null && !string.IsNullOrEmpty(departmentName))
         {
-            WorkOrder.DepName = departmentName == "Not assigned" ? string.Empty : departmentName;
+            WorkOrder.DepName = departmentName == notAssigned ? string.Empty : departmentName;
         }
     }
+
+    private async Task OnLevelChanged(object newValue)
+    {
+        var levelName = newValue as string;
+        if (WorkOrder != null && !string.IsNullOrEmpty(levelName))
+        {
+            WorkOrder.WOLevel = levelName;
+            if (ListDicts?.Any(d => d.Name == levelName && d.ListType == listTypeForLevel) == false)
+            {
+                ListDicts?.Add(new Dict
+                {
+                    Name = levelName,
+                    ListType = listTypeForLevel
+                });
+            }
+        }
+    }
+
+    #endregion Event Handlers
 
     private string GetStateColor(string? StateColor)
     {
@@ -286,6 +370,14 @@
             "yellow" => "bg-warning",
             _ => "bg-dark"
         };
+    }
+
+    private string FormatDateTime(DateTime? dateTime)
+    {
+        if (!dateTime.HasValue)
+            return "Not specified";
+            
+        return dateTime.Value.ToString("dd.MM.yyyy HH:mm");
     }
 }
 

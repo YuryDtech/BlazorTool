@@ -152,17 +152,22 @@
     </div>
 </div>
 
-<TelerikWindow Modal="false" Visible="@customEditFormShown" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
+<TelerikWindow Modal="false" MinWidth="1200px"  Visible="@customEditFormShown" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
     <WindowTitle>Appointment #@CurrentAppointment.WorkOrderID</WindowTitle>
     <WindowActions>
         <WindowAction Name="Close" OnClick="@CancelEditing" />
     </WindowActions>
     <WindowContent>
-        <AppointmentEditor Appointment="@CurrentAppointment" isEditable=true ListPersons=@Persons ListDepartments="@Departments" OnAppointmentChanged="@RefreshData" />
+        <AppointmentEditor Appointment="@CurrentAppointment" 
+            isEditable=true 
+            ListPersons=@Persons 
+            ListDepartments="@Departments" 
+            ListDicts="@ListDicts"
+            OnAppointmentChanged="@RefreshData" />
     </WindowContent>
 </TelerikWindow>
 
-<TelerikWindow Modal="false" Visible="@isOrderCardOpen" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
+<TelerikWindow Modal="false" MinWidth="1200px" Visible="@isOrderCardOpen" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
     <WindowTitle>WorkOrder #@CurrentOrder.WorkOrderID</WindowTitle>
     <WindowActions>
         <WindowAction Name="Close" OnClick="@CancelEditing" />
@@ -196,6 +201,7 @@
     private List<string> selectedAssignedPersons = new();
     private List<string> Persons = new();
     private List<string> Departments = new(); 
+    private List<Dict> ListDicts = new();
     private string selectedDepartment = "All";
     private bool isCBAllOrdersSelected = false; //show executed orders in grid
     private List<string?> DeviceCategories = new();//for Orders grid filter
@@ -226,6 +232,7 @@
         isLoading = true;
         StateHasChanged();
         Persons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList();
+        ListDicts = (await apiService.GetWODictionaries(1));
         _allOrders = await apiService.GetWorkOrdersCachedAsync();
         _allAppointments = await ApptService.GetTakenAppointments(_allOrders);
         Departments = new List<string> { "All" };

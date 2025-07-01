@@ -1,5 +1,15 @@
 # Changelog
 
+## 2025-07-01
+- **UI and Functionality:**
+    - Made `WorkOrderComponent` editable, adding a Telerik ComboBox for the `WOCategory` field.
+- **Code Changes:**
+    - Added a new endpoint `api/v1/wo/getdict` to the `WoController` to retrieve work order categories.
+    - Updated `ApiServiceClient` to fetch `Dict` objects.
+    - Added `Dict.cs` model.
+- **Bug Fixes:**
+    - Fixed an issue in `WorkOrderComponent` where `Department` and `assignedPersons` were not displaying correctly.
+
 ## 2025-06-30
 - **UI and Functionality:**
     - Made `WorkOrderComponent` editable, adding Telerik components for fields `assignedPersons`, `Department`, and `Description`.

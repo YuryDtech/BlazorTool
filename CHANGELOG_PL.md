@@ -1,5 +1,15 @@
 # Changelog
 
+## 2025-07-01
+- **Interfejs użytkownika i funkcjonalność:**
+    - Umożliwiono edycję `WorkOrderComponent`, dodając Telerik ComboBox dla pola `WOCategory`.
+- **Zmiany w kodzie:**
+    - Dodano nowy punkt końcowy `api/v1/wo/getdict` do `WoController` w celu pobierania kategorii zleceń pracy.
+    - Zaktualizowano `ApiServiceClient` do pobierania obiektów `Dict`.
+    - Dodano model `Dict.cs`.
+- **Poprawki błędów:**
+    - Naprawiono problem w `WorkOrderComponent`, gdzie `Department` i `assignedPersons` nie wyświetlały się poprawnie.
+
 ## 2025-06-30
 - **Interfejs użytkownika i funkcjonalność:**
     - Umożliwiono edycję komponentu `WorkOrderComponent`, dodając Telerik components dla pola `assignedPersons`, `Department` i `Description`.
