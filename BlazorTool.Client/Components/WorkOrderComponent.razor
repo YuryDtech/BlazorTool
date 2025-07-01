@@ -225,13 +225,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (ListPersons == null)
+        string notAssigned = "Not assigned";
+        if (ListPersons == null && !string.IsNullOrEmpty(WorkOrder?.AssignedPerson))
         {
-            ListPersons = new List<string>() { "Not assigned" };
-        }else
-        {
-            ListPersons.Add("Not assigned");
+            ListPersons = new List<string>() { WorkOrder.AssignedPerson };
         }
+        
+        ListPersons?.Add(notAssigned);
 
         if (ListDepartments != null)
         {
@@ -239,12 +239,13 @@
             {
                 ListDepartments.Remove("All");
             }
-            ListDepartments.Add("Not assigned");
         }
-        else 
+        else if (WorkOrder != null && !string.IsNullOrEmpty(WorkOrder.DepName))
         {
-            ListDepartments = new List<string>() { "Not assigned" };
+            ListDepartments = new List<string>() { WorkOrder.DepName };
         }
+
+        ListDepartments?.Add(notAssigned);
     }
 
     private string FormatDateTime(DateTime? dateTime)

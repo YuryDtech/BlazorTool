@@ -1,5 +1,13 @@
 # Changelog
 
+## 2025-06-30
+- **UI and Functionality:**
+    - Made `WorkOrderComponent` editable, adding Telerik components for fields `assignedPersons`, `Department`, and `Description`.
+    - On `OrderPage`, added a 'Device' column.
+    - On `SchedulerPage`, added `OnClick` functionality for orders (to view WorkOrders in the order list) and implemented header filters for orders.
+- **Code Changes:**
+    - made and added `telerik_manual.md` for Telerik component usage instructions.
+
 ## 2025-06-27
 - Added Changelog page and updated logging.
 - Introduced `ChangelogPage.razor` and `CHANGELOG.md` for release notes.

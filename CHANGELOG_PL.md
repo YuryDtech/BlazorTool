@@ -1,5 +1,13 @@
 # Changelog
 
+## 2025-06-30
+- **Interfejs użytkownika i funkcjonalność:**
+    - Umożliwiono edycję komponentu `WorkOrderComponent`, dodając Telerik components dla pola `assignedPersons`, `Department` i `Description`.
+    - Na stronie `OrderPage` dodano kolumnę 'Device'.
+    - Na stronie `SchedulerPage` dodano funkcjonalność `OnClick` dla zleceń (aby przeglądać WorkOrder na liście zleceń) oraz zaimplementowano filtry nagłówków dla zleceń.
+- **Zmiany w kodzie:**
+    - Utwożono i dodano plik `telerik_manual.md` z instrukcjami użycia komponentów Telerik.
+
 ## 2025-06-27
 - Dodano stronę Dziennika zmian i zaktualizowano mechanizm logowania.
 - Wprowadzono pliki `ChangelogPage.razor` i `CHANGELOG.md` do obsługi informacji o wydaniu.
