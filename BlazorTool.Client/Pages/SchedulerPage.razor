@@ -95,6 +95,19 @@
                           IsAllDayField="IsAllDay"
                           Height="80vh"
                           >
+            <SchedulerResources>
+                <SchedulerResource Field="StateColor" Title="StateColor" Data="@statuses" />
+            </SchedulerResources>
+            <ItemTemplate>
+                <div>
+                    @{
+                        var meeting = context as SchedulerAppointment;
+                    }
+                    
+
+                    <span style="color:black;">@GenerateItemText(meeting)</span>
+                    </div>
+            </ItemTemplate>
 
             <SchedulerViews>
                 <SchedulerDayView StartTime="@DayStart" EndTime="@DayEnd" />
@@ -193,8 +206,8 @@
 
     private DateTime SchedulerDate { get; set; } = DateTime.Today;
     private SchedulerView CurrentView { get; set; } = SchedulerView.Month;
-    private DateTime DayStart => DateTime.Today.AddHours(8);
-    private DateTime DayEnd => DateTime.Today.AddHours(18);
+    private DateTime DayStart => DateTime.Today.AddHours(7);
+    private DateTime DayEnd => DateTime.Today.AddHours(20);
     private MarkupString cellStyles = new MarkupString(); //for rows colors
     private List<WorkOrder> UntakenOrders { get; set; } = new();
     private List<WorkOrder> TakenOrders { get; set; } = new();
@@ -214,6 +227,12 @@
     private string selectedCategory = "All";
     private List<string> AssetNumbers = new();
     private string selectedAssetNo = "All";
+    private List<Resource> statuses = new List<Resource>
+    {
+        new Resource { Text = "Not starded", Value = "Red", Color = "LightCoral" },
+        new Resource { Text = "In Progress", Value = "Yellow", Color = "LightYellow" },
+        new Resource { Text = "Completed", Value = "Lime", Color = "LightGreen" },
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -239,7 +258,7 @@
         Console.WriteLine("--- LoadData called.");
         isLoading = true;
         StateHasChanged();
-        Persons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList();
+        //Persons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList();
         ListDicts = (await apiService.GetWODictionaries(1));
         _allOrders = await apiService.GetWorkOrdersCachedAsync();
         _allAppointments = await ApptService.GetTakenAppointments(_allOrders);
@@ -412,7 +431,7 @@
         // CurrView = SchedulerView.Day;
         // SelectedDate = navigateDate;
     }
-    
+
     async void RefreshData(SchedulerAppointment editedAppointment)
     {
         if (editedAppointment == null)//was removed
@@ -421,8 +440,8 @@
         }
         customEditFormShown = false;
         isOrderCardOpen = false;
-        await LoadData();
-        // SchedulerRef?.Rebind();
+        //await LoadData();
+        SchedulerRef?.Rebind();
     }
 
     void EditHandler(SchedulerEditEventArgs args)
@@ -452,7 +471,7 @@
 
 
     #endregion    
-    
+
     #region Grid Row Styles
 
     void OnRowRenderHandler(GridRowRenderEventArgs args)
@@ -474,6 +493,12 @@
         }
     }
     #endregion
+
+    private string GenerateItemText(SchedulerAppointment meeting)
+    {
+        return $"[{meeting?.AppointmentId}] {meeting?.AssetNo} => {(string.IsNullOrEmpty(meeting?.DepName) ? "" : meeting?.DepName + ":")} {meeting?.AssignedPerson}";
+    }
+
     private MarkupString RenderStatesStyle(List<WorkOrder> orders)
     {
         var uniqueColors = orders
@@ -508,5 +533,11 @@
 
         return new MarkupString(sb.ToString());
     }
-   
+    public class Resource
+    {
+        // these are the default field names
+        public string Text { get; set; }
+        public string Value { get; set; }
+        public string Color { get; set; } // must be a valid CSS string
+    }
 }

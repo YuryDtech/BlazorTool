@@ -35,8 +35,10 @@ namespace BlazorTool.Client.Services
                 if (_appointments == null || !_appointments.Any())
                 {
                     if (orders == null)
-                    orders = await _apiServiceClient.GetWorkOrdersCachedAsync();
-
+                    {
+                        Console.WriteLine("===> _appointments = null, run _apiServiceClient.GetWorkOrdersCachedAsync()");
+                        orders = await _apiServiceClient.GetWorkOrdersCachedAsync();
+                    }
                     _appointments = GetAppointmentsFromOrders(orders);
                 }
                 return _appointments.Where(x => !string.IsNullOrWhiteSpace(x.DepName) && x.Start != null).ToList();

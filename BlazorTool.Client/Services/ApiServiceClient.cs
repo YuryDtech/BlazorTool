@@ -146,9 +146,7 @@ namespace BlazorTool.Client.Services
             var url = "api/v1/wo/getlist?" + string.Join("&", qp);
 
             var wrapper = await _http.GetFromJsonAsync<ApiResponse<WorkOrder>>(url);
-            Console.WriteLine("\n");
-            Console.WriteLine("= = = = = = = = = = response WorkOrder.Count: " + wrapper?.Data.Count.ToString());
-            Console.WriteLine("\n");
+            Console.WriteLine("= = = = = = = API response-> WorkOrder.Count: " + wrapper?.Data.Count.ToString());
             var result = wrapper?.Data ?? new List<WorkOrder>();
             return result;
         }
@@ -222,7 +220,7 @@ namespace BlazorTool.Client.Services
                 //update existing work order in cache
                 _workOrdersCache[workOrder.MachineID][ind] = workOrder;
                 Console.WriteLine("= = = = = = = = = Work order was updated in cache. ");
-                Console.WriteLine(" === Title={workOrder.AssetNo}, StartDate={workOrder.StartDate}, EndDate={workOrder.EndDate}===");
+                Console.WriteLine($" === Title={workOrder.AssetNo}, StartDate={workOrder.StartDate}, EndDate={workOrder.EndDate}===");
                 return true;
             }
          // new work - cant insert a new one
