@@ -41,7 +41,7 @@
             </TelerikComboBox>
         </div>
         <div>
-            <label>Device (AssetNo): </label>
+            <label>Device: </label>
             <TelerikComboBox Data="@AssetNumbers"
                              Placeholder="Select asset..."
                              Filterable="true"
@@ -56,20 +56,13 @@
     @* device categories filter *@
     <div style="flex-basis: 32%; flex-shrink:1; display: flex;  flex-grow:0; align-items: center; gap: 1rem;">
         <label>Device category: </label>
-        <div Width="20%">
+        <div style="min-width:30px">
             <TelerikComboBox Data="@DeviceCategories" TextField="DeviceType"
                              Value="@selectedCategory"
                              Placeholder="Select device category..." Filterable="true"
                              ValueChanged="@((string cat) => OnCategoryChanged(cat))">
             </TelerikComboBox>
         </div>
-        @* <div>
-            <TelerikComboBox Data="@deviceCategories" TextField="DeviceType"
-                             Value="@selectedCategory"
-                             Placeholder="Select device category..." Filterable="true"
-                             ValueChanged="@((string cat) => OnCategoryChanged(cat))">
-            </TelerikComboBox>
-        </div> *@
     </div>
     
     @*end device categories filter *@
@@ -140,9 +133,9 @@
                 <RowTemplate Context="order">
                     <td class="tooltip-target" title="@order.WODesc">@order?.AssetNo</td>
                     <td class="tooltip-target" title="@order.WODesc">@order?.WOCategory</td>
-                    <td class="tooltip-target" title="@order.WODesc">@order?.AssignedPerson</td>
-                    <td class="tooltip-target" title="@order.WODesc">@order?.StartDate</td>
-                    <td class="tooltip-target" title="@order.WODesc">@order?.EndDate</td>
+                    <td class="tooltip-target" title="@order.AddDate">@order?.AddDate?.ToString("dd/MM/yyyy HH:mm")</td>
+                    @* <td class="tooltip-target" title="@order.WODesc">@order?.StartDate</td>
+                    <td class="tooltip-target" title="@order.WODesc">@order?.EndDate</td> *@
                     <td class="state-@order?.StateColor?.TrimStart('#') tooltip-target" title="@order?.WOState">@order?.WOState</td>
                 </RowTemplate>
 
@@ -154,9 +147,9 @@
                 <GridColumns>
                     <GridColumn Field="@nameof(WorkOrder.AssetNo)" />
                     <GridColumn Field="@nameof(WorkOrder.WOCategory)"/>
-                    <GridColumn Field="@nameof(WorkOrder.AssignedPerson)" />
-                    <GridColumn Field="@nameof(WorkOrder.StartDate)" />
-                    <GridColumn Field="@nameof(WorkOrder.EndDate)" />
+                    <GridColumn Field="@nameof(WorkOrder.AddDate)" />
+                    @* <GridColumn Field="@nameof(WorkOrder.StartDate)" />
+                    <GridColumn Field="@nameof(WorkOrder.EndDate)" /> *@
                     <GridColumn Field="@nameof(WorkOrder.WOState)" />
                 </GridColumns>
 

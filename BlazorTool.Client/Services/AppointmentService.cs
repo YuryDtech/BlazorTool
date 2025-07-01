@@ -39,7 +39,7 @@ namespace BlazorTool.Client.Services
 
                     _appointments = GetAppointmentsFromOrders(orders);
                 }
-                return _appointments.Where(x => !string.IsNullOrWhiteSpace(x.AssignedPerson)).ToList();
+                return _appointments.Where(x => !string.IsNullOrWhiteSpace(x.DepName) && x.Start != null).ToList();
                 //return _appointments.Where(x => x.TakeDate != null && x.Start != null).ToList();
         }
 
@@ -50,7 +50,7 @@ namespace BlazorTool.Client.Services
                 var orders = await _apiServiceClient.GetWorkOrdersCachedAsync();
                 _appointments = GetAppointmentsFromOrders(orders);
             }
-            return _appointments.Where(x => x.TakeDate == null || x.Start == null).ToList();
+            return _appointments.Where(x => string.IsNullOrWhiteSpace(x.DepName) || x.Start == null).ToList();
         }
 
         public SchedulerAppointment? GetAppointmentById(int id)

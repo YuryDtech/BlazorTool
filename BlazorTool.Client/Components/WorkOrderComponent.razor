@@ -98,8 +98,8 @@
                         <label>Take Persons:</label>
                         <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.TakePersons) ? "Not specified" : WorkOrder.TakePersons)</div>
                     </div>
-                    <div class="field-group">
-                        <label>Department:</label>
+                    <div class="field-group" >
+                            <label class=@DepAlarm>Department:</label>
                                 <TelerikComboBox Data="@ListDepartments"
                                                  Value="@WorkOrder.DepName"
                                                  Placeholder="Select department..."
@@ -107,7 +107,7 @@
                                                  Width="100%"
                                                  ReadOnly=@(isEditable == false)
                                                  ShowClearButton=false
-                                
+                                Class="@DepAlarm"
                                 >
                                                  
                                 </TelerikComboBox>
@@ -133,8 +133,8 @@
                             <div class="date-value">@FormatDateTime(WorkOrder.TakeDate)</div>
                         </div>
                         <div class="date-item">
-                            <label>Start:</label>
-                            <div class="date-value">@FormatDateTime(WorkOrder.StartDate)</div>
+                            <label class="@StartDateAlarm">Start:</label>
+                            <div class="date-value @StartDateAlarm">@FormatDateTime(WorkOrder.StartDate)</div>
                         </div>
                         <div class="date-item">
                             <label>End:</label>
@@ -237,6 +237,7 @@
     [Parameter] public List<string>? ListDepartments { get; set; }
     [Parameter] public List<Dict>? ListDicts { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
+    [Parameter] public string Type { get; set; }
     // bool isLoading = false;
     // bool isLoaded = false;
     private int listTypeForCategory = 1;
@@ -246,6 +247,8 @@
     private int listTypeForDepartment = 5;
     private string notAssigned = "Not assigned";
     private string notSpecified = "Not specified";
+    private string DepAlarm = string.Empty;
+    private string StartDateAlarm = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -254,7 +257,7 @@
         {
             ListPersons = new List<string>() { WorkOrder.AssignedPerson };
         }
-        
+
         ListPersons?.Add(notAssigned);
 
         if (ListDepartments != null)
@@ -301,6 +304,17 @@
                 } 
             };
         }
+
+        if (string.IsNullOrEmpty(WorkOrder?.DepName) || WorkOrder.DepName == notAssigned)
+        {
+            DepAlarm = "bg-warning";
+        }
+
+        if (WorkOrder?.StartDate == null || WorkOrder.StartDate == DateTime.MinValue)
+        {
+            StartDateAlarm = "bg-warning";
+        }
+
     }
 
 
@@ -338,6 +352,9 @@
         {
             WorkOrder.DepName = departmentName == notAssigned ? string.Empty : departmentName;
         }
+        if (string.IsNullOrEmpty(departmentName) || departmentName == notAssigned)
+            DepAlarm = "bg-warning";
+        else DepAlarm = string.Empty;
     }
 
     private async Task OnLevelChanged(object newValue)
