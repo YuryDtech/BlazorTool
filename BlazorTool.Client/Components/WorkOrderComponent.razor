@@ -45,7 +45,15 @@
                     </div>
                     <div class="field-group">
                         <label>Category:</label>
-                        <div class="field-value">@(WorkOrder.WOCategory ?? "Not specified")</div>
+                            <TelerikComboBox Data="@ListDicts?.Where(c => c.ListType == listTypeForCategory).Select(n => n.Name).ToList()"
+                                                 Value="@WorkOrder.WOCategory"
+                                                 Placeholder="Select WO category..."
+                                                 ValueChanged="@((string name) => OnCategoryChanged(name))"
+                                                 Width="100%"
+                                                 ReadOnly=@(isEditable == false)
+                                                 ShowClearButton=false
+                                                 AllowCustom=true>
+                                </TelerikComboBox>
                     </div>
                     <div class="field-group">
                         <label>Reason:</label>
@@ -219,18 +227,20 @@
     [Parameter] public WorkOrder? WorkOrder { get; set; }
     [Parameter] public List<string>? ListPersons { get; set; }
     [Parameter] public List<string>? ListDepartments { get; set; }
+    [Parameter] public List<Dict>? ListDicts { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
     // bool isLoading = false;
     // bool isLoaded = false;
+    private int listTypeForCategory = 1;
+    private string notAssigned = "Not assigned";
 
     protected override async Task OnInitializedAsync()
     {
-        string notAssigned = "Not assigned";
         if (ListPersons == null && !string.IsNullOrEmpty(WorkOrder?.AssignedPerson))
         {
             ListPersons = new List<string>() { WorkOrder.AssignedPerson };
         }
-        
+
         ListPersons?.Add(notAssigned);
 
         if (ListDepartments != null)
@@ -246,6 +256,16 @@
         }
 
         ListDepartments?.Add(notAssigned);
+
+        if (ListDicts == null)
+        {
+            ListDicts = new List<Dict>(){new Dict()
+            {
+                Name = WorkOrder?.WOCategory ?? "Not specified",
+                ListType = listTypeForCategory
+            }
+            };
+        }
     }
 
     private string FormatDateTime(DateTime? dateTime)
@@ -261,7 +281,24 @@
         var personName = newValue as string;
         if (WorkOrder != null && !string.IsNullOrEmpty(personName))
         {
-            WorkOrder.AssignedPerson = personName == "Not assigned" ? string.Empty : personName;
+            WorkOrder.AssignedPerson = personName == notAssigned ? string.Empty : personName;
+        }
+    }
+
+    private async Task OnCategoryChanged(object newValue)
+    {
+        var categoryName = newValue as string;
+        if (WorkOrder != null && !string.IsNullOrEmpty(categoryName))
+        {
+            WorkOrder.WOCategory = categoryName;
+            if (ListDicts?.Any(d => d.Name == categoryName && d.ListType == listTypeForCategory) == false)
+            {
+                ListDicts?.Add(new Dict
+                {
+                    Name = categoryName,
+                    ListType = listTypeForCategory
+                });            
+            }
         }
     }
 
@@ -270,7 +307,7 @@
         var departmentName = newValue as string; // Updated variable name
         if (WorkOrder != null && !string.IsNullOrEmpty(departmentName))
         {
-            WorkOrder.DepName = departmentName == "Not assigned" ? string.Empty : departmentName;
+            WorkOrder.DepName = departmentName == notAssigned ? string.Empty : departmentName;
         }
     }
 

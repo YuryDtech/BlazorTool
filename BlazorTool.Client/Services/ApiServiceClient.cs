@@ -267,18 +267,17 @@ namespace BlazorTool.Client.Services
         //temp, for test only
         //TODO : implement getting work order categories from Dicts from API
         //TODO : implement Dicts model and methods
-        public async Task<List<string>> GetWOCategories()
+        public async Task<List<Dict>> GetWODictionaries(int personID, string lang = "pl-PL")
         {
             var qp = new List<string>();
-            qp.Add($"PersonID=1");
-            qp.Add($"Lang=pl-pl");
+            qp.Add($"PersonID={personID}");
+            qp.Add($"Lang={lang}");
             var url = "api/v1/wo/getdict?" + string.Join("&", qp);
             var wrapper = await _http.GetFromJsonAsync<ApiResponse<Dict>>(url);
             Console.WriteLine("\n");
             Console.WriteLine("= = = = = = = = = = response Dict.Count: " + wrapper?.Data.Count.ToString());
             Console.WriteLine("\n");
-            var result = wrapper?.Data.Select(s=>s.Name).Distinct().ToList() ?? new List<string>();
-            return result;
+            return wrapper?.Data ?? new List<Dict>();
         }
 
         #endregion

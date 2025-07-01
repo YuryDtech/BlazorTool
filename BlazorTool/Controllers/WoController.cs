@@ -52,6 +52,30 @@ namespace BlazorTool.Controllers
             }
         }
 
+        [HttpGet("getdict")]
+        public async Task<IActionResult> GetWOCategories([FromQuery] WOCategoriesParameters q)
+        {
+            try
+            {
+                var data = await _apiServiceClient.GetWODictionaries(q.PersonID, q.Lang);
+                return Ok(new
+                {
+                    data,
+                    isValid = true,
+                    errors = Array.Empty<string>()
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = Array.Empty<object>(),
+                    isValid = false,
+                    errors = new[] { ex.Message }
+                });
+            }
+        }
+
         public class WorkOrderQueryParameters
         {
             public int? DeviceID { get; set; }
@@ -64,6 +88,12 @@ namespace BlazorTool.Controllers
             public int? PersonID { get; set; }
             public bool? IsPlan { get; set; }
             public bool? IsWithPerson { get; set; }
+        }
+
+        public class WOCategoriesParameters
+        {
+            public int PersonID { get; set; }
+            public string Lang { get; set; } = "pl-PL";
         }
 
         // GET api/<WoController>/5

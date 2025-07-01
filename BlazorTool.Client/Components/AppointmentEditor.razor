@@ -31,7 +31,11 @@
     </div>
 </EditForm>
 <br />
-<WorkOrderComponent WorkOrder="@Appointment" ListPersons=@ListPersons ListDepartments="@ListDepartments" isEditable=@isEditable></WorkOrderComponent>
+<WorkOrderComponent WorkOrder="@Appointment" 
+    ListPersons=@ListPersons 
+    ListDepartments="@ListDepartments"
+    ListDicts="@ListDicts"
+    isEditable=@isEditable></WorkOrderComponent>
 
 @code{
     //communcation with the parent component where the scheduler is
@@ -39,7 +43,9 @@
     [Parameter] public EventCallback<SchedulerAppointment?> OnAppointmentChanged { get; set; }
     [Parameter] public List<string>? ListPersons { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
+    [Parameter] public List<Dict>? ListDicts { get; set; }
     [Parameter] public List<string>? ListDepartments { get; set; }
+
     private DateTime? _start_Init_value;
     private DateTime? _end_Init_value;
     private string _title_Init_value;
