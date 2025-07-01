@@ -2,7 +2,8 @@
 
 ## 2025-07-01
 - **Interfejs użytkownika i funkcjonalność:**
-    - Umożliwiono edycję `WorkOrderComponent`, dodając Telerik ComboBox dla pola `WOCategory`.
+    - Na stronie `SchedulerPage` dodano filtr `Device` po `AssetNo` za filtrem `Department`.
+    - Umożliwiono edycję `WorkOrderComponent`, dodając Telerik ComboBox dla pola `WOCategory`, `WOLevel`.
 - **Zmiany w kodzie:**
     - Dodano nowy punkt końcowy `api/v1/wo/getdict` do `WoController` w celu pobierania kategorii zleceń pracy.
     - Zaktualizowano `ApiServiceClient` do pobierania obiektów `Dict`.

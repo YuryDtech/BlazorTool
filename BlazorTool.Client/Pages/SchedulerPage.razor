@@ -17,7 +17,8 @@
 <h3>Scheduler</h3>
 <div class="filter-controls-row">
     <div style="flex-basis: 66%; flex-shrink:1; flex-grow:0; border-right: outset; display: flex; align-items: top; gap: 1rem;">
-        <div Width="100px">
+        <div style="max-width: 400px;">
+        <label>Assigned persons: </label>
             <TelerikMultiSelect Data="@Persons"
                                 @bind-Value="@selectedAssignedPersons"
                                 TagMode="@MultiSelectTagMode.Multiple"
@@ -25,13 +26,13 @@
                                 AutoClose="false"
                                 OnClose="@OnAssignedPersonsClosed"
                                 OnChange="@OnPersonSelectChanged"
-                                Width="400px"
                                 ShowClearButton="true"
                                 Size="sm">
                                 
             </TelerikMultiSelect>
         </div>
         <div>
+            <label>Department: </label>
             <TelerikComboBox Data="@Departments" TextField="Department"
                              Placeholder="Select department..." Filterable="false"
                              AllowCustom="false" Value="@selectedDepartment"
@@ -39,6 +40,18 @@
                              Size="sm">
             </TelerikComboBox>
         </div>
+        <div>
+            <label>Device (AssetNo): </label>
+            <TelerikComboBox Data="@AssetNumbers"
+                             Placeholder="Select asset..."
+                             Filterable="true"
+                             AllowCustom="true"
+                             Value="@selectedAssetNo"
+                             ValueChanged="@((string assetNo) => OnAssetNoChanged(assetNo))"
+                             Size="sm">
+            </TelerikComboBox>
+        </div>
+ 
     </div>
     @* device categories filter *@
     <div style="flex-basis: 32%; flex-shrink:1; display: flex;  flex-grow:0; align-items: center; gap: 1rem;">
@@ -206,6 +219,8 @@
     private bool isCBAllOrdersSelected = false; //show executed orders in grid
     private List<string?> DeviceCategories = new();//for Orders grid filter
     private string selectedCategory = "All";
+    private List<string> AssetNumbers = new();
+    private string selectedAssetNo = "All";
 
     protected override async Task OnInitializedAsync()
     {
@@ -239,6 +254,8 @@
         Departments.AddRange(_allOrders.Where(d => !string.IsNullOrWhiteSpace(d.DepName)).Select(x => x.DepName).Distinct().ToList());
         DeviceCategories = new List<string?> { "All" };
         DeviceCategories.AddRange(_allOrders.Select(x => x.DeviceCategory).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct());
+        AssetNumbers = new List<string> { "All" };
+        AssetNumbers.AddRange(_allOrders.Where(d => !string.IsNullOrWhiteSpace(d.AssetNo)).Select(x => x.AssetNo).Distinct().ToList());
         DisplayAppointments(); 
         DisplayOrders();
         isLoading = false;
@@ -309,6 +326,12 @@
         DisplayAppointments();
     }
 
+    private void OnAssetNoChanged(string assetNo)
+    {
+        selectedAssetNo = assetNo ?? "All";
+        DisplayAppointments();
+    }
+
     private void OnCategoryChanged(string cat)
     {
         selectedCategory = cat ?? "All"; 
@@ -327,6 +350,11 @@
         {
             // Filter appointments based on the selected department
             filteredAppointments = filteredAppointments.Where(a => a.DepName == selectedDepartment).ToList();
+        }
+        if (!string.IsNullOrEmpty(selectedAssetNo) && selectedAssetNo != "All")
+        {
+            // Filter appointments based on the selected asset number
+            filteredAppointments = filteredAppointments.Where(a => a.AssetNo == selectedAssetNo).ToList();
         }
         if (selectedAssignedPersons.Count > 0)
         {
