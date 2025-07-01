@@ -249,11 +249,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        string notAssigned = "Not assigned";
         if (ListPersons == null && !string.IsNullOrEmpty(WorkOrder?.AssignedPerson))
         {
             ListPersons = new List<string>() { WorkOrder.AssignedPerson };
         }
-
+        
         ListPersons?.Add(notAssigned);
 
         if (ListDepartments != null)
