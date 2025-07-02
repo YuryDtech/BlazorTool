@@ -56,6 +56,13 @@
                              ValueChanged="@((string cat) => OnTypeChanged(cat))">
             </TelerikComboBox>
         </div>
+    <div>
+        <TelerikComboBox Data="@workOrderStates"
+                         Placeholder="Select state..."
+                         ValueChanged="@((string state) => OnStateChanged(state))"
+                         ShowClearButton="false" Filterable="true">
+        </TelerikComboBox>
+</div>
 </div>
 }
 
@@ -228,6 +235,12 @@ else
     {
         selectedDevices = devices.Where(d => selectedDeviceIds.Contains(d.MachineID)).ToList();
         await LoadData(); 
+    }
+
+    void OnStateChanged(string? state)
+    {
+        selectedWorkOrderState = state;
+        ApplyFilters();
     }
 
     async Task OnCategoryChanged(string? category)
