@@ -6,7 +6,7 @@
 
 <PageTitle>Order №@(WorkOrder?.WorkOrderID)</PageTitle>
 
-<div class="work-order-container">
+<div class="work-order-container @(showActivities ? "activities-visible" : "")">
   @if(WorkOrder != null)
         {
     <!-- HEADER -->
@@ -193,16 +193,17 @@
                             <span class="cost-amount no-cost">Not specified</span>
                         }
                         <div class="stat-label-cost">Cost</div>
-                    </div>
+                </div>
             </div>
+                <div >
+                        @if (showActivities)
+                        {
+                            <ActivityList WorkOrderId="WorkOrder.WorkOrderID" />
+                        }
+                </div>
             
         </CardBody>
     </TelerikCard>
-
-    @if (showActivities)
-    {
-        <ActivityList WorkOrderId="WorkOrder.WorkOrderID" />
-    }
 
     <!-- Modification Information -->
     @if (WorkOrder.ModDate.HasValue || !string.IsNullOrEmpty(WorkOrder.ModPerson))

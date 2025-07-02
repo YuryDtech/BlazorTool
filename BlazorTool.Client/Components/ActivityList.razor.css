@@ -26,3 +26,30 @@
     max-height: 400px;
     overflow-y: auto;
 }
+
+.activity-category {
+    flex-basis: 20%;
+}
+
+.activity-description {
+    flex-basis: 40%;
+}
+
+.activity-workload {
+    flex-basis: 10%;
+    text-align: right;
+}
+
+.activity-workers {
+    flex-basis: 10%;
+    text-align: center;
+}
+
+.activity-persons {
+    flex-basis: 15%;
+}
+
+.activity-date {
+    flex-basis: 13%;
+    text-align: right;
+}

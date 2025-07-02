@@ -171,7 +171,7 @@
     </div>
 </div>
 
-<TelerikWindow Modal="false" MinWidth="1200px"  Visible="@customEditFormShown" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
+<TelerikWindow Modal="false" MinWidth="1200px" MaxHeight="95vh" Visible="@customEditFormShown" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
     <WindowTitle>Appointment #@CurrentAppointment.WorkOrderID</WindowTitle>
     <WindowActions>
         <WindowAction Name="Close" OnClick="@CancelEditing" />
@@ -186,7 +186,7 @@
     </WindowContent>
 </TelerikWindow>
 
-<TelerikWindow Modal="false" MinWidth="1200px" Visible="@isOrderCardOpen" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
+<TelerikWindow Modal="false" MinWidth="1200px" MaxHeight="95vh" Visible="@isOrderCardOpen" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
     <WindowTitle>WorkOrder #@CurrentOrder.WorkOrderID</WindowTitle>
     <WindowActions>
         <WindowAction Name="Close" OnClick="@CancelEditing" />

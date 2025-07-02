@@ -2,6 +2,7 @@
 
 ## 2025-07-02
 - **Interfejs użytkownika i funkcjonalność:**
+    - Wyrównano rozmiary kolumn między nagłówkiem w `ActivityList` a elementami w `ActivityDisplay`, aby uzyskać spójny wygląd.
     - Użytkownicy mogą teraz klikać na statystykę "Akcje" w widoku zlecenia pracy, aby zobaczyć szczegółową listę działań.
     - Lista działań jest wyświetlana w kompaktowym, czytelnym formacie tabeli.
 - **Zmiany w kodzie:**

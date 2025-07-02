@@ -1,4 +1,4 @@
-﻿.work-order-container {
+.work-order-container {
     min-width: 1000px;
     padding: 0;
     display: flex;
@@ -9,6 +9,10 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     max-height: 70vh;
+}
+
+.work-order-container.activities-visible {
+    max-height: none;
 }
 
 .main-header-card {

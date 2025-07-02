@@ -2,10 +2,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 0rem;
     border: 1px solid #e0e0e0;
     border-radius: 4px;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     background-color: #fafafa;
     font-size: 0.9rem;
 }
@@ -15,15 +15,15 @@
 }
 
 .activity-row > span {
-    white-space: nowrap;
+    white-space: normal;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 0 10px;
+    padding: 0 5px;
 }
 
 .activity-category {
     font-weight: bold;
-    flex-basis: 15%;
+    flex-basis: 20%;
 }
 
 .activity-description {
@@ -46,7 +46,7 @@
 }
 
 .activity-date {
-    flex-basis: 10%;
+    flex-basis: 13%;
     text-align: right;
     color: #6c757d;
 }

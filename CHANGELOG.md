@@ -2,6 +2,7 @@
 
 ## 2025-07-02
 - **UI and Functionality:**
+    - Aligned the column sizes between the header in `ActivityList` and the items in `ActivityDisplay` for a consistent look.
     - Users can now click on the "Actions" statistic in the work order view to see a detailed list of activities.
     - The activity list is displayed in a compact, readable table format.
 - **Code Changes:**
