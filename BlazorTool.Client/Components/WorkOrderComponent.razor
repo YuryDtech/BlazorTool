@@ -162,7 +162,7 @@
         </CardHeader>
         <CardBody>
             <div class="stats-grid">
-                <div class="stat-item">
+                <div class="stat-item" @onclick="ToggleActivities">
                     <div class="stat-number">@(WorkOrder.ActCount ?? 0)</div>
                     <div class="stat-label">Actions</div>
                 </div>
@@ -198,6 +198,11 @@
             
         </CardBody>
     </TelerikCard>
+
+    @if (showActivities)
+    {
+        <ActivityList WorkOrderId="WorkOrder.WorkOrderID" />
+    }
 
     <!-- Modification Information -->
     @if (WorkOrder.ModDate.HasValue || !string.IsNullOrEmpty(WorkOrder.ModPerson))
@@ -249,6 +254,12 @@
     private string notSpecified = "Not specified";
     private string DepAlarm = string.Empty;
     private string StartDateAlarm = string.Empty;
+    private bool showActivities = false;
+
+    private void ToggleActivities()
+    {
+        showActivities = !showActivities;
+    }
 
     protected override async Task OnInitializedAsync()
     {

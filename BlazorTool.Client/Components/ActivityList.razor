@@ -1,0 +1,48 @@
+@using BlazorTool.Client.Models
+@using BlazorTool.Client.Services
+@inject ApiServiceClient ApiClient
+
+<div class="activity-list-container">
+    <h5>Activities for Work Order: @WorkOrderId</h5>
+
+    @if (activities == null)
+    {
+        <p><em>Loading activities...</em></p>
+    }
+    else if (activities.Count == 0)
+    {
+        <p>No activities found for this work order.</p>
+    }
+    else
+    {
+        <div class="activity-list-header">
+            <span class="activity-category">Category</span>
+            <span class="activity-description">Description</span>
+            <span class="activity-workload">Workload</span>
+            <span class="activity-workers">Workers</span>
+            <span class="activity-persons">Assigned</span>
+            <span class="activity-date">Date</span>
+        </div>
+        <div class="activity-list-body">
+            @foreach (var activity in activities)
+            {
+                <ActivityDisplay ActivityItem="activity" />
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int WorkOrderId { get; set; }
+
+    private List<Activity>? activities;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (WorkOrderId > 0)
+        {
+            activities = await ApiClient.GetActivityByWO(WorkOrderId);
+        }
+    }
+}

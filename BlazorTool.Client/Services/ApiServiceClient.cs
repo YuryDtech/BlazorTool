@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using Telerik.SvgIcons;
+using Activity = BlazorTool.Client.Models.Activity;
 namespace BlazorTool.Client.Services
 
 {
@@ -278,6 +279,18 @@ namespace BlazorTool.Client.Services
             return wrapper?.Data ?? new List<Dict>();
         }
 
+        #endregion
+
+        #region Activity
+        public async Task<List<Activity>> GetActivityByWO(int workorder_id)
+        {
+            var url = $"api/v1/activity/getlist?woID={workorder_id}";
+            var response = await _http.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            var wrapper = JsonConvert.DeserializeObject<ApiResponse<Activity>>(content);
+            return wrapper?.Data ?? new List<Activity>();
+        }
         #endregion
 
         #region users
