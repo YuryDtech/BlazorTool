@@ -3,7 +3,7 @@
 @inject ApiServiceClient ApiClient
 
 <div class="activity-list-container">
-    <h5>Activities for Work Order: @WorkOrderId</h5>
+    <h5>Activities for Work Order: @WorkOrderId.    (Total workload: @activities?.Sum(x=>x.WorkLoad).ToString("F2") h)</h5>
 
     @if (activities == null)
     {
