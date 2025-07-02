@@ -44,25 +44,31 @@
         </TelerikMultiSelect>
     </div>
     <div>
-            <TelerikComboBox Data="@deviceCategories" TextField="DeviceCategory"
-                             Placeholder="Select category..." ShowClearButton="true" Filterable="true"
-                             ValueChanged="@((string cat) => OnCategoryChanged(cat))"
-            >
-            </TelerikComboBox>
+        <label>Device category</label>
+        <TelerikComboBox Data="@deviceCategories" TextField="DeviceCategory"
+                            @bind-Value="@selectedDeviceCategory"
+                            Placeholder="Select category..." ShowClearButton="true" Filterable="true"
+                            OnChange="@OnCategoryChanged"
+        >
+        </TelerikComboBox>
     </div>
     <div>
-            <TelerikComboBox Data="@deviceTypes" TextField="DeviceType"
-                             Placeholder="Select type..." ShowClearButton="true" Filterable="true"
-                             ValueChanged="@((string cat) => OnTypeChanged(cat))">
-            </TelerikComboBox>
-        </div>
+        <label>Device type</label>
+        <TelerikComboBox Data="@deviceTypes" TextField="DeviceType"
+                            @bind-Value="@selectedDeviceType"   
+                            Placeholder="Select type..." ShowClearButton="true" Filterable="true"
+                            OnChange="@OnTypeChanged">
+        </TelerikComboBox>
+    </div>
     <div>
+        <label>Order state</label>
         <TelerikComboBox Data="@workOrderStates"
+                         @bind-Value = "@selectedState"
                          Placeholder="Select state..."
-                         ValueChanged="@((string state) => OnStateChanged(state))"
+                         OnChange="@OnStateChanged"
                          ShowClearButton="false" Filterable="true">
         </TelerikComboBox>
-</div>
+    </div>
 </div>
 }
 
@@ -129,24 +135,37 @@ else
     private WorkOrder selectedOrder;
     private IEnumerable<Device> selectedDevices = new List<Device>();
     private List<int> selectedDeviceIds = new List<int>();
+    private string? selectedState = "All";
+    private string? selectedDeviceType = "All";
+    private string? selectedDeviceCategory = "All";
     private MarkupString rowStyles = new MarkupString();
     private List<Device> devices = new List<Device>();
     List<string?> deviceCategories = new List<string?>();
     List<string?> deviceTypes = new List<string?>();
+    List<string>? workOrderStates = new List<string>(){"All"};
     public TelerikGrid<WorkOrderView> GridRef { get; set; }
     public CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor();
     private bool isOrderCardOpen = false;
     private MultiSelectTagMode TagMode { get; set; } = MultiSelectTagMode.Single;
     private int? MaxAllowedTags { get; set; }
+    private List<Dict> dicts = new List<Dict>();
 
     protected override async Task OnInitializedAsync()
     {
         Console.WriteLine("Initialized ORDERS PAGE");
         isDevicesLoading = true;
         StateHasChanged();
+        dicts = await apiService.GetWODictionaries(1);
+        workOrderStates = dicts?.Where(d => d.ListType == (int)ListTypeEnum.State)
+                               .Select(d => d.Name)
+                               .Distinct()
+                               .ToList() ?? null;
+        workOrderStates?.Insert(0, "All");
         devices = await apiService.GetAllDevicesCachedAsync();
         deviceCategories = devices.Select(d => d.DeviceCategory).Distinct().ToList();
+        deviceCategories?.Insert(0,"All");
         deviceTypes = devices.Select(d => d.Type).Distinct().ToList();
+        deviceTypes?.Insert(0, "All");
         isDevicesLoading = false;
         StateHasChanged();
         await LoadData();
@@ -167,13 +186,15 @@ else
             // selectedDevices = new List<Device>() { devices.FirstOrDefault() };
             selectedDevices = new List<Device>();
         }
+
         if (selectedDeviceIds == null || selectedDeviceIds.Count == 0)
         {
             selectedDeviceIds = new List<int>();
             // selectedDeviceIds = selectedDevices.Select(d => d.MachineID).ToList();
         }
         Console.WriteLine($"Selected devices count: {selectedDevices.Count()}");
-        OrdersForGrid = await apiService.GetWorkOrdersCachedAsync(selectedDevices);
+        var filteredDevices = GetFilteredDevices();
+        OrdersForGrid = await GetFilteredOrders(filteredDevices);
         OrderDevicesForGrid = OrdersForGrid.Select(o => new WorkOrderView(o, GetDeviceNameByOrder(o))).ToList();
         rowStyles = RenderStatesStyle(OrdersForGrid);
         isOrdersLoading = false;
@@ -183,6 +204,25 @@ else
     private string GetDeviceNameByOrder(WorkOrder order)
     {
         return devices.First(d => d.MachineID == order.MachineID)?.AssetNo ?? string.Empty;
+    }
+
+    private IEnumerable<Device> GetFilteredDevices()
+    {
+
+        return devices.Where(d => 
+            (string.IsNullOrWhiteSpace(selectedDeviceCategory) || d.DeviceCategory == selectedDeviceCategory || selectedDeviceCategory == "All") &&
+            (string.IsNullOrWhiteSpace(selectedDeviceType) || d.Type == selectedDeviceType || selectedDeviceType == "All") &&
+            (selectedDeviceIds.Count == 0 || selectedDeviceIds.Contains(d.MachineID))
+        );
+    }
+    private async Task<List<WorkOrder>> GetFilteredOrders(IEnumerable<Device> devices)
+    {
+        var orders = await apiService.GetWorkOrdersCachedAsync(devices);
+        var statesFromOrders = orders.Select(o => o.WOState).Distinct().ToList();
+        workOrderStates = workOrderStates.Union(statesFromOrders).ToList();
+        var result = orders.Where(o => o.WOState == selectedState || selectedState == "All" || string.IsNullOrWhiteSpace(selectedState)).ToList();
+        selectedDeviceIds = result.Select(d => d.MachineID).Distinct().ToList();
+        return result;
     }
 
     public class WorkOrderView : WorkOrder
@@ -237,38 +277,24 @@ else
         await LoadData(); 
     }
 
-    void OnStateChanged(string? state)
+    async Task OnStateChanged()
     {
-        selectedWorkOrderState = state;
-        ApplyFilters();
-    }
-
-    async Task OnCategoryChanged(string? category)
-    {
-        if (string.IsNullOrEmpty(category))
-        {
-            return;
-        }
-        else
-        {
-            selectedDevices = devices.Where(d => d.DeviceCategory == category).ToList();
-            selectedDeviceIds = selectedDevices.Select(d => d.MachineID).ToList();
-        }
+        if ( string.IsNullOrEmpty(selectedState))
+            selectedState = "All";
         await LoadData();
     }
 
-    async Task OnTypeChanged(string? type)
+    async Task OnCategoryChanged()
     {
-        if (string.IsNullOrEmpty(type))
-        {
-            return;
-        }
-        else
-        {
-            
-            selectedDevices = devices.Where(d => d.Type == type).ToList();
-            selectedDeviceIds = selectedDevices.Select(d => d.MachineID).ToList();
-        }
+        if (string.IsNullOrWhiteSpace(selectedDeviceCategory))
+            selectedDeviceCategory = "All";
+        await LoadData();
+    }
+
+    async Task OnTypeChanged()
+    {
+        if (string.IsNullOrWhiteSpace(selectedDeviceType))
+            selectedDeviceType = "All";
         await LoadData();
     }
 
@@ -276,6 +302,9 @@ else
     {
         selectedDeviceIds = devices.Select(d => d.MachineID).ToList();
         selectedDevices = devices.ToList();
+        selectedDeviceCategory = "All";
+        selectedDeviceType = "All";
+        selectedState = "All";
         await LoadData();
     }
 
