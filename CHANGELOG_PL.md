@@ -1,5 +1,17 @@
 # Changelog
 
+## 2025-07-02
+- **Interfejs użytkownika i funkcjonalność:**
+    - Użytkownicy mogą teraz klikać na statystykę "Akcje" w widoku zlecenia pracy, aby zobaczyć szczegółową listę działań.
+    - Lista działań jest wyświetlana w kompaktowym, czytelnym formacie tabeli.
+- **Zmiany w kodzie:**
+    - Utworzono model `Activity.cs`.
+    - Dodano `ActivityController` do pobierania danych o działaniach z zewnętrznego API.
+    - Zaimplementowano `GetActivityByWO` w `ApiServiceClient` w celu pobierania działań.
+    - Opracowano komponenty Blazor `ActivityList` i `ActivityDisplay` do wyświetlania działań.
+    - Zmodyfikowano `WorkOrderComponent` w celu wyświetlania listy działań po interakcji użytkownika.
+    - Porządek na ChangelogPage
+
 ## 2025-07-01
 - **Interfejs użytkownika i funkcjonalność:**
     - Na stronie `SchedulerPage` dodano filtr `Device` po `AssetNo` za filtrem `Department`.

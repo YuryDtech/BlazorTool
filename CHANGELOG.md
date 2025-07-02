@@ -1,5 +1,16 @@
 # Changelog
 
+## 2025-07-02
+- **UI and Functionality:**
+    - Users can now click on the "Actions" statistic in the work order view to see a detailed list of activities.
+    - The activity list is displayed in a compact, readable table format.
+- **Code Changes:**
+    - Created `Activity.cs` model.
+    - Added `ActivityController` to fetch activity data from the external API.
+    - Implemented `GetActivityByWO` in `ApiServiceClient` to retrieve activities.
+    - Developed `ActivityList` and `ActivityDisplay` Blazor components to show the activities.
+    - Modified `WorkOrderComponent` to display the activity list on user interaction.
+    - Beautify ChangelogPage
 ## 2025-07-01
 - **UI and Functionality:**
     - On `SchedulerPage`, added a `Device` filter by `AssetNo` after the `Department` filter.

@@ -1,31 +1,31 @@
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace BlazorTool.Client.Models
 {
     public class Activity
     {
-        [JsonPropertyName("workOrderID")]
+        [JsonProperty("workOrderID")]
         public int WorkOrderID { get; set; }
 
-        [JsonPropertyName("activityID")]
+        [JsonProperty("activityID")]
         public int ActivityID { get; set; }
 
-        [JsonPropertyName("work_Load")]
+        [JsonProperty("work_Load")]
         public decimal WorkLoad { get; set; }
 
-        [JsonPropertyName("workers")]
+        [JsonProperty("workers")]
         public int Workers { get; set; }
 
-        [JsonPropertyName("act_Category")]
+        [JsonProperty("act_Category")]
         public string ActCategory { get; set; }
 
-        [JsonPropertyName("description")]
+        [JsonProperty("description")]
         public string Description { get; set; }
 
-        [JsonPropertyName("act_Persons")]
+        [JsonProperty("act_Persons")]
         public string ActPersons { get; set; }
 
-        [JsonPropertyName("add_Date")]
+        [JsonProperty("add_Date")]
         public DateTime AddDate { get; set; }
     }
 }
