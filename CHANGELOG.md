@@ -4,6 +4,9 @@
 - **UI and Functionality:**
     - On `SchedulerPage`, added a `Device` filter by `AssetNo` after the `Department` filter.
     - Made `WorkOrderComponent` editable, adding a Telerik ComboBox for the `WOCategory`, `WOLevel` fields.
+    - In `WorkOrderComponent`, highlighted empty `Department` and `StartDate` fields.
+    - On `SchedulerPage`, changed the logic for displaying taken/untaken orders.
+    - On `SchedulerPage`, customized the scheduler item's text and color based on its state.
 - **Code Changes:**
     - Added a new endpoint `api/v1/wo/getdict` to the `WoController` to retrieve work order categories.
     - Updated `ApiServiceClient` to fetch `Dict` objects.

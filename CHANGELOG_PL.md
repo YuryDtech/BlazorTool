@@ -4,6 +4,9 @@
 - **Interfejs użytkownika i funkcjonalność:**
     - Na stronie `SchedulerPage` dodano filtr `Device` po `AssetNo` za filtrem `Department`.
     - Umożliwiono edycję `WorkOrderComponent`, dodając Telerik ComboBox dla pola `WOCategory`, `WOLevel`.
+    - W komponencie `WorkOrderComponent` wyróżniono puste pola `Department` i `StartDate`.
+    - Na stronie `SchedulerPage` zmieniono logikę wyświetlania zajętych/niezajętych zleceń.
+    - Na stronie `SchedulerPage` dostosowano tekst i kolor elementu harmonogramu w zależności od jego stanu.
 - **Zmiany w kodzie:**
     - Dodano nowy punkt końcowy `api/v1/wo/getdict` do `WoController` w celu pobierania kategorii zleceń pracy.
     - Zaktualizowano `ApiServiceClient` do pobierania obiektów `Dict`.
@@ -53,7 +56,7 @@
 - Wyrównano przyciski w edytorze Schedulera.
 
 ## 2025-06-23
-- Zaimplementowano metody `Save/Delete` w `AppointmentService` oraz `Save/DeleteAppointment` w `ApiServiceClient`.
+- Zaimplementowano metody `Save/Delete` w `AppointmentService` oraz `Save/DeleteAppointment` w `ApiServiceClient`..
 - Dodano widok terminów w Schedulerze oraz funkcjonalność przesuwania/aktualizowania elementów.
 - Zaktualizowano klasę `SchedulerAppointment`, aby dziedziczyła po `WorkOrder`.
 - Ustawiono komponent `WorkOrderComponent` jako tylko do odczytu.
