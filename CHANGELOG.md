@@ -2,10 +2,15 @@
 
 ## 2025-07-02
 - **UI and Functionality:**
+    - Added total workload to the activity list header.
+    - The `WorkOrderComponent` now expands to show the full list of activities without scrolling.
     - Aligned the column sizes between the header in `ActivityList` and the items in `ActivityDisplay` for a consistent look.
     - Users can now click on the "Actions" statistic in the work order view to see a detailed list of activities.
     - The activity list is displayed in a compact, readable table format.
 - **Code Changes:**
+    - Added `totalWorkload` calculation in `ActivityList.razor`.
+    - Used a conditional CSS class in `WorkOrderComponent.razor` to adjust `max-height` when activities are visible.
+    - Corrected JSON deserialization for the `Activity` model by adding `[JsonConstructor]` to the default constructor.
     - Created `Activity.cs` model.
     - Added `ActivityController` to fetch activity data from the external API.
     - Implemented `GetActivityByWO` in `ApiServiceClient` to retrieve activities.

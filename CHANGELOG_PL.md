@@ -2,10 +2,15 @@
 
 ## 2025-07-02
 - **Interfejs użytkownika i funkcjonalność:**
+    - Dodano sumaryczną pracochłonność do nagłówka listy działań.
+    - Komponent `WorkOrderComponent` teraz rozszerza się, aby pokazać pełną listę działań bez przewijania.
     - Wyrównano rozmiary kolumn między nagłówkiem w `ActivityList` a elementami w `ActivityDisplay`, aby uzyskać spójny wygląd.
     - Użytkownicy mogą teraz klikać na statystykę "Akcje" w widoku zlecenia pracy, aby zobaczyć szczegółową listę działań.
     - Lista działań jest wyświetlana w kompaktowym, czytelnym formacie tabeli.
 - **Zmiany w kodzie:**
+    - Dodano obliczanie `totalWorkload` w `ActivityList.razor`.
+    - Użyto warunkowej klasy CSS w `WorkOrderComponent.razor` do dostosowania `max-height`, gdy działania są widoczne.
+    - Poprawiono deserializację JSON dla modelu `Activity`, dodając `[JsonConstructor]` do domyślnego konstruktora.
     - Utworzono model `Activity.cs`.
     - Dodano `ActivityController` do pobierania danych o działaniach z zewnętrznego API.
     - Zaimplementowano `GetActivityByWO` w `ApiServiceClient` w celu pobierania działań.
@@ -37,7 +42,7 @@
 
 ## 2025-06-27
 - Dodano stronę Dziennika zmian i zaktualizowano mechanizm logowania.
-- Wprowadzono pliki `ChangelogPage.razor` i `CHANGELOG.md` do obsługi informacji o wydaniu.
+- Wprowadzono pliki `ChangelotPage.razor` i `CHANGELOG.md` do obsługi informacji o wydaniu.
 - Zastąpiono `Debug.Print` przez `Console.WriteLine` w celu ujednolicenia logowania po stronie klienta i serwera.
 - Drobne poprawki w interfejsie użytkownika (UI) w plikach `MainLayout.razor` i `OrdersPage.razor`.
 - Skonfigurowano kopiowanie pliku `CHANGELOG.md` do katalogu `wwwroot` w celu zapewnienia dostępu po stronie klienta.
