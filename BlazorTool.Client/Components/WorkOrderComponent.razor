@@ -21,8 +21,29 @@
 </div>
 
     <div class="position-absolute top-50 end-50 translate-middle-y  fs-5 ">
-      <div><strong>Device:</strong> @WorkOrder.AssetNo</div>
-      <div><strong>Category:</strong> @WorkOrder.DeviceCategory</div>
+                <div class="@DeviceAlarm"><strong>Device:</strong>
+                    @if (isNewWorkOrder && isEditable)
+                    {
+                       <TelerikComboBox Data="@ListDevices"
+                                        ValueField="@nameof(Device.MachineID)"
+                                        TextField="@nameof(Device.AssetNo)"
+                                        Placeholder="Select device..."
+                                        ValueChanged="@((int devId) => OnDeviceChanged(devId))"
+                                        Width="250px"
+                                        ShowClearButton=false
+                                        AllowCustom=false
+                                        Class="@DeviceAlarm"
+                                        Size="sm"
+                                        >
+                                        
+                        </TelerikComboBox> 
+                    }
+                    else
+                    {
+                        @WorkOrder.AssetNo
+                    }
+                </div>
+                <div><strong>Category:</strong> @(ListDevices?.FirstOrDefault(x=>x.MachineID == WorkOrder?.MachineID)?.DeviceCategory ?? "no device")</div>
     </div>
   </CardHeader> 
 
@@ -238,14 +259,13 @@
 
 
 @code {
+
     [Parameter] public WorkOrder? WorkOrder { get; set; }
     [Parameter] public List<string>? ListPersons { get; set; }
     [Parameter] public List<string>? ListDepartments { get; set; }
     [Parameter] public List<Dict>? ListDicts { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
-    [Parameter] public string Type { get; set; }
-    // bool isLoading = false;
-    // bool isLoaded = false;
+    [Parameter] public EventCallback OnStateChanged { get; set; }
     private int listTypeForCategory = 1;
     private int listTypeForLevel = 2;
     private int listTypeForReason = 3;
@@ -254,37 +274,52 @@
     private string notAssigned = "Not assigned";
     private string notSpecified = "Not specified";
     private string DepAlarm = string.Empty;
+    private string DeviceAlarm = string.Empty;
     private string StartDateAlarm = string.Empty;
     private bool showActivities = false;
-
-    private void ToggleActivities()
-    {
-        showActivities = !showActivities;
-    }
+    private bool isNewWorkOrder = false;
+    private List<Device>? ListDevices { get; set; } = new List<Device>();
 
     protected override async Task OnInitializedAsync()
     {
-        string notAssigned = "Not assigned";
-        if (ListPersons == null && !string.IsNullOrEmpty(WorkOrder?.AssignedPerson))
-        {
-            ListPersons = new List<string>() { WorkOrder.AssignedPerson };
+        isNewWorkOrder = WorkOrder?.WorkOrderID == 0;
+
+        if (isNewWorkOrder) {
+            ListDevices = await apiService.GetAllDevicesCachedAsync();
+
+            WorkOrder.EndDate = WorkOrder.StartDate?.AddHours(1);
+            DeviceAlarm = string.IsNullOrWhiteSpace(WorkOrder?.AssetNo) ? "bg-warning" : string.Empty;
         }
 
-        ListPersons?.Add(notAssigned);
+        if (ListPersons == null )
+        {
+            ListPersons = new List<string>();
+            if (!string.IsNullOrEmpty(WorkOrder?.AssignedPerson))
+             ListPersons.Add(WorkOrder.AssignedPerson) ;
+            
+             ListPersons.Add(notAssigned);
 
+        }else
+        if (!ListPersons.Contains(notAssigned))
+        {
+            ListPersons.Add(notAssigned);
+        }
+        
         if (ListDepartments != null)
         {
             if (ListDepartments.Contains("All"))
-            {
-                ListDepartments.Remove("All");
-            }
+                      ListDepartments.RemoveAll(d => d == "All");
+        
         }
         else if (WorkOrder != null && !string.IsNullOrEmpty(WorkOrder.DepName))
         {
             ListDepartments = new List<string>() { WorkOrder.DepName };
         }
 
-        ListDepartments?.Add(notAssigned);
+        if (!ListDepartments.Contains(notAssigned))
+        {
+            ListDepartments.Add(notAssigned);
+        }
 
         if (ListDicts == null)
         {
@@ -327,6 +362,12 @@
             StartDateAlarm = "bg-warning";
         }
 
+        if (isNewWorkOrder && WorkOrder != null)
+        {
+            WorkOrder.AddDate = DateTime.Now;
+            WorkOrder.ModDate = DateTime.Now;
+        }
+
     }
 
 
@@ -338,6 +379,28 @@
         {
             WorkOrder.AssignedPerson = personName == notAssigned ? string.Empty : personName;
         }
+    }
+
+    private async Task OnDeviceChanged(int devId)
+    {
+        var device = ListDevices?.FirstOrDefault(d => d.MachineID == devId);
+        if (WorkOrder != null && device != null)
+        {
+            WorkOrder.AssetNo = device.AssetNo; //?? or WorkOrder.AssetNo - custom?
+            WorkOrder.DeviceCategory = device.DeviceCategory;
+            WorkOrder.DeviceCategoryID = device.CategoryID;
+            WorkOrder.MachineID = device.MachineID;
+            await OnStateChanged.InvokeAsync();
+            DeviceAlarm = string.Empty;
+        }else
+        {
+            DeviceAlarm = "bg-warning";
+        }
+    }
+
+    private void ToggleActivities()
+    {
+        showActivities = !showActivities;
     }
 
     private async Task OnCategoryChanged(object newValue)
@@ -364,7 +427,7 @@
         {
             WorkOrder.DepName = departmentName == notAssigned ? string.Empty : departmentName;
         }
-        if (string.IsNullOrEmpty(departmentName) || departmentName == notAssigned)
+        if (string.IsNullOrEmpty(departmentName) || departmentName == notAssigned || departmentName == "All")
             DepAlarm = "bg-warning";
         else DepAlarm = string.Empty;
     }

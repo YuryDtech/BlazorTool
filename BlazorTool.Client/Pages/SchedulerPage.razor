@@ -179,8 +179,8 @@
     <WindowContent>
         <AppointmentEditor Appointment="@CurrentAppointment" 
             isEditable=true 
-            ListPersons=@Persons 
-            ListDepartments="@Departments" 
+            ListPersons="@Persons.Where(c=>c != "All").Concat(new List<string>(){"Not assigned"}).ToList()"
+            ListDepartments="@Departments.Where(c=>c != "All").Concat(new List<string>(){"Not assigned"}).ToList()"
             ListDicts="@ListDicts"
             OnAppointmentChanged="@RefreshData" />
     </WindowContent>
@@ -438,6 +438,8 @@
         {
 
         }
+        if (!Appointments.Any(x => x.AppointmentId == editedAppointment?.AppointmentId)) //new appointment
+            Appointments.Add(editedAppointment);
         customEditFormShown = false;
         isOrderCardOpen = false;
         //await LoadData();

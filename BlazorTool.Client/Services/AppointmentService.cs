@@ -76,6 +76,17 @@ namespace BlazorTool.Client.Services
                 existingAppointment = appointment.ShallowCopy();
                 await _apiServiceClient.SaveWorkOrderAsync((WorkOrder)existingAppointment);
             }
+            else // New appointment, add it to the list
+            {
+                var newId = await _apiServiceClient.SaveWorkOrderAsync((WorkOrder)appointment);
+                if (newId < 0)
+                {
+                    Console.WriteLine("Error: Failed to save the new appointment.");
+                    return;
+                }
+                appointment.AppointmentId = newId;
+                _appointments.Add(appointment);
+            }
         }
 
         public async Task DeleteAppointment(SchedulerAppointment ap)

@@ -7,8 +7,8 @@
 <EditForm Model="@Appointment" OnValidSubmit="@SaveAppointment">
     <DataAnnotationsValidator />
     <label class="width100">
-        Title:<br />
-        <TelerikTextBox @bind-Value="@Appointment.Title" Width="100%" />
+        AssetNo:<br />
+        <TelerikTextBox @bind-Value="@Appointment.AssetNo" Width="100%" Class="@titleAlarm" OnChange="@OnTitleChange"/>
     </label>
     <br />
      <div class="datetime-row">
@@ -23,19 +23,35 @@
     </div>
     <ValidationSummary />
       <div class="button-row">
-    <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Save</TelerikButton>
+        <TelerikButton Class="popup-target" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Save</TelerikButton>
 
     @* These buttons do not invoke validation, you can always delete an appointment or stop editing *@
-    <TelerikButton OnClick="@CancelEditing" ButtonType="ButtonType.Button">Cancel</TelerikButton>
+        <TelerikButton OnClick="@CancelEditing" ButtonType="ButtonType.Button">Cancel</TelerikButton>
     <TelerikButton OnClick="@DeleteAppointment" ButtonType="ButtonType.Button">Delete</TelerikButton>
     </div>
 </EditForm>
-<br />
 <WorkOrderComponent WorkOrder="@Appointment" 
-    ListPersons=@ListPersons 
+    ListPersons="@ListPersons" 
     ListDepartments="@ListDepartments"
     ListDicts="@ListDicts"
-    isEditable=@isEditable></WorkOrderComponent>
+    isEditable=@isEditable
+                    OnStateChanged="@(() => {StateHasChanged();OnTitleChange();})">
+</WorkOrderComponent>
+
+<TelerikPopup @ref="@PopupRef"
+              AnchorSelector=".popup-target"
+              AnimationType="@AnimationType.SlideDown"
+              AnimationDuration="200"
+              Width="300px"
+              Height="200px"
+              >
+    <div Class="warning-popup">
+        <p>Сheck all required fields</p>
+        <TelerikButton OnClick="@(() => PopupRef?.Hide())"
+                       Icon="@SvgIcon.XCircle">Close</TelerikButton>
+    </div>
+
+</TelerikPopup>
 
 @code{
     //communcation with the parent component where the scheduler is
@@ -45,35 +61,79 @@
     [Parameter] public bool isEditable { get; set; } = false;
     [Parameter] public List<Dict>? ListDicts { get; set; }
     [Parameter] public List<string>? ListDepartments { get; set; }
+    private bool isNewAppointment = false;
+    private string titleAlarm = string.Empty;
+    private TelerikPopup? PopupRef { get; set; }
 
-    private DateTime? _start_Init_value;
-    private DateTime? _end_Init_value;
-    private string _title_Init_value;
+    private SchedulerAppointment? _OriginAppointment; // Used to store the original appointment for cancellation
 
     protected override void OnInitialized()
     {
-        _start_Init_value = Appointment.Start;
-        _end_Init_value = Appointment.End;
-        _title_Init_value = Appointment.Title;
+        isNewAppointment = Appointment.AppointmentId == 0;
+        if (string.IsNullOrWhiteSpace(Appointment.AssetNo))
+        {
+            titleAlarm = "bg-warning";
+        }
+        else
+        {
+            titleAlarm = string.Empty;
+        }
+        _OriginAppointment = Appointment.ShallowCopy(); 
     }
 
     async Task SaveAppointment()
     {
+        if (!IsValidAppointment())
+        {
+            Console.WriteLine("--- IS INVALID");
+            PopupRef?.Show();
+            return;
+        }
         await ApptService.UpdateAppointment(Appointment);
         await OnAppointmentChanged.InvokeAsync(Appointment);
     }
 
     async Task DeleteAppointment()
     {
+        if (isNewAppointment) return;
         await ApptService.DeleteAppointment(Appointment);
         await OnAppointmentChanged.InvokeAsync(null);
     }
 
     async Task CancelEditing()
     {
-        Appointment.Start = _start_Init_value;
-        Appointment.End = _end_Init_value;
-        Appointment.Title = _title_Init_value;
+        if (isNewAppointment) return;
+
+        // Reset the appointment to the original one
+        Appointment = _OriginAppointment.ShallowCopy();
         await OnAppointmentChanged.InvokeAsync(Appointment);
+    }
+
+    private bool IsValidAppointment()
+    {
+        //log every check parameter
+        Console.WriteLine($"AssetNo: {Appointment.AssetNo}");
+        Console.WriteLine($"Start: {Appointment.Start}");
+        Console.WriteLine($"End: {Appointment.End}");
+        Console.WriteLine($"MachineID: {Appointment.MachineID}");
+        Console.WriteLine($"DepName: {Appointment.DepName}");
+        return !string.IsNullOrWhiteSpace(Appointment.AssetNo) &&
+               Appointment.Start != default &&
+               Appointment.End != default &&
+               Appointment.Start < Appointment.End &&
+               Appointment.MachineID != 0 &&
+               !string.IsNullOrEmpty(Appointment.DepName);
+    }
+
+    private void OnTitleChange()
+    {
+        if (string.IsNullOrWhiteSpace(Appointment.AssetNo))
+        {
+            titleAlarm = "bg-warning";
+        }
+        else
+        {
+            titleAlarm = string.Empty;
+        }
     }
 }

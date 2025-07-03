@@ -184,7 +184,7 @@ namespace BlazorTool.Client.Services
             return orders.FirstOrDefault();
         }
 
-        public async Task<bool> SaveWorkOrderAsync(WorkOrder workOrder)
+        public async Task<int> SaveWorkOrderAsync(WorkOrder workOrder)
         {
             //TODO : implement saving work order to API
             //var url = "api/v1/wo/save";
@@ -201,17 +201,41 @@ namespace BlazorTool.Client.Services
             //    return false;
             //}
             //for test save only cache
-            if (workOrder == null || workOrder.WorkOrderID <= 0)
+            if (workOrder == null || workOrder.WorkOrderID < 0)
             {
-                Console.WriteLine("= = = = = = = = = Work order is null.\n");
-                return false;
+                Console.WriteLine("= = = = = = = Work order is null.\n");
+                return -1;
             }
+
+            if (workOrder.WorkOrderID == 0) //is MEW order
+            {
+                //TODO : implement saving MEW order to API
+                // now save only to cache
+                var newId = _workOrdersCache.Count > 0 ? _workOrdersCache.Max(x => x.Key) + 1 : 1;
+                workOrder.WorkOrderID = newId;
+                workOrder.ModPerson = "System"; //TODO: get current user
+                if (workOrder.MachineID <= 0)
+                {
+                    Console.WriteLine($"= = = = = = =New workorder {workOrder.WorkOrderID} has no MachineID, cannot save to cache.\n");
+                    return -1;
+                }
+                if (_workOrdersCache.ContainsKey(workOrder.MachineID))
+                {
+                     _workOrdersCache[workOrder.MachineID].Add(workOrder);
+                }else
+                {
+                    _workOrdersCache.Add(workOrder.MachineID, new List<WorkOrder>() { workOrder });
+                }
+                Console.WriteLine($"= = = = = = = NEW workorder ID={workOrder.WorkOrderID} saved to chache.\n");
+                return workOrder.WorkOrderID;
+            }
+
             if (!_workOrdersCache.ContainsKey(workOrder.MachineID))
             {
                 //new machineID, add new list to cache
                 _workOrdersCache.Add(workOrder.MachineID, new List<WorkOrder>() { workOrder});
-                Console.WriteLine("= = = = = = = = = Work order was added to cache.");
-                return true;
+                Console.WriteLine($"= = = = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
+                return workOrder.WorkOrderID;
             }
             
             //existing machineID, check if work order already exists in cache
@@ -220,14 +244,17 @@ namespace BlazorTool.Client.Services
             {
                 //update existing work order in cache
                 _workOrdersCache[workOrder.MachineID][ind] = workOrder;
-                Console.WriteLine("= = = = = = = = = Work order was updated in cache. ");
+                Console.WriteLine($"= = = = = = = = = Work order ID={workOrder.WorkOrderID} was updated in cache. ");
                 Console.WriteLine($" === Title={workOrder.AssetNo}, StartDate={workOrder.StartDate}, EndDate={workOrder.EndDate}===");
-                return true;
+                return workOrder.WorkOrderID;
             }
-         // new work - cant insert a new one
-         //_workOrdersCache[workOrder.MachineID].Add(workOrder);
-         Console.WriteLine("= = = = = = = = = Work order not found in base: " + workOrder.WorkOrderID);
-            return false;
+            else // work order not found in cache
+            {
+                _workOrdersCache[workOrder.MachineID].Add(workOrder);
+                Console.WriteLine($"= = = = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
+                return workOrder.WorkOrderID;
+            }
+            
         }
 
         public async Task<bool> DeleteWorkOrderAsync(int workOrderID, int MachineID)
