@@ -1,5 +1,6 @@
 ﻿@page "/changelog"
 @inject HttpClient Http
+@using Markdig
 
 <h3>Changelog Page</h3>
 
@@ -8,11 +9,11 @@
     <div class="changelog-content">
         <div class="full-width-container flex flex-col md:flex-row">
             <div class="w-full md:w-1/2 bg-blue-100 p-4">
-                <pre>@changelogContent</pre>
+                @((MarkupString)changelogContent)
             </div>
 
             <div class="w-full md:w-1/2 bg-green-100 p-4">
-                <pre>@changelogContent_PL</pre>
+                @((MarkupString)changelogContent_PL)
             </div>
         </div>
         
@@ -33,12 +34,16 @@ else
     
         try
         {
-            changelogContent = await Http.GetStringAsync(changelogUrl);
-            changelogContent_PL = await Http.GetStringAsync(changelogUrl_PL);
+            var markdownEn = await Http.GetStringAsync(changelogUrl);
+            changelogContent = Markdig.Markdown.ToHtml(markdownEn ?? "");
+
+            var markdownPl = await Http.GetStringAsync(changelogUrl_PL);
+            changelogContent_PL = Markdig.Markdown.ToHtml(markdownPl ?? "");
         }
         catch (Exception ex)
         {
-            changelogContent = $"Error loading changelog: {ex.Message}";
+            changelogContent = $"<p>Error loading changelog: {ex.Message}</p>";
+            changelogContent_PL = $"<p>Error loading changelog: {ex.Message}</p>";
         }
     }
 }

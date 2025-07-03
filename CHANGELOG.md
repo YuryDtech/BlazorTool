@@ -2,6 +2,9 @@
 
 ## 2025-07-02
 - **UI and Functionality:**
+    - Added a status filter to the `OrdersPage`.
+    - Improved filtering logic on the `OrdersPage`.
+    - Added descriptive labels for the filters.
     - Added total workload to the activity list header.
     - The `WorkOrderComponent` now expands to show the full list of activities without scrolling.
     - Aligned the column sizes between the header in `ActivityList` and the items in `ActivityDisplay` for a consistent look.

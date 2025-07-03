@@ -2,6 +2,9 @@
 
 ## 2025-07-02
 - **Interfejs użytkownika i funkcjonalność:**
+    - Dodano filtr statusu na stronie `OrdersPage`.
+    - Poprawiono logikę filtrowania na stronie `OrdersPage`.
+    - Dodano opisowe etykiety dla filtrów.
     - Dodano sumaryczną pracochłonność do nagłówka listy działań.
     - Komponent `WorkOrderComponent` teraz rozszerza się, aby pokazać pełną listę działań bez przewijania.
     - Wyrównano rozmiary kolumn między nagłówkiem w `ActivityList` a elementami w `ActivityDisplay`, aby uzyskać spójny wygląd.
