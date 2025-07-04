@@ -1,8 +1,10 @@
 ﻿@page "/settings"
+@using BlazorTool.Client.Services
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
+@inject UserState UserState
 
 <h3>Settings</h3>
-<p class="active">user=@currentUser</p>
+<p class="active">user=@UserState.UserName</p>
 <div class="container">
     <div class="row mb-3">
         <div class="col-md-6">

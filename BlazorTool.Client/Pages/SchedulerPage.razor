@@ -128,7 +128,7 @@
         else
         {
             <div style="display:flex; justify-content:space-between; align-items: center">
-                <p mb-0>Untaken orders (no assigned persons): @UntakenOrders.Count()</p>
+                <p mb-0>Untaken orders (no Department and  StartDate): @UntakenOrders.Count()</p>
                 <div style="display:flex; align-items:center; gap: 5px;">
                     <TelerikCheckBox Size="lg" OnChange="@DisplayOrders" Id="OrdersCheckBox" @bind-Value="@isCBAllOrdersSelected" />
                     <label for="OrdersCheckBox">show completed orders </label>
@@ -317,10 +317,11 @@
             {
                 var newscheduler = new SchedulerAppointment(wo);
                 newscheduler.Start = slot.Start;
-                newscheduler.End = slot.End;
+                newscheduler.End = slot.End.AddHours(3);
                 newscheduler.IsAllDay = slot.IsAllDay;
                 newscheduler.TakeDate = slot.Start;
                 Appointments.Add(newscheduler);
+                _allAppointments.Add(newscheduler);
                 UntakenOrders.Remove(wo);
                 await ApptService.UpdateAppointment(newscheduler);
             }
@@ -329,7 +330,7 @@
         }
     }
 
-    #region filters
+    #region filters can remove (not actual)
     private void OnAssignedPersonsClosed()
     {
         DisplayAppointments();
@@ -395,9 +396,10 @@
 
         if (args.Item is SchedulerAppointment newAppt && SchedulerRef != null)
         {
+            _allAppointments.Add(newAppt);
             Appointments.Add(newAppt);
             await ApptService.UpdateAppointment(newAppt);
-            SchedulerRef.Rebind();
+            SchedulerRef?.Rebind();
         }
     }
 
@@ -409,6 +411,7 @@
             if (ind >= 0)
             {
                 Appointments[ind] = updAppt.ShallowCopy(); 
+
                 await ApptService.UpdateAppointment(Appointments[ind]);
                 SchedulerRef?.Rebind();
             }
@@ -421,7 +424,9 @@
         {
             //TODO not delete Order, but change status(Assigned Person, Date...)
             await ApptService.DeleteAppointment(delAppt); // Delete from service
+            _allAppointments.RemoveAll(a => a.AppointmentId == delAppt.AppointmentId);
             Appointments.RemoveAll(a => a.AppointmentId == delAppt.AppointmentId);
+
             SchedulerRef?.Rebind();
         }
     }
@@ -435,17 +440,21 @@
         // SelectedDate = navigateDate;
     }
 
+    //when order window closed
     async void RefreshData(SchedulerAppointment editedAppointment)
     {
         if (editedAppointment == null)//was removed
         {
 
         }
-        if (!Appointments.Any(x => x.AppointmentId == editedAppointment?.AppointmentId)) //new appointment
-            Appointments.Add(editedAppointment);
+        // if (!_allAppointments.Any(x => x.AppointmentId == editedAppointment?.AppointmentId)) //new appointment
+        // { 
+        //     _allAppointments.Add(editedAppointment);
+        //     Appointments.Add(editedAppointment);
+        // }
         customEditFormShown = false;
         isOrderCardOpen = false;
-        //await LoadData();
+        await LoadData();
         SchedulerRef?.Rebind();
     }
 
@@ -469,7 +478,6 @@
 
     void CancelEditing()
     {
-        //TODO undo changes if any
         customEditFormShown = false;
         isOrderCardOpen = false;
     }

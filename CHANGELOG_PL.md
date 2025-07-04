@@ -5,18 +5,17 @@
     - Zaimplementowano autoryzację użytkownika za pośrednictwem strony `Login.razor`.
     - Zintegrowano `UserState` do zarządzania danymi logowania i tokenem bieżącego użytkownika.
 - **Zmiany w kodzie:**
-    - Dodano właściwość `Password` do `UserState.cs`.
+	- Dodano właściwość `Password` do `UserState.cs`.
     - Zrefaktoryzowano `AuthHeaderHandler.cs` w celu pobierania danych uwierzytelniających użytkownika z `UserState` do odświeżania tokena.
     - Zmodyfikowano `BlazorTool.Client/Program.cs` w celu prawidłowego wstrzykiwania `UserState` do `AuthHeaderHandler`.
     - Dodano metodę `PostSingleAsync` do `ApiServiceClient.cs` do obsługi odpowiedzi API zawierających pojedynczy obiekt.
     - Zaktualizowano `Login.razor` w celu użycia `ApiServiceClient.PostSingleAsync` do uwierzytelniania i aktualizacji `UserState` po pomyślnym zalogowaniu.
     - Uzupełniono model `RightMatrix` w celu prawidłowej deserializacji uprawnień użytkownika.
-
-## 2025-07-04
-- **Zmiany w kodzie:**
     - Dodano właściwość `Expires` do modelu `IdentityData`.
     - Zrefaktoryzowano `AuthHeaderHandler` w celu użycia `IdentityData` i `ApiResponse<IdentityData>` do zarządzania tokenami.
     - Zmodyfikowano `IdentityController.cs` w celu zwracania pełnych danych `IdentityData` z zewnętrznego API.
+    - Ulepszono `UserState` w celu utrwalania `IdentityData` w `localStorage` i ładowania jej przy uruchomieniu.
+    - Zmodyfikowano `Login.razor` w celu jawnego zapisywania `IdentityData` w `UserState` (a tym samym w `localStorage`) po pomyślnym zalogowaniu.
 
 ## 2025-07-03
 - **Interfejs użytkownika i funkcjonalność:**

@@ -31,7 +31,8 @@ builder.Services.AddHttpClient("ServerApi", client =>
 .AddHttpMessageHandler<AuthHeaderHandler>();
 
 builder.Services.AddScoped<ApiServiceClient>(sp =>
-    new ApiServiceClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ServerApi")));
+    new ApiServiceClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ServerApi"), 
+    sp.GetRequiredService<UserState>()));
 
 builder.Services.AddScoped<AppointmentService>();
 
@@ -40,7 +41,7 @@ builder.Services.AddScoped(sp => {
     return new HttpClient { BaseAddress = new Uri(serverBaseUrl) };
 });
 
-builder.Services.AddScoped<UserState>();
+builder.Services.AddScoped<UserState>(sp => new UserState(sp.GetRequiredService<ILocalStorageService>()));
 
 Console.WriteLine("======= APPLICATION (Client) STARTING...");
 

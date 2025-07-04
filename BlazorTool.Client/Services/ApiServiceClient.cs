@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Telerik.SvgIcons;
 using Activity = BlazorTool.Client.Models.Activity;
+
 namespace BlazorTool.Client.Services
 
 {
@@ -22,9 +23,12 @@ namespace BlazorTool.Client.Services
         private readonly HttpClient _http;
         private Dictionary<int, List<WorkOrder>> _workOrdersCache = new Dictionary<int, List<WorkOrder>>();
         private List<Device> _devicesCache = new List<Device>();
-        public ApiServiceClient(HttpClient http)
+        private readonly UserState _userState;
+
+        public ApiServiceClient(HttpClient http, UserState userState)
         {
             _http = http;
+            _userState = userState;
         }
 
         
@@ -211,12 +215,12 @@ namespace BlazorTool.Client.Services
             {
                 //TODO : implement saving MEW order to API
                 // now save only to cache
-                var newId = _workOrdersCache.Count > 0 ? _workOrdersCache.Max(x => x.Key) + 1 : 1;
+                var newId = _workOrdersCache.Count > 0 ? _workOrdersCache.Max(x => x.Value.Max(c=>c.WorkOrderID)) + 1 : 1;
                 workOrder.WorkOrderID = newId;
-                workOrder.ModPerson = "System"; //TODO: get current user
+                workOrder.ModPerson = _userState.UserName; 
                 if (workOrder.MachineID <= 0)
                 {
-                    Console.WriteLine($"= = = = = = =New workorder {workOrder.WorkOrderID} has no MachineID, cannot save to cache.\n");
+                    Console.WriteLine($"= = = = = = = NEW workorder {workOrder.WorkOrderID} has no MachineID, cannot save to cache.\n");
                     return -1;
                 }
                 if (_workOrdersCache.ContainsKey(workOrder.MachineID))
@@ -226,7 +230,7 @@ namespace BlazorTool.Client.Services
                 {
                     _workOrdersCache.Add(workOrder.MachineID, new List<WorkOrder>() { workOrder });
                 }
-                Console.WriteLine($"= = = = = = = NEW workorder ID={workOrder.WorkOrderID} saved to chache.\n");
+                Console.WriteLine($"= = = = = = = NEW workorder ID={workOrder.WorkOrderID} saved to cache.\n");
                 return workOrder.WorkOrderID;
             }
 
@@ -290,9 +294,6 @@ namespace BlazorTool.Client.Services
             return true;
         }
 
-        //temp, for test only
-        //TODO : implement getting work order categories from Dicts from API
-        //TODO : implement Dicts model and methods
         public async Task<List<Dict>> GetWODictionaries(int personID, string lang = "pl-PL")
         {
             var qp = new List<string>();

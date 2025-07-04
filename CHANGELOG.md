@@ -12,11 +12,10 @@
     - Updated `Login.razor` to use `ApiServiceClient.PostSingleAsync` for authentication and to update `UserState` upon successful login.
     - Completed `RightMatrix` model to correctly deserialize user rights.
     - Modified `IdentityController.cs` to return full `IdentityData` from external API.
-
-## 2025-07-04
-- **Code Changes:**
     - Added `Expires` property to `IdentityData` model.
     - Refactored `AuthHeaderHandler` to use `IdentityData` and `ApiResponse<IdentityData>` for token management.
+    - Enhanced `UserState` to persist `IdentityData` to `localStorage` and load it on startup.
+    - Modified `Login.razor` to explicitly save `IdentityData` to `UserState` (and thus `localStorage`) after successful login.
 
 ## 2025-07-03
 - **UI and Functionality:**

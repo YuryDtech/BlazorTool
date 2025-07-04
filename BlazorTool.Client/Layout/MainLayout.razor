@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using BlazorTool.Client.Services
+@inherits LayoutComponentBase
+@inject UserState UserState
+@inject NavigationManager Navigation
 
 <TelerikRootComponent>
     <div class="page">
@@ -24,3 +27,15 @@
         <a class="dismiss">🗙</a>
     </div>
 </TelerikRootComponent>
+@code{
+protected override void OnInitialized()
+    {
+        if (!UserState.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+        }
+        // Для проверки ролей:
+        // if (!UserState.HasRole("Admin")) { ... }
+    }
+
+}

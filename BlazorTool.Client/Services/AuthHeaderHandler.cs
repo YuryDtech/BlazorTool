@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Telerik.SvgIcons;
 
 namespace BlazorTool.Client.Services
 {
@@ -64,6 +65,11 @@ namespace BlazorTool.Client.Services
             // Проверяем, есть ли токен и не истек ли он
             if (identityData != null && !string.IsNullOrEmpty(identityData.Token) && identityData.Expires > DateTime.UtcNow)
             {
+                //fill UserState with token
+                _userState.UserName = identityData.Name;
+                _userState.Token = identityData.Token;
+                _userState.RightMatrix = identityData.RigthMatrix;
+
                 return identityData.Token;
             }
             else

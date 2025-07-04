@@ -18,7 +18,7 @@
         {
             <div class="error-message">@ErrorMessage</div>
         }
-        <button type="submit" class="btn-login">Войти</button>
+        <button type="submit" class="btn-login">Enter</button>
     </form>
 </div>
 
@@ -46,6 +46,7 @@
                 UserState.UserName = identityData.Name;
                 UserState.Token = identityData.Token;
                 UserState.Password = Password; // Save password to UserState for token refresh
+                await UserState.SaveIdentityDataAsync(identityData); // Save identityData to local storage
                 Navigation.NavigateTo("/");
             }
             else

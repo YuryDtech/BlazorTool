@@ -32,7 +32,7 @@ builder.Services.AddHttpClient("ExternalApiBearerAuthClient", client =>
 .AddHttpMessageHandler<ServerAuthHeaderHandler>();
 
 // inject IHttpClientFactory & IMemoryCache
-builder.Services.AddSingleton(sp =>
+builder.Services.AddScoped(sp =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
     var loginDto = new LoginRequest
@@ -49,7 +49,7 @@ builder.Services.AddSingleton(sp =>
 });
 builder.Services.AddScoped<ServerAuthHeaderHandler>();
 
-builder.Services.AddSingleton<UserState>();
+
 
 string? internalApiBaseUrl = null;
 
@@ -61,7 +61,8 @@ builder.Services.AddHttpClient("InternalApiClient", client =>
 });
 
 builder.Services.AddScoped<ApiServiceClient>(sp =>
-    new ApiServiceClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ExternalApiBearerAuthClient")));
+    new ApiServiceClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ExternalApiBearerAuthClient"),
+    sp.GetRequiredService<UserState>()));
 
 
 builder.Services.AddRazorComponents()
