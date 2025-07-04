@@ -12,5 +12,8 @@ namespace BlazorTool.Client.Models
 
         [JsonPropertyName("errors")]
         public List<string> Errors { get; set; }
+
+        [JsonPropertyName("message")]
+        public string? Message { get; set; }
     }
 }

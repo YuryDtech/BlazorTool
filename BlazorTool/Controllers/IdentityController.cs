@@ -55,10 +55,7 @@ namespace BlazorTool.Controllers
             var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             var wrapper = await response.Content.ReadFromJsonAsync<SingleResponse<IdentityData>>();
-            var token = wrapper?.Data?.Token ?? string.Empty;
-            var langCode = wrapper?.Data.LangCode ?? "pl-PL";
-            var expires = DateTime.UtcNow.AddHours(2);
-            return Ok(new { Token = token, LangCode = langCode, Expires = expires });     
+            return Ok(wrapper);     
         }
     }
 

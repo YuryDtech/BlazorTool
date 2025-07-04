@@ -1,5 +1,39 @@
 # Changelog
 
+## 2025-07-04
+- **Interfejs użytkownika i funkcjonalność:**
+    - Zaimplementowano autoryzację użytkownika za pośrednictwem strony `Login.razor`.
+    - Zintegrowano `UserState` do zarządzania danymi logowania i tokenem bieżącego użytkownika.
+- **Zmiany w kodzie:**
+    - Dodano właściwość `Password` do `UserState.cs`.
+    - Zrefaktoryzowano `AuthHeaderHandler.cs` w celu pobierania danych uwierzytelniających użytkownika z `UserState` do odświeżania tokena.
+    - Zmodyfikowano `BlazorTool.Client/Program.cs` w celu prawidłowego wstrzykiwania `UserState` do `AuthHeaderHandler`.
+    - Dodano metodę `PostSingleAsync` do `ApiServiceClient.cs` do obsługi odpowiedzi API zawierających pojedynczy obiekt.
+    - Zaktualizowano `Login.razor` w celu użycia `ApiServiceClient.PostSingleAsync` do uwierzytelniania i aktualizacji `UserState` po pomyślnym zalogowaniu.
+    - Uzupełniono model `RightMatrix` w celu prawidłowej deserializacji uprawnień użytkownika.
+
+## 2025-07-04
+- **Zmiany w kodzie:**
+    - Dodano właściwość `Expires` do modelu `IdentityData`.
+    - Zrefaktoryzowano `AuthHeaderHandler` w celu użycia `IdentityData` i `ApiResponse<IdentityData>` do zarządzania tokenami.
+
+## 2025-07-03
+- **Interfejs użytkownika i funkcjonalność:**
+    - Zaimplementowano tworzenie nowych spotkań w Harmonogramie.
+    - Dodano pole kombi do wyboru urządzenia podczas tworzenia nowego spotkania.
+    - Zaimplementowano walidację wymaganych pól w Edytorze Spotkań.
+    - Dodano wyskakujące powiadomienie informujące użytkowników o niewypełnionych wymaganych polach.
+    - Zmieniono nazwę pola "Title" na "AssetNo" w Edytorze Spotkań i podświetlono je, jeśli jest puste.
+    - Ulepszono stronę `ChangelogPage` w celu renderowania Markdown dla lepszej czytelności.
+- **Zmiany w kodzie:**
+    - Dodano logikę do `AppointmentService` do obsługi tworzenia nowych spotkań.
+    - Zaimplementowano zapisywanie nowych spotkań za pośrednictwem `ApiServiceClient`.
+    - Dodano rozwijaną listę do wyboru `Device` w `WorkOrderComponent` dla nowych spotkań.
+    - Dodano logikę walidacji w `AppointmentEditor.razor`.
+    - Zaimplementowano wyskakujące okienko Telerik do powiadomień w `AppointmentEditor.razor`.
+    - Zaktualizowano style w `AppointmentEditor.razor.css`.
+    - Dodano pakiet `Markdig` do renderowania Markdown na stronie `ChangelogPage`.
+
 ## 2025-07-02
 - **Interfejs użytkownika i funkcjonalność:**
     - Dodano filtr statusu na stronie `OrdersPage`.

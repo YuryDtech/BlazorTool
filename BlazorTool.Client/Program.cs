@@ -15,17 +15,12 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Services.AddTelerikBlazor();
 builder.Services.AddBlazoredLocalStorage();
 
-var loginDto = new LoginRequest
-{ //TODO auth page
-    Username = "Romaniuk Krzysztof",//builder.Configuration["Auth:Username"]!,
-    Password = "q"//builder.Configuration["Auth:Password"]!
-};
-
 builder.Services.AddScoped<AuthHeaderHandler>(sp =>
 {
     var localStorageService = sp.GetRequiredService<ILocalStorageService>();
     var httpClientForAuth = new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
-    return new AuthHeaderHandler(localStorageService, httpClientForAuth, loginDto);
+    var userState = sp.GetRequiredService<UserState>();
+    return new AuthHeaderHandler(localStorageService, httpClientForAuth, userState);
 });
 
 builder.Services.AddHttpClient("ServerApi", client =>
@@ -45,8 +40,7 @@ builder.Services.AddScoped(sp => {
     return new HttpClient { BaseAddress = new Uri(serverBaseUrl) };
 });
 
-
-
+builder.Services.AddScoped<UserState>();
 
 Console.WriteLine("======= APPLICATION (Client) STARTING...");
 

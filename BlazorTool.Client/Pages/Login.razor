@@ -1,0 +1,62 @@
+﻿@page "/login"
+@inject NavigationManager Navigation
+@inject BlazorTool.Client.Services.UserState UserState
+@inject BlazorTool.Client.Services.ApiServiceClient ApiServiceClient
+
+<div class="login-container">
+    <form @onsubmit="HandleLogin">
+        <h2>Login to the @AppInfo.Name</h2>
+        <div class="form-group">
+            <label for="username">User name</label>
+            <input id="username" class="form-control" @bind="Username" autocomplete="username" />
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input id="password" type="password" class="form-control" @bind="Password" autocomplete="current-password" />
+        </div>
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="error-message">@ErrorMessage</div>
+        }
+        <button type="submit" class="btn-login">Войти</button>
+    </form>
+</div>
+
+@code {
+    private string Username { get; set; } = string.Empty;
+    private string Password { get; set; } = string.Empty;
+    private string ErrorMessage { get; set; } = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        ErrorMessage = string.Empty;
+        try
+        {
+            var loginRequest = new BlazorTool.Client.Models.LoginRequest
+            {
+                Username = Username,
+                Password = Password
+            };
+
+            var response = await ApiServiceClient.PostSingleAsync<BlazorTool.Client.Models.LoginRequest, BlazorTool.Client.Models.IdentityData>("api/v1/identity/loginpassword", loginRequest);
+
+            if (response != null && response.IsValid && response.Data != null)
+            {
+                var identityData = response.Data;
+                UserState.UserName = identityData.Name;
+                UserState.Token = identityData.Token;
+                UserState.Password = Password; // Save password to UserState for token refresh
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                ErrorMessage = response?.Errors?.FirstOrDefault() ?? "Login failed. Please check your credentials.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+}
+

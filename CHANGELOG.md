@@ -1,5 +1,40 @@
 # Changelog
 
+## 2025-07-04
+- **UI and Functionality:**
+    - Implemented user authorization via `Login.razor` page.
+    - Integrated `UserState` for managing current user's login and token.
+- **Code Changes:**
+    - Added `Password` property to `UserState.cs`.
+    - Refactored `AuthHeaderHandler.cs` to retrieve user credentials from `UserState` for token refresh.
+    - Modified `BlazorTool.Client/Program.cs` to correctly inject `UserState` into `AuthHeaderHandler`.
+    - Added `PostSingleAsync` method to `ApiServiceClient.cs` for handling single object API responses.
+    - Updated `Login.razor` to use `ApiServiceClient.PostSingleAsync` for authentication and to update `UserState` upon successful login.
+    - Completed `RightMatrix` model to correctly deserialize user rights.
+    - Modified `IdentityController.cs` to return full `IdentityData` from external API.
+
+## 2025-07-04
+- **Code Changes:**
+    - Added `Expires` property to `IdentityData` model.
+    - Refactored `AuthHeaderHandler` to use `IdentityData` and `ApiResponse<IdentityData>` for token management.
+
+## 2025-07-03
+- **UI and Functionality:**
+    - Implemented the creation of new appointments in the Scheduler.
+    - Added a combobox for selecting a Device when creating a new appointment.
+    - Implemented validation for required fields in the AppointmentEditor.
+    - Added a popup notification to alert users about unfilled required fields.
+    - Renamed the "Title" field to "AssetNo" in the AppointmentEditor and highlighted it if empty.
+    - Improved `ChangelogPage` to render Markdown for better readability.
+- **Code Changes:**
+    - Added logic to `AppointmentService` to handle the creation of new appointments.
+    - Implemented saving new appointments via `ApiServiceClient`.
+    - Added a dropdown list for `Device` selection in `WorkOrderComponent` for new appointments.
+    - Added validation logic in `AppointmentEditor.razor`.
+    - Implemented a Telerik Popup for notifications in `AppointmentEditor.razor`.
+    - Updated styles in `AppointmentEditor.razor.css`.
+    - Added `Markdig` package to render Markdown in `ChangelogPage`.
+
 ## 2025-07-02
 - **UI and Functionality:**
     - Added a status filter to the `OrdersPage`.

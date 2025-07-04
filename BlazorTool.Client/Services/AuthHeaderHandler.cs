@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using BlazorTool.Client.Models;
+using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json;
 using System;
 using System.Net.Http;
@@ -13,14 +14,14 @@ namespace BlazorTool.Client.Services
     public class AuthHeaderHandler : DelegatingHandler
     {
         private readonly ILocalStorageService _localStorageService;
-        private readonly HttpClient _httpClient; 
-        private readonly LoginRequest _loginDto; 
+        private readonly HttpClient _httpClient;
+        private readonly UserState _userState;
 
-        public AuthHeaderHandler(ILocalStorageService localStorageService, HttpClient httpClient, LoginRequest loginDto)
+        public AuthHeaderHandler(ILocalStorageService localStorageService, HttpClient httpClient, UserState userState)
         {
             _localStorageService = localStorageService;
             _httpClient = httpClient;
-            _loginDto = loginDto;
+            _userState = userState;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -44,26 +45,26 @@ namespace BlazorTool.Client.Services
 
         private async Task<string> GetValidToken()
         {
-            string tokenJson = await _localStorageService.GetItemAsStringAsync("token");
-            TokenResponse tokenResult = null;
+            string? identityDataJson = await _localStorageService.GetItemAsStringAsync("identityData");
+            IdentityData? identityData = null;
 
-            if (!string.IsNullOrEmpty(tokenJson))
+            if (!string.IsNullOrEmpty(identityDataJson))
             {
                 try
                 {
-                    tokenResult = JsonConvert.DeserializeObject<TokenResponse>(tokenJson);
+                    identityData = JsonConvert.DeserializeObject<IdentityData>(identityDataJson);
                 }
                 catch (JsonException ex)
                 {
-                    Console.WriteLine($"AuthHeaderHandler: Error deserializing token from LocalStorage: {ex.Message}");
-                    tokenResult = null;
+                    Console.WriteLine($"AuthHeaderHandler: Error deserializing identityData from LocalStorage: {ex.Message}");
+                    identityData = null;
                 }
             }
 
             // Проверяем, есть ли токен и не истек ли он
-            if (tokenResult != null && !string.IsNullOrEmpty(tokenResult.Token) && tokenResult.Expires > DateTime.UtcNow)
+            if (identityData != null && !string.IsNullOrEmpty(identityData.Token) && identityData.Expires > DateTime.UtcNow)
             {
-                return tokenResult.Token;
+                return identityData.Token;
             }
             else
             {
@@ -74,21 +75,35 @@ namespace BlazorTool.Client.Services
 
         private async Task<string> GetNewToken()
         {
+            if (string.IsNullOrEmpty(_userState.UserName) || string.IsNullOrEmpty(_userState.Password))
+            {
+                Console.WriteLine("AuthHeaderHandler: UserState does not contain username or password for token refresh.");
+                return string.Empty;
+            }
+
             try
             {
-                var loginResponse = await _httpClient.PostAsJsonAsync("api/v1/identity/loginpassword", _loginDto);
+                var loginRequest = new LoginRequest
+                {
+                    Username = _userState.UserName,
+                    Password = _userState.Password
+                };
+
+                var loginResponse = await _httpClient.PostAsJsonAsync("api/v1/identity/loginpassword", loginRequest);
                 loginResponse.EnsureSuccessStatusCode(); // Выбросит исключение, если статус-код не 2xx
 
-                var tokenResult = await loginResponse.Content.ReadFromJsonAsync<TokenResponse>();
+                var apiResponse = await loginResponse.Content.ReadFromJsonAsync<ApiResponse<IdentityData>>();
 
-                if (tokenResult != null && !string.IsNullOrEmpty(tokenResult.Token))
+                if (apiResponse != null && apiResponse.IsValid && apiResponse.Data != null && apiResponse.Data.Any() && !string.IsNullOrEmpty(apiResponse.Data[0].Token))
                 {
-                    await _localStorageService.SetItemAsStringAsync("token", JsonConvert.SerializeObject(tokenResult));
-                    return tokenResult.Token;
+                    var identityData = apiResponse.Data[0];
+                    await _localStorageService.SetItemAsStringAsync("identityData", JsonConvert.SerializeObject(identityData));
+                    _userState.Token = identityData.Token; // Update UserState with new token
+                    return identityData.Token;
                 }
                 else
                 {
-                    Console.WriteLine("AuthHeaderHandler: Failed to get token from login API. Token or TokenResult is null.");
+                    Console.WriteLine("AuthHeaderHandler: Failed to get token from login API. ApiResponse is invalid or data is null/empty.");
                     return string.Empty;
                 }
             }

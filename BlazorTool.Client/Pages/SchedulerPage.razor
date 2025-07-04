@@ -12,6 +12,7 @@
 @inject IJSRuntime JSRuntime
 @inject ApiServiceClient apiService
 @inject AppointmentService ApptService
+@inject UserState UserState
 
 @cellStyles
 <h3>Scheduler</h3>
@@ -295,9 +296,11 @@
     private void DisplayOrders()
     {
         var orders = FilterOrders();
-        UntakenOrders = orders.Where(x => string.IsNullOrEmpty(x.AssignedPerson) &&
-        (selectedCategory == "All" || x.DeviceCategory == selectedCategory) &&
-        (x.WOState?.ToLowerInvariant() != "zakończony") || isCBAllOrdersSelected).ToList();
+        UntakenOrders = orders.Where(x =>
+            string.IsNullOrEmpty(x.AssignedPerson) &&
+            (selectedCategory == "All" || x.DeviceCategory == selectedCategory) &&
+            (isCBAllOrdersSelected || (x.WOState?.ToLowerInvariant() != "zakończony"))
+        ).ToList();
         cellStyles = RenderStatesStyle(orders);
     }
 

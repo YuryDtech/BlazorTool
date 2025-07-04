@@ -380,6 +380,49 @@ namespace BlazorTool.Client.Services
         #endregion
 
         #region Other functions
+
+        public async Task<ApiResponse<TResponse>> PostAsync<TRequest, TResponse>(string url, TRequest data)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync(url, data);
+                response.EnsureSuccessStatusCode();
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<TResponse>>();
+                return apiResponse ?? new ApiResponse<TResponse> { IsValid = false, Message = "Empty response from API." };
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during POST to {url}: {ex.Message}");
+                return new ApiResponse<TResponse> { IsValid = false, Message = $"Network error: {ex.Message}" };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during POST to {url}: {ex.Message}");
+                return new ApiResponse<TResponse> { IsValid = false, Message = $"An unexpected error occurred: {ex.Message}" };
+            }
+        }
+
+        public async Task<SingleResponse<TResponse>> PostSingleAsync<TRequest, TResponse>(string url, TRequest data)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync(url, data);
+                response.EnsureSuccessStatusCode();
+                var apiResponse = await response.Content.ReadFromJsonAsync<SingleResponse<TResponse>>();
+                return apiResponse ?? new SingleResponse<TResponse> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during POST to {url}: {ex.Message}");
+                return new SingleResponse<TResponse> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during POST to {url}: {ex.Message}");
+                return new SingleResponse<TResponse> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+            }
+        }
+
         public async Task<(bool, string)> CheckApiAddress(string address)
         {
             var url = "api/v1/settings/check";

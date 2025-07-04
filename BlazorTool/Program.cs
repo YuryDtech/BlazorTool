@@ -37,7 +37,7 @@ builder.Services.AddSingleton(sp =>
     var config = sp.GetRequiredService<IConfiguration>();
     var loginDto = new LoginRequest
     {
-        Username = "Romaniuk Krzysztof", //TODO auth page, or use config["Auth:Username"]
+        Username = "Romaniuk Krzysztof", 
         Password = "q"                   
     };
     return new ServerAuthTokenService(
@@ -48,6 +48,8 @@ builder.Services.AddSingleton(sp =>
     );
 });
 builder.Services.AddScoped<ServerAuthHeaderHandler>();
+
+builder.Services.AddSingleton<UserState>();
 
 string? internalApiBaseUrl = null;
 

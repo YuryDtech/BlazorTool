@@ -21,5 +21,8 @@ namespace BlazorTool.Client.Models
 
         [JsonPropertyName("RigthMatrix")]
         public RightMatrix RigthMatrix { get; set; } = default!;
+
+        [JsonPropertyName("expires")]
+        public DateTime Expires { get; set; }
     }
 }
