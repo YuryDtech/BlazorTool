@@ -46,7 +46,7 @@ namespace BlazorTool.Controllers
             var body = new LoginPasswordRequest { PersonID = personID, Password = personPassword };
             var jsonBody = JsonSerializer.Serialize(body);
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
+            //TODO change to GET?
             var request = new HttpRequestMessage(HttpMethod.Post, externalApiRelativeUrl)
             {
                 Content = content   

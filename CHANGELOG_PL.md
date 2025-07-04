@@ -16,6 +16,7 @@
 - **Zmiany w kodzie:**
     - Dodano właściwość `Expires` do modelu `IdentityData`.
     - Zrefaktoryzowano `AuthHeaderHandler` w celu użycia `IdentityData` i `ApiResponse<IdentityData>` do zarządzania tokenami.
+    - Zmodyfikowano `IdentityController.cs` w celu zwracania pełnych danych `IdentityData` z zewnętrznego API.
 
 ## 2025-07-03
 - **Interfejs użytkownika i funkcjonalność:**

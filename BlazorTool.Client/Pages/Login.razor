@@ -38,7 +38,7 @@
                 Password = Password
             };
 
-            var response = await ApiServiceClient.PostSingleAsync<BlazorTool.Client.Models.LoginRequest, BlazorTool.Client.Models.IdentityData>("api/v1/identity/loginpassword", loginRequest);
+        var response = await ApiServiceClient.PostSingleAsync<BlazorTool.Client.Models.LoginRequest, BlazorTool.Client.Models.IdentityData>("api/v1/identity/loginpassword", loginRequest);
 
             if (response != null && response.IsValid && response.Data != null)
             {
