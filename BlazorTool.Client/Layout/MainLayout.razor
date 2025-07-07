@@ -11,6 +11,11 @@
 
         <main>
             <div class="top-row px-4">
+                @if(UserState.IsAuthenticated)
+                {
+                    <span class="user-name">Hello, @UserState.UserName!</span>
+                    <button class="btn btn-link logout-button" @onclick="Logout">Logout</button>
+                }
                 <a href="changelog">Version @ThisAssembly.AssemblyInformationalVersion</a>
             </div>
 
@@ -28,8 +33,9 @@
     </div>
 </TelerikRootComponent>
 @code{
-protected override void OnInitialized()
+protected override async Task OnInitializedAsync()
     {
+        await UserState.LoadIdentityDataAsync();
         if (!UserState.IsAuthenticated)
         {
             Navigation.NavigateTo("/login");
@@ -38,4 +44,9 @@ protected override void OnInitialized()
         // if (!UserState.HasRole("Admin")) { ... }
     }
 
+    private async Task Logout()
+    {
+        await UserState.ClearAsync();
+        Navigation.NavigateTo("/login");
+    }
 }

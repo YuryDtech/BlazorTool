@@ -41,7 +41,12 @@ builder.Services.AddScoped(sp => {
     return new HttpClient { BaseAddress = new Uri(serverBaseUrl) };
 });
 
-builder.Services.AddScoped<UserState>(sp => new UserState(sp.GetRequiredService<ILocalStorageService>()));
+builder.Services.AddScoped<UserState>(sp =>
+{
+    var userState = new UserState(sp.GetRequiredService<ILocalStorageService>());
+    _ = userState.LoadIdentityDataAsync(); // Load identity data asynchronously
+    return userState;
+});
 
 Console.WriteLine("======= APPLICATION (Client) STARTING...");
 
