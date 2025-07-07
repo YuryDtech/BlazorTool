@@ -24,6 +24,7 @@ namespace BlazorTool.Client.Services
         private Dictionary<int, List<WorkOrder>> _workOrdersCache = new Dictionary<int, List<WorkOrder>>();
         private List<Device> _devicesCache = new List<Device>();
         private readonly UserState _userState;
+        private List<Dict> _dictCache = new List<Dict>();
 
         public ApiServiceClient(HttpClient http, UserState userState)
         {
@@ -215,6 +216,9 @@ namespace BlazorTool.Client.Services
             {
                 //TODO : implement saving MEW order to API
                 // now save only to cache
+                //Maybe no need to set WOStat 
+                var defaultState = (await GetWOStates(1)).FirstOrDefault(); //TODO add lang param from UserState
+                workOrder.WOState = defaultState ?? "Nie rozpoczęte";
                 var newId = _workOrdersCache.Count > 0 ? _workOrdersCache.Max(x => x.Value.Max(c=>c.WorkOrderID)) + 1 : 1;
                 workOrder.WorkOrderID = newId;
                 workOrder.ModPerson = _userState.UserName; 
@@ -294,19 +298,6 @@ namespace BlazorTool.Client.Services
             return true;
         }
 
-        public async Task<List<Dict>> GetWODictionaries(int personID, string lang = "pl-PL")
-        {
-            var qp = new List<string>();
-            qp.Add($"PersonID={personID}");
-            qp.Add($"Lang={lang}");
-            var url = "api/v1/wo/getdict?" + string.Join("&", qp);
-            var wrapper = await _http.GetFromJsonAsync<ApiResponse<Dict>>(url);
-            Console.WriteLine("\n");
-            Console.WriteLine("= = = = = = = = = = response Dict.Count: " + wrapper?.Data.Count.ToString());
-            Console.WriteLine("\n");
-            return wrapper?.Data ?? new List<Dict>();
-        }
-
         #endregion
 
         #region Activity
@@ -336,6 +327,8 @@ namespace BlazorTool.Client.Services
             Console.WriteLine($"\n= = = = = = = = = response {_http.BaseAddress}{url} \n====== Users: " + wrapper?.Data.Count.ToString() + "\n");
             return wrapper?.Data ?? new List<Person>();
         }
+
+
         #endregion
 
         #region Devices
@@ -381,6 +374,99 @@ namespace BlazorTool.Client.Services
         #endregion
 
         #region Other functions
+        public async Task<List<Dict>> GetWODictionaries(int personID, string lang = "pl-PL")
+        {
+            var qp = new List<string>();
+            qp.Add($"PersonID={personID}");
+            qp.Add($"Lang={lang}");
+            var url = "api/v1/wo/getdict?" + string.Join("&", qp);
+            var wrapper = await _http.GetFromJsonAsync<ApiResponse<Dict>>(url);
+            Console.WriteLine("\n");
+            Console.WriteLine("= = = = = = = = = = response Dict.Count: " + wrapper?.Data.Count.ToString());
+            Console.WriteLine("\n");
+            if (wrapper != null && wrapper.Data != null && wrapper.IsValid)
+            {
+                if (wrapper.Errors.Count == 0)
+                // Cache the dictionaries
+                _dictCache = wrapper.Data;
+                else
+                {
+                    Console.WriteLine("= = = = = = = = = Errors in GetWODictionaries: " + string.Join(", ", wrapper.Errors));
+                }
+            }
+
+            return wrapper?.Data ?? new List<Dict>();
+        }
+        public async Task<List<Dict>> GetWODictionariesCached(int personID, string lang = "pl-PL")
+        {
+            if (_dictCache.Count == 0)
+            {//is need cache with personID and lang ?
+                _dictCache = await GetWODictionaries(personID, lang);
+            }
+            return _dictCache;
+            
+        }
+
+        public async Task<List<string>> GetWOCategories(int personID, string lang = "pl-PL")
+        {
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Category).
+                Select(d => d.Name)
+                .Distinct()
+                .ToList();
+        }
+
+        public async Task<List<string>> GetWOStates(int personID, string lang = "pl-PL")
+        {
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.State).
+                Select(d => d.Name)
+                .Distinct()
+                .ToList();
+        }
+
+        public async Task<List<string>> GetWOLevels(int personID, string lang = "pl-PL")
+        {
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Level).
+                Select(d => d.Name)
+                .Distinct()
+                .ToList();
+        }
+
+        public async Task<List<string>> GetWOReasons(int personID, string lang = "pl-PL")
+        {
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Reason).
+                Select(d => d.Name)
+                .Distinct()
+                .ToList();
+        }
+
+        public async Task<List<string>> GetWODepartments(int personID, string lang = "pl-PL")
+        {
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Department).
+                Select(d => d.Name)
+                .Distinct()
+                .ToList();
+        }
+
+        public async Task<bool> AddNewWODict(string name, int listType, bool isDefault = false, int machineCategoryId = 0)
+        {
+            if (string.IsNullOrEmpty(name) || listType < 1 || listType > 5) return false;
+            Dict newDict = new Dict
+            {
+                Name = name,
+                ListType = listType,
+                IsDefault = false,
+                MachineCategoryID = null, // or set to a specific value if needed
+                Id = 0 // API will assign the ID
+            };
+            if (_dictCache.Any(d=>d.Name == name && d.ListType == listType && d.MachineCategoryID == machineCategoryId))
+            {
+                Console.WriteLine($"= = = = = = = = = Dictionary with name '{name}' and ListType {listType} already exists.");
+                return false;
+            }
+            _dictCache.Add(newDict); 
+            return true;
+           //TODO SAVE return await PostSingleAsync<Dict, Dict>("api/v1/wo/adddict", newDict) is { IsValid: true, Data: { } };
+        }
 
         public async Task<ApiResponse<TResponse>> PostAsync<TRequest, TResponse>(string url, TRequest data)
         {
@@ -405,17 +491,19 @@ namespace BlazorTool.Client.Services
 
         public async Task<SingleResponse<TResponse>> PostSingleAsync<TRequest, TResponse>(string url, TRequest data)
         {
+            List<string>? errors = null;
             try
             {
                 var response = await _http.PostAsJsonAsync(url, data);
-                response.EnsureSuccessStatusCode();
                 var apiResponse = await response.Content.ReadFromJsonAsync<SingleResponse<TResponse>>();
-                return apiResponse ?? new SingleResponse<TResponse> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
+                errors = apiResponse?.Errors;
+                response.EnsureSuccessStatusCode();
+                return apiResponse ?? new SingleResponse<TResponse> { IsValid = false, Errors = errors ?? new List<string> { "Empty response from API." } };
             }
             catch (HttpRequestException ex)
             {
                 Console.WriteLine($"ApiServiceClient: HTTP Request error during POST to {url}: {ex.Message}");
-                return new SingleResponse<TResponse> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+                return new SingleResponse<TResponse> { IsValid = false, Errors = errors ?? new List<string> { $"Network error: {ex.Message}" } };
             }
             catch (Exception ex)
             {

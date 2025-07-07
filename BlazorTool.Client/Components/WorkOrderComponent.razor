@@ -40,10 +40,10 @@
                     }
                     else
                     {
-                        @WorkOrder.AssetNo
+                        @(selectedDevice?.AssetNo ?? WorkOrder.AssetNo ?? "no device")
                     }
                 </div>
-                <div><strong>Category:</strong> @(ListDevices?.FirstOrDefault(x=>x.MachineID == WorkOrder?.MachineID)?.DeviceCategory ?? "no device")</div>
+                <div><strong>Category:</strong> @(WorkOrder.DeviceCategory ?? selectedDevice?.DeviceCategory ?? "no device")</div>
     </div>
   </CardHeader> 
 
@@ -66,7 +66,7 @@
                     </div>
                     <div class="field-group">
                         <label>Category:</label>
-                            <TelerikComboBox Data="@ListDicts?.Where(c => c.ListType == listTypeForCategory).Select(n => n.Name).ToList()"
+                            <TelerikComboBox Data="@ListCategories"
                                                  Value="@WorkOrder.WOCategory"
                                                  Placeholder="Select WO category..."
                                                  ValueChanged="@((string name) => OnCategoryChanged(name))"
@@ -82,7 +82,7 @@
                     </div>
                     <div class="field-group">
                         <label>Level:</label>
-                            <TelerikComboBox Data="@ListDicts?.Where(c => c.ListType == listTypeForLevel).Select(n => n.Name).ToList()"
+                            <TelerikComboBox Data="@ListLevels"
                                              Value="@WorkOrder.WOLevel"
                                              Placeholder="Select WO level..."
                                              ValueChanged="@((string name) => OnLevelChanged(name))"
@@ -263,14 +263,14 @@
     [Parameter] public WorkOrder? WorkOrder { get; set; }
     [Parameter] public List<string>? ListPersons { get; set; }
     [Parameter] public List<string>? ListDepartments { get; set; }
-    [Parameter] public List<Dict>? ListDicts { get; set; }
+    // [Parameter] public List<Dict>? ListDicts { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
     [Parameter] public EventCallback OnStateChanged { get; set; }
-    private int listTypeForCategory = 1;
-    private int listTypeForLevel = 2;
-    private int listTypeForReason = 3;
-    private int listTypeForState = 4;
-    private int listTypeForDepartment = 5;
+    // private int listTypeForCategory = 1;
+    // private int listTypeForLevel = 2;
+    // private int listTypeForReason = 3;
+    // private int listTypeForState = 4;
+    // private int listTypeForDepartment = 5;
     private string notAssigned = "Not assigned";
     private string notSpecified = "Not specified";
     private string DepAlarm = string.Empty;
@@ -279,77 +279,53 @@
     private bool showActivities = false;
     private bool isNewWorkOrder = false;
     private List<Device>? ListDevices { get; set; } = new List<Device>();
+    private Device? selectedDevice;
+    private List<string> ListCategories = new List<string>();
+    private List<string> ListLevels = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
         isNewWorkOrder = WorkOrder?.WorkOrderID == 0;
-
+        ListDevices = await apiService.GetAllDevicesCachedAsync();
+        ListCategories = await apiService.GetWOCategories(1);
+        ListLevels = await apiService.GetWOLevels(1);
         if (isNewWorkOrder) {
-            ListDevices = await apiService.GetAllDevicesCachedAsync();
-
             WorkOrder.EndDate = WorkOrder.StartDate?.AddHours(1);
             DeviceAlarm = string.IsNullOrWhiteSpace(WorkOrder?.AssetNo) ? "bg-warning" : string.Empty;
         }
+
+        selectedDevice = ListDevices?.FirstOrDefault(d => d.MachineID == WorkOrder?.MachineID);
 
         if (ListPersons == null )
         {
             ListPersons = new List<string>();
             if (!string.IsNullOrEmpty(WorkOrder?.AssignedPerson))
-             ListPersons.Add(WorkOrder.AssignedPerson) ;
-            
-             ListPersons.Add(notAssigned);
+                ListPersons.Add(WorkOrder.AssignedPerson) ;
+
+            ListPersons.Add(notAssigned);
 
         }else
         if (!ListPersons.Contains(notAssigned))
         {
             ListPersons.Add(notAssigned);
         }
-        
+
         if (ListDepartments != null)
         {
             if (ListDepartments.Contains("All"))
-                      ListDepartments.RemoveAll(d => d == "All");
-        
+                ListDepartments.RemoveAll(d => d == "All");
+
+            if (!ListDepartments.Contains(notAssigned))
+            {
+                ListDepartments.Add(notAssigned);
+            }
         }
         else if (WorkOrder != null && !string.IsNullOrEmpty(WorkOrder.DepName))
         {
             ListDepartments = new List<string>() { WorkOrder.DepName };
-        }
-
-        if (!ListDepartments.Contains(notAssigned))
+        }else
         {
-            ListDepartments.Add(notAssigned);
-        }
-
-        if (ListDicts == null)
-        {
-            ListDicts = new List<Dict>(){new Dict()
-            {
-                    Name = WorkOrder?.WOCategory ?? notSpecified,
-                    ListType = listTypeForCategory
-                },
-                    new Dict()
-                {
-                    Name = WorkOrder?.WOLevel ?? notSpecified,
-                    ListType = listTypeForLevel
-                },
-                    new Dict()
-                {
-                    Name = WorkOrder?.WOReason ?? notSpecified,
-                    ListType = listTypeForReason
-                },
-                    new Dict()
-                {
-                    Name = WorkOrder?.WOState ?? notSpecified,
-                    ListType = listTypeForState
-                },
-                    new Dict()
-                {
-                    Name = WorkOrder?.DepName ?? notSpecified,
-                    ListType = listTypeForDepartment
-
-                } 
-            };
+            ListDepartments = new List<string>();
         }
 
         if (string.IsNullOrEmpty(WorkOrder?.DepName) || WorkOrder.DepName == notAssigned)
@@ -386,6 +362,7 @@
         var device = ListDevices?.FirstOrDefault(d => d.MachineID == devId);
         if (WorkOrder != null && device != null)
         {
+            selectedDevice = device;
             WorkOrder.AssetNo = device.AssetNo; //?? or WorkOrder.AssetNo - custom?
             WorkOrder.DeviceCategory = device.DeviceCategory;
             WorkOrder.DeviceCategoryID = device.CategoryID;
@@ -409,14 +386,7 @@
         if (WorkOrder != null && !string.IsNullOrEmpty(categoryName))
         {
             WorkOrder.WOCategory = categoryName;
-            if (ListDicts?.Any(d => d.Name == categoryName && d.ListType == listTypeForCategory) == false)
-            {
-                ListDicts?.Add(new Dict
-                {
-                    Name = categoryName,
-                    ListType = listTypeForCategory
-                });            
-            }
+            await apiService.AddNewWODict(categoryName, (int)ListTypeEnum.Category);
         }
     }
 
@@ -430,6 +400,9 @@
         if (string.IsNullOrEmpty(departmentName) || departmentName == notAssigned || departmentName == "All")
             DepAlarm = "bg-warning";
         else DepAlarm = string.Empty;
+
+        await apiService.AddNewWODict(departmentName, (int)ListTypeEnum.Department);
+
     }
 
     private async Task OnLevelChanged(object newValue)
@@ -438,14 +411,7 @@
         if (WorkOrder != null && !string.IsNullOrEmpty(levelName))
         {
             WorkOrder.WOLevel = levelName;
-            if (ListDicts?.Any(d => d.Name == levelName && d.ListType == listTypeForLevel) == false)
-            {
-                ListDicts?.Add(new Dict
-                {
-                    Name = levelName,
-                    ListType = listTypeForLevel
-                });
-            }
+            await apiService.AddNewWODict(levelName, (int)ListTypeEnum.Level);
         }
     }
 

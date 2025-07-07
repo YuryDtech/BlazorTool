@@ -123,7 +123,9 @@
     <div style="flex-basis: 33%; flex-shrink:1; flex-grow:0">
         @if (isLoading)
         {
+        <div style="display:flex; justify-content:space-between; align-items: center; align-content: center">
             <p>Loading orders…</p>
+        </div>
         }
         else
         {
@@ -182,7 +184,6 @@
             isEditable=true 
             ListPersons="@Persons.Where(c=>c != "All").Concat(new List<string>(){"Not assigned"}).ToList()"
             ListDepartments="@Departments.Where(c=>c != "All").Concat(new List<string>(){"Not assigned"}).ToList()"
-            ListDicts="@ListDicts"
             OnAppointmentChanged="@RefreshData" />
     </WindowContent>
 </TelerikWindow>
@@ -221,7 +222,6 @@
     private List<string> selectedAssignedPersons = new();
     private List<string> Persons = new();
     private List<string> Departments = new(); 
-    private List<Dict> ListDicts = new();
     private string selectedDepartment = "All";
     private bool isCBAllOrdersSelected = false; //show executed orders in grid
     private List<string?> DeviceCategories = new();//for Orders grid filter
@@ -260,7 +260,7 @@
         isLoading = true;
         StateHasChanged();
         //Persons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList();
-        ListDicts = (await apiService.GetWODictionaries(1));
+        // ListDicts = (await apiService.GetWODictionaries(1));
         _allOrders = await apiService.GetWorkOrdersCachedAsync();
         _allAppointments = await ApptService.GetTakenAppointments(_allOrders);
         Departments = new List<string> { "All" };
@@ -296,11 +296,7 @@
     private void DisplayOrders()
     {
         var orders = FilterOrders();
-        UntakenOrders = orders.Where(x =>
-            string.IsNullOrEmpty(x.AssignedPerson) &&
-            (selectedCategory == "All" || x.DeviceCategory == selectedCategory) &&
-            (isCBAllOrdersSelected || (x.WOState?.ToLowerInvariant() != "zakończony"))
-        ).ToList();
+        UntakenOrders = orders;
         cellStyles = RenderStatesStyle(orders);
     }
 
@@ -384,7 +380,14 @@
 
     private List<WorkOrder> FilterOrders()
     {
-        return _allOrders; // Return all orders if no filtering is applied
+
+        return _allOrders.Where(x =>
+            // string.IsNullOrEmpty(x.AssignedPerson) &&
+            (selectedCategory == "All" || x.DeviceCategory == selectedCategory) &&
+            (isCBAllOrdersSelected || (x.WOState?.ToLowerInvariant() != "zakończony")) &&
+            (x.StartDate == null) &&
+            (string.IsNullOrEmpty(x.DepName))
+        ).ToList();
     }
 
     #endregion

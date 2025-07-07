@@ -1,5 +1,25 @@
 # Changelog
 
+## 2025-07-07
+- **Interfejs użytkownika i funkcjonalność:**
+    - Ulepszone logowanie z rozwijaną listą wyszukiwania nazwy użytkownika i podstawową walidacją danych wejściowych.
+    - Ulepszony edytor zleceń pracy z dynamicznym wyborem kategorii i poziomów oraz ulepszonym wyświetlaniem urządzeń/kategorii.
+    - Automatyczne buforowanie nowych wpisów słownikowych (kategorie, poziomy, działy).
+    - Udoskonalono logikę filtrowania zleceń pracy na stronie harmonogramu.
+    - Ulepszona obsługa błędów klienta API.
+- **Zmiany w kodzie:**
+    - Usunięto parametr `ListDicts` z `AppointmentEditor.razor`.
+    - Zaktualizowano `WorkOrderComponent.razor` do używania `ListCategories` i `ListLevels` dla TelerikComboBox, usunięto logikę inicjalizacji `ListDicts` i dodano logikę aktualizacji `selectedDevice`.
+    - Zastąpiono bezpośrednie manipulacje `ListDicts` wywołaniami `apiService.AddNewWODict` dla kategorii, działów i poziomów.
+    - Zastąpiono pole wprowadzania nazwy użytkownika komponentem `TelerikComboBox` w `Login.razor`.
+    - Dodano wskaźnik ładowania i usunięto parametr `ListDicts` ze `SchedulerPage.razor`.
+    - Zmodyfikowano logikę filtrowania zleceń pracy w `SchedulerPage.razor`.
+    - Dodano `_dictCache` i nowe metody związane ze słownikami (`GetWODictionaries`, `GetWODictionariesCached`, `GetWOCategories`, `GetWOStates`, `GetWOLevels`, `GetWOReasons`, `GetWODepartments`, `AddNewWODict`) do `ApiServiceClient.cs`.
+    - Ulepszono obsługę błędów w `PostSingleAsync` w `ApiServiceClient.cs`.
+    - Dodano konstruktor bez parametrów do `UserState.cs`.
+    - Zmieniono punkt końcowy logowania na `api/v1/identity/loginpass` i metodę na GET w `IdentityController.cs`.
+    - Zarejestrowano `UserState` jako usługę Scoped w `Program.cs`.
+
 ## 2025-07-04
 - **Interfejs użytkownika i funkcjonalność:**
     - Zaimplementowano autoryzację użytkownika za pośrednictwem strony `Login.razor`.

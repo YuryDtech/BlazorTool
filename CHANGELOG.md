@@ -1,5 +1,25 @@
 # Changelog
 
+## 2025-07-07
+- **UI and Functionality:**
+    - Improved login experience with a searchable dropdown for username and basic input validation.
+    - Enhanced Work Order editor with dynamic selection for categories and levels, and improved device/category display.
+    - Automatic caching of new dictionary entries (categories, levels, departments).
+    - Refined work order filtering logic on the Scheduler page.
+    - Improved API client error handling.
+- **Code Changes:**
+    - Removed `ListDicts` parameter from `AppointmentEditor.razor`.
+    - Updated `WorkOrderComponent.razor` to use `ListCategories` and `ListLevels` for TelerikComboBox, removed `ListDicts` initialization logic, and added `selectedDevice` update logic.
+    - Replaced direct `ListDicts` manipulations with `apiService.AddNewWODict` calls for categories, departments, and levels.
+    - Replaced username input with `TelerikComboBox` in `Login.razor`.
+    - Added loading indicator and removed `ListDicts` parameter from `SchedulerPage.razor`.
+    - Modified work order filtering logic in `SchedulerPage.razor`.
+    - Added `_dictCache` and new dictionary-related methods (`GetWODictionaries`, `GetWODictionariesCached`, `GetWOCategories`, `GetWOStates`, `GetWOLevels`, `GetWOReasons`, `GetWODepartments`, `AddNewWODict`) to `ApiServiceClient.cs`.
+    - Improved error handling in `PostSingleAsync` in `ApiServiceClient.cs`.
+    - Added a parameterless constructor to `UserState.cs`.
+    - Changed login endpoint to `api/v1/identity/loginpass` and method to GET in `IdentityController.cs`.
+    - Registered `UserState` as a Scoped service in `Program.cs`.
+
 ## 2025-07-04
 - **UI and Functionality:**
     - Implemented user authorization via `Login.razor` page.

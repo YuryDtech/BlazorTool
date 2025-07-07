@@ -33,7 +33,6 @@
 <WorkOrderComponent WorkOrder="@Appointment" 
     ListPersons="@ListPersons" 
     ListDepartments="@ListDepartments"
-    ListDicts="@ListDicts"
     isEditable=@isEditable
                     OnStateChanged="@(() => {StateHasChanged();OnTitleChange();})">
 </WorkOrderComponent>
@@ -59,7 +58,7 @@
     [Parameter] public EventCallback<SchedulerAppointment?> OnAppointmentChanged { get; set; }
     [Parameter] public List<string>? ListPersons { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
-    [Parameter] public List<Dict>? ListDicts { get; set; }
+    // [Parameter] public List<Dict>? ListDicts { get; set; }
     [Parameter] public List<string>? ListDepartments { get; set; }
     private bool isNewAppointment = false;
     private string titleAlarm = string.Empty;

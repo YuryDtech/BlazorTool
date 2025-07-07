@@ -42,7 +42,6 @@ namespace BlazorTool.Client.Services
                     _appointments = GetAppointmentsFromOrders(orders);
                 }
                 return _appointments.Where(x => !string.IsNullOrWhiteSpace(x.DepName) && x.Start != null).ToList();
-                //return _appointments.Where(x => x.TakeDate != null && x.Start != null).ToList();
         }
 
         public async Task<List<SchedulerAppointment>> GetUnTakenAppointments()

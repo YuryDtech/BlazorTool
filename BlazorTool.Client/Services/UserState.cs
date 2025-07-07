@@ -14,6 +14,11 @@ namespace BlazorTool.Client.Services
             _localStorageService = localStorageService;
         }
 
+        public UserState()
+        {
+            //_localStorageService = new Blazored.LocalStorage.LocalStorageService();
+        }
+
         public string? UserName { get; set; }
         public string? Password { get; set; }
         public string? Token { get; set; }
