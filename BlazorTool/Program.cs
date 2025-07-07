@@ -49,7 +49,7 @@ builder.Services.AddScoped(sp =>
 });
 builder.Services.AddScoped<ServerAuthHeaderHandler>();
 
-
+builder.Services.AddScoped<UserState>();
 
 string? internalApiBaseUrl = null;
 

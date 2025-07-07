@@ -39,23 +39,23 @@ namespace BlazorTool.Controllers
                 var basicAuth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{basicAuthUsername}:{basicAuthPassword}"));
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basicAuth);
             }
-            var externalApiRelativeUrl = $"api/v1/identity/loginpassword?UserName={Uri.EscapeDataString(loginRequest.Username)}&Password={Uri.EscapeDataString(loginRequest.Password)}";
-            var personID = int.TryParse(_configuration["ExternalApi:PersonID"], out var id) ? id : 1;
-            var personPassword = _configuration["ExternalApi:PersonPassword"] ?? loginRequest.Password;
-
-            var body = new LoginPasswordRequest { PersonID = personID, Password = personPassword };
-            var jsonBody = JsonSerializer.Serialize(body);
-            var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-            //TODO change to GET?
-            var request = new HttpRequestMessage(HttpMethod.Post, externalApiRelativeUrl)
-            {
-                Content = content   
-            };
-
+            var externalApiRelativeUrl = $"api/v1/identity/loginpass?UserName={Uri.EscapeDataString(loginRequest.Username)}&Password={Uri.EscapeDataString(loginRequest.Password)}";
+            var request = new HttpRequestMessage(HttpMethod.Get, externalApiRelativeUrl);
+            Console.WriteLine($"Request URL: {request.RequestUri}");
+            Console.WriteLine("BaseUrl= " + client.BaseAddress);
             var response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            var wrapper = await response.Content.ReadFromJsonAsync<SingleResponse<IdentityData>>();
-            return Ok(wrapper);     
+            var statusCode = (int)response.StatusCode;
+            var content = await response.Content.ReadAsStringAsync();
+            foreach (var header in response.Content.Headers)
+            {
+                Response.Headers[header.Key] = header.Value.ToArray();
+            }
+            return new ContentResult
+            {
+                StatusCode = statusCode,
+                Content = content,
+                ContentType = response.Content.Headers.ContentType?.ToString() ?? "application/json"
+            };
         }
     }
 
