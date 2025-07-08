@@ -163,6 +163,10 @@ else
         isDevicesLoading = true;
         StateHasChanged();
         dicts = await apiService.GetWODictionaries(1);
+        if (!UserState.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+        }
         workOrderStates = dicts?.Where(d => d.ListType == (int)ListTypeEnum.State)
                                .Select(d => d.Name)
                                .Distinct()

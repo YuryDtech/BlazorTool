@@ -237,11 +237,11 @@
     {
         var isWASM = JSRuntime is IJSInProcessRuntime;
         Console.WriteLine($"--- Initialized SCHEDULER PAGE. WASM = {isWASM}");
+        await UserState.InitializationTask; // Ensure UserState is loaded
         if (!UserState.IsAuthenticated)
         {
             Navigation.NavigateTo("/login");
         }
-        await UserState.InitializationTask; // Ensure UserState is loaded
         await HardLoadData();
     }
 
@@ -252,6 +252,10 @@
         StateHasChanged();
         Persons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList(); //TODO remove while made cache persons
         _allOrders = await apiService.GetWorkOrdersAsync(); //from API, not cache
+        if (!UserState.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+        }
         await LoadData();
 
         Console.WriteLine($"--- HardLoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");

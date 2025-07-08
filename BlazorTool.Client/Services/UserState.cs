@@ -36,6 +36,7 @@ namespace BlazorTool.Client.Services
             PersonID = identityData.PersonID; // Populate PersonID
             RightMatrix = identityData.RigthMatrix;
             await _localStorageService.SetItemAsStringAsync("identityData", JsonConvert.SerializeObject(identityData));
+            Console.WriteLine($"UserState: Saved identity data for {UserName} with PersonID {PersonID}");
         }
 
         public async Task LoadIdentityDataAsync()

@@ -51,7 +51,8 @@ namespace BlazorTool.Client.Services
             {
                 if (_workOrdersCache.Count > 0)
                 {
-                    Console.WriteLine("Work orders found in cache: " + _workOrdersCache.Count + "\n");
+                    Console.WriteLine($"[{_userState.UserName}] Work orders found in cache: " + _workOrdersCache.Count + "\n");
+                    Debug.WriteLine($"[{_userState.UserName}] Work orders found in cache: " + _workOrdersCache.Count + "\n");
                     return _workOrdersCache.SelectMany(x => x.Value).ToList();
                 }
                 var allOrders = await GetWorkOrdersAsync();
@@ -154,18 +155,21 @@ namespace BlazorTool.Client.Services
             try
             {
                 var wrapper = await _http.GetFromJsonAsync<ApiResponse<WorkOrder>>(url);
-                Console.WriteLine("= = = = = = = API response-> WorkOrder.Count: " + wrapper?.Data.Count.ToString());
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = API response-> WorkOrder.Count: " + wrapper?.Data.Count.ToString());
                 var result = wrapper?.Data ?? new List<WorkOrder>();
                 return result;
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                await _userState.ClearAsync();
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 return new List<WorkOrder>();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
                 return new List<WorkOrder>();
             }
         }
@@ -189,17 +193,20 @@ namespace BlazorTool.Client.Services
             try
             {
                 var wrapper = await _http.GetFromJsonAsync<ApiResponse<OrderStatus>>(url);
-                Console.WriteLine("\n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
+                Console.WriteLine($"[{_userState.UserName}] \n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
+                Debug.WriteLine($"[{_userState.UserName}] \n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
                 return wrapper?.Data ?? new List<OrderStatus>();
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 return new List<OrderStatus>();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
                 return new List<OrderStatus>();
             }
         }
@@ -209,7 +216,8 @@ namespace BlazorTool.Client.Services
             var orders = await GetWorkOrdersCachedAsync(workOrderID);
             if (orders == null || orders.Count == 0)
             {
-                Console.WriteLine("= = = = = = = = = No work order found for ID: " + workOrderID);
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = = = No work order found for ID: " + workOrderID);
+                Debug.WriteLine($"[{_userState.UserName}] = = = = = = = = = No work order found for ID: " + workOrderID);
                 return null;
             }
             return orders.FirstOrDefault();
@@ -234,7 +242,8 @@ namespace BlazorTool.Client.Services
             //for test save only cache
             if (workOrder == null || workOrder.WorkOrderID < 0)
             {
-                Console.WriteLine("= = = = = = = Work order is null.\n");
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = Work order is null.\n");
+                Debug.WriteLine($"[{_userState.UserName}] = = = = = = = Work order is null.\n");
                 return -1;
             }
 
@@ -250,7 +259,8 @@ namespace BlazorTool.Client.Services
                 workOrder.ModPerson = _userState.UserName; 
                 if (workOrder.MachineID <= 0)
                 {
-                    Console.WriteLine($"= = = = = = = NEW workorder {workOrder.WorkOrderID} has no MachineID, cannot save to cache.\n");
+                    Console.WriteLine($"[{_userState.UserName}] = = = = NEW workorder {workOrder.WorkOrderID} has no MachineID, cannot save to cache.\n");
+                    Debug.WriteLine($"[{_userState.UserName}] = = = = NEW workorder {workOrder.WorkOrderID} has no MachineID, cannot save to cache.\n");
                     return -1;
                 }
                 if (_workOrdersCache.ContainsKey(workOrder.MachineID))
@@ -260,7 +270,8 @@ namespace BlazorTool.Client.Services
                 {
                     _workOrdersCache.Add(workOrder.MachineID, new List<WorkOrder>() { workOrder });
                 }
-                Console.WriteLine($"= = = = = = = NEW workorder ID={workOrder.WorkOrderID} saved to cache.\n");
+                Console.WriteLine($"[{_userState.UserName}] = = = = NEW workorder ID={workOrder.WorkOrderID} saved to cache.\n");
+                Debug.WriteLine($"[{_userState.UserName}] = = = = NEW workorder ID={workOrder.WorkOrderID} saved to cache.\n");
                 return workOrder.WorkOrderID;
             }
 
@@ -268,7 +279,8 @@ namespace BlazorTool.Client.Services
             {
                 //new machineID, add new list to cache
                 _workOrdersCache.Add(workOrder.MachineID, new List<WorkOrder>() { workOrder});
-                Console.WriteLine($"= = = = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
+                Console.WriteLine($"[{_userState.UserName}] = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
+                Debug.WriteLine($"[{_userState.UserName}] = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
                 return workOrder.WorkOrderID;
             }
             
@@ -278,14 +290,17 @@ namespace BlazorTool.Client.Services
             {
                 //update existing work order in cache
                 _workOrdersCache[workOrder.MachineID][ind] = workOrder;
-                Console.WriteLine($"= = = = = = = = = Work order ID={workOrder.WorkOrderID} was updated in cache. ");
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = Work order ID={workOrder.WorkOrderID} was updated in cache. ");
                 Console.WriteLine($" === Title={workOrder.AssetNo}, StartDate={workOrder.StartDate}, EndDate={workOrder.EndDate}===");
+                Debug.WriteLine($"[{_userState.UserName}] = = = = = = Work order ID={workOrder.WorkOrderID} was updated in cache. ");
+                Debug.WriteLine($" === Title={workOrder.AssetNo}, StartDate={workOrder.StartDate}, EndDate={workOrder.EndDate}===");
                 return workOrder.WorkOrderID;
             }
             else // work order not found in cache
             {
                 _workOrdersCache[workOrder.MachineID].Add(workOrder);
-                Console.WriteLine($"= = = = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
+                Console.WriteLine($"[{_userState.UserName}] = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
+                Debug.WriteLine($"[{_userState.UserName}] = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
                 return workOrder.WorkOrderID;
             }
             
@@ -416,18 +431,21 @@ namespace BlazorTool.Client.Services
                 var response = await _http.GetAsync(url);
                 if (!response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine("\n= = = = = = = = Devices response error: " + response.ReasonPhrase + "\n");
+                    Console.WriteLine($"\n[{_userState.UserName}] = = = = = = Devices response error: " + response.ReasonPhrase + "\n");
+                    Debug.WriteLine($"\n[{_userState.UserName}] = = = = = Devices response error: " + response.ReasonPhrase + "\n");
                     return new List<Device>();
                 }
                 var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Device>>();
 
-                Console.WriteLine("\n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
-                
+                Console.WriteLine($"\n[{_userState.UserName}] = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
+                Debug.WriteLine($"\n[{_userState.UserName}] = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
                 return wrapper?.Data ?? new List<Device>();
             }
             catch (HttpRequestException ex)
             {
+                await _userState.ClearAsync();
                 Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 return new List<Device>();
             }
             catch (Exception ex)
@@ -449,8 +467,9 @@ namespace BlazorTool.Client.Services
             {
                 var wrapper = await _http.GetFromJsonAsync<ApiResponse<Dict>>(url);
                 Console.WriteLine("\n");
-                Console.WriteLine("= = = = = = = = = = response Dict.Count: " + wrapper?.Data.Count.ToString());
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = response Dict.Count: " + wrapper?.Data.Count.ToString());
                 Console.WriteLine("\n");
+                Debug.WriteLine($"[{_userState.UserName}] = = = = = = = response Dict.Count: " + wrapper?.Data.Count.ToString());
                 if (wrapper != null && wrapper.Data != null && wrapper.IsValid)
                 {
                     if (wrapper.Errors.Count == 0)
@@ -458,7 +477,7 @@ namespace BlazorTool.Client.Services
                     _dictCache = wrapper.Data;
                     else
                     {
-                        Console.WriteLine("= = = = = = = = = Errors in GetWODictionaries: " + string.Join(", ", wrapper.Errors));
+                        Console.WriteLine("[{_userState.UserName}] = = = = = = Errors in GetWODictionaries: " + string.Join(", ", wrapper.Errors));
                     }
                 }
 
@@ -466,6 +485,7 @@ namespace BlazorTool.Client.Services
             }
             catch (HttpRequestException ex)
             {
+                await _userState.ClearAsync();
                 Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 return new List<Dict>();
             }
@@ -538,7 +558,7 @@ namespace BlazorTool.Client.Services
             };
             if (_dictCache.Any(d=>d.Name == name && d.ListType == listType && d.MachineCategoryID == machineCategoryId))
             {
-                Console.WriteLine($"= = = = = = = = = Dictionary with name '{name}' and ListType {listType} already exists.");
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = Dictionary with name '{name}' and ListType {listType} already exists.");
                 return false;
             }
             _dictCache.Add(newDict); 
