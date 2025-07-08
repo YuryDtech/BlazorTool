@@ -134,6 +134,32 @@ namespace BlazorTool.Controllers
         {
         }
 
+        [HttpPost("create")]
+        public async Task<IActionResult> Create([FromBody] WorkOrderCreateRequest createRequest)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
+                var url = "api/v1/wo/create";
+
+                var response = await client.PostAsJsonAsync(url, createRequest);
+                response.EnsureSuccessStatusCode();
+
+                var apiResponse = await response.Content.ReadFromJsonAsync<SingleResponse<WorkOrder>>();
+
+                return Ok(apiResponse);
+            }
+            catch (Exception ex)
+            {
+                // TODO: logging ex
+                return StatusCode(500, new SingleResponse<WorkOrder>
+                {
+                    IsValid = false,
+                    Errors = new List<string> { ex.Message }
+                });
+            }
+        }
+
         // PUT api/<WoController>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)

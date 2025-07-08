@@ -223,67 +223,42 @@ namespace BlazorTool.Client.Services
             return orders.FirstOrDefault();
         }
 
-        public async Task<int> SaveWorkOrderAsync(WorkOrder workOrder)
+        public async Task<SingleResponse<WorkOrder>> UpdateWorkOrderAsync(WorkOrder workOrder)
         {
-            //TODO : implement saving work order to API
-            //var url = "api/v1/wo/save";
-            //var content = new StringContent(JsonConvert.SerializeObject(workOrder), System.Text.Encoding.UTF8, "application/json");
-            //var response = await _http.PostAsync(url, content);
-            //if (response.IsSuccessStatusCode)
-            //{
-            //    Debug.Print("\n= = = = = = = = = Work order saved successfully.\n");
-            //    return true;
-            //}
-            //else
-            //{
-            //    Debug.Print("\n= = = = = = = = = SaveWorkOrderAsync error: " + response.ReasonPhrase + "\n");
-            //    return false;
-            //}
-            //for test save only cache
             if (workOrder == null || workOrder.WorkOrderID < 0)
             {
-                Console.WriteLine($"[{_userState.UserName}] = = = = = = = Work order is null.\n");
-                Debug.WriteLine($"[{_userState.UserName}] = = = = = = = Work order is null.\n");
-                return -1;
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = Work order is null or has invalid ID.\n");
+                Debug.WriteLine($"[{_userState.UserName}] = = = = = = = Work order is null or has invalid ID.\n");
+                return new SingleResponse<WorkOrder> { IsValid = false, Errors = new List<string> { "Work order is null or has invalid ID." } };
             }
 
-            if (workOrder.WorkOrderID == 0) //is MEW order
+            if (workOrder.WorkOrderID == 0) //is NEW order
             {
-                //TODO : implement saving MEW order to API
-                // now save only to cache
-                //Maybe no need to set WOStat 
-                var defaultState = (await GetWOStates(1)).FirstOrDefault(); //TODO add lang param from UserState
-                workOrder.WOState = defaultState ?? "Nie rozpoczęte";
-                var newId = _workOrdersCache.Count > 0 ? _workOrdersCache.Max(x => x.Value.Max(c=>c.WorkOrderID)) + 1 : 1;
-                workOrder.WorkOrderID = newId;
-                workOrder.ModPerson = _userState.UserName; 
-                if (workOrder.MachineID <= 0)
+                var saveResult = await SaveWorkOrderAsync(workOrder);
+                if (saveResult.IsValid && saveResult.Data != null)
                 {
-                    Console.WriteLine($"[{_userState.UserName}] = = = = NEW workorder {workOrder.WorkOrderID} has no MachineID, cannot save to cache.\n");
-                    Debug.WriteLine($"[{_userState.UserName}] = = = = NEW workorder {workOrder.WorkOrderID} has no MachineID, cannot save to cache.\n");
-                    return -1;
+                    // Add to cache after successful save to API
+                    if (!_workOrdersCache.ContainsKey(saveResult.Data.MachineID))
+                    {
+                        _workOrdersCache.Add(saveResult.Data.MachineID, new List<WorkOrder>());
+                    }
+                    _workOrdersCache[saveResult.Data.MachineID].Add(saveResult.Data);
+                    Console.WriteLine($"[{_userState.UserName}] = = = = NEW workorder ID={saveResult.Data.WorkOrderID} saved to cache after API save.\n");
+                    Debug.WriteLine($"[{_userState.UserName}] = = = = NEW workorder ID={saveResult.Data.WorkOrderID} saved to cache after API save.\n");
                 }
-                if (_workOrdersCache.ContainsKey(workOrder.MachineID))
-                {
-                     _workOrdersCache[workOrder.MachineID].Add(workOrder);
-                }else
-                {
-                    _workOrdersCache.Add(workOrder.MachineID, new List<WorkOrder>() { workOrder });
-                }
-                Console.WriteLine($"[{_userState.UserName}] = = = = NEW workorder ID={workOrder.WorkOrderID} saved to cache.\n");
-                Debug.WriteLine($"[{_userState.UserName}] = = = = NEW workorder ID={workOrder.WorkOrderID} saved to cache.\n");
-                return workOrder.WorkOrderID;
+                return saveResult;
             }
 
+            // Existing work order update logic (caching only, assuming API update is handled elsewhere or not needed for existing)
             if (!_workOrdersCache.ContainsKey(workOrder.MachineID))
             {
                 //new machineID, add new list to cache
-                _workOrdersCache.Add(workOrder.MachineID, new List<WorkOrder>() { workOrder});
+                _workOrdersCache.Add(workOrder.MachineID, new List<WorkOrder>() { workOrder });
                 Console.WriteLine($"[{_userState.UserName}] = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
                 Debug.WriteLine($"[{_userState.UserName}] = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
-                return workOrder.WorkOrderID;
+                return new SingleResponse<WorkOrder> { IsValid = true, Data = workOrder };
             }
-            
+
             //existing machineID, check if work order already exists in cache
             var ind = _workOrdersCache[workOrder.MachineID].FindIndex(x => x.WorkOrderID == workOrder.WorkOrderID);
             if (ind >= 0)
@@ -294,16 +269,184 @@ namespace BlazorTool.Client.Services
                 Console.WriteLine($" === Title={workOrder.AssetNo}, StartDate={workOrder.StartDate}, EndDate={workOrder.EndDate}===");
                 Debug.WriteLine($"[{_userState.UserName}] = = = = = = Work order ID={workOrder.WorkOrderID} was updated in cache. ");
                 Debug.WriteLine($" === Title={workOrder.AssetNo}, StartDate={workOrder.StartDate}, EndDate={workOrder.EndDate}===");
-                return workOrder.WorkOrderID;
+                return new SingleResponse<WorkOrder> { IsValid = true, Data = workOrder };
             }
             else // work order not found in cache
             {
                 _workOrdersCache[workOrder.MachineID].Add(workOrder);
                 Console.WriteLine($"[{_userState.UserName}] = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
                 Debug.WriteLine($"[{_userState.UserName}] = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
-                return workOrder.WorkOrderID;
+                return new SingleResponse<WorkOrder> { IsValid = true, Data = workOrder };
             }
-            
+        }
+
+        /// <summary>
+        /// Save only new workorder.
+        /// </summary>
+        /// <param name="workOrder"></param>
+        /// <returns></returns>
+        public async Task<SingleResponse<WorkOrder>> SaveWorkOrderAsync(WorkOrder workOrder)
+        {
+            var errors = new List<string>();
+
+            // 1. LevelID - Have to be greater then 0 (обязательный)
+            if (!workOrder.LevelID.HasValue || workOrder.LevelID <= 0)
+            {
+                errors.Add("LevelID must be greater than 0.");
+            }
+
+            // 2. Description - Can not be empty (обязательный)
+            if (string.IsNullOrWhiteSpace(workOrder.WODesc))
+            {
+                errors.Add("Description cannot be empty.");
+            }
+
+            // 3. MachineID - Have to be greater then 0 (обязательный)
+            if (workOrder.MachineID <= 0)
+            {
+                errors.Add("MachineID must be greater than 0.");
+            }
+
+            // 4. PersonID - Have to be greater then 0 (обязательный)
+            if (!_userState.PersonID.HasValue || _userState.PersonID <= 0)
+            {
+                errors.Add("Current user's PersonID is not available or invalid.");
+            }
+
+            // 5. End_Date - Start date can not be higher then end date (не обязательный)
+            if (workOrder.StartDate.HasValue && workOrder.EndDate.HasValue && workOrder.StartDate > workOrder.EndDate)
+            {
+                errors.Add("Start date cannot be higher than end date.");
+            }
+
+            // 6. ReasonID - Have to be greater then 0 (не обязательный)
+            if (workOrder.ReasonID.HasValue && workOrder.ReasonID <= 0)
+            {
+                errors.Add("ReasonID must be greater than 0 if provided.");
+            }
+
+            // 7. CategoryID - Have to be greater then 0 (не обязательный)
+            if (workOrder.CategoryID.HasValue && workOrder.CategoryID <= 0)
+            {
+                errors.Add("CategoryID must be greater than 0 if provided.");
+            }
+
+            // 8. DepartmentID - Have to be greater then 0 (не обязательный)
+            int? departmentId = null;
+            if (!string.IsNullOrWhiteSpace(workOrder.DepName))
+            {
+                if (!_userState.PersonID.HasValue)
+                {
+                    errors.Add("Cannot validate DepartmentID: Current user's PersonID is not available.");
+                }
+                else
+                {
+                    try
+                    {
+                        var departments = await GetWODictionariesCached(_userState.PersonID.Value);
+                        var department = departments.FirstOrDefault(d => d.ListType == (int)ListTypeEnum.Department && d.Name == workOrder.DepName);
+                        if (department == null || department.Id <= 0)
+                        {
+                            errors.Add($"Department '{workOrder.DepName}' not found or has invalid ID.");
+                        }
+                        else
+                        {
+                            departmentId = department.Id;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.Add($"Error validating DepartmentID: {ex.Message}");
+                    }
+                }
+            }
+
+            // 9. AssignedPersonID - Have to be greater then 0 (не обязательный)
+            int? assignedPersonId = null;
+            if (!string.IsNullOrWhiteSpace(workOrder.AssignedPerson))
+            {
+                try
+                {
+                    var persons = await GetAllPersons();
+                    var assignedPerson = persons.FirstOrDefault(p => p.Name == workOrder.AssignedPerson);
+                    if (assignedPerson == null || assignedPerson.PersonId <= 0)
+                    {
+                        errors.Add($"Assigned person '{workOrder.AssignedPerson}' not found or has invalid ID.");
+                    }
+                    else
+                    {
+                        assignedPersonId = assignedPerson.PersonId;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    errors.Add($"Error validating AssignedPersonID: {ex.Message}");
+                }
+            }
+
+
+            if (errors.Any())
+            {
+                return new SingleResponse<WorkOrder>
+                {
+                    IsValid = false,
+                    Errors = errors
+                };
+            }
+
+            var url = "api/v1/wo/create";
+            try
+            {
+
+                // mapping на WorkOrderCreateRequest
+                var createRequest = new WorkOrderCreateRequest
+                {
+                    MachineID = workOrder.MachineID,
+                    PersonID = _userState.PersonID.Value, 
+                    LevelID = workOrder.LevelID.Value,
+                    Description = workOrder.WODesc,
+                    StartDate = workOrder.StartDate,
+                    EndDate = workOrder.EndDate,
+                    ReasonID = workOrder.ReasonID,
+                    CategoryID = workOrder.CategoryID,
+                    DepartmentID = departmentId,
+                    AssignedPersonID = assignedPersonId 
+                };
+
+                var response = await _http.PostAsJsonAsync(url, createRequest);
+                var apiResponse = await response.Content.ReadFromJsonAsync<SingleResponse<WorkOrder>>();
+
+                if (response.IsSuccessStatusCode && apiResponse != null && apiResponse.IsValid && apiResponse.Data != null)
+                {
+                    Console.WriteLine($"[{_userState.UserName}] = = = = = = Work order saved successfully. ID: {apiResponse.Data.WorkOrderID}\n");
+                    Debug.WriteLine($"[{_userState.UserName}] = = = = = = Work order saved successfully. ID: {apiResponse.Data.WorkOrderID}\n");
+                    return apiResponse;
+                }
+                else
+                {
+                    var responseErrors = apiResponse?.Errors ?? new List<string>();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        responseErrors.Add($"Server responded with status code: {response.StatusCode}");
+                        responseErrors.Add($"Server response content: {await response.Content.ReadAsStringAsync()}");
+                    }
+                    Console.WriteLine($"[{_userState.UserName}] = = = = = = Failed to save work order. Errors: {string.Join(", ", responseErrors)}\n");
+                    Debug.WriteLine($"[{_userState.UserName}] = = = = = = Failed to save work order. Errors: {string.Join(", ", responseErrors)}\n");
+                    return new SingleResponse<WorkOrder> { IsValid = false, Errors = responseErrors };
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during POST to {url}: {ex.Message}\n");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during POST to {url}: {ex.Message}\n");
+                return new SingleResponse<WorkOrder> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during POST to {url}: {ex.Message}\n");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during POST to {url}: {ex.Message}\n");
+                return new SingleResponse<WorkOrder> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+            }
         }
 
         public async Task<bool> DeleteWorkOrderAsync(int workOrderID, int MachineID)
@@ -478,6 +621,7 @@ namespace BlazorTool.Client.Services
                     else
                     {
                         Console.WriteLine("[{_userState.UserName}] = = = = = = Errors in GetWODictionaries: " + string.Join(", ", wrapper.Errors));
+                        Debug.WriteLine($"[{_userState.UserName}] = = = = = = Errors in GetWODictionaries: " + string.Join(", ", wrapper.Errors));
                     }
                 }
 
@@ -487,11 +631,13 @@ namespace BlazorTool.Client.Services
             {
                 await _userState.ClearAsync();
                 Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 return new List<Dict>();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
                 return new List<Dict>();
             }
         }

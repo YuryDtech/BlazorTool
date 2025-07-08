@@ -63,17 +63,21 @@ namespace BlazorTool.Client.Services
             if (index != -1)
             {
                 _appointments[index] = appointment.ShallowCopy();
-                await _apiServiceClient.SaveWorkOrderAsync((WorkOrder)_appointments[index]);
+                var updateResult = await _apiServiceClient.UpdateWorkOrderAsync((WorkOrder)_appointments[index]);
+                if (!updateResult.IsValid)
+                {
+                    Console.WriteLine($"Error updating appointment: {string.Join(", ", updateResult.Errors)}");
+                }
             }
             else // New appointment, add it to the list
             {
-                var newId = await _apiServiceClient.SaveWorkOrderAsync((WorkOrder)appointment);
-                if (newId < 0)
+                var saveResult = await _apiServiceClient.UpdateWorkOrderAsync((WorkOrder)appointment);
+                if (!saveResult.IsValid || saveResult.Data == null)
                 {
-                    Console.WriteLine("Error: Failed to save the new appointment.");
+                    Console.WriteLine($"Error: Failed to save the new appointment. Errors: {string.Join(", ", saveResult.Errors)}");
                     return;
                 }
-                appointment.AppointmentId = newId;
+                appointment.AppointmentId = saveResult.Data.WorkOrderID;
                 _appointments.Add(appointment);
             }
         }
