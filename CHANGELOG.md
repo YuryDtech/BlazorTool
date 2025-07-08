@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2025-07-08
+- **Work Order Management Enhancement**: Implemented client-side validation and mapping of `WorkOrder` to `WorkOrderCreateRequest` in `ApiServiceClient.SaveWorkOrderAsync`. The `WoController.Create` endpoint now directly accepts `WorkOrderCreateRequest`. `ApiServiceClient.UpdateWorkOrderAsync` now utilizes `SaveWorkOrderAsync` for new work orders, ensuring consistent API saving. Added `ReasonID`, `CategoryID`, `DepartmentID`, and `AssignedPersonID` fields to `WorkOrderCreateRequest`.
 - **Client-Server Token Synchronization**: Implemented a robust mechanism where the Blazor server retrieves external API tokens from its cache using the `PersonID` provided by the client in a custom `X-Person-ID` HTTP header. This eliminates the need for the client to directly send the external API token to the Blazor server.
 - **Client-side Initialization Enhancement**: Ensured that `UserState` data is fully loaded from `localStorage` before any client-side API calls are made. This was achieved by awaiting `UserState.InitializationTask` in `AuthHeaderHandler` and relevant Razor pages (`SchedulerPage`, `OrdersPage`, `Settings`).
 - **Server-side Token Management**: The `IdentityController` now caches `IdentityData` (including the external API token) upon successful user login. The `ServerAuthTokenService` has been refactored to retrieve these tokens from the server's `IMemoryCache` based on the `PersonID` extracted from the `X-Person-ID` header.
