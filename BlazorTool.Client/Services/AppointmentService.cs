@@ -44,16 +44,6 @@ namespace BlazorTool.Client.Services
                 return _appointments.Where(x => !string.IsNullOrWhiteSpace(x.DepName) && x.Start != null).ToList();
         }
 
-        public async Task<List<SchedulerAppointment>> GetUnTakenAppointments()
-        {
-            if (_appointments == null || !_appointments.Any())
-            {
-                var orders = await _apiServiceClient.GetWorkOrdersCachedAsync();
-                _appointments = GetAppointmentsFromOrders(orders);
-            }
-            return _appointments.Where(x => string.IsNullOrWhiteSpace(x.DepName) || x.Start == null).ToList();
-        }
-
         public SchedulerAppointment? GetAppointmentById(int id)
         {
             return _appointments.FirstOrDefault(x => x.AppointmentId == id);
@@ -69,11 +59,11 @@ namespace BlazorTool.Client.Services
         }
         public async Task UpdateAppointment(SchedulerAppointment appointment)
         {
-            var existingAppointment = _appointments.FirstOrDefault(x => x.AppointmentId == appointment.AppointmentId);
-            if (existingAppointment != null)
+            var index = _appointments.FindIndex(x => x.AppointmentId == appointment.AppointmentId);
+            if (index != -1)
             {
-                existingAppointment = appointment.ShallowCopy();
-                await _apiServiceClient.SaveWorkOrderAsync((WorkOrder)existingAppointment);
+                _appointments[index] = appointment.ShallowCopy();
+                await _apiServiceClient.SaveWorkOrderAsync((WorkOrder)_appointments[index]);
             }
             else // New appointment, add it to the list
             {

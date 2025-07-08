@@ -1,0 +1,47 @@
+﻿Verbose logs are written to:
+C:\Users\yfilionchyk\AppData\Local\Temp\visualstudio-js-debugger.txt
+CSS Hot Reload ignoring http://localhost:5168/bootstrap/bootstrap.min.css because it was inaccessible or had more than 7000 rules.
+CSS Hot Reload ignoring https://blazor.cdn.telerik.com/blazor/6.2.0/kendo-theme-bootstrap/swatches/bootstrap-urban.css because it was inaccessible or had more than 7000 rules.
+[0m[48;5;127m[38;5;231mdotnet[0m[1m Loaded 11.17 MB resources[0m
+This application was built with linking (tree shaking) disabled. 
+Published applications will be significantly smaller if you install wasm-tools workload. 
+See also https://aka.ms/dotnet-wasm-features[0m
+Loaded 11.17 MB resources from cache
+Debugging hotkey: Shift+Alt+D (when application has focus)
+======= APPLICATION (Client) STARTING...
+--- Initialized SCHEDULER PAGE. WASM = True
+--- HardLoadData called.
+====== Start GetAllPersons() request: http://localhost:5168/api/v1/other/getuserslist
+info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
+      Start processing HTTP request GET http://localhost:5168/api/v1/other/getuserslist
+AuthHeaderHandler: UserState.PersonID is null. Request sent without X-Person-ID header.
+info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
+      Sending HTTP request GET http://localhost:5168/api/v1/other/getuserslist
+info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
+      Received HTTP response headers after 893ms - 200
+info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
+      End processing HTTP request after 905.3999ms - 200
+
+= = = = = = = = = response http://localhost:5168/api/v1/other/getuserslist 
+====== Users: 11
+
+info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
+      Start processing HTTP request GET http://localhost:5168/api/v1/wo/getlist?*
+AuthHeaderHandler: UserState.PersonID is null. Request sent without X-Person-ID header.
+info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
+      Sending HTTP request GET http://localhost:5168/api/v1/wo/getlist?*
+Exception thrown: 'System.Net.Http.HttpRequestException' in System.Net.Http.dll
+info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
+      Received HTTP response headers after 88.3ms - 500
+info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
+      End processing HTTP request after 89.9ms - 500
+crit: Microsoft.AspNetCore.Components.WebAssembly.Rendering.WebAssemblyRenderer[100]
+      Unhandled exception rendering component: Response status code does not indicate success: 500 (Internal Server Error).
+System.Net.Http.HttpRequestException: Response status code does not indicate success: 500 (Internal Server Error).
+   at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at System.Net.Http.Json.HttpClientJsonExtensions.<<FromJsonAsyncCore>g__Core|12_0>d`2[[BlazorTool.Client.Models.ApiResponse`1[[BlazorTool.Client.Models.WorkOrder, BlazorTool.Client, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], BlazorTool.Client, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[System.Text.Json.JsonSerializerOptions, System.Text.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51]].MoveNext()
+   at BlazorTool.Client.Services.ApiServiceClient.GetWorkOrdersAsync(Nullable`1 deviceID, Nullable`1 workOrderID, String deviceName, Nullable`1 isDep, Nullable`1 isTakenPerson, Nullable`1 active, String lang, Nullable`1 personID, Nullable`1 isPlan, Nullable`1 isWithPerson) in C:\Users\yfilionchyk\source\repos\BlazorTool\BlazorTool.Client\Services\ApiServiceClient.cs:line 154
+   at BlazorTool.Client.Pages.SchedulerPage.HardLoadData() in C:\Users\yfilionchyk\source\repos\BlazorTool\BlazorTool.Client\Pages\SchedulerPage.razor:line 251
+   at BlazorTool.Client.Pages.SchedulerPage.OnInitializedAsync() in C:\Users\yfilionchyk\source\repos\BlazorTool\BlazorTool.Client\Pages\SchedulerPage.razor:line 242
+   at Microsoft.AspNetCore.Components.ComponentBase.RunInitAndSetParametersAsync()
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
