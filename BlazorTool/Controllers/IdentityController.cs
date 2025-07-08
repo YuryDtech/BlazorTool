@@ -1,6 +1,7 @@
 ﻿using BlazorTool.Client.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Memory; // Added
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -19,11 +20,13 @@ namespace BlazorTool.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
+        private readonly IMemoryCache _cache; // Added
 
-        public IdentityController(IHttpClientFactory httpClientFactory, IConfiguration configuration)       
+        public IdentityController(IHttpClientFactory httpClientFactory, IConfiguration configuration, IMemoryCache cache)       
         {
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
+            _cache = cache; // Added
         }
 
         [HttpPost("loginpassword")]
@@ -46,6 +49,17 @@ namespace BlazorTool.Controllers
             var response = await client.SendAsync(request);
             var statusCode = (int)response.StatusCode;
             var content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = JsonSerializer.Deserialize<SingleResponse<IdentityData>>(content);
+                if (apiResponse != null && apiResponse.IsValid && apiResponse.Data != null)
+                {
+                    // Cache the IdentityData for the user
+                    _cache.Set($"IdentityData_{apiResponse.Data.PersonID}", apiResponse.Data, TimeSpan.FromHours(1)); // Cache for 1 hour
+                }
+            }
+
             foreach (var header in response.Content.Headers)
             {
                 Response.Headers[header.Key] = header.Value.ToArray();

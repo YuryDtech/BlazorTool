@@ -8,20 +8,24 @@ namespace BlazorTool.Client.Services
     public class UserState
     {
         private readonly ILocalStorageService _localStorageService;
+        public Task InitializationTask { get; private set; } // Added
 
         public UserState(ILocalStorageService localStorageService)
         {
             _localStorageService = localStorageService;
+            InitializationTask = LoadIdentityDataAsync(); // Set in constructor
         }
 
         public UserState()
         {
             //_localStorageService = new Blazored.LocalStorage.LocalStorageService();
+            InitializationTask = Task.CompletedTask; // For parameterless constructor, if ever used
         }
 
         public string? UserName { get; set; }
         public string? Password { get; set; }
         public string? Token { get; set; }
+        public int? PersonID { get; set; } // Added PersonID property
         public bool IsAuthenticated => !string.IsNullOrEmpty(UserName);
         public RightMatrix? RightMatrix { get; set; }
 
@@ -29,6 +33,7 @@ namespace BlazorTool.Client.Services
         {
             UserName = identityData.Name;
             Token = identityData.Token;
+            PersonID = identityData.PersonID; // Populate PersonID
             RightMatrix = identityData.RigthMatrix;
             await _localStorageService.SetItemAsStringAsync("identityData", JsonConvert.SerializeObject(identityData));
         }
@@ -43,6 +48,7 @@ namespace BlazorTool.Client.Services
                 {
                     UserName = identityData.Name;
                     Token = identityData.Token;
+                    PersonID = identityData.PersonID; // Populate PersonID
                     RightMatrix = identityData.RigthMatrix;
                 }
             }
@@ -53,6 +59,7 @@ namespace BlazorTool.Client.Services
             UserName = null;
             Password = null;
             Token = null;
+            PersonID = null; // Clear PersonID
             RightMatrix = null;
             await _localStorageService.RemoveItemAsync("identityData");
         }

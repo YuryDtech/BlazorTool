@@ -35,7 +35,6 @@
 @code{
 protected override async Task OnInitializedAsync()
     {
-        await UserState.LoadIdentityDataAsync();
         if (!UserState.IsAuthenticated)
         {
             Navigation.NavigateTo("/login");

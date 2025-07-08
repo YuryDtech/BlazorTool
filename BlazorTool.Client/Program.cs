@@ -17,10 +17,8 @@ builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddScoped<AuthHeaderHandler>(sp =>
 {
-    var localStorageService = sp.GetRequiredService<ILocalStorageService>();
-    var httpClientForAuth = new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
     var userState = sp.GetRequiredService<UserState>();
-    return new AuthHeaderHandler(localStorageService, httpClientForAuth, userState);
+    return new AuthHeaderHandler(userState);
 });
 
 builder.Services.AddHttpClient("ServerApi", client =>
@@ -41,12 +39,7 @@ builder.Services.AddScoped(sp => {
     return new HttpClient { BaseAddress = new Uri(serverBaseUrl) };
 });
 
-builder.Services.AddScoped<UserState>(sp =>
-{
-    var userState = new UserState(sp.GetRequiredService<ILocalStorageService>());
-    _ = userState.LoadIdentityDataAsync(); // Load identity data asynchronously
-    return userState;
-});
+builder.Services.AddScoped<UserState>();
 
 Console.WriteLine("======= APPLICATION (Client) STARTING...");
 

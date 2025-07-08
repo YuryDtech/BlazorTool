@@ -8,7 +8,9 @@
 @using System.Diagnostics
 @using Telerik.DataSource.Extensions
 @using Telerik.Blazor
+@inject NavigationManager Navigation
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
+@inject UserState UserState
 @rowStyles
 
 <label>Devices:</label>
@@ -153,6 +155,11 @@ else
     protected override async Task OnInitializedAsync()
     {
         Console.WriteLine("Initialized ORDERS PAGE");
+        await UserState.InitializationTask; // Ensure UserState is loaded
+        if (!UserState.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+        }
         isDevicesLoading = true;
         StateHasChanged();
         dicts = await apiService.GetWODictionaries(1);

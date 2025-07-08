@@ -1,6 +1,8 @@
-﻿using BlazorTool.Client.Services;
+﻿using BlazorTool.Client.Models; // Added for ApiResponse
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Net.Http; // Added
+using System.Net.Http.Json; // Added
 
 namespace BlazorTool.Controllers
 {
@@ -8,11 +10,11 @@ namespace BlazorTool.Controllers
     [ApiController]
     public class WoController : ControllerBase
     {
-        private readonly ApiServiceClient _apiServiceClient;
+        private readonly IHttpClientFactory _httpClientFactory; // Changed
 
-        public WoController(ApiServiceClient apiServiceClient)
+        public WoController(IHttpClientFactory httpClientFactory) // Changed
         {
-            _apiServiceClient = apiServiceClient;
+            _httpClientFactory = httpClientFactory; // Changed
         }
 
         [HttpGet("getlist")]
@@ -20,18 +22,28 @@ namespace BlazorTool.Controllers
         {
             try
             {
-                var data = await _apiServiceClient.GetWorkOrdersAsync(
-                    deviceID: q.DeviceID,
-                    workOrderID: q.WorkOrderID,
-                    deviceName: q.DeviceName,
-                    isDep: q.IsDep,
-                    isTakenPerson: q.IsTakenPerson,
-                    active: q.Active,
-                    lang: q.Lang,
-                    personID: q.PersonID,
-                    isPlan: q.IsPlan,
-                    isWithPerson: q.IsWithPerson
-                );
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient"); // Get named client
+
+                var qp = new List<string>();
+                if (q.DeviceID.HasValue) qp.Add($"DeviceID={q.DeviceID.Value}"); 
+                if (q.WorkOrderID.HasValue) qp.Add($"WorkOrderID={q.WorkOrderID.Value}");
+                if (!string.IsNullOrWhiteSpace(q.DeviceName)) qp.Add($"DeviceName={Uri.EscapeDataString(q.DeviceName)}");
+                if (q.IsDep.HasValue) qp.Add($"IsDep={q.IsDep.Value}");
+                if (q.IsTakenPerson.HasValue) qp.Add($"IsTakenPerson={q.IsTakenPerson.Value}");
+                if (q.Active.HasValue) qp.Add($"Active={q.Active.Value}");
+                if (!string.IsNullOrWhiteSpace(q.Lang)) qp.Add($"Lang={Uri.EscapeDataString(q.Lang)}");
+                if (q.PersonID.HasValue) qp.Add($"PersonID={q.PersonID.Value}");
+                if (q.IsPlan.HasValue) qp.Add($"IsPlan={q.IsPlan.Value}");
+                if (q.IsWithPerson.HasValue) qp.Add($"IsWithPerson={q.IsWithPerson.Value}");
+
+                var url = "api/v1/wo/getlist?" + string.Join("&", qp);
+
+                var response = await client.GetAsync(url); // Use the named client
+                response.EnsureSuccessStatusCode();
+
+                var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<WorkOrder>>();
+
+                var data = wrapper?.Data ?? new List<WorkOrder>();
 
                 return Ok(new
                 {
@@ -57,7 +69,20 @@ namespace BlazorTool.Controllers
         {
             try
             {
-                var data = await _apiServiceClient.GetWODictionaries(q.PersonID, q.Lang);
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient"); // Get named client
+
+                var qp = new List<string>();
+                qp.Add($"PersonID={q.PersonID}");
+                qp.Add($"Lang={q.Lang}");
+                var url = "api/v1/wo/getdict?" + string.Join("&", qp);
+
+                var response = await client.GetAsync(url); // Use the named client
+                response.EnsureSuccessStatusCode();
+
+                var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Dict>>();
+
+                var data = wrapper?.Data ?? new List<Dict>();
+
                 return Ok(new
                 {
                     data,

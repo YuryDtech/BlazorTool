@@ -1,5 +1,6 @@
 ﻿@page "/settings"
 @using BlazorTool.Client.Services
+@inject NavigationManager Navigation
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
 @inject UserState UserState
 
@@ -53,6 +54,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!UserState.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+        }
         // TODO: Load saved settings (e.g., from localStorage or a service)
         await LoadSettingsAsync();
         await InvokeAsync(StateHasChanged); // Ensure UI updates if settings are loaded asynchronously

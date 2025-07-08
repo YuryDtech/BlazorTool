@@ -31,22 +31,16 @@ builder.Services.AddHttpClient("ExternalApiBearerAuthClient", client =>
 })
 .AddHttpMessageHandler<ServerAuthHeaderHandler>();
 
+builder.Services.AddHttpContextAccessor(); 
 // inject IHttpClientFactory & IMemoryCache
-builder.Services.AddScoped(sp =>
+builder.Services.AddScoped<ServerAuthTokenService>(sp =>
 {
-    var config = sp.GetRequiredService<IConfiguration>();
-    var loginDto = new LoginRequest
-    {
-        Username = "Romaniuk Krzysztof", 
-        Password = "q"                   
-    };
     return new ServerAuthTokenService(
         sp.GetRequiredService<IMemoryCache>(),
-        sp.GetRequiredService<IHttpClientFactory>(),
-        config,
-        loginDto
+        sp.GetRequiredService<IHttpContextAccessor>()
     );
 });
+
 builder.Services.AddScoped<ServerAuthHeaderHandler>();
 
 builder.Services.AddScoped<UserState>();
@@ -61,7 +55,7 @@ builder.Services.AddHttpClient("InternalApiClient", client =>
 });
 
 builder.Services.AddScoped<ApiServiceClient>(sp =>
-    new ApiServiceClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ExternalApiBearerAuthClient"),
+    new ApiServiceClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("InternalApiClient"), // Changed to InternalApiClient
     sp.GetRequiredService<UserState>()));
 
 

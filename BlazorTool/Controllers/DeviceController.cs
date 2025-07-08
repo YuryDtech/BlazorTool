@@ -1,6 +1,7 @@
 ﻿using BlazorTool.Client.Models;
-using BlazorTool.Client.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http; // Added
+using System.Net.Http.Json; // Added
 
 namespace BlazorTool.Controllers
 {
@@ -8,22 +9,44 @@ namespace BlazorTool.Controllers
     [ApiController]
     public class DeviceController : ControllerBase
     {
-        private readonly ApiServiceClient _apiServiceClient;
+        private readonly IHttpClientFactory _httpClientFactory; // Changed
 
-        public DeviceController(ApiServiceClient apiServiceClient)
+        public DeviceController(IHttpClientFactory httpClientFactory) // Changed
         {
-            _apiServiceClient = apiServiceClient;
+            _httpClientFactory = httpClientFactory; // Changed
         }
 
         [HttpGet("getlist")]
-        public async Task<IActionResult> GetList()
+        public async Task<IActionResult> GetList(
+                                        [FromQuery] string lang = "pl-pl",
+                                        [FromQuery] string? name = null,
+                                        [FromQuery] int? categoryID = null,
+                                        [FromQuery] bool? isSet = null,
+                                        [FromQuery] IEnumerable<int>? machineIDs = null)
         {
             try
             {
-                var data = await _apiServiceClient.GetAllDevicesCachedAsync();
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient"); // Get named client
+
+                var qp = new List<string>();
+                if (!string.IsNullOrWhiteSpace(lang)) qp.Add($"Lang={Uri.EscapeDataString(lang)}");
+                if (!string.IsNullOrWhiteSpace(name)) qp.Add($"Name={Uri.EscapeDataString(name)}");
+                if (categoryID.HasValue) qp.Add($"CategoryID={categoryID.Value}");
+                if (isSet.HasValue) qp.Add($"IsSet={isSet.Value}");
+                if (machineIDs != null)
+                    foreach (var id in machineIDs)
+                        qp.Add($"MachineIDs={id}");
+
+                var url = "api/v1/device/getlist" + (qp.Count > 0 ? "?" + string.Join("&", qp) : "");
+                
+                var response = await client.GetAsync(url); // Use the named client
+                response.EnsureSuccessStatusCode();
+
+                var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Device>>();
+
                 return Ok(new
                 {
-                    data,
+                    data = wrapper?.Data ?? new List<Device>(),
                     isValid = true,
                     errors = Array.Empty<string>()
                 });

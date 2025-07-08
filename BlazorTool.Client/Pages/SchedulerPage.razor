@@ -12,6 +12,7 @@
 @inject IJSRuntime JSRuntime
 @inject ApiServiceClient apiService
 @inject AppointmentService ApptService
+@inject NavigationManager Navigation
 @inject UserState UserState
 
 @cellStyles
@@ -199,9 +200,6 @@
 </TelerikWindow>
 
 @code {
-
-
-
     private List<SchedulerAppointment> Appointments { get; set; } = new();    
     private List<SchedulerAppointment> _allAppointments { get; set; } = new();    
     private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }
@@ -239,6 +237,11 @@
     {
         var isWASM = JSRuntime is IJSInProcessRuntime;
         Console.WriteLine($"--- Initialized SCHEDULER PAGE. WASM = {isWASM}");
+        if (!UserState.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+        }
+        await UserState.InitializationTask; // Ensure UserState is loaded
         await HardLoadData();
     }
 

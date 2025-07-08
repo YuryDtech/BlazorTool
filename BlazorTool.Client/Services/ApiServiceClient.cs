@@ -151,10 +151,23 @@ namespace BlazorTool.Client.Services
 
             var url = "api/v1/wo/getlist?" + string.Join("&", qp);
 
-            var wrapper = await _http.GetFromJsonAsync<ApiResponse<WorkOrder>>(url);
-            Console.WriteLine("= = = = = = = API response-> WorkOrder.Count: " + wrapper?.Data.Count.ToString());
-            var result = wrapper?.Data ?? new List<WorkOrder>();
-            return result;
+            try
+            {
+                var wrapper = await _http.GetFromJsonAsync<ApiResponse<WorkOrder>>(url);
+                Console.WriteLine("= = = = = = = API response-> WorkOrder.Count: " + wrapper?.Data.Count.ToString());
+                var result = wrapper?.Data ?? new List<WorkOrder>();
+                return result;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new List<WorkOrder>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new List<WorkOrder>();
+            }
         }
 
 
@@ -164,7 +177,7 @@ namespace BlazorTool.Client.Services
                                         string lang = "pl-PL",
                                         bool? isEdit = null)
         {
-                var qs = new List<string>
+            var qs = new List<string>
             {
                 $"DeviceCategoryID={(deviceCategoryID?.ToString() ?? "")}",
                 $"PersonID={personID}",
@@ -173,9 +186,22 @@ namespace BlazorTool.Client.Services
             };
 
             var url = "api/v1/wo/getdict?" + string.Join("&", qs);
-            var wrapper = await _http.GetFromJsonAsync<ApiResponse<OrderStatus>>(url);
-            Console.WriteLine("\n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
-            return wrapper?.Data ?? new List<OrderStatus>();
+            try
+            {
+                var wrapper = await _http.GetFromJsonAsync<ApiResponse<OrderStatus>>(url);
+                Console.WriteLine("\n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
+                return wrapper?.Data ?? new List<OrderStatus>();
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new List<OrderStatus>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new List<OrderStatus>();
+            }
         }
 
         public async Task<WorkOrder?> GetWorkOrderByIdAsync(int workOrderID)
@@ -304,11 +330,24 @@ namespace BlazorTool.Client.Services
         public async Task<List<Activity>> GetActivityByWO(int workorder_id)
         {
             var url = $"api/v1/activity/getlist?woID={workorder_id}";
-            var response = await _http.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            var wrapper = JsonConvert.DeserializeObject<ApiResponse<Activity>>(content);
-            return wrapper?.Data ?? new List<Activity>();
+            try
+            {
+                var response = await _http.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync();
+                var wrapper = JsonConvert.DeserializeObject<ApiResponse<Activity>>(content);
+                return wrapper?.Data ?? new List<Activity>();
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new List<Activity>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new List<Activity>();
+            }
         }
         #endregion
 
@@ -316,16 +355,29 @@ namespace BlazorTool.Client.Services
         public async Task<List<Person>> GetAllPersons()
         {
             var url = "api/v1/other/getuserslist";
-            Console.WriteLine("====== Start GetAllPersons() request: " + _http.BaseAddress + url);
-            var response = await _http.GetAsync(url);
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                Console.WriteLine("\n= = = = = = = = = Users response error: " + response.ReasonPhrase + "\n");
+                Console.WriteLine("====== Start GetAllPersons() request: " + _http.BaseAddress + url);
+                var response = await _http.GetAsync(url);
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("\n= = = = = = = = = Users response error: " + response.ReasonPhrase + "\n");
+                    return new List<Person>();
+                }
+                var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Person>>();
+                Console.WriteLine($"\n= = = = = = = = = response {_http.BaseAddress}{url} \n====== Users: " + wrapper?.Data.Count.ToString() + "\n");
+                return wrapper?.Data ?? new List<Person>();
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 return new List<Person>();
             }
-            var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Person>>();
-            Console.WriteLine($"\n= = = = = = = = = response {_http.BaseAddress}{url} \n====== Users: " + wrapper?.Data.Count.ToString() + "\n");
-            return wrapper?.Data ?? new List<Person>();
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new List<Person>();
+            }
         }
 
 
@@ -359,17 +411,30 @@ namespace BlazorTool.Client.Services
                     qp.Add($"MachineIDs={id}");
             Console.WriteLine($" ====    name:{name} MachineIDs.count={machineIDs?.Count()}");
             var url = "api/v1/device/getlist" + (qp.Count > 0 ? "?" + string.Join("&", qp) : "");
-            var response = await _http.GetAsync(url);
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                Console.WriteLine("\n= = = = = = = = Devices response error: " + response.ReasonPhrase + "\n");
+                var response = await _http.GetAsync(url);
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("\n= = = = = = = = Devices response error: " + response.ReasonPhrase + "\n");
+                    return new List<Device>();
+                }
+                var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Device>>();
+
+                Console.WriteLine("\n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
+                
+                return wrapper?.Data ?? new List<Device>();
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 return new List<Device>();
             }
-            var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Device>>();
-
-            Console.WriteLine("\n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
-            
-            return wrapper?.Data ?? new List<Device>();
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new List<Device>();
+            }
         }
         #endregion
 
@@ -380,22 +445,35 @@ namespace BlazorTool.Client.Services
             qp.Add($"PersonID={personID}");
             qp.Add($"Lang={lang}");
             var url = "api/v1/wo/getdict?" + string.Join("&", qp);
-            var wrapper = await _http.GetFromJsonAsync<ApiResponse<Dict>>(url);
-            Console.WriteLine("\n");
-            Console.WriteLine("= = = = = = = = = = response Dict.Count: " + wrapper?.Data.Count.ToString());
-            Console.WriteLine("\n");
-            if (wrapper != null && wrapper.Data != null && wrapper.IsValid)
+            try
             {
-                if (wrapper.Errors.Count == 0)
-                // Cache the dictionaries
-                _dictCache = wrapper.Data;
-                else
+                var wrapper = await _http.GetFromJsonAsync<ApiResponse<Dict>>(url);
+                Console.WriteLine("\n");
+                Console.WriteLine("= = = = = = = = = = response Dict.Count: " + wrapper?.Data.Count.ToString());
+                Console.WriteLine("\n");
+                if (wrapper != null && wrapper.Data != null && wrapper.IsValid)
                 {
-                    Console.WriteLine("= = = = = = = = = Errors in GetWODictionaries: " + string.Join(", ", wrapper.Errors));
+                    if (wrapper.Errors.Count == 0)
+                    // Cache the dictionaries
+                    _dictCache = wrapper.Data;
+                    else
+                    {
+                        Console.WriteLine("= = = = = = = = = Errors in GetWODictionaries: " + string.Join(", ", wrapper.Errors));
+                    }
                 }
-            }
 
-            return wrapper?.Data ?? new List<Dict>();
+                return wrapper?.Data ?? new List<Dict>();
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new List<Dict>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new List<Dict>();
+            }
         }
         public async Task<List<Dict>> GetWODictionariesCached(int personID, string lang = "pl-PL")
         {
@@ -519,14 +597,27 @@ namespace BlazorTool.Client.Services
             {
                 new KeyValuePair<string, string>("address", address)
             });
-            var response = await _http.PostAsync(url, content);
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                Console.WriteLine("\n= = = = = = = = = CheckApiAddress error: " + response.ReasonPhrase + "\n");
-                return (false, "API address is invalid. " + response.ReasonPhrase);
+                var response = await _http.PostAsync(url, content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("\n= = = = = = = = = CheckApiAddress error: " + response.ReasonPhrase + "\n");
+                    return (false, "API address is invalid. " + response.ReasonPhrase);
+                }
+                var wrapper = await response.Content.ReadFromJsonAsync<SimpleResponse>();
+                return (wrapper.Success,wrapper.Message);
             }
-            var wrapper = await response.Content.ReadFromJsonAsync<SimpleResponse>();
-            return (wrapper.Success,wrapper.Message);
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during POST to {url}: {ex.Message}");
+                return (false, $"Network error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during POST to {url}: {ex.Message}");
+                return (false, $"An unexpected error occurred: {ex.Message}");
+            }
         }
         
         public async Task<string> GetSettingAsync(string key, string user)
@@ -563,14 +654,27 @@ namespace BlazorTool.Client.Services
                 new KeyValuePair<string, string>("value", value),
                 new KeyValuePair<string, string>("user", user)
             });
-            var response = await _http.PostAsync(url, content);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                return true;
+                var response = await _http.PostAsync(url, content);
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("\n= = = = = = = = = SaveSettingAsync error: " + response.ReasonPhrase + "\n");
+                    return false;
+                }
             }
-            else
+            catch (HttpRequestException ex)
             {
-                Debug.Print("\n= = = = = = = = = SaveSettingAsync error: " + response.ReasonPhrase + "\n");
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during POST to {url}: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during POST to {url}: {ex.Message}");
                 return false;
             }
         }
