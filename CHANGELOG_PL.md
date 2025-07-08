@@ -1,5 +1,13 @@
 # Changelog
 
+## 2025-07-08
+- **Synchronizacja tokenów między klientem a serwerem**: Zaimplementowano solidny mechanizm, w którym serwer Blazor pobiera tokeny zewnętrznego API ze swojej pamięci podręcznej, używając `PersonID` dostarczonego przez klienta w niestandardowym nagłówku HTTP `X-Person-ID`. Eliminuje to potrzebę bezpośredniego wysyłania tokena zewnętrznego API z klienta do serwera Blazor.
+- **Ulepszenie inicjalizacji po stronie klienta**: Upewniono się, że dane `UserState` są w pełni załadowane z `localStorage` przed wykonaniem jakichkolwiek wywołań API po stronie klienta. Osiągnięto to poprzez oczekiwanie na `UserState.InitializationTask` w `AuthHeaderHandler` i odpowiednich stronach Razor (`SchedulerPage`, `OrdersPage`, `Settings`).
+- **Zarządzanie tokenami po stronie serwera**: `IdentityController` teraz buforuje `IdentityData` (w tym token zewnętrznego API) po pomyślnym zalogowaniu użytkownika. `ServerAuthTokenService` został zrefaktoryzowany w celu pobierania tych tokenów z pamięci podręcznej serwera (`IMemoryCache`) na podstawie `PersonID` wyodrębnionego z nagłówka `X-Person-ID`.
+- **Obsługa błędów API**: Dodano bloki `try-catch` do wszystkich metod żądań HTTP w `ApiServiceClient`, aby elegancko obsługiwać błędy sieciowe i API, logując je do konsoli i zwracając puste/domyślne wartości.
+- **Udoskonalenie i czyszczenie zależności**: Usunięto przestarzałe konfiguracje uwierzytelniania JWT Bearer i zakodowane na stałe dane logowania z pliku `Program.cs` po stronie serwera, usprawniając konfigurację uwierzytelniania i wstrzykiwania zależności.
+- **Dokumentacja API**: Dodano `API-info.md` w celu zapewnienia jasnej dokumentacji punktów końcowych API i ich typów autoryzacji.
+
 ## 2025-07-07
 - **Interfejs użytkownika i funkcjonalność:**
     - Ulepszone logowanie z rozwijaną listą wyszukiwania nazwy użytkownika i podstawową walidacją danych wejściowych.

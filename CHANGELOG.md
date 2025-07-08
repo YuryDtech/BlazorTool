@@ -1,5 +1,13 @@
 # Changelog
 
+## 2025-07-08
+- **Client-Server Token Synchronization**: Implemented a robust mechanism where the Blazor server retrieves external API tokens from its cache using the `PersonID` provided by the client in a custom `X-Person-ID` HTTP header. This eliminates the need for the client to directly send the external API token to the Blazor server.
+- **Client-side Initialization Enhancement**: Ensured that `UserState` data is fully loaded from `localStorage` before any client-side API calls are made. This was achieved by awaiting `UserState.InitializationTask` in `AuthHeaderHandler` and relevant Razor pages (`SchedulerPage`, `OrdersPage`, `Settings`).
+- **Server-side Token Management**: The `IdentityController` now caches `IdentityData` (including the external API token) upon successful user login. The `ServerAuthTokenService` has been refactored to retrieve these tokens from the server's `IMemoryCache` based on the `PersonID` extracted from the `X-Person-ID` header.
+- **API Error Handling**: Added `try-catch` blocks to all HTTP request methods within `ApiServiceClient` to gracefully handle network and API errors, logging them to the console and returning empty/default values.
+- **Dependency Refinement and Cleanup**: Removed obsolete JWT Bearer authentication configurations and hardcoded login credentials from the server-side `Program.cs`, streamlining the authentication and dependency injection setup.
+- **API Documentation**: Added `API-info.md` to provide clear documentation of API endpoints and their authorization types.
+
 ## 2025-07-07
 - **UI and Functionality:**
     - Improved login experience with a searchable dropdown for username and basic input validation.
