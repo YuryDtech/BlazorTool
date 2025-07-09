@@ -57,38 +57,70 @@ namespace BlazorTool.Client.Services
             //_appointments.Add(appointment);
             //await _apiServiceClient.SaveWorkOrderAsync((WorkOrder)appointment);
         }
-        public async Task UpdateAppointment(SchedulerAppointment appointment)
+        public async Task<SingleResponse<WorkOrder>> UpdateAppointment(SchedulerAppointment appointment)
         {
-            var index = _appointments.FindIndex(x => x.AppointmentId == appointment.AppointmentId);
-            if (index != -1)
+            var existingAppointment = _appointments.FirstOrDefault(x => x.AppointmentId == appointment.AppointmentId);
+
+            if (existingAppointment != null)
             {
-                _appointments[index] = appointment.ShallowCopy();
-                var updateResult = await _apiServiceClient.UpdateWorkOrderAsync((WorkOrder)_appointments[index]);
+                // Update existing appointment
+                existingAppointment.Title = appointment.Title;
+                existingAppointment.Start = appointment.Start;
+                existingAppointment.End = appointment.End;
+                existingAppointment.IsAllDay = appointment.IsAllDay;
+                existingAppointment.Description = appointment.Description;
+                existingAppointment.DepName = appointment.DepName;
+                
+                var workOrderToUpdate = (WorkOrder)existingAppointment;
+                var updateResult = await _apiServiceClient.UpdateWorkOrderAsync(workOrderToUpdate);
+
                 if (!updateResult.IsValid)
                 {
                     Console.WriteLine($"Error updating appointment: {string.Join(", ", updateResult.Errors)}");
                 }
+                return updateResult;
             }
-            else // New appointment, add it to the list
+            else // New appointment (dragged from list)
             {
-                var saveResult = await _apiServiceClient.UpdateWorkOrderAsync((WorkOrder)appointment);
-                if (!saveResult.IsValid || saveResult.Data == null)
+                var workOrderToCreate = (WorkOrder)appointment;
+                var saveResult = await _apiServiceClient.UpdateWorkOrderAsync(workOrderToCreate);
+                if (saveResult.IsValid && saveResult.Data != null)
                 {
-                    Console.WriteLine($"Error: Failed to save the new appointment. Errors: {string.Join(", ", saveResult.Errors)}");
-                    return;
+                    _appointments.Add(new SchedulerAppointment(saveResult.Data));
                 }
-                appointment = new SchedulerAppointment(saveResult.Data);
-                _appointments.Add(appointment);
+                else
+                {
+                     Console.WriteLine($"Error: Failed to save the new appointment. Errors: {string.Join(", ", saveResult.Errors)}");
+                }
+                return saveResult;
             }
         }
 
-        public async Task DeleteAppointment(SchedulerAppointment ap)
+        public async Task<SingleResponse<WorkOrder>> CloseAppointment(SchedulerAppointment ap)
         {
             if (ap != null)
             {
-                _appointments.Remove(ap);
-                await _apiServiceClient.DeleteWorkOrderAsync(ap.WorkOrderID, ap.MachineID);
+                var tryClose = await _apiServiceClient.CloseWorkOrderAsync((WorkOrder) ap);
+                if (!tryClose.IsValid)
+                {
+                    Console.WriteLine($"Error closing appointment: {string.Join(", ", tryClose.Errors)}");
+                }
+                else 
+                { 
+                    _appointments.Remove(ap);
+                }
+                return new SingleResponse<WorkOrder>
+                {
+                    IsValid = tryClose.IsValid,
+                    Data = tryClose.Data,
+                    Errors = tryClose.Errors
+                };
             }
+            return new SingleResponse<WorkOrder>
+            {
+                IsValid = false,
+                Errors = new List<string> { "Appointment is null." }
+            };
         }
 
         public void DeleteAllAppointments()

@@ -45,7 +45,7 @@
               Height="200px"
               >
     <div Class="warning-popup">
-        <p>Сheck all required fields</p>
+        <p>@popupMessage</p>
         <TelerikButton OnClick="@(() => PopupRef?.Hide())"
                        Icon="@SvgIcon.XCircle">Close</TelerikButton>
     </div>
@@ -63,6 +63,7 @@
     private bool isNewAppointment = false;
     private string titleAlarm = string.Empty;
     private TelerikPopup? PopupRef { get; set; }
+    private string popupMessage = "Please fill in all required fields.";
 
     private SchedulerAppointment? _OriginAppointment; // Used to store the original appointment for cancellation
 
@@ -85,17 +86,35 @@
         if (!IsValidAppointment())
         {
             Console.WriteLine("--- IS INVALID");
+            popupMessage = "Please fill in all required fields.";
             PopupRef?.Show();
             return;
         }
-        await ApptService.UpdateAppointment(Appointment);
+
+        var result = await ApptService.UpdateAppointment(Appointment);
+        if (!result.IsValid)
+        {
+            string errors = string.Join(Environment.NewLine, result.Errors);
+            popupMessage = errors ?? "Failed to save appointment.";
+            PopupRef?.Show();
+            return;
+        }
         await OnAppointmentChanged.InvokeAsync(Appointment);
     }
 
     async Task DeleteAppointment()
     {
         if (isNewAppointment) return;
-        await ApptService.DeleteAppointment(Appointment);
+
+        var tryClose = await ApptService.CloseAppointment(Appointment);
+        if (!tryClose.IsValid)
+        {
+            string errors = string.Join(Environment.NewLine, tryClose.Errors);
+            popupMessage = errors ?? "Failed to close appointment.";
+            PopupRef?.Show();
+            return;
+        }
+        
         await OnAppointmentChanged.InvokeAsync(null);
     }
 

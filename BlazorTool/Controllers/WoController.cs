@@ -26,7 +26,7 @@ namespace BlazorTool.Controllers
                 var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient"); // Get named client
 
                 var qp = new List<string>();
-                if (q.DeviceID.HasValue) qp.Add($"DeviceID={q.DeviceID.Value}"); 
+                if (q.DeviceID.HasValue) qp.Add($"DeviceID={q.DeviceID.Value}");
                 if (q.WorkOrderID.HasValue) qp.Add($"WorkOrderID={q.WorkOrderID.Value}");
                 if (!string.IsNullOrWhiteSpace(q.DeviceName)) qp.Add($"DeviceName={Uri.EscapeDataString(q.DeviceName)}");
                 if (q.IsDep.HasValue) qp.Add($"IsDep={q.IsDep.Value}");
@@ -102,25 +102,7 @@ namespace BlazorTool.Controllers
             }
         }
 
-        public class WorkOrderQueryParameters
-        {
-            public int? DeviceID { get; set; }
-            public int? WorkOrderID { get; set; }
-            public string? DeviceName { get; set; }
-            public bool? IsDep { get; set; }
-            public bool? IsTakenPerson { get; set; }
-            public bool? Active { get; set; }
-            public string Lang { get; set; } = "pl-PL";
-            public int? PersonID { get; set; }
-            public bool? IsPlan { get; set; }
-            public bool? IsWithPerson { get; set; }
-        }
 
-        public class WOCategoriesParameters
-        {
-            public int PersonID { get; set; }
-            public string Lang { get; set; } = "pl-PL";
-        }
 
         // GET api/<WoController>/get?WorkOrderID=2
         [HttpGet("get")]
@@ -194,5 +176,115 @@ namespace BlazorTool.Controllers
         public void Delete(int id)
         {
         }
-    }
+
+        [HttpPut("close")]
+        public async Task<IActionResult> CloseWorkOrder([FromBody] CloseWorkOrderRequest request)
+        {
+            if (request == null || request.WorkOrderID <= 0)
+            {
+                return BadRequest(new SingleResponse<WorkOrder>
+                {
+                    IsValid = false,
+                    Errors = new List<string> { "WorkOrderID is required." }
+                });
+            }
+
+            try
+            {
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
+                var url = "api/v1/wo/close";
+
+                var response = await client.PutAsJsonAsync(url, request);
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    var apiResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<WorkOrder>>(responseContent);
+                    return Ok(apiResponse);
+                }
+                else
+                {
+                    try
+                    {
+                        var errorResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<bool>>(responseContent);
+                        if (errorResponse != null)
+                        {
+                            return StatusCode((int)response.StatusCode, errorResponse);
+                        }
+                    }
+                    catch { }
+
+                    return StatusCode((int)response.StatusCode, new SingleResponse<WorkOrder>
+                    {
+                        IsValid = false,
+                        Errors = new List<string> { $"API Error: {response.ReasonPhrase}", responseContent }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new SingleResponse<WorkOrder>
+                {
+                    IsValid = false,
+                    Errors = new List<string> { ex.Message }
+                });
+            }
+        }
+    
+
+    
+
+    [HttpPut("update")]
+        public async Task<IActionResult> UpdateWorkOrder([FromBody] UpdateWorkOrderRequest request)
+        {
+            if (request == null || request.WorkOrderID <= 0)
+            {
+                return BadRequest(new SingleResponse<bool>
+                {
+                    IsValid = false,
+                    Errors = new List<string> { "A valid WorkOrderID is required." }
+                });
+            }
+
+            try
+            {
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
+                var url = "api/v1/wo/update";
+
+                var response = await client.PutAsJsonAsync(url, request);
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    var apiResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<bool>>(responseContent);
+                    return Ok(apiResponse);
+                }
+                else
+                {
+                    try
+                    {
+                        var errorResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<bool>>(responseContent);
+                        if (errorResponse != null && errorResponse.Errors.Any())
+                        {
+                            return StatusCode((int)response.StatusCode, errorResponse);
+                        }
+                    }
+                    catch {  }
+
+                    return StatusCode((int)response.StatusCode, new SingleResponse<bool>
+                    {
+                        IsValid = false,
+                        Errors = new List<string> { $"API Error: {response.ReasonPhrase}", responseContent }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new SingleResponse<bool>
+                {
+                    IsValid = false,
+                    Errors = new List<string> { ex.Message }
+                });
+            }
+        } }
 }

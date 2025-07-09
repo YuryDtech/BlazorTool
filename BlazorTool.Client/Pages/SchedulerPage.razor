@@ -50,7 +50,8 @@
                              AllowCustom="true"
                              Value="@selectedAssetNo"
                              ValueChanged="@((string assetNo) => OnAssetNoChanged(assetNo))"
-                             Size="sm">
+                             Size="sm"
+                             class="popup-target">
             </TelerikComboBox>
         </div>
  
@@ -199,11 +200,31 @@
     </WindowContent>
 </TelerikWindow>
 
+<TelerikPopup @ref="@PopupRef"
+              AnchorSelector=".popup-target"
+              AnchorHorizontalAlign="@PopupAnchorHorizontalAlign.Center"
+              AnchorVerticalAlign="@PopupAnchorVerticalAlign.Center"
+              AnimationType="@AnimationType.SlideDown"
+              AnimationDuration="200"
+              Width="300px"
+              Height="300px"
+              >
+    <div Class="warning-popup">
+        <p>@popupMessage</p>
+        <TelerikButton OnClick="@(() => PopupRef?.Hide())"
+                       Icon="@SvgIcon.XCircle">Close</TelerikButton>
+    </div>
+
+</TelerikPopup>
+
 @code {
+
+
+
     private List<SchedulerAppointment> Appointments { get; set; } = new();    
     private List<SchedulerAppointment> _allAppointments { get; set; } = new();    
     private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }
-
+    private TelerikPopup? PopupRef { get; set; }
     private DateTime SchedulerDate { get; set; } = DateTime.Today;
     private SchedulerView CurrentView { get; set; } = SchedulerView.Month;
     private DateTime DayStart => DateTime.Today.AddHours(7);
@@ -227,6 +248,7 @@
     private List<string> AssetNumbers = new();
     private string selectedAssetNo = "All";
     private Person currentUser = new Person();
+    private string popupMessage = string.Empty;
     private List<Resource> statuses = new List<Resource>
     {
         new Resource { Text = "Not starded", Value = "Red", Color = "LightCoral" },
@@ -321,15 +343,28 @@
             var slot = SchedulerRef.GetTimeSlotFromDropIndex(args.DestinationIndex);
             foreach (var wo in args.Items)
             {
-                var newscheduler = new SchedulerAppointment(wo);
-                newscheduler.Start = slot.Start;
-                newscheduler.End = slot.End.AddHours(3);
-                newscheduler.IsAllDay = slot.IsAllDay;
-                newscheduler.TakeDate = slot.Start;
-                Appointments.Add(newscheduler);
-                _allAppointments.Add(newscheduler);
-                UntakenOrders.Remove(wo);
-                await ApptService.UpdateAppointment(newscheduler);
+                var newAppointment = new SchedulerAppointment(wo)
+                {
+                    Start = slot.Start,
+                    End = slot.End.AddHours(3),
+                    IsAllDay = slot.IsAllDay,
+                    TakeDate = slot.Start
+                };
+
+                var result = await ApptService.UpdateAppointment(newAppointment);
+                if (result.IsValid)
+                {
+                    Appointments.Add(newAppointment);
+                    _allAppointments.Add(newAppointment);
+                    UntakenOrders.Remove(wo);
+                }
+                else
+                {
+                    Console.WriteLine($"Failed to update appointment on drop: {string.Join(", ", result.Errors)}");
+
+                    CurrentAppointment = newAppointment;
+                    customEditFormShown = true;
+                }
             }
 
             SchedulerRef.Rebind();
@@ -395,8 +430,8 @@
             // string.IsNullOrEmpty(x.AssignedPerson) &&
             (selectedCategory == "All" || x.DeviceCategory == selectedCategory) &&
             (isCBAllOrdersSelected || (x.WOState?.ToLowerInvariant() != "zakończony")) &&
-            (x.StartDate == null) &&
-            (string.IsNullOrEmpty(x.DepName))
+            ((x.StartDate == null) || 
+            (string.IsNullOrEmpty(x.DepName)))
         ).ToList();
     }
 
@@ -409,9 +444,16 @@
 
         if (args.Item is SchedulerAppointment newAppt && SchedulerRef != null)
         {
-            _allAppointments.Add(newAppt);
-            Appointments.Add(newAppt);
-            await ApptService.UpdateAppointment(newAppt);
+            var result = await ApptService.UpdateAppointment(newAppt);
+            if(result.IsValid)
+            {
+                _allAppointments.Add(newAppt);
+                Appointments.Add(newAppt);
+            }
+            else
+            {
+                Console.WriteLine($"Failed to create appointment: {string.Join(", ", result.Errors)}");
+            }
             SchedulerRef?.Rebind();
         }
     }
@@ -420,23 +462,40 @@
     {
         if (args.Item is SchedulerAppointment updAppt)
         {
-            var ind = Appointments.FindIndex(a => a.AppointmentId == updAppt.AppointmentId);
-            if (ind >= 0)
+            var result = await ApptService.UpdateAppointment(updAppt);
+            if (result.IsValid && result.Data != null)
             {
-                Appointments[ind] = updAppt.ShallowCopy(); 
+                // Find and update the item in the local collections
+                var index = Appointments.FindIndex(a => a.AppointmentId == result.Data.WorkOrderID);
+                if (index >= 0) Appointments[index] = new SchedulerAppointment(result.Data);
 
-                await ApptService.UpdateAppointment(Appointments[ind]);
-                SchedulerRef?.Rebind();
+                var allIndex = _allAppointments.FindIndex(a => a.AppointmentId == result.Data.WorkOrderID);
+                if (allIndex >= 0) _allAppointments[allIndex] = new SchedulerAppointment(result.Data);
             }
+            else
+            {
+                Console.WriteLine($"Failed to update appointment: {string.Join(", ", result.Errors)}");
+                // Optional: revert changes in the UI or show a notification
+            }
+            SchedulerRef?.Rebind();
         }
     }
 
     private async Task OnDeleteAppointment(SchedulerDeleteEventArgs args)
     {
+        
         if (args.Item is SchedulerAppointment delAppt)
         {
             //TODO not delete Order, but change status(Assigned Person, Date...)
-            await ApptService.DeleteAppointment(delAppt); // Delete from service
+            var result = await ApptService.CloseAppointment(delAppt); 
+            if (!result.IsValid)
+            {
+                string errors = string.Join(Environment.NewLine, result.Errors);
+                popupMessage = errors ?? "Failed to close appointment.";
+                PopupRef?.Show();
+                Console.WriteLine($"Failed to delete appointment: {string.Join(", ", result.Errors)}");
+                return; // Exit if deletion failed
+            }
             _allAppointments.RemoveAll(a => a.AppointmentId == delAppt.AppointmentId);
             Appointments.RemoveAll(a => a.AppointmentId == delAppt.AppointmentId);
 

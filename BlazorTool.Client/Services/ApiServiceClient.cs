@@ -249,35 +249,85 @@ namespace BlazorTool.Client.Services
                 return saveResult;
             }
 
-            // Existing work order update logic (caching only, assuming API update is handled elsewhere or not needed for existing)
-            if (!_workOrdersCache.ContainsKey(workOrder.MachineID))
+            // --- Existing Work Order Update Logic ---
+            var errors = new List<string>();
+
+            // --- Validation ---
+            if (workOrder.WorkOrderID <= 0) errors.Add("WorkOrderID - Have to be greater then 0");
+            if (!workOrder.LevelID.HasValue || workOrder.LevelID.Value <= 0) errors.Add("LevelID - Have to be greater then 0");
+            if (string.IsNullOrWhiteSpace(workOrder.WODesc)) errors.Add("Description - Can not be empty");
+            if (!_userState.PersonID.HasValue || _userState.PersonID.Value <= 0) errors.Add("PersonID - Have to be greater then 0");
+
+            // --- ID Lookups ---
+            int? departmentId = null;
+            if (!string.IsNullOrWhiteSpace(workOrder.DepName))
             {
-                //new machineID, add new list to cache
-                _workOrdersCache.Add(workOrder.MachineID, new List<WorkOrder>() { workOrder });
-                Console.WriteLine($"[{_userState.UserName}] = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
-                Debug.WriteLine($"[{_userState.UserName}] = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
-                return new SingleResponse<WorkOrder> { IsValid = true, Data = workOrder };
+                var departments = await GetWODepartments(_userState.PersonID.Value);
+                departmentId = departments.FirstOrDefault(d => d.Name.Equals(workOrder.DepName, StringComparison.OrdinalIgnoreCase))?.Id;
             }
 
-            //existing machineID, check if work order already exists in cache
-            var ind = _workOrdersCache[workOrder.MachineID].FindIndex(x => x.WorkOrderID == workOrder.WorkOrderID);
-            if (ind >= 0)
+            int? assignedPersonId = null;
+            if (!string.IsNullOrWhiteSpace(workOrder.AssignedPerson))
             {
-                //update existing work order in cache
-                _workOrdersCache[workOrder.MachineID][ind] = workOrder;
-                Console.WriteLine($"[{_userState.UserName}] = = = = = = Work order ID={workOrder.WorkOrderID} was updated in cache. ");
-                Console.WriteLine($" === Title={workOrder.AssetNo}, StartDate={workOrder.StartDate}, EndDate={workOrder.EndDate}===");
-                Debug.WriteLine($"[{_userState.UserName}] = = = = = = Work order ID={workOrder.WorkOrderID} was updated in cache. ");
-                Debug.WriteLine($" === Title={workOrder.AssetNo}, StartDate={workOrder.StartDate}, EndDate={workOrder.EndDate}===");
-                return new SingleResponse<WorkOrder> { IsValid = true, Data = workOrder };
+                var persons = await GetAllPersons();
+                assignedPersonId = persons.FirstOrDefault(p => p.Name.Equals(workOrder.AssignedPerson, StringComparison.OrdinalIgnoreCase))?.PersonId;
             }
-            else // work order not found in cache
+
+            int? stateId = null;
+            if (!string.IsNullOrWhiteSpace(workOrder.WOState))
             {
-                _workOrdersCache[workOrder.MachineID].Add(workOrder);
-                Console.WriteLine($"[{_userState.UserName}] = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
-                Debug.WriteLine($"[{_userState.UserName}] = = = = Work order ID={workOrder.WorkOrderID} was added to cache.");
-                return new SingleResponse<WorkOrder> { IsValid = true, Data = workOrder };
+                var states = await GetWOStates(_userState.PersonID.Value);
+                stateId = states.FirstOrDefault(s => s.Name.Equals(workOrder.WOState, StringComparison.OrdinalIgnoreCase))?.Id;
             }
+            if (!stateId.HasValue || stateId.Value <= 0) errors.Add("StateID - Have to be greater then 0");
+
+            if (errors.Any())
+            {
+                return new SingleResponse<WorkOrder> { IsValid = false, Errors = errors };
+            }
+
+            // --- Request Creation ---
+            var request = new UpdateWorkOrderRequest
+            {
+                WorkOrderID = workOrder.WorkOrderID,
+                PersonID = _userState.PersonID.Value,
+                CategoryID = workOrder.CategoryID,
+                LevelID = workOrder.LevelID,
+                ReasonID = workOrder.ReasonID,
+                Description = workOrder.WODesc,
+                DepartmentID = departmentId,
+                AssignedPersonID = assignedPersonId,
+                Location = null, // As requested
+                Start_Date = workOrder.StartDate?.ToString("O"),
+                End_Date = workOrder.EndDate?.ToString("O"),
+                StateID = stateId
+            };
+
+            var result = await PutSingleAsync<UpdateWorkOrderRequest, bool>("api/v1/wo/update", request);
+
+            // --- Cache Update ---
+            if (result.IsValid)
+            {
+                if (_workOrdersCache.TryGetValue(workOrder.MachineID, out var orderList))
+                {
+                    var index = orderList.FindIndex(wo => wo.WorkOrderID == workOrder.WorkOrderID);
+                    if (index != -1)
+                    {
+                        orderList[index] = workOrder;
+                    }
+                    else
+                    {
+                        orderList.Add(workOrder);
+                    }
+                }
+                else
+                {
+                    _workOrdersCache[workOrder.MachineID] = new List<WorkOrder> { workOrder };
+                }
+
+            }
+
+            return new SingleResponse<WorkOrder> {Data = workOrder, IsValid = result.IsValid, Errors = result.Errors };
         }
 
         /// <summary>
@@ -462,37 +512,63 @@ namespace BlazorTool.Client.Services
             }
         }
 
-        public async Task<bool> DeleteWorkOrderAsync(WorkOrder workOrder)
+        public async Task<SingleResponse<WorkOrder>> CloseWorkOrderAsync(WorkOrder workOrder)
         {
-            //TODO : implement deleting work order from API (PUT)
-            //var url = $"api/v1/wo/close";
-            //var response = await _http.DeleteAsync(url);
-            //if (response.IsSuccessStatusCode)
-            //{
-            //    Debug.Print("\n= = = = = = = = = Work order deleted successfully.\n");
-            //    return true;
-            //}
-            //else
-            //{
-            //    Debug.Print("\n= = = = = = = = = DeleteWorkOrderAsync error: " + response.ReasonPhrase + "\n");
-            //    return false;
-            //}
+            var errors = new List<string>();
 
-            if (!_workOrdersCache.ContainsKey(workOrder.MachineID))
+            if (!_userState.PersonID.HasValue || _userState.PersonID.Value <= 0)
             {
-                Console.WriteLine("\n= = = = = = = = = No work orders found for MachineID: " + workOrder.MachineID + "\n");
-                return false;
+                errors.Add("PersonID - Have to be greater then 0");
             }
-             
-            var WO_index = _workOrdersCache[workOrder.MachineID].FindIndex(x => x.WorkOrderID == workOrder.WorkOrderID);
-            if (WO_index < 0)
+            if (workOrder.WorkOrderID <= 0)
             {
-                Console.WriteLine("\n= = = = = = = = = No work order found for ID: " + workOrder.WorkOrderID + "\n");
-                return false;
+                errors.Add("WorkOrderID - Have to be greater then 0");
             }
-            _workOrdersCache[workOrder.MachineID].RemoveAt(WO_index);
-            Console.WriteLine("\n= = = = = = = = = Work order deleted successfully for ID: " + workOrder.WorkOrderID + "\n");
-            return true;
+            if (!workOrder.CategoryID.HasValue || workOrder.CategoryID <= 0)
+            {
+                errors.Add("CategoryID - Have to be greater then 0");
+            }
+            if (!workOrder.ReasonID.HasValue || workOrder.ReasonID <= 0)
+            {
+                errors.Add("ReasonID - Have to be greater then 0");
+            }
+            if (!workOrder.ActCount.HasValue || workOrder.ActCount.Value <= 0)
+            {
+                errors.Add("WorkOrder must have at least one activity (act_Count > 0)");
+            }
+
+            if (errors.Any())
+            {
+                return new SingleResponse<WorkOrder>
+                {
+                    IsValid = false,
+                    Errors = errors
+                };
+            }
+
+            var request = new CloseWorkOrderRequest
+            {
+                WorkOrderID = workOrder.WorkOrderID,
+                PersonID = _userState.PersonID.Value,
+                CategoryID = workOrder.CategoryID ?? 0,
+                ReasonID = workOrder.ReasonID ?? 0
+            };
+
+            var result = await PutSingleAsync<CloseWorkOrderRequest, WorkOrder>("api/v1/wo/close", request);
+
+            if (result.IsValid && result.Data != null)
+            {
+                // Remove from cache on successful close
+                if (_workOrdersCache.ContainsKey(result.Data.MachineID))
+                {
+                    var wo_index = _workOrdersCache[result.Data.MachineID].FindIndex(x => x.WorkOrderID == result.Data.WorkOrderID);
+                    if (wo_index >= 0)
+                    {
+                        _workOrdersCache[result.Data.MachineID].RemoveAt(wo_index);
+                    }
+                }
+            }
+            return result;
         }
 
         #endregion
@@ -633,7 +709,7 @@ namespace BlazorTool.Client.Services
                     _dictCache = wrapper.Data;
                     else
                     {
-                        Console.WriteLine("[{_userState.UserName}] = = = = = = Errors in GetWODictionaries: " + string.Join(", ", wrapper.Errors));
+                        Console.WriteLine($"[{_userState.UserName}] = = = = = = Errors in GetWODictionaries: " + string.Join(", ", wrapper.Errors));
                         Debug.WriteLine($"[{_userState.UserName}] = = = = = = Errors in GetWODictionaries: " + string.Join(", ", wrapper.Errors));
                     }
                 }
@@ -650,7 +726,6 @@ namespace BlazorTool.Client.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
-                Debug.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
                 return new List<Dict>();
             }
         }
@@ -760,6 +835,55 @@ namespace BlazorTool.Client.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"ApiServiceClient: Unexpected error during POST to {url}: {ex.Message}");
+                return new SingleResponse<TResponse> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+            }
+        }
+
+        /// <summary>
+        /// Sends a PUT request to a specified URL with a JSON payload and deserializes the response.
+        /// </summary>
+        public async Task<SingleResponse<TResponse>> PutSingleAsync<TRequest, TResponse>(string url, TRequest data)
+        {
+            try
+            {
+                var response = await _http.PutAsJsonAsync(url, data);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return System.Text.Json.JsonSerializer.Deserialize<SingleResponse<TResponse>>(responseContent)
+                           ?? new SingleResponse<TResponse> { IsValid = false, Errors = new List<string> { "Failed to deserialize successful response." } };
+                }
+
+                try
+                {
+                    var errorResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<bool>>(responseContent);
+                    if (errorResponse != null && (errorResponse.Errors?.Any() ?? false))
+                    {
+                        return new SingleResponse<TResponse>
+                        {
+                            Data = default,
+                            IsValid = false,
+                            Errors = errorResponse.Errors
+                        };
+                    }
+                }
+                catch {  }
+
+                return new SingleResponse<TResponse>
+                {
+                    IsValid = false,
+                    Errors = new List<string> { $"API request failed with status {response.StatusCode}.", responseContent }
+                };
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during PUT to {url}: {ex.Message}");
+                return new SingleResponse<TResponse> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during PUT to {url}: {ex.Message}");
                 return new SingleResponse<TResponse> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
             }
         }
