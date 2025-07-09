@@ -8,7 +8,7 @@ namespace BlazorTool.Client.Services
     public class UserState
     {
         private readonly ILocalStorageService _localStorageService;
-        public Task InitializationTask { get; private set; } // Added
+        public Task InitializationTask { get; private set; }
 
         public UserState(ILocalStorageService localStorageService)
         {
@@ -49,7 +49,7 @@ namespace BlazorTool.Client.Services
                 {
                     UserName = identityData.Name;
                     Token = identityData.Token;
-                    PersonID = identityData.PersonID; // Populate PersonID
+                    PersonID = identityData.PersonID;
                     RightMatrix = identityData.RigthMatrix;
                 }
             }

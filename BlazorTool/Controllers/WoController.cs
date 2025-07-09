@@ -1,5 +1,6 @@
 ﻿using BlazorTool.Client.Models; // Added for ApiResponse
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Diagnostics;
 using System.Net.Http; // Added
 using System.Net.Http.Json; // Added
@@ -121,12 +122,34 @@ namespace BlazorTool.Controllers
             public string Lang { get; set; } = "pl-PL";
         }
 
-        // GET api/<WoController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        // GET api/<WoController>/get?WorkOrderID=2
+        [HttpGet("get")]
+        public async Task<IActionResult> Get([FromQuery] int WorkOrderID)
         {
-            return "value";
+            try
+            {
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient"); // Get named client
+                string url = $"api/v1/wo/get?WorkOrderID={WorkOrderID}";
+                var response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                var apiResponse = await response.Content.ReadFromJsonAsync<SingleResponse<WorkOrder>>();
+                if (apiResponse == null || !apiResponse.IsValid)
+                {
+                    var errors = apiResponse?.Errors ?? new List<string> { "Unknown error occurred." };
+                    return NotFound(new SingleResponse<WorkOrder>
+                    {
+                        IsValid = false,
+                        Errors = errors
+                    });
+                }
+                return Ok(apiResponse);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
 
         // POST api/<WoController>
         [HttpPost]

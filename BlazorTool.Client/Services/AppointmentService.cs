@@ -77,7 +77,7 @@ namespace BlazorTool.Client.Services
                     Console.WriteLine($"Error: Failed to save the new appointment. Errors: {string.Join(", ", saveResult.Errors)}");
                     return;
                 }
-                appointment.AppointmentId = saveResult.Data.WorkOrderID;
+                appointment = new SchedulerAppointment(saveResult.Data);
                 _appointments.Add(appointment);
             }
         }

@@ -232,7 +232,7 @@ namespace BlazorTool.Client.Services
                 return new SingleResponse<WorkOrder> { IsValid = false, Errors = new List<string> { "Work order is null or has invalid ID." } };
             }
 
-            if (workOrder.WorkOrderID == 0) //is NEW order
+            if (workOrder.WorkOrderID == 0) // NEW order
             {
                 var saveResult = await SaveWorkOrderAsync(workOrder);
                 if (saveResult.IsValid && saveResult.Data != null)
@@ -343,8 +343,8 @@ namespace BlazorTool.Client.Services
                 {
                     try
                     {
-                        var departments = await GetWODictionariesCached(_userState.PersonID.Value);
-                        var department = departments.FirstOrDefault(d => d.ListType == (int)ListTypeEnum.Department && d.Name == workOrder.DepName);
+                        var departments = await GetWODepartments(_userState.PersonID.Value);
+                        var department = departments.FirstOrDefault(d => d.Name == workOrder.DepName);
                         if (department == null || department.Id <= 0)
                         {
                             errors.Add($"Department '{workOrder.DepName}' not found or has invalid ID.");
@@ -405,13 +405,13 @@ namespace BlazorTool.Client.Services
                     PersonID = _userState.PersonID.Value, 
                     LevelID = workOrder.LevelID.Value,
                     Description = workOrder.WODesc,
-                    StartDate = workOrder.StartDate,
-                    EndDate = workOrder.EndDate,
+                    StartDate = workOrder.StartDate?.ToString("O"),
+                    EndDate = workOrder.EndDate?.ToString("O"),
                     ReasonID = workOrder.ReasonID,
                     CategoryID = workOrder.CategoryID,
                     DepartmentID = departmentId,
                     AssignedPersonID = assignedPersonId 
-                };
+                }; //TODO location - what is this
 
                 var response = await _http.PostAsJsonAsync(url, createRequest);
                 var apiResponse = await response.Content.ReadFromJsonAsync<SingleResponse<WorkOrder>>();
@@ -420,7 +420,20 @@ namespace BlazorTool.Client.Services
                 {
                     Console.WriteLine($"[{_userState.UserName}] = = = = = = Work order saved successfully. ID: {apiResponse.Data.WorkOrderID}\n");
                     Debug.WriteLine($"[{_userState.UserName}] = = = = = = Work order saved successfully. ID: {apiResponse.Data.WorkOrderID}\n");
-                    return apiResponse;
+                    //request new order from API
+                    //url = $"api/v1/wo/get?WorkOrderID={apiResponse.Data.WorkOrderID}";
+                    var updatedResponse = await GetWorkOrdersAsync( workOrderID: apiResponse.Data.WorkOrderID); //TODO add userstate.lang
+                    if (updatedResponse != null && updatedResponse.Count != 0)
+                    {
+                        Debug.WriteLine("[{_userState.UserName}] = = = = = = Work order updated successfully from API. ID: " + updatedResponse.First().WorkOrderID);
+                        apiResponse.Data = updatedResponse.First();
+                        
+                    } else
+                    {
+                        Console.WriteLine($"[{_userState.UserName}] = = = = = = Failed to retrieve updated work order from API.\n");
+                        Debug.WriteLine($"[{_userState.UserName}] = = = = = = Failed to retrieve updated work order from API.\n");
+                    } 
+                        return apiResponse;
                 }
                 else
                 {
@@ -449,10 +462,10 @@ namespace BlazorTool.Client.Services
             }
         }
 
-        public async Task<bool> DeleteWorkOrderAsync(int workOrderID, int MachineID)
+        public async Task<bool> DeleteWorkOrderAsync(WorkOrder workOrder)
         {
-            //TODO : implement deleting work order from API
-            //var url = $"api/v1/wo/delete?workOrderID={workOrderID}";
+            //TODO : implement deleting work order from API (PUT)
+            //var url = $"api/v1/wo/close";
             //var response = await _http.DeleteAsync(url);
             //if (response.IsSuccessStatusCode)
             //{
@@ -464,21 +477,21 @@ namespace BlazorTool.Client.Services
             //    Debug.Print("\n= = = = = = = = = DeleteWorkOrderAsync error: " + response.ReasonPhrase + "\n");
             //    return false;
             //}
-            
-            if (!_workOrdersCache.ContainsKey(MachineID))
+
+            if (!_workOrdersCache.ContainsKey(workOrder.MachineID))
             {
-                Console.WriteLine("\n= = = = = = = = = No work orders found for MachineID: " + MachineID + "\n");
+                Console.WriteLine("\n= = = = = = = = = No work orders found for MachineID: " + workOrder.MachineID + "\n");
                 return false;
             }
              
-            var WO_index = _workOrdersCache[MachineID].FindIndex(x => x.WorkOrderID == workOrderID);
+            var WO_index = _workOrdersCache[workOrder.MachineID].FindIndex(x => x.WorkOrderID == workOrder.WorkOrderID);
             if (WO_index < 0)
             {
-                Console.WriteLine("\n= = = = = = = = = No work order found for ID: " + workOrderID + "\n");
+                Console.WriteLine("\n= = = = = = = = = No work order found for ID: " + workOrder.WorkOrderID + "\n");
                 return false;
             }
-            _workOrdersCache[MachineID].RemoveAt(WO_index);
-            Console.WriteLine("\n= = = = = = = = = Work order deleted successfully for ID: " + workOrderID + "\n");
+            _workOrdersCache[workOrder.MachineID].RemoveAt(WO_index);
+            Console.WriteLine("\n= = = = = = = = = Work order deleted successfully for ID: " + workOrder.WorkOrderID + "\n");
             return true;
         }
 
@@ -651,42 +664,37 @@ namespace BlazorTool.Client.Services
             
         }
 
-        public async Task<List<string>> GetWOCategories(int personID, string lang = "pl-PL")
+        public async Task<List<Dict>> GetWOCategories(int personID, string lang = "pl-PL")
         {
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Category).
-                Select(d => d.Name)
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Category)
                 .Distinct()
                 .ToList();
         }
 
-        public async Task<List<string>> GetWOStates(int personID, string lang = "pl-PL")
+        public async Task<List<Dict>> GetWOStates(int personID, string lang = "pl-PL")
         {
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.State).
-                Select(d => d.Name)
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.State)
                 .Distinct()
                 .ToList();
         }
 
-        public async Task<List<string>> GetWOLevels(int personID, string lang = "pl-PL")
+        public async Task<List<Dict>> GetWOLevels(int personID, string lang = "pl-PL")
         {
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Level).
-                Select(d => d.Name)
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Level)
                 .Distinct()
                 .ToList();
         }
 
-        public async Task<List<string>> GetWOReasons(int personID, string lang = "pl-PL")
+        public async Task<List<Dict>> GetWOReasons(int personID, string lang = "pl-PL")
         {
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Reason).
-                Select(d => d.Name)
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Reason)
                 .Distinct()
                 .ToList();
         }
 
-        public async Task<List<string>> GetWODepartments(int personID, string lang = "pl-PL")
+        public async Task<List<Dict>> GetWODepartments(int personID, string lang = "pl-PL")
         {
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Department).
-                Select(d => d.Name)
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Department)
                 .Distinct()
                 .ToList();
         }
@@ -846,5 +854,11 @@ namespace BlazorTool.Client.Services
         }
         #endregion
 
+        #region Session
+        public async Task<HttpResponseMessage> CheckSessionAsync()
+        {
+            return await _http.GetAsync("api/v1/identity/check-session");
+        }
+        #endregion
     }
 }

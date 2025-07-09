@@ -2,6 +2,7 @@
 @inherits LayoutComponentBase
 @inject UserState UserState
 @inject NavigationManager Navigation
+@inject ApiServiceClient ApiClient
 
 <TelerikRootComponent>
     <div class="page">
@@ -33,15 +34,39 @@
     </div>
 </TelerikRootComponent>
 @code{
-protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         await UserState.InitializationTask;
+
+        // If user state is not authenticated locally, redirect to login
         if (!UserState.IsAuthenticated)
         {
             Navigation.NavigateTo("/login");
+            return;
         }
-        // Для проверки ролей:
-        // if (!UserState.HasRole("Admin")) { ... }
+
+        // If on a page other than login, verify session with the server
+        if (!Navigation.Uri.EndsWith("/login", StringComparison.OrdinalIgnoreCase))
+        {
+            try
+            {
+                var response = await ApiClient.CheckSessionAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    // Server session expired or invalid, clear local state and redirect
+                    await UserState.ClearAsync();
+                    Navigation.NavigateTo("/login");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle potential network errors or API unavailability
+                Console.WriteLine($"Failed to check session: {ex.Message}");
+                // Optional: redirect to an error page or show a notification
+                await UserState.ClearAsync();
+                Navigation.NavigateTo("/login");
+            }
+        }
     }
 
     private async Task Logout()

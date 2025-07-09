@@ -17,11 +17,11 @@ namespace BlazorTool.Client.Models
         [JsonPropertyName("description")]
         public string Description { get; set; }
 
-        [JsonPropertyName("startDate")]
-        public DateTime? StartDate { get; set; }
+        [JsonPropertyName("start_Date")]
+        public string? StartDate { get; set; }
 
-        [JsonPropertyName("endDate")]
-        public DateTime? EndDate { get; set; }
+        [JsonPropertyName("end_Date")]
+        public string? EndDate { get; set; }
 
         [JsonPropertyName("reasonID")]
         public int? ReasonID { get; set; }

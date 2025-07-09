@@ -32,8 +32,8 @@
 </EditForm>
 <WorkOrderComponent WorkOrder="@Appointment" 
     ListPersons="@ListPersons" 
-    ListDepartments="@ListDepartments"
     isEditable=@isEditable
+    currentUser="@currentUser"
                     OnStateChanged="@(() => {StateHasChanged();OnTitleChange();})">
 </WorkOrderComponent>
 
@@ -58,8 +58,8 @@
     [Parameter] public EventCallback<SchedulerAppointment?> OnAppointmentChanged { get; set; }
     [Parameter] public List<string>? ListPersons { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
+    [Parameter] public Person currentUser { get; set; }
     // [Parameter] public List<Dict>? ListDicts { get; set; }
-    [Parameter] public List<string>? ListDepartments { get; set; }
     private bool isNewAppointment = false;
     private string titleAlarm = string.Empty;
     private TelerikPopup? PopupRef { get; set; }
@@ -111,17 +111,20 @@
     private bool IsValidAppointment()
     {
         //log every check parameter
-        Console.WriteLine($"AssetNo: {Appointment.AssetNo}");
-        Console.WriteLine($"Start: {Appointment.Start}");
-        Console.WriteLine($"End: {Appointment.End}");
-        Console.WriteLine($"MachineID: {Appointment.MachineID}");
-        Console.WriteLine($"DepName: {Appointment.DepName}");
+        // Console.WriteLine($"AssetNo: {Appointment.AssetNo}");
+        // Console.WriteLine($"Start: {Appointment.Start}");
+        // Console.WriteLine($"End: {Appointment.End}");
+        // Console.WriteLine($"MachineID: {Appointment.MachineID}");
+        // Console.WriteLine($"DepName: {Appointment.DepName}");
+        //TODO make Validation 
         return !string.IsNullOrWhiteSpace(Appointment.AssetNo) &&
                Appointment.Start != default &&
                Appointment.End != default &&
                Appointment.Start < Appointment.End &&
                Appointment.MachineID != 0 &&
-               !string.IsNullOrEmpty(Appointment.DepName);
+               !string.IsNullOrEmpty(Appointment.DepName) &&
+               !string.IsNullOrWhiteSpace(Appointment.WODesc) &&
+               !string.IsNullOrWhiteSpace(Appointment.WOLevel);
     }
 
     private void OnTitleChange()

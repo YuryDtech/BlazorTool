@@ -71,6 +71,19 @@ namespace BlazorTool.Controllers
                 ContentType = response.Content.Headers.ContentType?.ToString() ?? "application/json"
             };
         }
+
+        [HttpGet("check-session")]
+        public IActionResult CheckSession()
+        {
+            if (Request.Headers.TryGetValue("X-Person-ID", out var personIdValues) && int.TryParse(personIdValues.FirstOrDefault(), out int personId))
+            {
+                if (_cache.TryGetValue($"IdentityData_{personId}", out _))
+                {
+                    return Ok("Session is active.");
+                }
+            }
+            return Unauthorized("Session not found or PersonID header is missing/invalid.");
+        }
     }
 
     public class LoginPasswordRequest

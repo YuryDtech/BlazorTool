@@ -118,7 +118,7 @@ else
         <WindowTitle>
         </WindowTitle>
         <WindowContent>
-             <WorkOrderComponent WorkOrder="@selectedOrder" isEditable=false />
+             <WorkOrderComponent WorkOrder="@selectedOrder" isEditable=false currentUser="@currentUser"/>
         </WindowContent>
         <WindowActions>
             <WindowAction Name="Close" />
@@ -151,6 +151,7 @@ else
     private MultiSelectTagMode TagMode { get; set; } = MultiSelectTagMode.Single;
     private int? MaxAllowedTags { get; set; }
     private List<Dict> dicts = new List<Dict>();
+    private Person currentUser = new Person();
 
     protected override async Task OnInitializedAsync()
     {
@@ -167,6 +168,8 @@ else
         {
             Navigation.NavigateTo("/login");
         }
+        currentUser.PersonId = UserState.PersonID ?? -1;
+        currentUser.Name = UserState.UserName ?? string.Empty;
         workOrderStates = dicts?.Where(d => d.ListType == (int)ListTypeEnum.State)
                                .Select(d => d.Name)
                                .Distinct()

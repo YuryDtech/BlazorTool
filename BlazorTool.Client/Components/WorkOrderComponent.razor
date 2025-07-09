@@ -56,40 +56,49 @@
                     <CardTitle>Description</CardTitle>
                 </CardHeader>
                 <CardBody Class="p-2 card-body-description">
-                    <div class="field-group">
+                    <div class="field-group ">
                         <label>Description:</label>
                         
                                 <TelerikTextArea @bind-Value="@WorkOrder.WODesc"
                                                  ReadOnly=@(isEditable == false) 
                                                  Size="sm"
-                                             ResizeMode="@TextAreaResizeMode.Auto" />
+                                             ResizeMode="@TextAreaResizeMode.Auto"
+                                             Class="@DescriptionAlarm"
+                                             OnChange="@OnDescriptionChanged"
+                                             />
                     </div>
                     <div class="field-group">
                         <label>Category:</label>
                             <TelerikComboBox Data="@ListCategories"
-                                                 Value="@WorkOrder.WOCategory"
+                                                    ValueField="@nameof(Dict.Id)"
+                                                    TextField="@nameof(Dict.Name)"
+                                                 Value="@(WorkOrder?.CategoryID ?? 0)"
                                                  Placeholder="Select WO category..."
-                                                 ValueChanged="@((string name) => OnCategoryChanged(name))"
+                                                 ValueChanged="@((int id) => OnCategoryChanged(id))"
                                                  Width="100%"
                                                  ReadOnly=@(isEditable == false)
                                                  ShowClearButton=false
-                                                 AllowCustom=true>
+                                                 AllowCustom=false>
                                 </TelerikComboBox>
                     </div>
                     <div class="field-group">
                         <label>Reason:</label>
-                        <div class="field-value">@(WorkOrder.WOReason ?? "Not specified")</div>
+                        <div class="field-value">@(WorkOrder?.WOReason ?? "Not specified")</div>
                     </div>
                     <div class="field-group">
                         <label>Level:</label>
                             <TelerikComboBox Data="@ListLevels"
-                                             Value="@WorkOrder.WOLevel"
+                                             ValueField="@nameof(Dict.Id)"
+                                             TextField="@nameof(Dict.Name)"
+                                             Value="@(WorkOrder?.LevelID ?? 0)"
                                              Placeholder="Select WO level..."
-                                             ValueChanged="@((string name) => OnLevelChanged(name))"
+                                             ValueChanged="@((int levelId) => OnLevelChanged(levelId))"
                                              Width="100%"
                                              ReadOnly=@(isEditable == false)
                                              ShowClearButton=false
-                                             AllowCustom=true>
+                                             AllowCustom=false
+                                             Class="@LevelAlarm"
+                                             >
                             </TelerikComboBox>
                     </div>
                 </CardBody>
@@ -262,10 +271,9 @@
 
     [Parameter] public WorkOrder? WorkOrder { get; set; }
     [Parameter] public List<string>? ListPersons { get; set; }
-    [Parameter] public List<string>? ListDepartments { get; set; }
-    // [Parameter] public List<Dict>? ListDicts { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
     [Parameter] public EventCallback OnStateChanged { get; set; }
+    [Parameter] public Person? currentUser { get; set; }
     // private int listTypeForCategory = 1;
     // private int listTypeForLevel = 2;
     // private int listTypeForReason = 3;
@@ -275,25 +283,28 @@
     private string notSpecified = "Not specified";
     private string DepAlarm = string.Empty;
     private string DeviceAlarm = string.Empty;
+    private string DescriptionAlarm = string.Empty;
+    private string LevelAlarm = string.Empty;
     private string StartDateAlarm = string.Empty;
     private bool showActivities = false;
     private bool isNewWorkOrder = false;
     private List<Device>? ListDevices { get; set; } = new List<Device>();
     private Device? selectedDevice;
-    private List<string> ListCategories = new List<string>();
-    private List<string> ListLevels = new List<string>();
+    private List<Dict> ListCategories = new List<Dict>();
+    private List<string> ListDepartments = new List<string>();
+    private List<Dict> ListLevels = new List<Dict>();
 
     protected override async Task OnInitializedAsync()
     {
         isNewWorkOrder = WorkOrder?.WorkOrderID == 0;
         ListDevices = await apiService.GetAllDevicesCachedAsync();
-        ListCategories = await apiService.GetWOCategories(1);
-        ListLevels = await apiService.GetWOLevels(1);
+        ListCategories = await apiService.GetWOCategories(currentUser?.PersonId ?? 1);
+        ListLevels = await apiService.GetWOLevels(currentUser?.PersonId ?? 1);
+        ListDepartments = (await apiService.GetWODepartments(currentUser?.PersonId ?? 1)).Select(c=>c.Name).ToList();
         if (isNewWorkOrder) {
             WorkOrder.EndDate = WorkOrder.StartDate?.AddHours(1);
             DeviceAlarm = string.IsNullOrWhiteSpace(WorkOrder?.AssetNo) ? "bg-warning" : string.Empty;
         }
-
         selectedDevice = ListDevices?.FirstOrDefault(d => d.MachineID == WorkOrder?.MachineID);
 
         if (ListPersons == null )
@@ -338,6 +349,16 @@
             StartDateAlarm = "bg-warning";
         }
 
+        if (string.IsNullOrEmpty(WorkOrder?.WODesc))
+        {
+            DescriptionAlarm = "bg-warning";
+        }
+
+        if (string.IsNullOrEmpty(WorkOrder?.WOLevel) || WorkOrder.WOLevel == notSpecified)
+        {
+            LevelAlarm = "bg-warning";
+        }
+
         if (isNewWorkOrder && WorkOrder != null)
         {
             WorkOrder.AddDate = DateTime.Now;
@@ -354,6 +375,18 @@
         if (WorkOrder != null && !string.IsNullOrEmpty(personName))
         {
             WorkOrder.AssignedPerson = personName == notAssigned ? string.Empty : personName;
+        }
+    }
+
+    private void OnDescriptionChanged()
+    {
+        if (WorkOrder != null && !string.IsNullOrWhiteSpace(WorkOrder.WODesc))
+        {
+            DescriptionAlarm = string.Empty;
+        }
+        else
+        {
+            DescriptionAlarm = "bg-warning";
         }
     }
 
@@ -380,12 +413,13 @@
         showActivities = !showActivities;
     }
 
-    private async Task OnCategoryChanged(object newValue)
+    private async Task OnCategoryChanged(int newValue)
     {
-        var categoryName = newValue as string;
+        var categoryName = ListCategories?.FirstOrDefault(c => c.Id == newValue)?.Name;
         if (WorkOrder != null && !string.IsNullOrEmpty(categoryName))
         {
             WorkOrder.WOCategory = categoryName;
+            WorkOrder.CategoryID = newValue;
             await apiService.AddNewWODict(categoryName, (int)ListTypeEnum.Category);
         }
     }
@@ -405,14 +439,19 @@
 
     }
 
-    private async Task OnLevelChanged(object newValue)
+    private async Task OnLevelChanged(int newValue)
     {
-        var levelName = newValue as string;
+        var levelName = ListLevels?.FirstOrDefault(l => l.Id == newValue)?.Name;
         if (WorkOrder != null && !string.IsNullOrEmpty(levelName))
         {
             WorkOrder.WOLevel = levelName;
+            WorkOrder.LevelID = newValue;
             await apiService.AddNewWODict(levelName, (int)ListTypeEnum.Level);
         }
+
+        if (string.IsNullOrEmpty(levelName) || levelName == notSpecified)
+            LevelAlarm = "bg-warning";
+        else LevelAlarm = string.Empty;
     }
 
     #endregion Event Handlers

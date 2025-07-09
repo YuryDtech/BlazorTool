@@ -184,7 +184,7 @@
         <AppointmentEditor Appointment="@CurrentAppointment" 
             isEditable=true 
             ListPersons="@Persons.Where(c=>c != "All").Concat(new List<string>(){"Not assigned"}).ToList()"
-            ListDepartments="@Departments.Where(c=>c != "All").Concat(new List<string>(){"Not assigned"}).ToList()"
+            currentUser="@currentUser"
             OnAppointmentChanged="@RefreshData" />
     </WindowContent>
 </TelerikWindow>
@@ -226,6 +226,7 @@
     private string selectedCategory = "All";
     private List<string> AssetNumbers = new();
     private string selectedAssetNo = "All";
+    private Person currentUser = new Person();
     private List<Resource> statuses = new List<Resource>
     {
         new Resource { Text = "Not starded", Value = "Red", Color = "LightCoral" },
@@ -256,6 +257,8 @@
         {
             Navigation.NavigateTo("/login");
         }
+        currentUser.PersonId = UserState.PersonID ?? -1;
+        currentUser.Name = UserState.UserName ?? string.Empty;
         await LoadData();
 
         Console.WriteLine($"--- HardLoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");

@@ -17,6 +17,11 @@ namespace BlazorTool.Client.Services
         {
             // Wait for the UserState to be initialized and load data from local storage
             await _userState.InitializationTask;
+            if (_userState != null && !_userState.PersonID.HasValue)
+            {
+                //try load identity data if UserState is not initialized
+                await _userState.LoadIdentityDataAsync();
+            }
 
             if (_userState.PersonID.HasValue)
             {
