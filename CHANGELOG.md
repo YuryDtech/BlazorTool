@@ -1,5 +1,17 @@
 # Changelog
 
+## 2025-07-09
+- **Functionality & UI:**
+    - Implemented the complete lifecycle for Work Orders, allowing users to create, update, and close them through the API.
+    - Added robust validation for required fields (like Description, Level) in the Work Order editor, with visual highlighting for missing data.
+    - Closing a Work Order now requires at least one associated activity.
+    - Pop-up notifications now display specific error messages from the API, providing clearer user feedback.
+- **Technical & Refactoring:**
+    - Implemented a server-side session check on application load. Users are now automatically logged out if their server session is invalid, preventing API errors.
+    - Refactored `ApiServiceClient` methods (`Save`, `Update`, `Close`) to return a `SingleResponse<T>` object, providing detailed error information.
+    - Added dedicated API endpoints and request models (`WorkOrderCreateRequest`, `UpdateWorkOrderRequest`, `CloseWorkOrderRequest`) for all Work Order operations.
+    - Switched from using string names to IDs for entities like Categories and Levels, improving data integrity.
+
 ## 2025-07-08
 - **Work Order Management Enhancement**: Implemented client-side validation and mapping of `WorkOrder` to `WorkOrderCreateRequest` in `ApiServiceClient.SaveWorkOrderAsync`. The `WoController.Create` endpoint now directly accepts `WorkOrderCreateRequest`. `ApiServiceClient.UpdateWorkOrderAsync` now utilizes `SaveWorkOrderAsync` for new work orders, ensuring consistent API saving. Added `ReasonID`, `CategoryID`, `DepartmentID`, and `AssignedPersonID` fields to `WorkOrderCreateRequest`.
 - **Client-Server Token Synchronization**: Implemented a robust mechanism where the Blazor server retrieves external API tokens from its cache using the `PersonID` provided by the client in a custom `X-Person-ID` HTTP header. This eliminates the need for the client to directly send the external API token to the Blazor server.

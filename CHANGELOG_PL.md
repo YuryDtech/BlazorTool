@@ -1,5 +1,17 @@
 # Changelog
 
+## 2025-07-09
+- **Funkcjonalność i Interfejs Użytkownika:**
+    - Wdrożono pełny cykl życia dla Zleceń Pracy (Work Orders), umożliwiając ich tworzenie, aktualizację i zamykanie przez API.
+    - Dodano solidną walidację dla wymaganych pól (takich jak Opis, Poziom) w edytorze Zleceń Pracy, z wizualnym podświetleniem brakujących danych.
+    - Zamykanie Zlecenia Pracy wymaga teraz co najmniej jednej powiązanej czynności (activity).
+    - Wyskakujące powiadomienia wyświetlają teraz konkretne komunikaty o błędach z API, zapewniając użytkownikowi jaśniejszą informację zwrotną.
+- **Techniczne i Refaktoryzacja:**
+    - Wprowadzono sprawdzanie sesji po stronie serwera przy ładowaniu aplikacji. Użytkownicy są teraz automatycznie wylogowywani, jeśli ich sesja na serwerze jest nieprawidłowa, co zapobiega błędom API.
+    - Zrefaktoryzowano metody `ApiServiceClient` (`Save`, `Update`, `Close`), aby zwracały obiekt `SingleResponse<T>`, dostarczając szczegółowych informacji o błędach.
+    - Dodano dedykowane punkty końcowe API i modele żądań (`WorkOrderCreateRequest`, `UpdateWorkOrderRequest`, `CloseWorkOrderRequest`) dla wszystkich operacji na Zleceniach Pracy.
+    - Przełączono się z używania nazw w postaci ciągów znaków na identyfikatory (ID) dla encji takich jak Kategorie i Poziomy, co poprawia integralność danych.
+
 ## 2025-07-08
 - **Ulepszenie zarządzania zleceniami pracy**: Zaimplementowano walidację i mapowanie `WorkOrder` na `WorkOrderCreateRequest` po stronie klienta w `ApiServiceClient.SaveWorkOrderAsync`. Punkt końcowy `WoController.Create` teraz bezpośrednio akceptuje `WorkOrderCreateRequest`. `ApiServiceClient.UpdateWorkOrderAsync` wykorzystuje teraz `SaveWorkOrderAsync` dla nowych zleceń pracy, zapewniając spójne zapisywanie do API. Dodano pola `ReasonID`, `CategoryID`, `DepartmentID` i `AssignedPersonID` do `WorkOrderCreateRequest`.
 - **Synchronizacja tokenów między klientem a serwerem**: Zaimplementowano solidny mechanizm, w którym serwer Blazor pobiera tokeny zewnętrznego API ze swojej pamięci podręcznej, używając `PersonID` dostarczonego przez klienta w niestandardowym nagłówku HTTP `X-Person-ID`. Eliminuje to potrzebę bezpośredniego wysyłania tokena zewnętrznego API z klienta do serwera Blazor.
@@ -93,7 +105,7 @@
     - Na stronie `SchedulerPage` dostosowano tekst i kolor elementu harmonogramu w zależności od jego stanu.
 - **Zmiany w kodzie:**
     - Dodano nowy punkt końcowy `api/v1/wo/getdict` do `WoController` w celu pobierania kategorii zleceń pracy.
-    - Zaktualizowano `ApiServiceClient` do pobierania obiektów `Dict`.
+    - Zaktualizowano `ApiServiceClient` do pobierania obiekt��w `Dict`.
     - Dodano model `Dict.cs`.
 - **Poprawki błędów:**
     - Naprawiono problem w `WorkOrderComponent`, gdzie `Department` i `assignedPersons` nie wyświetlały się poprawnie.
