@@ -106,7 +106,7 @@
     {
         if (isNewAppointment) return;
 
-        var tryClose = await ApptService.CloseAppointment(Appointment);
+        var tryClose = await ApptService.RemoveAppointment(Appointment);
         if (!tryClose.IsValid)
         {
             string errors = string.Join(Environment.NewLine, tryClose.Errors);

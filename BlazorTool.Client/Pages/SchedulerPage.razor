@@ -490,7 +490,7 @@
 
         if (args.Item is SchedulerAppointment delAppt)
         {
-            var result = await ApptService.CloseAppointment(delAppt); 
+            var result = await ApptService.RemoveAppointment(delAppt); 
             if (!result.IsValid)
             {
                 string errors = string.Join(Environment.NewLine, result.Errors);

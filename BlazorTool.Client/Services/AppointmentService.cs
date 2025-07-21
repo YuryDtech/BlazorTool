@@ -111,7 +111,7 @@ namespace BlazorTool.Client.Services
             return saveResult;
         }
 
-        public async Task<SingleResponse<WorkOrder>> CloseAppointment(SchedulerAppointment ap)
+        public async Task<SingleResponse<WorkOrder>> RemoveAppointment(SchedulerAppointment ap)
         {
             if (ap != null)
             {
