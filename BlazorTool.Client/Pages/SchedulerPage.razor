@@ -221,6 +221,10 @@
 
 
 
+
+
+
+
     private List<SchedulerAppointment> Appointments { get; set; } = new();    
     private List<SchedulerAppointment> _allAppointments { get; set; } = new();    
     private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }
@@ -483,10 +487,9 @@
 
     private async Task OnDeleteAppointment(SchedulerDeleteEventArgs args)
     {
-        
+
         if (args.Item is SchedulerAppointment delAppt)
         {
-            //TODO not delete Order, but change status(Assigned Person, Date...)
             var result = await ApptService.CloseAppointment(delAppt); 
             if (!result.IsValid)
             {
@@ -500,6 +503,8 @@
             Appointments.RemoveAll(a => a.AppointmentId == delAppt.AppointmentId);
 
             SchedulerRef?.Rebind();
+
+            DisplayOrders();
         }
     }
 

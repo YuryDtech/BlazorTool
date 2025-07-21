@@ -115,21 +115,44 @@ namespace BlazorTool.Client.Services
         {
             if (ap != null)
             {
-                var tryClose = await _apiServiceClient.CloseWorkOrderAsync((WorkOrder) ap);
+                //ONLY remove StartDate
+                ap.StartDate = null;
+                var tryClose = await _apiServiceClient.UpdateWorkOrderAsync((WorkOrder)ap);
                 if (!tryClose.IsValid)
                 {
                     Console.WriteLine($"Error closing appointment: {string.Join(", ", tryClose.Errors)}");
+                    return new SingleResponse<WorkOrder>
+                    {
+                        IsValid = false,
+                        Errors = tryClose.Errors
+                    };
                 }
                 else 
                 { 
                     _appointments.Remove(ap);
+                    return new SingleResponse<WorkOrder>
+                    {
+                        IsValid = true,
+                        Data = tryClose.Data,
+                        Errors = new List<string>()
+                    };
                 }
-                return new SingleResponse<WorkOrder>
-                {
-                    IsValid = tryClose.IsValid,
-                    Data = tryClose.Data,
-                    Errors = tryClose.Errors
-                };
+                
+                //var tryClose = await _apiServiceClient.CloseWorkOrderAsync((WorkOrder) ap);
+                //if (!tryClose.IsValid)
+                //{
+                //    Console.WriteLine($"Error closing appointment: {string.Join(", ", tryClose.Errors)}");
+                //}
+                //else 
+                //{ 
+                //    _appointments.Remove(ap);
+                //}
+                //return new SingleResponse<WorkOrder>
+                //{
+                //    IsValid = tryClose.IsValid,
+                //    Data = tryClose.Data,
+                //    Errors = tryClose.Errors
+                //};
             }
             return new SingleResponse<WorkOrder>
             {
