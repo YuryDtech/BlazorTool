@@ -51,7 +51,7 @@
                              Value="@selectedAssetNo"
                              ValueChanged="@((string assetNo) => OnAssetNoChanged(assetNo))"
                              Size="sm"
-                             class="popup-target">
+                             class=@(customEditFormShown ? "" : "popup-target")>
             </TelerikComboBox>
         </div>
  

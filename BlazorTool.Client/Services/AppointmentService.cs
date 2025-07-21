@@ -57,6 +57,7 @@ namespace BlazorTool.Client.Services
             //_appointments.Add(appointment);
             //await _apiServiceClient.SaveWorkOrderAsync((WorkOrder)appointment);
         }
+
         public async Task<SingleResponse<WorkOrder>> UpdateAppointment(SchedulerAppointment appointment)
         {
             var existingAppointment = _appointments.FirstOrDefault(x => x.AppointmentId == appointment.AppointmentId);
@@ -79,21 +80,35 @@ namespace BlazorTool.Client.Services
                     Console.WriteLine($"Error updating appointment: {string.Join(", ", updateResult.Errors)}");
                 }
                 return updateResult;
+            } else
+                {
+                // If appointment does not exist, create a new one
+                return await SaveNewAppointment(appointment);
             }
-            else // New appointment (dragged from list)
+        }
+
+        public async Task<SingleResponse<WorkOrder>> SaveNewAppointment(SchedulerAppointment appointment)
+        {
+            if (appointment == null)
             {
-                var workOrderToCreate = (WorkOrder)appointment;
-                var saveResult = await _apiServiceClient.UpdateWorkOrderAsync(workOrderToCreate);
-                if (saveResult.IsValid && saveResult.Data != null)
+                return new SingleResponse<WorkOrder>
                 {
-                    _appointments.Add(new SchedulerAppointment(saveResult.Data));
-                }
-                else
-                {
-                     Console.WriteLine($"Error: Failed to save the new appointment. Errors: {string.Join(", ", saveResult.Errors)}");
-                }
-                return saveResult;
+                    IsValid = false,
+                    Errors = new List<string> { "Appointment is null." }
+                };
             }
+
+            var workOrderToCreate = (WorkOrder)appointment;
+            var saveResult = await _apiServiceClient.SaveWorkOrderAsync(workOrderToCreate);
+            if (saveResult.IsValid && saveResult.Data != null)
+            {
+                _appointments.Add(new SchedulerAppointment(saveResult.Data));
+            }
+            else
+            {
+                Console.WriteLine($"Error: Failed to save the new appointment. Errors: {string.Join(", ", saveResult.Errors)}");
+            }
+            return saveResult;
         }
 
         public async Task<SingleResponse<WorkOrder>> CloseAppointment(SchedulerAppointment ap)
