@@ -157,11 +157,15 @@ namespace BlazorTool.Client.Services
                 var wrapper = await _http.GetFromJsonAsync<ApiResponse<WorkOrder>>(url);
                 Console.WriteLine($"[{_userState.UserName}] = = = = = = = API response-> WorkOrder.Count: " + wrapper?.Data.Count.ToString());
                 var result = wrapper?.Data ?? new List<WorkOrder>();
+                if (result.Count > 0) 
+                    {
+                        UpdateWorkOrdersInCache(result);
+                    }
                 return result;
             }
             catch (HttpRequestException ex)
             {
-                await _userState.ClearAsync();
+                //await _userState.ClearAsync(); //??
                 Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 return new List<WorkOrder>();
@@ -174,53 +178,157 @@ namespace BlazorTool.Client.Services
             }
         }
 
-
-        public async Task<List<OrderStatus>> GetOrderStatusesAsync(
-                                        int personID,
-                                        int? deviceCategoryID = null,
-                                        string lang = "pl-PL",
-                                        bool? isEdit = null)
+        #region Cache Management
+        /// <summary>
+        /// Adds or updates a work order in the cache. Can also be used to remove an item.
+        /// This is the single point of truth for modifying the work order cache.
+        /// </summary>
+        /// <param name="workOrder">The work order to update in the cache.</param>
+        /// <param name="remove">If true, the work order will be removed from the cache.</param>
+        private void UpdateWorkOrderInCache(WorkOrder workOrder, bool remove = false)
         {
-            var qs = new List<string>
-            {
-                $"DeviceCategoryID={(deviceCategoryID?.ToString() ?? "")}",
-                $"PersonID={personID}",
-                $"Lang={Uri.EscapeDataString(lang)}",
-                $"IsEdit={(isEdit?.ToString() ?? "")}"
-            };
+            if (workOrder == null) return;
 
-            var url = "api/v1/wo/getdict?" + string.Join("&", qs);
-            try
+            // First, remove any existing instance of this work order from the cache,
+            // to handle cases where the MachineID might have changed.
+            foreach (var list in _workOrdersCache.Values)
             {
-                var wrapper = await _http.GetFromJsonAsync<ApiResponse<OrderStatus>>(url);
-                Console.WriteLine($"[{_userState.UserName}] \n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
-                Debug.WriteLine($"[{_userState.UserName}] \n= = = = = = = = = response Devices: " + wrapper?.Data.Count.ToString() + "\n");
-                return wrapper?.Data ?? new List<OrderStatus>();
+                list.RemoveAll(wo => wo.WorkOrderID == workOrder.WorkOrderID);
             }
-            catch (HttpRequestException ex)
+
+            if (!remove)
             {
-                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
-                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
-                return new List<OrderStatus>();
+                // Now, add the updated work order to the correct list.
+                if (!_workOrdersCache.TryGetValue(workOrder.MachineID, out var orderList))
+                {
+                    // If the list for this machine doesn't exist, create it.
+                    orderList = new List<WorkOrder>();
+                    _workOrdersCache[workOrder.MachineID] = orderList;
+                }
+                orderList.Add(workOrder);
             }
-            catch (Exception ex)
+        }
+
+        /// <summary>
+        /// Adds or updates a list of work orders in the cache.
+        /// </summary>
+        /// <param name="workOrders">The list of work orders to add or update.</param>
+        public void UpdateWorkOrdersInCache(IEnumerable<WorkOrder> workOrders)
+        {
+            if (workOrders == null) return;
+
+            foreach (var workOrder in workOrders)
             {
-                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
-                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
-                return new List<OrderStatus>();
+                UpdateWorkOrderInCache(workOrder);
             }
+        }
+
+        /// <summary>
+        /// Forces a refresh of a single work order in the cache from the server.
+        /// </summary>
+        /// <param name="workOrderId">The ID of the work order to refresh.</param>
+        public async Task RefreshWorkOrderInCacheAsync(int workOrderId)
+        {
+            // 1. Get the latest version from the API
+            var freshWorkOrder = await GetWorkOrderByIdAsync(workOrderId);
+
+            // 2. Use the centralized method to update the cache
+            if (freshWorkOrder != null)
+            {
+                UpdateWorkOrderInCache(freshWorkOrder);
+                Console.WriteLine($"[{_userState.UserName}] Refreshed and updated WO {workOrderId} in cache.");
+                Debug.WriteLine($"[{_userState.UserName}] Refreshed and updated WO {workOrderId} in cache.");
+            }
+            else
+            {
+                // If the work order is not found on the server, remove it from the cache.
+                // We need a dummy WorkOrder object with the ID to perform the removal.
+                UpdateWorkOrderInCache(new WorkOrder { WorkOrderID = workOrderId }, remove: true);
+                Console.WriteLine($"[{_userState.UserName}] WO {workOrderId} not found on server, removed from cache.");
+                Debug.WriteLine($"[{_userState.UserName}] WO {workOrderId} not found on server, removed from cache.");
+            }
+        }
+
+        /// <summary>
+        /// Clears the entire work orders cache.
+        /// </summary>
+        public void InvalidateWorkOrdersCache()
+        {
+            _workOrdersCache.Clear();
+            Console.WriteLine($"[{_userState.UserName}] Work orders cache invalidated.");
+            Debug.WriteLine($"[{_userState.UserName}] Work orders cache invalidated.");
+        }
+
+        /// <summary>
+        /// Clears the work orders cache for a specific device.
+        /// </summary>
+        /// <param name="deviceId">The device ID for which to clear the cache.</param>
+        public void InvalidateWorkOrdersCacheForDevice(int deviceId)
+        {
+            if (_workOrdersCache.Remove(deviceId))
+            {
+                Console.WriteLine($"[{_userState.UserName}] Work orders cache for device {deviceId} invalidated.");
+                Debug.WriteLine($"[{_userState.UserName}] Work orders cache for device {deviceId} invalidated.");
+            }
+        }
+        #endregion
+
+        
+
+        public async Task<WorkOrder?> GetWorkOrderByIdCachedAsync(int workOrderID)
+        {
+            // Search in the cache first
+            var cachedOrder = _workOrdersCache.Values
+                                              .SelectMany(list => list)
+                                              .FirstOrDefault(wo => wo.WorkOrderID == workOrderID);
+
+            if (cachedOrder != null)
+            {
+                return cachedOrder;
+            }
+
+            // If not in cache, fetch from API
+            var apiOrder = await GetWorkOrderByIdAsync(workOrderID);
+            if (apiOrder != null)
+            {
+                // Add the newly fetched order to the cache
+                UpdateWorkOrderInCache(apiOrder);
+            }
+            return apiOrder;
         }
 
         public async Task<WorkOrder?> GetWorkOrderByIdAsync(int workOrderID)
         {
-            var orders = await GetWorkOrdersCachedAsync(workOrderID);
+            var orders = await GetWorkOrdersAsync(workOrderID: workOrderID); // FROM API
             if (orders == null || orders.Count == 0)
             {
                 Console.WriteLine($"[{_userState.UserName}] = = = = = = = = = No work order found for ID: " + workOrderID);
                 Debug.WriteLine($"[{_userState.UserName}] = = = = = = = = = No work order found for ID: " + workOrderID);
                 return null;
             }
-            return orders.FirstOrDefault();
+            else
+            {
+                UpdateWorkOrderInCache(orders.FirstOrDefault());
+                return orders.FirstOrDefault();
+            }
+        }
+        public async Task<WorkOrderInfo?> GetWOInfo(int workOrderID)
+        {
+            if (workOrderID < 0) return null;
+            var url = "api/v1/wo/get?WorkOrderID=" + workOrderID;
+            try
+            {
+                var wrapper = await _http.GetFromJsonAsync<SingleResponse<WorkOrderInfo>>(url);
+                var result = wrapper?.Data ?? null;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWOInfo: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWOInfo: Unexpected error during GET to {url}: {ex.Message}");
+                return null;
+            }
+
         }
 
         public async Task<SingleResponse<WorkOrder>> UpdateWorkOrderAsync(WorkOrder workOrder)
@@ -238,11 +346,7 @@ namespace BlazorTool.Client.Services
                 if (saveResult.IsValid && saveResult.Data != null)
                 {
                     // Add to cache after successful save to API
-                    if (!_workOrdersCache.ContainsKey(saveResult.Data.MachineID))
-                    {
-                        _workOrdersCache.Add(saveResult.Data.MachineID, new List<WorkOrder>());
-                    }
-                    _workOrdersCache[saveResult.Data.MachineID].Add(saveResult.Data);
+                    UpdateWorkOrderInCache(saveResult.Data);
                     Console.WriteLine($"[{_userState.UserName}] = = = = NEW workorder ID={saveResult.Data.WorkOrderID} saved to cache after API save.\n");
                     Debug.WriteLine($"[{_userState.UserName}] = = = = NEW workorder ID={saveResult.Data.WorkOrderID} saved to cache after API save.\n");
                 }
@@ -279,7 +383,8 @@ namespace BlazorTool.Client.Services
                 var states = await GetWOStates(_userState.PersonID.Value);
                 stateId = states.FirstOrDefault(s => s.Name.Equals(workOrder.WOState, StringComparison.OrdinalIgnoreCase))?.Id;
             }
-            if (!stateId.HasValue || stateId.Value <= 0) errors.Add("StateID - Have to be greater then 0");
+
+            if (!stateId.HasValue || stateId.Value < 0) stateId = 5;
 
             if (errors.Any())
             {
@@ -308,23 +413,7 @@ namespace BlazorTool.Client.Services
             // --- Cache Update ---
             if (result.IsValid)
             {
-                if (_workOrdersCache.TryGetValue(workOrder.MachineID, out var orderList))
-                {
-                    var index = orderList.FindIndex(wo => wo.WorkOrderID == workOrder.WorkOrderID);
-                    if (index != -1)
-                    {
-                        orderList[index] = workOrder;
-                    }
-                    else
-                    {
-                        orderList.Add(workOrder);
-                    }
-                }
-                else
-                {
-                    _workOrdersCache[workOrder.MachineID] = new List<WorkOrder> { workOrder };
-                }
-
+                UpdateWorkOrderInCache(workOrder);
             }
 
             return new SingleResponse<WorkOrder> {Data = workOrder, IsValid = result.IsValid, Errors = result.Errors };
@@ -461,7 +550,7 @@ namespace BlazorTool.Client.Services
                     CategoryID = workOrder.CategoryID,
                     DepartmentID = departmentId,
                     AssignedPersonID = assignedPersonId 
-                }; //TODO location - what is this
+                }; //TODO location - what is this?
 
                 var response = await _http.PostAsJsonAsync(url, createRequest);
                 var apiResponse = await response.Content.ReadFromJsonAsync<SingleResponse<WorkOrder>>();
@@ -477,7 +566,7 @@ namespace BlazorTool.Client.Services
                     {
                         Debug.WriteLine("[{_userState.UserName}] = = = = = = Work order updated successfully from API. ID: " + updatedResponse.First().WorkOrderID);
                         apiResponse.Data = updatedResponse.First();
-                        
+                        UpdateWorkOrderInCache(apiResponse.Data);
                     } else
                     {
                         Console.WriteLine($"[{_userState.UserName}] = = = = = = Failed to retrieve updated work order from API.\n");
@@ -512,7 +601,7 @@ namespace BlazorTool.Client.Services
             }
         }
 
-        public async Task<SingleResponse<WorkOrder>> CloseWorkOrderAsync(WorkOrder workOrder)
+        public async Task<SingleResponse<bool>> CloseWorkOrderAsync(WorkOrder workOrder)
         {
             var errors = new List<string>();
 
@@ -537,9 +626,14 @@ namespace BlazorTool.Client.Services
                 errors.Add("WorkOrder must have at least one activity (act_Count > 0)");
             }
 
+            if (workOrder.LevelID <= 0)
+            {
+                errors.Add("LevelID - Have to be greater then 0");
+            }
+
             if (errors.Any())
             {
-                return new SingleResponse<WorkOrder>
+                return new SingleResponse<bool>
                 {
                     IsValid = false,
                     Errors = errors
@@ -551,22 +645,15 @@ namespace BlazorTool.Client.Services
                 WorkOrderID = workOrder.WorkOrderID,
                 PersonID = _userState.PersonID.Value,
                 CategoryID = workOrder.CategoryID ?? 0,
-                ReasonID = workOrder.ReasonID ?? 0
+                ReasonID = workOrder.ReasonID ?? 0,
+                LevelID = workOrder.LevelID ?? 0,
             };
 
-            var result = await PutSingleAsync<CloseWorkOrderRequest, WorkOrder>("api/v1/wo/close", request);
+            var result = await PutSingleAsync<CloseWorkOrderRequest, bool>("api/v1/wo/close", request);
 
-            if (result.IsValid && result.Data != null)
+            if (result.IsValid && result.Data)
             {
-                // Remove from cache on successful close
-                if (_workOrdersCache.ContainsKey(result.Data.MachineID))
-                {
-                    var wo_index = _workOrdersCache[result.Data.MachineID].FindIndex(x => x.WorkOrderID == result.Data.WorkOrderID);
-                    if (wo_index >= 0)
-                    {
-                        _workOrdersCache[result.Data.MachineID].RemoveAt(wo_index);
-                    }
-                }
+                UpdateWorkOrderInCache(workOrder);
             }
             return result;
         }
@@ -675,7 +762,7 @@ namespace BlazorTool.Client.Services
             }
             catch (HttpRequestException ex)
             {
-                await _userState.ClearAsync();
+                //await _userState.ClearAsync();
                 Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 Debug.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 return new List<Device>();
@@ -718,7 +805,7 @@ namespace BlazorTool.Client.Services
             }
             catch (HttpRequestException ex)
             {
-                await _userState.ClearAsync();
+                //await _userState.ClearAsync();
                 Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 Debug.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 return new List<Dict>();

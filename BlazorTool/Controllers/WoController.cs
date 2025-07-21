@@ -114,11 +114,11 @@ namespace BlazorTool.Controllers
                 string url = $"api/v1/wo/get?WorkOrderID={WorkOrderID}";
                 var response = await client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
-                var apiResponse = await response.Content.ReadFromJsonAsync<SingleResponse<WorkOrder>>();
+                var apiResponse = await response.Content.ReadFromJsonAsync<SingleResponse<WorkOrderInfo>>();
                 if (apiResponse == null || !apiResponse.IsValid)
                 {
                     var errors = apiResponse?.Errors ?? new List<string> { "Unknown error occurred." };
-                    return NotFound(new SingleResponse<WorkOrder>
+                    return NotFound(new SingleResponse<WorkOrderInfo>
                     {
                         IsValid = false,
                         Errors = errors
@@ -182,7 +182,7 @@ namespace BlazorTool.Controllers
         {
             if (request == null || request.WorkOrderID <= 0)
             {
-                return BadRequest(new SingleResponse<WorkOrder>
+                return BadRequest(new SingleResponse<bool>
                 {
                     IsValid = false,
                     Errors = new List<string> { "WorkOrderID is required." }
@@ -199,7 +199,7 @@ namespace BlazorTool.Controllers
                 var responseContent = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {
-                    var apiResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<WorkOrder>>(responseContent);
+                    var apiResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<bool>>(responseContent);
                     return Ok(apiResponse);
                 }
                 else
@@ -214,7 +214,7 @@ namespace BlazorTool.Controllers
                     }
                     catch { }
 
-                    return StatusCode((int)response.StatusCode, new SingleResponse<WorkOrder>
+                    return StatusCode((int)response.StatusCode, new SingleResponse<bool>
                     {
                         IsValid = false,
                         Errors = new List<string> { $"API Error: {response.ReasonPhrase}", responseContent }
@@ -223,7 +223,7 @@ namespace BlazorTool.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new SingleResponse<WorkOrder>
+                return StatusCode(500, new SingleResponse<bool>
                 {
                     IsValid = false,
                     Errors = new List<string> { ex.Message }

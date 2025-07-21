@@ -20,6 +20,14 @@ namespace BlazorTool.Client.Services
             var orders = await _apiServiceClient.GetWorkOrdersCachedAsync();
             _appointments = ConvertAppointmentsFromOrders(orders);
         }
+
+        public void ClearAppointments()
+        {
+            _appointments.Clear();
+
+        }
+
+
         public async Task<List<SchedulerAppointment>> GetAllAppointments()
         {
             if (_appointments == null || !_appointments.Any())
@@ -32,7 +40,7 @@ namespace BlazorTool.Client.Services
 
         public async Task<List<SchedulerAppointment>> GetTakenAppointments(List<WorkOrder>? orders = null)
         {
-                if (_appointments == null || !_appointments.Any())
+                //if (_appointments == null || !_appointments.Any())
                 {
                     if (orders == null)
                     {
@@ -115,7 +123,7 @@ namespace BlazorTool.Client.Services
         {
             if (ap != null)
             {
-                //ONLY remove StartDate
+                //ONLY remove StartDate for removing from scheduler
                 ap.StartDate = null;
                 var tryClose = await _apiServiceClient.UpdateWorkOrderAsync((WorkOrder)ap);
                 if (!tryClose.IsValid)
@@ -127,8 +135,8 @@ namespace BlazorTool.Client.Services
                         Errors = tryClose.Errors
                     };
                 }
-                else 
-                { 
+                else
+                {
                     _appointments.Remove(ap);
                     return new SingleResponse<WorkOrder>
                     {
@@ -137,22 +145,6 @@ namespace BlazorTool.Client.Services
                         Errors = new List<string>()
                     };
                 }
-                
-                //var tryClose = await _apiServiceClient.CloseWorkOrderAsync((WorkOrder) ap);
-                //if (!tryClose.IsValid)
-                //{
-                //    Console.WriteLine($"Error closing appointment: {string.Join(", ", tryClose.Errors)}");
-                //}
-                //else 
-                //{ 
-                //    _appointments.Remove(ap);
-                //}
-                //return new SingleResponse<WorkOrder>
-                //{
-                //    IsValid = tryClose.IsValid,
-                //    Data = tryClose.Data,
-                //    Errors = tryClose.Errors
-                //};
             }
             return new SingleResponse<WorkOrder>
             {
@@ -161,10 +153,32 @@ namespace BlazorTool.Client.Services
             };
         }
 
-        public void DeleteAllAppointments()
+        public async Task<SingleResponse<WorkOrder?>> CloseAppointment(SchedulerAppointment ap)
         {
-            //TODO delete start and end dates for all appointments
-            _appointments.Clear();
+            if (ap != null)
+            {
+                var tryClose = await _apiServiceClient.CloseWorkOrderAsync((WorkOrder)ap);
+                var updWorkOrder = await _apiServiceClient.GetWorkOrderByIdAsync(ap.WorkOrderID);
+                if (!tryClose.IsValid)
+                {
+                    Console.WriteLine($"Error closing appointment: {string.Join(", ", tryClose.Errors)}");
+                }
+                else
+                {
+                   // _appointments.Remove(ap);                  
+                }
+                return new SingleResponse<WorkOrder?>
+                {
+                    IsValid = tryClose.IsValid,
+                    Data = updWorkOrder,
+                    Errors = tryClose.Errors
+                };
+            }
+            return new SingleResponse<WorkOrder?>
+            {
+                IsValid = false,
+                Errors = new List<string> { "Appointment is null." }
+            };
         }
 
         public List<SchedulerAppointment> GetAppointmentsFromOrders(IEnumerable<WorkOrder> orders)
@@ -181,6 +195,16 @@ namespace BlazorTool.Client.Services
                  appointments.Add(new SchedulerAppointment(order));
 
             return appointments;
+        }
+
+        public async Task<WorkOrderInfo?> GetWorkOrderInfo(SchedulerAppointment appointment)
+        {
+            if (appointment == null)
+            {
+                return null;
+            }
+            var workOrderInfo = await _apiServiceClient.GetWOInfo(appointment.WorkOrderID);
+            return workOrderInfo;
         }
     }
 }

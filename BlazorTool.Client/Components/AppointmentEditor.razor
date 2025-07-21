@@ -25,9 +25,12 @@
       <div class="button-row">
         <TelerikButton Class="popup-target" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Save</TelerikButton>
 
-    @* These buttons do not invoke validation, you can always delete an appointment or stop editing *@
-        <TelerikButton OnClick="@CancelEditing" ButtonType="ButtonType.Button">Cancel</TelerikButton>
-    <TelerikButton OnClick="@DeleteAppointment" ButtonType="ButtonType.Button">Delete</TelerikButton>
+    <TelerikButton OnClick="@CancelEditing"  ButtonType="ButtonType.Button" >Cancel</TelerikButton>
+    <TelerikButton OnClick="@DeleteAppointment" ButtonType="ButtonType.Button">Delete from scheduler</TelerikButton>
+        @if (!isWOClosed)
+        {
+            <TelerikButton OnClick="@CloseAppointment" ButtonType="ButtonType.Button" ThemeColor="@ThemeConstants.Button.ThemeColor.Warning">Finish order</TelerikButton>
+        }
     </div>
 </EditForm>
 <WorkOrderComponent WorkOrder="@Appointment" 
@@ -64,10 +67,11 @@
     private string titleAlarm = string.Empty;
     private TelerikPopup? PopupRef { get; set; }
     private string popupMessage = "Please fill in all required fields.";
-
     private SchedulerAppointment? _OriginAppointment; // Used to store the original appointment for cancellation
+    private WorkOrderInfo? workOrderInfo = null; //additional information about the work order /wo/get?WorkOrderID=
+    private bool isWOClosed = false;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         isNewAppointment = Appointment.AppointmentId == 0;
         if (string.IsNullOrWhiteSpace(Appointment.AssetNo))
@@ -78,7 +82,12 @@
         {
             titleAlarm = string.Empty;
         }
-        _OriginAppointment = Appointment.ShallowCopy(); 
+        _OriginAppointment = Appointment.ShallowCopy();
+        if (!isNewAppointment)
+        {
+            workOrderInfo = await ApptService.GetWorkOrderInfo(Appointment);
+            isWOClosed = IsWOClosed();
+        }
     }
 
     async Task SaveAppointment()
@@ -114,8 +123,29 @@
             PopupRef?.Show();
             return;
         }
-        
+
         await OnAppointmentChanged.InvokeAsync(null);
+    }
+
+    async Task CloseAppointment()
+    {
+        if (isNewAppointment) return;
+        // Set the appointment as closed
+        // Appointment.ModDate = DateTime.Now;
+        Appointment.ModPerson = currentUser.Name; // Assuming currentUser has a Name property
+        var result = await ApptService.CloseAppointment(Appointment);
+        if (!result.IsValid)
+        {
+            string errors = string.Join(Environment.NewLine, result.Errors);
+            popupMessage = errors ?? "Failed to close appointment.";
+            PopupRef?.Show();
+            return;
+        }
+        if (result.Data != null)
+        {
+            Appointment = new SchedulerAppointment(result.Data);
+        }   
+        await OnAppointmentChanged.InvokeAsync(Appointment);
     }
 
     async Task CancelEditing()
@@ -156,5 +186,15 @@
         {
             titleAlarm = string.Empty;
         }
+    }
+
+    private bool IsWOClosed()
+    {
+        if (workOrderInfo == null || workOrderInfo.StateID != 5)
+        {
+            return false; // No work order info available
+        }
+
+        return true;
     }
 }

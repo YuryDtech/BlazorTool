@@ -23,6 +23,7 @@
         public int PersonID { get; set; }
         public int CategoryID { get; set; }
         public int ReasonID { get; set; }
+        public int LevelID { get; set; }
     }
 
     public class WorkOrderQueryParameters

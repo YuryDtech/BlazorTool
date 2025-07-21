@@ -218,13 +218,6 @@
 </TelerikPopup>
 
 @code {
-
-
-
-
-
-
-
     private List<SchedulerAppointment> Appointments { get; set; } = new();    
     private List<SchedulerAppointment> _allAppointments { get; set; } = new();    
     private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }
@@ -279,6 +272,7 @@
         StateHasChanged();
         Persons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList(); //TODO remove while made cache persons
         _allOrders = await apiService.GetWorkOrdersAsync(); //from API, not cache
+        ApptService.ClearAppointments(); //clear cache
         if (!UserState.IsAuthenticated)
         {
             Navigation.NavigateTo("/login");
@@ -318,11 +312,6 @@
     private void DisplayAppointments()
     {
         var appointments = FilterAppointments();
-        // selectedAssignedPersons = appointments
-        //     .Where(x => !string.IsNullOrEmpty(x.AssignedPerson))
-        //     .Select(x => x.AssignedPerson)
-        //     .Distinct()
-        //     .ToList();
         Appointments = appointments;        
     }
 
@@ -335,9 +324,6 @@
         UntakenOrders = orders;
         cellStyles = RenderStatesStyle(orders);
     }
-
-
-
 
     // ==== DragAndDrop from Grid to Scheduler ====
     private async Task GridRowDrop(GridRowDropEventArgs<WorkOrder> args)
@@ -375,7 +361,7 @@
         }
     }
 
-    #region filters can remove (not actual)
+    #region filters 
     private void OnAssignedPersonsClosed()
     {
         DisplayAppointments();
@@ -499,12 +485,11 @@
                 Console.WriteLine($"Failed to delete appointment: {string.Join(", ", result.Errors)}");
                 return; // Exit if deletion failed
             }
+            //UntakenOrders.Add(result.Data);
             _allAppointments.RemoveAll(a => a.AppointmentId == delAppt.AppointmentId);
-            Appointments.RemoveAll(a => a.AppointmentId == delAppt.AppointmentId);
-
+            await LoadData();
             SchedulerRef?.Rebind();
-
-            DisplayOrders();
+                       
         }
     }
 
@@ -518,20 +503,23 @@
     }
 
     //when order window closed
-    async void RefreshData(SchedulerAppointment editedAppointment)
+    void RefreshData(SchedulerAppointment editedAppointment)
     {
         if (editedAppointment == null)//was removed
         {
 
         }
-        // if (!_allAppointments.Any(x => x.AppointmentId == editedAppointment?.AppointmentId)) //new appointment
-        // { 
-        //     _allAppointments.Add(editedAppointment);
-        //     Appointments.Add(editedAppointment);
-        // }
+        else
+        {
+            var index = _allAppointments.FindIndex(a => a.AppointmentId == editedAppointment.AppointmentId);
+            if (index != -1)
+            {
+                _allAppointments[index] = editedAppointment;
+            }
+        }
         customEditFormShown = false;
         isOrderCardOpen = false;
-        await LoadData();
+        DisplayAppointments();
         SchedulerRef?.Rebind();
     }
 
