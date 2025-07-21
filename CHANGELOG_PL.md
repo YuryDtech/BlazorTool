@@ -1,5 +1,13 @@
 # Changelog
 
+## 2025-07-21
+- **Refaktoryzacja i Poprawki Błędów:**
+    - Zrefaktoryzowano zarządzanie pamięcią podręczną dla obiektów `WorkOrder` w `ApiServiceClient`, aby zapewnić spójność danych. Wprowadzono scentralizowane metody do aktualizacji, unieważniania i odświeżania pamięci podręcznej (`UpdateWorkOrderInCache`, `InvalidateWorkOrdersCache`, `RefreshWorkOrderInCacheAsync`).
+    - Wszystkie metody manipulacji `WorkOrder` (`Update`, `Save`, `Close`) korzystają teraz z nowej, scentralizowanej logiki pamięci podręcznej.
+    - Poprawiono logikę aktualizacji interfejsu użytkownika w `SchedulerPage.razor`. Lokalna kolekcja spotkań (`_allAppointments`) jest teraz poprawnie modyfikowana po zmianie lub zamknięciu spotkania, co zapewnia, że interfejs użytkownika odzwierciedla aktualny stan.
+    - Ulepszono `AppointmentEditor.razor`, aby obsługiwał zamykanie zleceń pracy i poprawnie propagował aktualizacje interfejsu użytkownika.
+    - Dodano model `WorkOrderInfo.cs` i zaktualizowano `WoController`, aby obsługiwał pobieranie szczegółowych informacji o zleceniach pracy.
+
 ## 2025-07-09
 - **Funkcjonalność i Interfejs Użytkownika:**
     - Wdrożono pełny cykl życia dla Zleceń Pracy (Work Orders), umożliwiając ich tworzenie, aktualizację i zamykanie przez API.

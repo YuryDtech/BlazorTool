@@ -1,5 +1,13 @@
 # Changelog
 
+## 2025-07-21
+- **Refactoring & Bug Fixes:**
+    - Refactored cache management in `ApiServiceClient` for `WorkOrder` objects to ensure data consistency. Implemented centralized methods for updating, invalidating, and refreshing the cache (`UpdateWorkOrderInCache`, `InvalidateWorkOrdersCache`, `RefreshWorkOrderInCacheAsync`).
+    - All `WorkOrder` manipulation methods (`Update`, `Save`, `Close`) now use the new centralized cache logic.
+    - Corrected the UI update logic in `SchedulerPage.razor`. The local appointment collection (`_allAppointments`) is now correctly modified when an appointment is changed or closed, ensuring the UI reflects the current state.
+    - Enhanced `AppointmentEditor.razor` to support closing work orders and properly propagate UI updates.
+    - Added the `WorkOrderInfo.cs` model and updated `WoController` to support fetching detailed work order information.
+
 ## 2025-07-09
 - **Functionality & UI:**
     - Implemented the complete lifecycle for Work Orders, allowing users to create, update, and close them through the API.
