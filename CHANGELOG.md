@@ -1,4 +1,20 @@
-# Changelog
+## 2025-07-22
+## Added
+- **Scheduler Timeline View:** Introduced a new Timeline view for the scheduler, allowing for horizontal display of appointments.
+- **Dynamic Timeline View Settings:** Added UI controls to dynamically adjust `Column Width`, `Slot Duration`, and `Slot Divisions` for the Timeline view, providing greater flexibility in how time intervals are displayed.
+- **Time Format Customization:** Implemented a custom time format for Timeline view column headers, now displaying only the hour (0-24) for a more concise view.
+- **Scheduler Item Component:** Introduced a reusable `SchedulerItem` component to standardize the rendering of appointments across different scheduler views.
+- **Scheduler Loading Indicator:** Added a loading indicator to the scheduler to provide visual feedback during data fetching and authorization processes.
+
+### Changed
+- **Scheduler Grouping Logic:** Resolved `KeyNotFoundException` in Timeline view grouping by ensuring the correct resource field (`AssignedPerson`) is referenced in `SchedulerGroupSettings`.
+- **Scheduler UI Enhancements:** Applied custom styling to scheduler items and day cells in Month, Day, and Week views for improved visual appearance.
+- **Cache Management Refactoring:** Refactored internal cache management for appointments, leading to more efficient data handling and smoother UI updates in the scheduler.
+- **Appointment Service Method Rename:** Renamed `CloseAppointment` method to `RemoveAppointment` in the `AppointmentService` for clearer semantics.
+
+### Fixed
+- `KeyNotFoundException`: Addressed the `KeyNotFoundException` occurring when switching to the Telerik Scheduler Timeline view, specifically when grouping by assigned persons.
+
 
 ## 2025-07-21
 - **Refactoring & Bug Fixes:**

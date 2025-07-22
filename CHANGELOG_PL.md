@@ -1,4 +1,19 @@
-# Changelog
+## 2025-07-22
+	### Dodano
+- **Widok osi czasu harmonogramu (Timeline View):** Wprowadzono nowy widok osi czasu dla harmonogramu, umożliwiający poziome wyświetlanie spotkań.
+- **Dynamiczne ustawienia widoku osi czasu:** Dodano elementy sterujące interfejsu użytkownika do dynamicznej regulacji `Szerokości kolumn` (Column Width), `Czasu trwania slotu` (Slot Duration) i `Podziałów slotów` (Slot Divisions) dla widoku osi czasu, zapewniając większą elastyczność w wyświetlaniu interwałów czasowych.
+- **Dostosowanie formatu czasu:** Zaimplementowano niestandardowy format czasu dla nagłówków kolumn widoku osi czasu, wyświetlający teraz tylko godzinę (0-24) dla bardziej zwięzłego widoku.
+- **Komponent elementu harmonogramu:** Wprowadzono komponent `SchedulerItem` do ponownego użycia w celu standaryzacji renderowania spotkań w różnych widokach harmonogramu.
+- **Wskaźnik ładowania harmonogramu:** Dodano wskaźnik ładowania do harmonogramu, aby zapewnić wizualną informację zwrotną podczas pobierania danych i procesów autoryzacji.
+
+	### Zmieniono
+- **Logika grupowania harmonogramu:** Rozwiązano problem `KeyNotFoundException` w grupowaniu widoku osi czasu, zapewniając prawidłowe odwołanie do pola zasobu (`AssignedPerson`) w `SchedulerGroupSettings`.
+- **Ulepszenia interfejsu użytkownika harmonogramu:** Zastosowano niestandardowe style do elementów harmonogramu i komórek dnia w widokach Miesiąc, Dzień i Tydzień w celu poprawy wyglądu wizualnego.
+- **Refaktoryzacja zarządzania pamięcią podręczną:** Zrefaktoryzowano wewnętrzne zarządzanie pamięcią podręczną dla spotkań, co prowadzi do bardziej wydajnej obsługi danych i płynniejszych aktualizacji interfejsu użytkownika w harmonogramie.
+- **Zmiana nazwy metody usługi spotkań:** Zmieniono nazwę metody `CloseAppointment` na `RemoveAppointment` w `AppointmentService` dla jaśniejszej semantyki.
+
+	### Naprawiono
+- `KeyNotFoundException`: Rozwiązano problem `KeyNotFoundException` występujący podczas przełączania na widok osi czasu Telerik Scheduler, w szczególności podczas grupowania według przypisanych osób.
 
 ## 2025-07-21
 - **Refaktoryzacja i Poprawki Błędów:**
@@ -26,7 +41,7 @@
 - **Ulepszenie inicjalizacji po stronie klienta**: Upewniono się, że dane `UserState` są w pełni załadowane z `localStorage` przed wykonaniem jakichkolwiek wywołań API po stronie klienta. Osiągnięto to poprzez oczekiwanie na `UserState.InitializationTask` w `AuthHeaderHandler` i odpowiednich stronach Razor (`SchedulerPage`, `OrdersPage`, `Settings`).
 - **Zarządzanie tokenami po stronie serwera**: `IdentityController` teraz buforuje `IdentityData` (w tym token zewnętrznego API) po pomyślnym zalogowaniu użytkownika. `ServerAuthTokenService` został zrefaktoryzowany w celu pobierania tych tokenów z pamięci podręcznej serwera (`IMemoryCache`) na podstawie `PersonID` wyodrębnionego z nagłówka `X-Person-ID`.
 - **Obsługa błędów API**: Dodano bloki `try-catch` do wszystkich metod żądań HTTP w `ApiServiceClient`, aby elegancko obsługiwać błędy sieciowe i API, logując je do konsoli i zwracając puste/domyślne wartości.
-- **Udoskonalenie i czyszczenie zależności**: Usunięto przestarzałe konfiguracje uwierzytelniania JWT Bearer i zakodowane na stałe dane logowania z pliku `Program.cs` po stronie serwera, usprawniając konfigurację uwierzytelniania i wstrzykiwania zależności.
+- **Udoskonalenie i czyszczenie zależności**: Usunięto przestarzałe konfiguracje uwierzytelniań JWT Bearer i zakodowane na stałe dane logowania z pliku `Program.cs` po stronie serwera, usprawniając konfigurację uwierzytelniania i wstrzykiwania zależności.
 - **Dokumentacja API**: Dodano `API-info.md` w celu zapewnienia jasnej dokumentacji punktów końcowych API i ich typów autoryzacji.
 
 ## 2025-07-07
@@ -58,7 +73,7 @@
     - Zrefaktoryzowano `AuthHeaderHandler.cs` w celu pobierania danych uwierzytelniających użytkownika z `UserState` do odświeżania tokena.
     - Zmodyfikowano `BlazorTool.Client/Program.cs` w celu prawidłowego wstrzykiwania `UserState` do `AuthHeaderHandler`.
     - Dodano metodę `PostSingleAsync` do `ApiServiceClient.cs` do obsługi odpowiedzi API zawierających pojedynczy obiekt.
-    - Zaktualizowano `Login.razor` w celu użycia `ApiServiceClient.PostSingleAsync` do uwierzytelniania i aktualizacji `UserState` po pomyślnym zalogowaniu.
+    - Zaktualizowano `Login.razor` w celu użycia `ApiServiceClient.PostSingleAsync` do uwierzytelnia i aktualizacji `UserState` po pomyślnym zalogowaniu.
     - Uzupełniono model `RightMatrix` w celu prawidłowej deserializacji uprawnień użytkownika.
     - Dodano właściwość `Expires` do modelu `IdentityData`.
     - Zrefaktoryzowano `AuthHeaderHandler` w celu użycia `IdentityData` i `ApiResponse<IdentityData>` do zarządzania tokenami.
@@ -78,7 +93,7 @@
     - Dodano logikę do `AppointmentService` do obsługi tworzenia nowych spotkań.
     - Zaimplementowano zapisywanie nowych spotkań za pośrednictwem `ApiServiceClient`.
     - Dodano rozwijaną listę do wyboru `Device` w `WorkOrderComponent` dla nowych spotkań.
-    - Dodano logikę walidacji w `AppointmentEditor.razor`.
+    - Dodano walidację w `AppointmentEditor.razor`.
     - Zaimplementowano wyskakujące okienko Telerik do powiadomień w `AppointmentEditor.razor`.
     - Zaktualizowano style w `AppointmentEditor.razor.css`.
     - Dodano pakiet `Markdig` do renderowania Markdown na stronie `ChangelogPage`.
@@ -113,7 +128,7 @@
     - Na stronie `SchedulerPage` dostosowano tekst i kolor elementu harmonogramu w zależności od jego stanu.
 - **Zmiany w kodzie:**
     - Dodano nowy punkt końcowy `api/v1/wo/getdict` do `WoController` w celu pobierania kategorii zleceń pracy.
-    - Zaktualizowano `ApiServiceClient` do pobierania obiekt��w `Dict`.
+    - Zaktualizowano `ApiServiceClient` do pobierania obiektów `Dict`.
     - Dodano model `Dict.cs`.
 - **Poprawki błędów:**
     - Naprawiono problem w `WorkOrderComponent`, gdzie `Department` i `assignedPersons` nie wyświetlały się poprawnie.
