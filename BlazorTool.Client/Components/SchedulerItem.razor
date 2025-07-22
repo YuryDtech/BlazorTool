@@ -1,42 +1,38 @@
 @using BlazorTool.Client.Models
 @using Telerik.Blazor.Components
 
-@if (View == SchedulerView.Month)
-{
-    <div class="item-MonthView">
-        <span style="color:black;">@GenerateItemTextMonth(Item)</span>
-    </div>
-}
-else
-{
-    <div class="item-DayWeekView">
-        <span>@GenerateItemHeader(Item)</span>
-        <br />
-        <span style="color:black;">@GenerateItemTextWeek(Item)</span>
-        <br />
-        <span>Description: @(Item?.WODesc)</span>
-    </div>
-}
+<div class="scheduler-item-wrapper view-@View.ToString().ToLower()">
+    @if (View == SchedulerView.Month)
+    {
+        <div class="scheduler-item-month">
+            <span class="item-asset">[@Item.AppointmentId] @Item.AssetNo</span>
+            <span class="item-assignee">=> @Item.DepName: @Item.AssignedPerson</span>
+        </div>
+    }
+    else // Week or Day view
+    {
+        <div class="scheduler-item-details">
+            <div class="item-header">[@Item.AppointmentId] @Item.AssetNo</div>
+            <div class="item-body">
+                @if (!string.IsNullOrEmpty(Item.DepName))
+                {
+                    <span>@Item.DepName:</span>
+                }
+                <span>@Item.AssignedPerson</span>
+            </div>
+            @if (!string.IsNullOrEmpty(Item.WODesc))
+            {
+                <div class="item-description">@Item.WODesc</div>
+            }
+        </div>
+    }
+</div>
+
 
 @code {
     [Parameter]
-    public SchedulerAppointment Item { get; set; }
+    public SchedulerAppointment Item { get; set; } = new();
 
     [Parameter]
     public SchedulerView View { get; set; }
-
-    private string GenerateItemTextMonth(SchedulerAppointment meeting)
-    {
-        return $"[{meeting?.AppointmentId}] {meeting?.AssetNo} => {(string.IsNullOrEmpty(meeting?.DepName) ? "" : meeting?.DepName + ":")} {meeting?.AssignedPerson}";
-    }
-
-    private string GenerateItemTextWeek(SchedulerAppointment meeting)
-    {
-        return $"{(string.IsNullOrEmpty(meeting?.DepName) ? "" : meeting?.DepName + ":")} {meeting?.AssignedPerson}";
-    }
-
-    private string GenerateItemHeader(SchedulerAppointment meeting)
-    {
-        return $"[{meeting?.AppointmentId}] {meeting?.AssetNo}";
-    }
 }
