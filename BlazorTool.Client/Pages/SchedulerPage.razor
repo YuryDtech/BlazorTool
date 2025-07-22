@@ -109,42 +109,17 @@
             <SchedulerViews>
                 <SchedulerDayView StartTime="@DayStart" EndTime="@DayEnd">
                     <ItemTemplate>
-                        <div class="item-DayView">
-                            @{
-                                var meeting = context as SchedulerAppointment;
-                            }
-                            <span>@GenerateItemHeaader(meeting)</span>
-                            <br />
-                            <span style="color:black;">@GenerateItemTextWeek(meeting)</span>
-                            <br />
-                            <span>Description: @(meeting?.WODesc)</span>
-                        </div>
+                        <SchedulerItem Item="@(context as SchedulerAppointment)" View="@SchedulerView.Day" />
                     </ItemTemplate>
-                    </SchedulerDayView>
+                </SchedulerDayView>
                 <SchedulerWeekView StartTime="@DayStart" EndTime="@DayEnd">
                     <ItemTemplate>
-                        <div class="item-WeekView">
-                            @{
-                                var meeting = context as SchedulerAppointment;
-                            }
-                            <span>@GenerateItemHeaader(meeting)</span>
-                            <br />
-                            <span style="color:black;">@GenerateItemTextWeek(meeting)</span>
-                            <br />
-                            <span>Description: @(meeting?.WODesc)</span>
-                        </div>
+                        <SchedulerItem Item="@(context as SchedulerAppointment)" View="@SchedulerView.Week" />
                     </ItemTemplate>
-                    </SchedulerWeekView>
-                <SchedulerMonthView ItemsPerSlot=4>
+                </SchedulerWeekView>
+                <SchedulerMonthView ItemsPerSlot="4">
                     <ItemTemplate>
-                        <div class="item-MonthView">
-                            @{
-                                var meeting = context as SchedulerAppointment;
-                            }
-
-
-                            <span style="color:black;">@GenerateItemTextMonth(meeting)</span>
-                        </div>
+                        <SchedulerItem Item="@(context as SchedulerAppointment)" View="@SchedulerView.Month" />
                     </ItemTemplate>
                 </SchedulerMonthView>
             </SchedulerViews>
@@ -616,21 +591,6 @@
         }
     }
     #endregion
-
-    private string GenerateItemTextMonth(SchedulerAppointment meeting)
-    {
-        return $"[{meeting?.AppointmentId}] {meeting?.AssetNo} => {(string.IsNullOrEmpty(meeting?.DepName) ? "" : meeting?.DepName + ":")} {meeting?.AssignedPerson}";
-    }
-
-    private string GenerateItemTextWeek(SchedulerAppointment meeting)
-    {
-        return $"{(string.IsNullOrEmpty(meeting?.DepName) ? "" : meeting?.DepName + ":")} {meeting?.AssignedPerson}";
-    }
-
-    private string GenerateItemHeaader(SchedulerAppointment meeting)
-    {
-        return $"[{meeting?.AppointmentId}] {meeting?.AssetNo}";
-    }
 
     private MarkupString RenderStatesStyle(List<WorkOrder> orders)
     {

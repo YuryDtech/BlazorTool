@@ -1,0 +1,42 @@
+@using BlazorTool.Client.Models
+@using Telerik.Blazor.Components
+
+@if (View == SchedulerView.Month)
+{
+    <div class="item-MonthView">
+        <span style="color:black;">@GenerateItemTextMonth(Item)</span>
+    </div>
+}
+else
+{
+    <div class="item-DayWeekView">
+        <span>@GenerateItemHeader(Item)</span>
+        <br />
+        <span style="color:black;">@GenerateItemTextWeek(Item)</span>
+        <br />
+        <span>Description: @(Item?.WODesc)</span>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public SchedulerAppointment Item { get; set; }
+
+    [Parameter]
+    public SchedulerView View { get; set; }
+
+    private string GenerateItemTextMonth(SchedulerAppointment meeting)
+    {
+        return $"[{meeting?.AppointmentId}] {meeting?.AssetNo} => {(string.IsNullOrEmpty(meeting?.DepName) ? "" : meeting?.DepName + ":")} {meeting?.AssignedPerson}";
+    }
+
+    private string GenerateItemTextWeek(SchedulerAppointment meeting)
+    {
+        return $"{(string.IsNullOrEmpty(meeting?.DepName) ? "" : meeting?.DepName + ":")} {meeting?.AssignedPerson}";
+    }
+
+    private string GenerateItemHeader(SchedulerAppointment meeting)
+    {
+        return $"[{meeting?.AppointmentId}] {meeting?.AssetNo}";
+    }
+}
