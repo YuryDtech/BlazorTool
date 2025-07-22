@@ -90,6 +90,7 @@
                           OnUpdate="@OnUpdateAppointment"
                           OnDelete="@OnDeleteAppointment"
                           OnEdit="@EditHandler"
+                          OnCellRender="@OnSchedulerCellRender"
                           IdField="Id"
                           StartField="Start"
                           EndField="End"
@@ -545,6 +546,22 @@
     {
         customEditFormShown = false;
         isOrderCardOpen = false;
+    }
+
+    private void OnSchedulerCellRender(SchedulerCellRenderEventArgs args)
+    {
+        if (CurrentView == SchedulerView.Month)
+        {
+            args.Class = "month-view-slot";
+            if (args.Start.Date == DateTime.Today)
+            {
+                args.Class += " current-day";
+            }
+            else if (args.Start.DayOfWeek == DayOfWeek.Saturday || args.Start.DayOfWeek == DayOfWeek.Sunday)
+            {
+                args.Class += " weekend-day";
+            }
+        }
     }
 
 
