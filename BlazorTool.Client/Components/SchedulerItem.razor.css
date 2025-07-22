@@ -83,3 +83,20 @@
 .view-month .item-asset {
     font-weight: 600;
 }
+
+/* --- Timeline View Specifics (same as Week) --- */
+.view-timeline {
+    padding: 2px 4px;
+}
+
+.view-timeline .scheduler-item-details {
+    font-size: 16px;
+}
+
+.view-timeline .item-body {
+    font-size: 14px;
+}
+
+.view-timeline .item-description {
+    font-size: 14px;
+}

@@ -23,7 +23,11 @@ namespace BlazorTool.Client.Models
 
         public SchedulerAppointment(WorkOrder order)
         {
-            CopyFromWorkOrder(order);         
+            CopyFromWorkOrder(order);
+            if (string.IsNullOrEmpty(AssignedPerson))
+            {
+                AssignedPerson = Person.NotAssigned.Name;
+            }
         }
 
         public SchedulerAppointment ShallowCopy()

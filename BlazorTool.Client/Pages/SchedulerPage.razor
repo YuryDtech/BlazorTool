@@ -75,6 +75,17 @@
         <div style="display:flex; flex-direction: row; gap:10px">
             <div><p>Scheduled orders: @Appointments.Count()</p></div>
             <div><TelerikButton OnClick="@HardLoadData" Size="Small" ThemeColor="@ThemeConstants.Button.ThemeColor.Tertiary">Reload all data</TelerikButton></div>
+            @if (CurrentView == SchedulerView.Timeline)
+            {
+            <div style="display:flex; flex-direction: row; gap:10px; align-items:center;">
+                <label>Column Width:</label>
+                <TelerikNumericTextBox @bind-Value="@columnWidth" Width="80px" Min="10" Max="200" Step="10" Size="Small" />
+                <label>Slot Duration (min):</label>
+                <TelerikNumericTextBox @bind-Value="@slotDuration" Width="110px" Min="15" Max="1440" Step="15" Size="Small" />
+                <label>Number of days:</label>
+                <TelerikNumericTextBox @bind-Value="@numberOfDays" Width="80px" Min="1" Max="14" Step="1" Size="Small" />
+            </div>                
+            }
         </div>
         
 
@@ -101,8 +112,12 @@
                           IsAllDayField="IsAllDay"
                           Height="80vh"
                           >
+            <SchedulerSettings>
+                <SchedulerGroupSettings Orientation="SchedulerGroupOrientation.Vertical" Resources="@(CurrentView == SchedulerView.Timeline ? new List<string> { "AssignedPerson" } : null)" />
+            </SchedulerSettings>
             <SchedulerResources>
                 <SchedulerResource Field="StateColor" Title="StateColor" Data="@statuses" />
+                <SchedulerResource Field="AssignedPerson" Title="Person" Data="@PersonResources" ValueField="Name" TextField="Name" />
             </SchedulerResources>
             
 
@@ -122,11 +137,18 @@
                         <SchedulerItem Item="@(context as SchedulerAppointment)" View="@SchedulerView.Month" />
                     </ItemTemplate>
                 </SchedulerMonthView>
+                <SchedulerTimelineView NumberOfDays="@numberOfDays" StartTime="@DayStart" EndTime="@DayEnd" 
+                    ColumnWidth="@columnWidth" SlotDivisions="@slotDivisions" SlotDuration="@slotDuration">
+                    
+                    <ItemTemplate>
+                        <SchedulerItem Item="@(context as SchedulerAppointment)" View="@SchedulerView.Timeline" />
+                    </ItemTemplate>
+                </SchedulerTimelineView>
             </SchedulerViews>
         </TelerikScheduler>
     </div>
 
-    <div style="flex-basis: 33%; flex-shrink:1; flex-grow:0">
+    <div style="flex-basis: 33%; flex-shrink:1; flex-grow:0; min-width:600px">
         @if (isLoading)
         {
         <div style="display:flex; justify-content:space-between; align-items: center; align-content: center">
@@ -239,6 +261,8 @@
     private bool isOrderCardOpen = false;
     private SchedulerAppointment CurrentAppointment { get; set; } = new SchedulerAppointment();
     private WorkOrder CurrentOrder { get; set; }
+    private List<Person> allPersons = new();
+    private List<Person> PersonResources { get; set; } = new();
     private List<string> selectedAssignedPersons = new();
     private List<string> Persons = new();
     private List<string> Departments = new(); 
@@ -250,6 +274,10 @@
     private string selectedAssetNo = "All";
     private Person currentUser = new Person();
     private string popupMessage = string.Empty;
+    private int columnWidth = 50; //for TimelineView alt=80
+    private int slotDuration = 180; //in minutes for TimelineView
+    private int slotDivisions = 1; //for TimelineView
+    private int numberOfDays = 5; //for TimelineView alt=3
     private List<Resource> statuses = new List<Resource>
     {
         new Resource { Text = "Not starded", Value = "Red", Color = "LightCoral" },
@@ -261,6 +289,7 @@
     {
         var isWASM = JSRuntime is IJSInProcessRuntime;
         Console.WriteLine($"--- Initialized SCHEDULER PAGE. WASM = {isWASM}");
+        Console.WriteLine($"--- OnInitializedAsync completed.");
         await UserState.InitializationTask; // Ensure UserState is loaded
         if (!UserState.IsAuthenticated)
         {
@@ -274,7 +303,9 @@
         Console.WriteLine("--- HardLoadData called.");
         isLoading = true;
         StateHasChanged();
-        Persons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList(); //TODO remove while made cache persons
+        allPersons = await apiService.GetAllPersons();
+        Console.WriteLine($"--- HardLoadData: allPersons loaded. Count: {allPersons.Count}");
+        Persons = allPersons.Select(c => c.Name).ToList();
         _allOrders = await apiService.GetWorkOrdersAsync(); //from API, not cache
         ApptService.ClearAppointments(); //clear cache
         if (!UserState.IsAuthenticated)
@@ -297,6 +328,7 @@
         // ListDicts = (await apiService.GetWODictionaries(1));
         _allOrders = await apiService.GetWorkOrdersCachedAsync();
         _allAppointments = await ApptService.GetTakenAppointments(_allOrders);
+        Console.WriteLine($"--- LoadData: _allAppointments loaded. Count: {_allAppointments.Count}");
         Departments = new List<string> { "All" };
         Departments.AddRange(_allOrders.Where(d => !string.IsNullOrWhiteSpace(d.DepName)).Select(x => x.DepName).Distinct().ToList());
         DeviceCategories = new List<string?> { "All" };
@@ -304,6 +336,7 @@
         AssetNumbers = new List<string> { "All" };
         AssetNumbers.AddRange(_allOrders.Where(d => !string.IsNullOrWhiteSpace(d.AssetNo)).Select(x => x.AssetNo).Distinct().ToList());
         DisplayAppointments(); 
+        Console.WriteLine($"--- LoadData: DisplayAppointments called.");
         DisplayOrders();
         isLoading = false;
         StateHasChanged();
@@ -316,7 +349,18 @@
     private void DisplayAppointments()
     {
         var appointments = FilterAppointments();
-        Appointments = appointments;        
+        Appointments = appointments;
+
+        // PersonResources should always contain all possible persons for grouping, including "Not assigned".
+        // Filtering by selectedAssignedPersons is handled in FilterAppointments().
+        PersonResources = new List<Person>(allPersons);
+        if (!PersonResources.Any(p => p.Name == Person.NotAssigned.Name))
+        {
+            PersonResources.Insert(0, Person.NotAssigned);
+        }
+        Console.WriteLine($"--- DisplayAppointments: PersonResources after update. Count: {PersonResources.Count}");
+        Console.WriteLine($"--- DisplayAppointments: PersonResources names: {string.Join(", ", PersonResources.Select(p => p.Name))}");
+        Console.WriteLine($"--- DisplayAppointments: Appointments AssignedPerson values: {string.Join(", ", Appointments.Select(a => a.AssignedPerson).Distinct())}");
     }
 
     /// <summary>
@@ -443,6 +487,7 @@
             {
                 _allAppointments.Add(newAppt);
                 Appointments.Add(newAppt);
+                Console.WriteLine($"--- OnCreateAppointment: New appointment created. AssignedPerson: {newAppt.AssignedPerson}");
             }
             else
             {
@@ -465,6 +510,7 @@
 
                 var allIndex = _allAppointments.FindIndex(a => a.AppointmentId == result.Data.WorkOrderID);
                 if (allIndex >= 0) _allAppointments[allIndex] = new SchedulerAppointment(result.Data);
+                Console.WriteLine($"--- OnUpdateAppointment: Appointment updated. AssignedPerson: {updAppt.AssignedPerson}");
             }
             else
             {

@@ -1,47 +1,175 @@
-﻿Verbose logs are written to:
-C:\Users\yfilionchyk\AppData\Local\Temp\visualstudio-js-debugger.txt
-CSS Hot Reload ignoring http://localhost:5168/bootstrap/bootstrap.min.css because it was inaccessible or had more than 7000 rules.
-CSS Hot Reload ignoring https://blazor.cdn.telerik.com/blazor/6.2.0/kendo-theme-bootstrap/swatches/bootstrap-urban.css because it was inaccessible or had more than 7000 rules.
-[0m[48;5;127m[38;5;231mdotnet[0m[1m Loaded 11.17 MB resources[0m
-This application was built with linking (tree shaking) disabled. 
-Published applications will be significantly smaller if you install wasm-tools workload. 
-See also https://aka.ms/dotnet-wasm-features[0m
-Loaded 11.17 MB resources from cache
-Debugging hotkey: Shift+Alt+D (when application has focus)
-======= APPLICATION (Client) STARTING...
---- Initialized SCHEDULER PAGE. WASM = True
---- HardLoadData called.
-====== Start GetAllPersons() request: http://localhost:5168/api/v1/other/getuserslist
-info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
+assetsCache.ts:30 dotnet Loaded 11.19 MB resourcesThis application was built with linking (tree shaking) disabled. Published applications will be significantly smaller if you install wasm-tools workload. See also https://aka.ms/dotnet-wasm-features
+blazor.web.js:1 Debugging hotkey: Shift+Alt+D (when application has focus)
+blazor.web.js:1 ======= APPLICATION (Client) STARTING...
+browserLink:18 CSS Hot Reload ignoring http://localhost:5168/bootstrap/bootstrap.min.css because it was inaccessible or had more than 7000 rules.
+browserLink:18 CSS Hot Reload ignoring https://blazor.cdn.telerik.com/blazor/6.2.0/kendo-theme-bootstrap/swatches/bootstrap-urban.css because it was inaccessible or had more than 7000 rules.
+blazor.web.js:1 --- Initialized SCHEDULER PAGE. WASM = True
+invoke-js.ts:176 info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
+      Start processing HTTP request GET http://localhost:5168/api/v1/identity/check-session
+invoke-js.ts:176 info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
+      Sending HTTP request GET http://localhost:5168/api/v1/identity/check-session
+blazor.web.js:1 --- HardLoadData called.
+blazor.web.js:1 ====== Start GetAllPersons() request: http://localhost:5168/api/v1/other/getuserslist
+invoke-js.ts:176 info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
       Start processing HTTP request GET http://localhost:5168/api/v1/other/getuserslist
-AuthHeaderHandler: UserState.PersonID is null. Request sent without X-Person-ID header.
-info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
+invoke-js.ts:176 info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
       Sending HTTP request GET http://localhost:5168/api/v1/other/getuserslist
-info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
-      Received HTTP response headers after 893ms - 200
-info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
-      End processing HTTP request after 905.3999ms - 200
-
-= = = = = = = = = response http://localhost:5168/api/v1/other/getuserslist 
-====== Users: 11
-
-info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
+dotnet.native.js:8 [Violation] 'setTimeout' handler took 52ms
+invoke-js.ts:176 info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
+      Received HTTP response headers after 182.6ms - 200
+invoke-js.ts:176 info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
+      End processing HTTP request after 200.2ms - 200
+invoke-js.ts:176 info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
+      Received HTTP response headers after 49ms - 200
+invoke-js.ts:176 info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
+      End processing HTTP request after 49.9ms - 200
+blazor.web.js:1 
+blazor.web.js:1 = = = = = = = = = response http://localhost:5168/api/v1/other/getuserslist 
+blazor.web.js:1 ====== Users: 11
+blazor.web.js:1 
+invoke-js.ts:176 info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
       Start processing HTTP request GET http://localhost:5168/api/v1/wo/getlist?*
-AuthHeaderHandler: UserState.PersonID is null. Request sent without X-Person-ID header.
-info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
+invoke-js.ts:176 info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
       Sending HTTP request GET http://localhost:5168/api/v1/wo/getlist?*
-Exception thrown: 'System.Net.Http.HttpRequestException' in System.Net.Http.dll
-info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
-      Received HTTP response headers after 88.3ms - 500
-info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
-      End processing HTTP request after 89.9ms - 500
-crit: Microsoft.AspNetCore.Components.WebAssembly.Rendering.WebAssemblyRenderer[100]
-      Unhandled exception rendering component: Response status code does not indicate success: 500 (Internal Server Error).
-System.Net.Http.HttpRequestException: Response status code does not indicate success: 500 (Internal Server Error).
-   at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
-   at System.Net.Http.Json.HttpClientJsonExtensions.<<FromJsonAsyncCore>g__Core|12_0>d`2[[BlazorTool.Client.Models.ApiResponse`1[[BlazorTool.Client.Models.WorkOrder, BlazorTool.Client, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], BlazorTool.Client, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[System.Text.Json.JsonSerializerOptions, System.Text.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51]].MoveNext()
-   at BlazorTool.Client.Services.ApiServiceClient.GetWorkOrdersAsync(Nullable`1 deviceID, Nullable`1 workOrderID, String deviceName, Nullable`1 isDep, Nullable`1 isTakenPerson, Nullable`1 active, String lang, Nullable`1 personID, Nullable`1 isPlan, Nullable`1 isWithPerson) in C:\Users\yfilionchyk\source\repos\BlazorTool\BlazorTool.Client\Services\ApiServiceClient.cs:line 154
-   at BlazorTool.Client.Pages.SchedulerPage.HardLoadData() in C:\Users\yfilionchyk\source\repos\BlazorTool\BlazorTool.Client\Pages\SchedulerPage.razor:line 251
-   at BlazorTool.Client.Pages.SchedulerPage.OnInitializedAsync() in C:\Users\yfilionchyk\source\repos\BlazorTool\BlazorTool.Client\Pages\SchedulerPage.razor:line 242
-   at Microsoft.AspNetCore.Components.ComponentBase.RunInitAndSetParametersAsync()
-   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+invoke-js.ts:176 info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
+      Received HTTP response headers after 165.4ms - 200
+invoke-js.ts:176 info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
+      End processing HTTP request after 166.6ms - 200
+blazor.web.js:1 [Maintenance manager] = = = = = = = API response-> WorkOrder.Count: 192
+blazor.web.js:1 --- LoadData called.
+blazor.web.js:1 [Maintenance manager] Work orders found in cache: 37
+blazor.web.js:1 
+blazor.web.js:1 --- LoadData completed. UntakenOrders count: 16, Appointments count: 51
+blazor.web.js:1 --- HardLoadData completed. UntakenOrders count: 16, Appointments count: 51
+blazor.web.js:1 crit: Microsoft.AspNetCore.Components.WebAssembly.Rendering.WebAssemblyRenderer[100]
+      Unhandled exception rendering component: The given key 'Person' was not present in the dictionary.
+System.Collections.Generic.KeyNotFoundException: The given key 'Person' was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Telerik.Blazor.Components.Scheduler.Models.Resource, Telerik.Blazor, Version=6.2.0.0, Culture=neutral, PublicKeyToken=20b4b0547069c4f8]].get_Item(String key)
+   at Telerik.Blazor.Components.TelerikScheduler`1[[BlazorTool.Client.Models.SchedulerAppointment, BlazorTool.Client, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null]].get_IsGrouped()
+   at Telerik.Blazor.Components.Scheduler.Rendering.SchedulerContentTable`1[[BlazorTool.Client.Models.SchedulerAppointment, BlazorTool.Client, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null]].BuildRenderTree(RenderTreeBuilder __builder)
+   at Microsoft.AspNetCore.Components.ComponentBase.<.ctor>b__6_0(RenderTreeBuilder builder)
+   at Microsoft.AspNetCore.Components.Rendering.ComponentState.RenderIntoBatch(RenderBatchBuilder batchBuilder, RenderFragment renderFragment, Exception& renderFragmentException)
+Ar @ blazor.web.js:1
+(anonymous) @ invoke-js.ts:176
+$l @ invoke-js.ts:276
+$func349 @ 00b2380a:0x1fa8c
+$func245 @ 00b2380a:0x1bf2f
+$func238 @ 00b2380a:0xf017
+$func272 @ 00b2380a:0x1d14d
+$func3187 @ 00b2380a:0xe8951
+$func2507 @ 00b2380a:0xbe641
+$func2506 @ 00b2380a:0xbe5d1
+$func1876 @ 00b2380a:0x9a6c3
+$func349 @ 00b2380a:0x1fb10
+$func245 @ 00b2380a:0x1bf2f
+$func238 @ 00b2380a:0xf017
+$func272 @ 00b2380a:0x1d14d
+$func3187 @ 00b2380a:0xe8951
+$func2507 @ 00b2380a:0xbe641
+$func2513 @ 00b2380a:0xbee65
+$func2537 @ 00b2380a:0xc14bc
+$mono_wasm_invoke_method_bound @ 00b2380a:0xa4fe
+Module._mono_wasm_invoke_method_bound @ dotnet.native.js:8
+kr @ invoke-cs.ts:273
+(anonymous) @ invoke-cs.ts:247
+beginInvokeDotNetFromJS @ blazor.web.js:1
+invokeDotNetMethodAsync @ blazor.web.js:1
+invokeMethodAsync @ blazor.web.js:1
+(anonymous) @ blazor.web.js:1
+D @ blazor.web.js:1
+(anonymous) @ blazor.web.js:1
+invokeWhenHeapUnlocked @ blazor.web.js:1
+(anonymous) @ blazor.web.js:1
+D @ blazor.web.js:1
+R @ blazor.web.js:1
+dispatchGlobalEventToAllElements @ blazor.web.js:1
+onGlobalEvent @ blazor.web.js:1
+blazor.web.js:1 crit: Microsoft.AspNetCore.Components.WebAssembly.Rendering.WebAssemblyRenderer[100]
+      Unhandled exception rendering component: The given key 'Person' was not present in the dictionary.
+System.Collections.Generic.KeyNotFoundException: The given key 'Person' was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Telerik.Blazor.Components.Scheduler.Models.Resource, Telerik.Blazor, Version=6.2.0.0, Culture=neutral, PublicKeyToken=20b4b0547069c4f8]].get_Item(String key)
+   at Telerik.Blazor.Components.TelerikScheduler`1[[BlazorTool.Client.Models.SchedulerAppointment, BlazorTool.Client, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null]].get_IsGrouped()
+   at Telerik.Blazor.Components.Scheduler.Rendering.SchedulerContentTable`1[[BlazorTool.Client.Models.SchedulerAppointment, BlazorTool.Client, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null]].BuildRenderTree(RenderTreeBuilder __builder)
+   at Microsoft.AspNetCore.Components.ComponentBase.<.ctor>b__6_0(RenderTreeBuilder builder)
+   at Microsoft.AspNetCore.Components.Rendering.ComponentState.RenderIntoBatch(RenderBatchBuilder batchBuilder, RenderFragment renderFragment, Exception& renderFragmentException)
+Ar @ blazor.web.js:1
+(anonymous) @ invoke-js.ts:176
+$l @ invoke-js.ts:276
+$func349 @ 00b2380a:0x1fa8c
+$func245 @ 00b2380a:0x1bf2f
+$func238 @ 00b2380a:0xf017
+$func272 @ 00b2380a:0x1d14d
+$func3187 @ 00b2380a:0xe8951
+$func2507 @ 00b2380a:0xbe641
+$func2513 @ 00b2380a:0xbee65
+$func2537 @ 00b2380a:0xc14bc
+$mono_wasm_invoke_method_bound @ 00b2380a:0xa4fe
+Module._mono_wasm_invoke_method_bound @ dotnet.native.js:8
+kr @ invoke-cs.ts:273
+(anonymous) @ invoke-cs.ts:184
+endInvokeJSFromDotNet @ blazor.web.js:1
+(anonymous) @ blazor.web.js:1
+Promise.then
+beginInvokeJSFromDotNet @ blazor.web.js:1
+ri @ blazor.web.js:1
+(anonymous) @ invoke-js.ts:233
+$l @ invoke-js.ts:276
+$func349 @ 00b2380a:0x1fa8c
+$func245 @ 00b2380a:0x1bf2f
+$func238 @ 00b2380a:0xf017
+$func272 @ 00b2380a:0x1d14d
+$func3187 @ 00b2380a:0xe8951
+$func2507 @ 00b2380a:0xbe641
+$func2513 @ 00b2380a:0xbee65
+$func2537 @ 00b2380a:0xc14bc
+$mono_wasm_invoke_method_bound @ 00b2380a:0xa4fe
+Module._mono_wasm_invoke_method_bound @ dotnet.native.js:8
+kr @ invoke-cs.ts:273
+(anonymous) @ invoke-cs.ts:184
+endInvokeJSFromDotNet @ blazor.web.js:1
+(anonymous) @ blazor.web.js:1
+Promise.then
+beginInvokeJSFromDotNet @ blazor.web.js:1
+ri @ blazor.web.js:1
+(anonymous) @ invoke-js.ts:233
+$l @ invoke-js.ts:276
+$func349 @ 00b2380a:0x1fa8c
+$func245 @ 00b2380a:0x1bf2f
+$func238 @ 00b2380a:0xf017
+$func272 @ 00b2380a:0x1d14d
+$func3187 @ 00b2380a:0xe8951
+$func2507 @ 00b2380a:0xbe641
+$func2506 @ 00b2380a:0xbe5d1
+$func1876 @ 00b2380a:0x9a6c3
+$func349 @ 00b2380a:0x1fb10
+$func245 @ 00b2380a:0x1bf2f
+$func238 @ 00b2380a:0xf017
+$func272 @ 00b2380a:0x1d14d
+$func3187 @ 00b2380a:0xe8951
+$func2507 @ 00b2380a:0xbe641
+$func2506 @ 00b2380a:0xbe5d1
+$func1876 @ 00b2380a:0x9a6c3
+$func349 @ 00b2380a:0x1fb10
+$func245 @ 00b2380a:0x1bf2f
+$func238 @ 00b2380a:0xf017
+$func272 @ 00b2380a:0x1d14d
+$func3187 @ 00b2380a:0xe8951
+$func2507 @ 00b2380a:0xbe641
+$func2513 @ 00b2380a:0xbee65
+$func2537 @ 00b2380a:0xc14bc
+$mono_wasm_invoke_method_bound @ 00b2380a:0xa4fe
+Module._mono_wasm_invoke_method_bound @ dotnet.native.js:8
+kr @ invoke-cs.ts:273
+(anonymous) @ invoke-cs.ts:247
+beginInvokeDotNetFromJS @ blazor.web.js:1
+invokeDotNetMethodAsync @ blazor.web.js:1
+invokeMethodAsync @ blazor.web.js:1
+(anonymous) @ blazor.web.js:1
+D @ blazor.web.js:1
+(anonymous) @ blazor.web.js:1
+invokeWhenHeapUnlocked @ blazor.web.js:1
+(anonymous) @ blazor.web.js:1
+D @ blazor.web.js:1
+R @ blazor.web.js:1
+dispatchGlobalEventToAllElements @ blazor.web.js:1
+onGlobalEvent @ blazor.web.js:1
