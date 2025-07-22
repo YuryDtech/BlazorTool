@@ -27,7 +27,16 @@
         {
             <div class="error-message">@ErrorMessage</div>
         }
-        <button type="submit" class="btn-login">Enter</button>
+        <button type="submit" class="btn-login" disabled="@isLoading">
+            @if (isLoading)
+            {
+                <TelerikLoader Type="LoaderType.ConvergingSpinner" Size="Telerik.Blazor.ThemeConstants.Loader.Size.Small" />
+            }
+            else
+            {
+                <span>Enter</span>
+            }
+        </button>
     </form>
 </div>
 
@@ -36,6 +45,7 @@
     private string Password { get; set; } = string.Empty;
     private string ErrorMessage { get; set; } = string.Empty;
     private List<Person> Persons { get; set; } = new List<Person>();
+    private bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,6 +60,8 @@
             ErrorMessage = "Empty field";
             return;
         }
+
+        isLoading = true;
         try
         {
             var loginRequest = new BlazorTool.Client.Models.LoginRequest
@@ -58,7 +70,7 @@
                 Password = Password
             };
 
-        var response = await ApiServiceClient.PostSingleAsync<LoginRequest, IdentityData>("api/v1/identity/loginpassword", loginRequest);
+            var response = await ApiServiceClient.PostSingleAsync<LoginRequest, IdentityData>("api/v1/identity/loginpassword", loginRequest);
 
             if (response != null && response.IsValid && response.Data != null)
             {
@@ -77,6 +89,10 @@
         catch (Exception ex)
         {
             ErrorMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 }

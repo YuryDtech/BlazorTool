@@ -77,6 +77,8 @@
             <div><TelerikButton OnClick="@HardLoadData" Size="Small" ThemeColor="@ThemeConstants.Button.ThemeColor.Tertiary">Reload all data</TelerikButton></div>
         </div>
         
+
+
         <TelerikScheduler TItem="SchedulerAppointment"
                           Id="Scheduler1"
                           Data="@Appointments"
@@ -102,22 +104,48 @@
             <SchedulerResources>
                 <SchedulerResource Field="StateColor" Title="StateColor" Data="@statuses" />
             </SchedulerResources>
-            <ItemTemplate>
-                <div>
-                    @{
-                        var meeting = context as SchedulerAppointment;
-                    }
-                    
-
-                    <span style="color:black;">@GenerateItemText(meeting)</span>
-                    </div>
-            </ItemTemplate>
+            
 
             <SchedulerViews>
-                <SchedulerDayView StartTime="@DayStart" EndTime="@DayEnd" />
-                <SchedulerWeekView StartTime="@DayStart" EndTime="@DayEnd" />
+                <SchedulerDayView StartTime="@DayStart" EndTime="@DayEnd">
+                    <ItemTemplate>
+                        <div class="item-DayView">
+                            @{
+                                var meeting = context as SchedulerAppointment;
+                            }
+                            <span>@GenerateItemHeaader(meeting)</span>
+                            <br />
+                            <span style="color:black;">@GenerateItemTextWeek(meeting)</span>
+                            <br />
+                            <span>Description: @(meeting?.WODesc)</span>
+                        </div>
+                    </ItemTemplate>
+                    </SchedulerDayView>
+                <SchedulerWeekView StartTime="@DayStart" EndTime="@DayEnd">
+                    <ItemTemplate>
+                        <div class="item-WeekView">
+                            @{
+                                var meeting = context as SchedulerAppointment;
+                            }
+                            <span>@GenerateItemHeaader(meeting)</span>
+                            <br />
+                            <span style="color:black;">@GenerateItemTextWeek(meeting)</span>
+                            <br />
+                            <span>Description: @(meeting?.WODesc)</span>
+                        </div>
+                    </ItemTemplate>
+                    </SchedulerWeekView>
                 <SchedulerMonthView ItemsPerSlot=4>
-                   
+                    <ItemTemplate>
+                        <div class="item-MonthView">
+                            @{
+                                var meeting = context as SchedulerAppointment;
+                            }
+
+
+                            <span style="color:black;">@GenerateItemTextMonth(meeting)</span>
+                        </div>
+                    </ItemTemplate>
                 </SchedulerMonthView>
             </SchedulerViews>
         </TelerikScheduler>
@@ -336,8 +364,8 @@
             {
                 var newAppointment = new SchedulerAppointment(wo)
                 {
-                    Start = slot.Start,
-                    End = slot.End.AddHours(3),
+                    Start = slot.Start.AddHours(8),
+                    End = slot.Start.AddHours(11),
                     IsAllDay = slot.IsAllDay,
                     TakeDate = slot.Start
                 };
@@ -589,9 +617,19 @@
     }
     #endregion
 
-    private string GenerateItemText(SchedulerAppointment meeting)
+    private string GenerateItemTextMonth(SchedulerAppointment meeting)
     {
         return $"[{meeting?.AppointmentId}] {meeting?.AssetNo} => {(string.IsNullOrEmpty(meeting?.DepName) ? "" : meeting?.DepName + ":")} {meeting?.AssignedPerson}";
+    }
+
+    private string GenerateItemTextWeek(SchedulerAppointment meeting)
+    {
+        return $"{(string.IsNullOrEmpty(meeting?.DepName) ? "" : meeting?.DepName + ":")} {meeting?.AssignedPerson}";
+    }
+
+    private string GenerateItemHeaader(SchedulerAppointment meeting)
+    {
+        return $"[{meeting?.AppointmentId}] {meeting?.AssetNo}";
     }
 
     private MarkupString RenderStatesStyle(List<WorkOrder> orders)
