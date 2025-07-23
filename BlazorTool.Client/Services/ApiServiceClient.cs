@@ -861,7 +861,7 @@ namespace BlazorTool.Client.Services
                 .ToList();
         }
 
-        public async Task<bool> AddNewWODict(string name, int listType, bool isDefault = false, int machineCategoryId = 0)
+        public async Task<bool> AddNewWODict(string name, int listType, bool isDefault = false, int? machineCategoryId = null)
         {
             if (string.IsNullOrEmpty(name) || listType < 1 || listType > 5) return false;
             Dict newDict = new Dict
@@ -874,10 +874,10 @@ namespace BlazorTool.Client.Services
             };
             if (_dictCache.Any(d=>d.Name == name && d.ListType == listType && d.MachineCategoryID == machineCategoryId))
             {
-                Console.WriteLine($"[{_userState.UserName}] = = = = = = Dictionary with name '{name}' and ListType {listType} already exists.");
                 return false;
             }
             _dictCache.Add(newDict); 
+            Console.WriteLine($"[{_userState.UserName}] = = = = = = Dictionary with name '{name}' and ListType {listType} added to cache.");
             return true;
            //TODO SAVE return await PostSingleAsync<Dict, Dict>("api/v1/wo/adddict", newDict) is { IsValid: true, Data: { } };
         }

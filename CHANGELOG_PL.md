@@ -1,18 +1,17 @@
 ## 2025-07-22
-	### Dodano
+## Dodano
 - **Widok osi czasu harmonogramu (Timeline View):** Wprowadzono nowy widok osi czasu dla harmonogramu, umożliwiający poziome wyświetlanie spotkań.
 - **Dynamiczne ustawienia widoku osi czasu:** Dodano elementy sterujące interfejsu użytkownika do dynamicznej regulacji `Szerokości kolumn` (Column Width), `Czasu trwania slotu` (Slot Duration) i `Podziałów slotów` (Slot Divisions) dla widoku osi czasu, zapewniając większą elastyczność w wyświetlaniu interwałów czasowych.
-- **Dostosowanie formatu czasu:** Zaimplementowano niestandardowy format czasu dla nagłówków kolumn widoku osi czasu, wyświetlający teraz tylko godzinę (0-24) dla bardziej zwięzłego widoku.
 - **Komponent elementu harmonogramu:** Wprowadzono komponent `SchedulerItem` do ponownego użycia w celu standaryzacji renderowania spotkań w różnych widokach harmonogramu.
 - **Wskaźnik ładowania harmonogramu:** Dodano wskaźnik ładowania do harmonogramu, aby zapewnić wizualną informację zwrotną podczas pobierania danych i procesów autoryzacji.
 
-	### Zmieniono
+## Zmieniono
 - **Logika grupowania harmonogramu:** Rozwiązano problem `KeyNotFoundException` w grupowaniu widoku osi czasu, zapewniając prawidłowe odwołanie do pola zasobu (`AssignedPerson`) w `SchedulerGroupSettings`.
 - **Ulepszenia interfejsu użytkownika harmonogramu:** Zastosowano niestandardowe style do elementów harmonogramu i komórek dnia w widokach Miesiąc, Dzień i Tydzień w celu poprawy wyglądu wizualnego.
 - **Refaktoryzacja zarządzania pamięcią podręczną:** Zrefaktoryzowano wewnętrzne zarządzanie pamięcią podręczną dla spotkań, co prowadzi do bardziej wydajnej obsługi danych i płynniejszych aktualizacji interfejsu użytkownika w harmonogramie.
 - **Zmiana nazwy metody usługi spotkań:** Zmieniono nazwę metody `CloseAppointment` na `RemoveAppointment` w `AppointmentService` dla jaśniejszej semantyki.
 
-	### Naprawiono
+## Naprawiono
 - `KeyNotFoundException`: Rozwiązano problem `KeyNotFoundException` występujący podczas przełączania na widok osi czasu Telerik Scheduler, w szczególności podczas grupowania według przypisanych osób.
 
 ## 2025-07-21

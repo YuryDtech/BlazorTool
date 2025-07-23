@@ -9,9 +9,16 @@
             <span class="item-assignee">=> @Item.DepName: @Item.AssignedPerson</span>
         </div>
     }
+    else if(View == SchedulerView.Timeline)
+    {
+        <div class="scheduler-item-month">
+            <span class="item-asset">[@Item.AppointmentId] @Item.AssetNo</span>
+            <span class="item-assignee">=> @Item.DepName: @Item.AssignedPerson</span>
+        </div>
+    }
     else // Week or Day view
     {
-        <div class="scheduler-item-details">
+         <div class="scheduler-item-details">
             <div class="item-header">[@Item.AppointmentId] @Item.AssetNo</div>
             <div class="item-body">
                 @if (!string.IsNullOrEmpty(Item.DepName))

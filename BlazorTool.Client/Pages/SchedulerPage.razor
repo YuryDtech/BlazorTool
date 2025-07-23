@@ -138,8 +138,7 @@
                     </ItemTemplate>
                 </SchedulerMonthView>
                 <SchedulerTimelineView NumberOfDays="@numberOfDays" StartTime="@DayStart" EndTime="@DayEnd" 
-                    ColumnWidth="@columnWidth" SlotDivisions="@slotDivisions" SlotDuration="@slotDuration">
-                    
+                    ColumnWidth="@columnWidth" SlotDivisions="@slotDivisions" SlotDuration="@slotDuration">                    
                     <ItemTemplate>
                         <SchedulerItem Item="@(context as SchedulerAppointment)" View="@SchedulerView.Timeline" />
                     </ItemTemplate>
@@ -358,9 +357,6 @@
         {
             PersonResources.Insert(0, Person.NotAssigned);
         }
-        Console.WriteLine($"--- DisplayAppointments: PersonResources after update. Count: {PersonResources.Count}");
-        Console.WriteLine($"--- DisplayAppointments: PersonResources names: {string.Join(", ", PersonResources.Select(p => p.Name))}");
-        Console.WriteLine($"--- DisplayAppointments: Appointments AssignedPerson values: {string.Join(", ", Appointments.Select(a => a.AssignedPerson).Distinct())}");
     }
 
     /// <summary>
@@ -539,7 +535,7 @@
             _allAppointments.RemoveAll(a => a.AppointmentId == delAppt.AppointmentId);
             await LoadData();
             SchedulerRef?.Rebind();
-                       
+
         }
     }
 
@@ -553,7 +549,8 @@
     }
 
     //when order window closed
-    void RefreshData(SchedulerAppointment editedAppointment)
+    //On create, Update
+    async Task RefreshData(SchedulerAppointment editedAppointment)
     {
         if (editedAppointment == null)//was removed
         {
@@ -566,11 +563,14 @@
             {
                 _allAppointments[index] = editedAppointment;
             }
+            else
+                _allAppointments.Add(editedAppointment);
         }
         customEditFormShown = false;
         isOrderCardOpen = false;
-        DisplayAppointments();
-        SchedulerRef?.Rebind();
+        await LoadData();
+        //DisplayAppointments();
+        SchedulerRef?.Rebind();        
     }
 
     void EditHandler(SchedulerEditEventArgs args)
