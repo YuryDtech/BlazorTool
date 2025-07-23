@@ -1,0 +1,80 @@
+@using BlazorTool.Client.Models
+@using BlazorTool.Client.Pages
+@using Telerik.Blazor.Components.Scheduler
+
+<div class="summary-table-container">
+    <table class="summary-table">
+        <thead>
+            <tr>
+                <th>Person</th>
+                <th>Total</th>
+                @foreach (var status in Statuses)
+                {
+                    <th>@status.Text</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var summary in SummaryData)
+            {
+                <tr>
+                    <td>@summary.PersonName</td>
+                    <td>@summary.TotalCount</td>
+                    @foreach (var status in Statuses)
+                    {
+                        <td class="summary-cell-@GetColorName(status.Value.ToString())">
+                            @summary.StatusCounts.GetValueOrDefault(status.Value.ToString(), 0)
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public List<SchedulerAppointment> Appointments { get; set; } = new();
+
+    [Parameter]
+    public List<SchedulerPage.Resource> Statuses { get; set; } = new();
+
+    private List<PersonWorkOrderSummary> SummaryData { get; set; } = new();
+
+    protected override void OnParametersSet()
+    {
+        GenerateSummaryData();
+    }
+
+    private void GenerateSummaryData()
+    {
+        if (Appointments == null || !Appointments.Any())
+        {
+            SummaryData.Clear();
+            return;
+        }
+
+        var personGroups = Appointments.GroupBy(a => a.AssignedPerson);
+
+        var newSummaryData = new List<PersonWorkOrderSummary>();
+
+        foreach (var group in personGroups)
+        {
+            var summary = new PersonWorkOrderSummary
+            {
+                PersonName = string.IsNullOrEmpty(group.Key) ? "Not assigned" : group.Key,
+                TotalCount = group.Count(),
+                StatusCounts = group.GroupBy(a => a.StateColor)
+                                    .ToDictionary(g => g.Key, g => g.Count())
+            };
+            newSummaryData.Add(summary);
+        }
+
+        SummaryData = newSummaryData.OrderBy(s => s.PersonName).ToList();
+    }
+
+    private string GetColorName(string colorValue)
+    {
+        return colorValue?.ToLowerInvariant() ?? "default";
+    }
+}

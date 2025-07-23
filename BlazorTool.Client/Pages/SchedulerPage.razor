@@ -110,8 +110,7 @@
                           TitleField="Title"
                           DescriptionField="Description"
                           IsAllDayField="IsAllDay"
-                          Height="80vh"
-                          >
+                          Height="@(CurrentView == SchedulerView.Timeline ? "60hv" : "80hv")">
             <SchedulerSettings>
                 <SchedulerGroupSettings Orientation="SchedulerGroupOrientation.Vertical" Resources="@(CurrentView == SchedulerView.Timeline ? new List<string> { "AssignedPerson" } : null)" />
             </SchedulerSettings>
@@ -145,6 +144,11 @@
                 </SchedulerTimelineView>
             </SchedulerViews>
         </TelerikScheduler>
+
+        @if (CurrentView == SchedulerView.Timeline)
+        {
+            <SchedulerSummary Appointments="@Appointments" Statuses="@statuses" />
+        }
     </div>
 
     <div style="flex-basis: 33%; flex-shrink:1; flex-grow:0; min-width:600px">
@@ -375,14 +379,24 @@
         if (args.DestinationComponentId == "Scheduler1" && SchedulerRef != null)
         {
             var slot = SchedulerRef.GetTimeSlotFromDropIndex(args.DestinationIndex);
+            object resourceValue = Person.NotAssigned.Name; // Default to "Not assigned"
+
+            // slot.Resources is a List<KeyValuePair<string, object>>, not a Dictionary. Use LINQ to find the resource.
+            var resourceKvp = slot.Resources.FirstOrDefault(kvp => kvp.Key == "AssignedPerson");
+            if (resourceKvp.Key != null) // Check if a resource was found
+            {
+                resourceValue = resourceKvp.Value;
+            }
+
             foreach (var wo in args.Items)
             {
                 var newAppointment = new SchedulerAppointment(wo)
                 {
-                    Start = slot.Start.AddHours(8),
-                    End = slot.Start.AddHours(11),
+                    Start = slot.Start,
+                    End = slot.Start.AddHours(8),
                     IsAllDay = slot.IsAllDay,
-                    TakeDate = slot.Start
+                    TakeDate = slot.Start,
+                    AssignedPerson = resourceValue as string ?? Person.NotAssigned.Name
                 };
 
                 var result = await ApptService.UpdateAppointment(newAppointment);

@@ -73,14 +73,12 @@ namespace BlazorTool.Client.Services
             if (existingAppointment != null)
             {
                 // Update existing appointment
-                existingAppointment.Title = appointment.Title;
-                existingAppointment.Start = appointment.Start;
-                existingAppointment.End = appointment.End;
-                existingAppointment.IsAllDay = appointment.IsAllDay;
-                existingAppointment.Description = appointment.Description;
-                existingAppointment.DepName = appointment.DepName;
-                
-                var workOrderToUpdate = (WorkOrder)existingAppointment;
+                if (!Object.ReferenceEquals(existingAppointment, appointment))
+                {
+                    existingAppointment = appointment.ShallowCopy();
+                }
+
+                var workOrderToUpdate = (WorkOrder)appointment;
                 var updateResult = await _apiServiceClient.UpdateWorkOrderAsync(workOrderToUpdate);
 
                 if (!updateResult.IsValid)

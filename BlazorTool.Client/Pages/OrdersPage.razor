@@ -71,6 +71,18 @@
                          ShowClearButton="false" Filterable="true">
         </TelerikComboBox>
     </div>
+    <div>
+            <label style="display: block;">Assigned persons</label>
+        <TelerikMultiSelect Data="@personNames"
+                            @bind-Value="@selectedPersons"
+                            Placeholder="Select persons..."
+                            AutoClose="false"
+                            OnChange="@OnPersonChanged"
+                            ShowClearButton="true"
+                                Width="300px"
+                                TagMode="@TagMode">
+        </TelerikMultiSelect>
+    </div>
 </div>
 }
 
@@ -145,6 +157,9 @@ else
     List<string?> deviceCategories = new List<string?>();
     List<string?> deviceTypes = new List<string?>();
     List<string>? workOrderStates = new List<string>(){"All"};
+    private List<Person> allPersons = new List<Person>();
+    private List<string> personNames = new List<string>();
+    private List<string> selectedPersons = new List<string>();
     public TelerikGrid<WorkOrderView> GridRef { get; set; }
     public CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor();
     private bool isOrderCardOpen = false;
@@ -164,6 +179,8 @@ else
         isDevicesLoading = true;
         StateHasChanged();
         dicts = await apiService.GetWODictionaries(1);
+        allPersons = await apiService.GetAllPersons();
+        personNames = allPersons.Select(p => p.Name).ToList();
         if (!UserState.IsAuthenticated)
         {
             Navigation.NavigateTo("/login");
@@ -234,7 +251,10 @@ else
         var orders = await apiService.GetWorkOrdersCachedAsync(devices);
         var statesFromOrders = orders.Select(o => o.WOState).Distinct().ToList();
         workOrderStates = workOrderStates.Union(statesFromOrders).ToList();
-        var result = orders.Where(o => o.WOState == selectedState || selectedState == "All" || string.IsNullOrWhiteSpace(selectedState)).ToList();
+        var result = orders.Where(o => 
+            (o.WOState == selectedState || selectedState == "All" || string.IsNullOrWhiteSpace(selectedState)) &&
+            (selectedPersons.Count == 0 || selectedPersons.Contains(o.AssignedPerson))
+        ).ToList();
         selectedDeviceIds = result.Select(d => d.MachineID).Distinct().ToList();
         return result;
     }
@@ -295,6 +315,11 @@ else
     {
         if ( string.IsNullOrEmpty(selectedState))
             selectedState = "All";
+        await LoadData();
+    }
+
+    async Task OnPersonChanged()
+    {
         await LoadData();
     }
 
