@@ -17,7 +17,7 @@
                     <span class="user-name">Hello, @UserState.UserName!</span>
                     <button class="btn btn-link logout-button" @onclick="Logout">Logout</button>
                 }
-                <a href="changelog">Version @ThisAssembly.AssemblyInformationalVersion</a>
+                <a href="changelog">@FormattedVersion</a>
             </div>
 
 
@@ -34,6 +34,33 @@
     </div>
 </TelerikRootComponent>
 @code{
+    private string FormattedVersion { get; set; } = "Version";
+
+    protected override void OnInitialized()
+    {
+        var versionString = ThisAssembly.AssemblyInformationalVersion;
+        var parts = versionString.Split('+');
+        var versionNumber = parts[0];
+        var buildTime = string.Empty;
+
+        if (parts.Length > 1 && parts[1].StartsWith("buildTime="))
+        {
+            var buildTimeRaw = parts[1].Substring("buildTime=".Length);
+            if (System.DateTime.TryParse(buildTimeRaw.Replace('_', ' '), out var parsedTime))
+            {
+                buildTime = parsedTime.ToString("yyyy-MM-dd HH:mm:ss");
+                FormattedVersion = $"Version {versionNumber} ({buildTime})";
+            }
+            else
+            {
+                FormattedVersion = $"Version {versionNumber}";
+            }
+        }
+        else
+        {
+            FormattedVersion = $"Version {versionNumber}";
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         await UserState.InitializationTask;

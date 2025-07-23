@@ -1,10 +1,6 @@
 ﻿{
-  "version": "1.1-alfa",
-  "versionHeightOffset": 0,
-  "cloudBuild": {
-    "buildNumber": {
-      "enabled": true,
-      "format": "{version}-{date:yyyyMMdd}.{height}"
-    }
-  }
+  "version": "1.2-alfa",
+  "buildMetadata": [
+    "buildTime={now:yyyy-MM-dd_HH:mm:ss}"
+  ]
 }
