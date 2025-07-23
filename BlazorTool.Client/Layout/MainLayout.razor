@@ -3,6 +3,7 @@
 @inject UserState UserState
 @inject NavigationManager Navigation
 @inject ApiServiceClient ApiClient
+@inject HttpClient Http
 
 <TelerikRootComponent>
     <div class="page">
@@ -17,7 +18,7 @@
                     <span class="user-name">Hello, @UserState.UserName!</span>
                     <button class="btn btn-link logout-button" @onclick="Logout">Logout</button>
                 }
-                <a href="changelog">@FormattedVersion</a>
+                <a href="changelog">@FormattedVersion (@buildDate)</a>
             </div>
 
 
@@ -35,6 +36,7 @@
 </TelerikRootComponent>
 @code{
     private string FormattedVersion { get; set; } = "Version";
+    private string buildDate = "загрузка...";
 
     protected override void OnInitialized()
     {
@@ -63,6 +65,15 @@
     }
     protected override async Task OnInitializedAsync()
     {
+        try
+        {
+            buildDate = await Http.GetStringAsync("buildinfo.txt");
+        }
+        catch (Exception)
+        {
+            buildDate = "не удалось загрузить";
+        }
+
         await UserState.InitializationTask;
 
         // If user state is not authenticated locally, redirect to login

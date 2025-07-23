@@ -21,4 +21,13 @@
         <PackageReference Include="Telerik.UI.for.Blazor" Version="6.2.0" />
   </ItemGroup>
 
+  <Target Name="WriteBuildInfo" BeforeTargets="Build">
+    <PropertyGroup>
+      <BuildDate>$([System.DateTime]::Now.ToString('dd.MM.yyyy HH:mm:ss'))</BuildDate>
+      <BuildInfoFile>$(MSBuildProjectDirectory)/wwwroot/buildinfo.txt</BuildInfoFile>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(BuildInfoFile)" Lines="$(BuildDate)" Overwrite="true" Encoding="UTF-8" />
+    <Message Text="Дата сборки $(BuildDate) записана в $(BuildInfoFile)" Importance="high" />
+  </Target>
+
 </Project>
