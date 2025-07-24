@@ -50,7 +50,7 @@ builder.Services.AddScoped<ApiServiceClient>(sp =>
     new ApiServiceClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ServerApi"), 
     sp.GetRequiredService<UserState>()));
 
-builder.Services.AddSingleton<AppConfiguration>();
+//builder.Services.AddSingleton<AppConfiguration>();
 
 builder.Services.AddScoped<AppointmentService>();
 

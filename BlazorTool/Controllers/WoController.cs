@@ -1,9 +1,9 @@
-﻿using BlazorTool.Client.Models; // Added for ApiResponse
+﻿using BlazorTool.Client.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Diagnostics;
-using System.Net.Http; // Added
-using System.Net.Http.Json; // Added
+using System.Net.Http;
+using System.Net.Http.Json; 
 
 namespace BlazorTool.Controllers
 {
@@ -11,11 +11,11 @@ namespace BlazorTool.Controllers
     [ApiController]
     public class WoController : ControllerBase
     {
-        private readonly IHttpClientFactory _httpClientFactory; // Changed
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public WoController(IHttpClientFactory httpClientFactory) // Changed
+        public WoController(IHttpClientFactory httpClientFactory)
         {
-            _httpClientFactory = httpClientFactory; // Changed
+            _httpClientFactory = httpClientFactory;
         }
 
         [HttpGet("getlist")]
@@ -23,7 +23,7 @@ namespace BlazorTool.Controllers
         {
             try
             {
-                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient"); // Get named client
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
 
                 var qp = new List<string>();
                 if (q.DeviceID.HasValue) qp.Add($"DeviceID={q.DeviceID.Value}");
@@ -39,7 +39,7 @@ namespace BlazorTool.Controllers
 
                 var url = "wo/getlist?" + string.Join("&", qp);
 
-                var response = await client.GetAsync(url); // Use the named client
+                var response = await client.GetAsync(url); 
                 response.EnsureSuccessStatusCode();
 
                 var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<WorkOrder>>();

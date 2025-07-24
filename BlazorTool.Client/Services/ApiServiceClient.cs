@@ -25,12 +25,10 @@ namespace BlazorTool.Client.Services
         private List<Device> _devicesCache = new List<Device>();
         private readonly UserState _userState;
         private List<Dict> _dictCache = new List<Dict>();
-        public string BaseAddress;
         public ApiServiceClient(HttpClient http, UserState userState)
         {
             _http = http;
             _userState = userState;
-            BaseAddress = _http.BaseAddress?.ToString() ?? string.Empty;
         }
 
         
@@ -976,7 +974,7 @@ namespace BlazorTool.Client.Services
             }
         }
 
-        public async Task<(bool, string)> CheckApiAddress(string address)
+        public async Task<(bool, string)> CheckApiAddressAsync(string address)
         {
             var url = "settings/check";
             var content = new FormUrlEncodedContent(new[]
@@ -1006,7 +1004,7 @@ namespace BlazorTool.Client.Services
             }
         }
         
-        public async Task<string> GetSettingAsync(string key, string user)
+        public async Task<string> LoadSettingAsync(string key, string user)
         {
             var url = $"settings/get?key={Uri.EscapeDataString(key)}&user={Uri.EscapeDataString(user)}";
             try

@@ -3,7 +3,6 @@
 @inject ApiServiceClient apiService
 @inject NavigationManager Navigation
 @inject UserState UserState
-@inject AppConfiguration AppConfig
 
 <h3>Settings</h3>
 <div class="container">
@@ -23,9 +22,12 @@
     <div class="row mb-3">
         <div class="col-md-6">
             <label for="language" class="form-label">Language</label>
-            <select id="language" class="form-select" @bind="SelectedLanguage">
+            <select id="language" class="form-select" @bind="@SelectedLanguage">
                 <option value="pl-Pl">Polski</option>
                 <option value="en-US">English</option>
+                <option value="fr-Fr">Français</option>
+                <option value="ru-Ru">Русский</option>
+                {!-- Add more languages as needed --}
             </select>
         </div>
     </div>
@@ -73,6 +75,7 @@
 
     protected async Task<bool> TestApiAddress()
     {
+        StatusMessage = string.Empty;
         if (string.IsNullOrWhiteSpace(ApiAddress))
         {
             StatusMessage = "API Address cannot be empty.";
@@ -80,10 +83,25 @@
             return false;
         }
 
-        var result = await apiService.CheckApiAddressAsync(ApiAddress);
-        StatusMessage = result.Message;
-        StatusMessageClass = result.Success ? "text-success" : "text-danger";
-        return result.Success;
+        try
+        {
+            var response = await apiService.CheckApiAddressAsync(ApiAddress);
+            if (!response.Item1)
+            {
+                StatusMessage = response.Item2;
+                StatusMessageClass = "text-danger";
+                return false;
+            }
+            StatusMessage = $"Successfully connected to API at '{ApiAddress}'.";
+            StatusMessageClass = "text-success";
+            return true;
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error testing API address: {ex.Message}";
+            StatusMessageClass = "text-danger";
+            return false;
+        }
     }
 
     protected async Task SaveSettingsAsync()
@@ -109,10 +127,6 @@
             {
                 StatusMessage = "Settings saved successfully!";
                 StatusMessageClass = "text-success";
-                if (isAdmin)
-                {
-                    await AppConfig.LoadApiAddressAsync(); // Notify the app of the change
-                }
             }
             else
             {
