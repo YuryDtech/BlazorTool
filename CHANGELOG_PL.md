@@ -1,3 +1,14 @@
+## 2025-07-23
+### Dodano
+- **Wyświetlanie Daty Kompilacji**: Wprowadzono mechanizm wyświetlania daty kompilacji aplikacji w głównym layoucie, co dostarcza jasnej informacji o wersji.
+- **Tabela Podsumowująca w Harmonogramie**: Na stronie Harmonogramu (w widoku osi czasu) dodano tabelę podsumowującą, która pokazuje liczbę zleceń pracy dla każdej osoby z podziałem na statusy. Umożliwia to szybki przegląd obciążenia każdego członka zespołu.
+- **Filtrowanie na Stronie Zleceń**: Wprowadzono nowy filtr "Przypisane osoby" na stronie Zleceń, umożliwiając użytkownikom zawężenie listy zleceń do konkretnych członków zespołu.
+
+### Naprawiono
+- **Przeciąganie i Upuszczanie w Harmonogramie**: Naprawiono błąd, który powodował, że przeciągnięcie zlecenia z siatki na oś czasu w Harmonogramie nie przypisywało poprawnie zlecenia do docelowej osoby (zasobu).
+- **Zachowanie Filtra w Interfejsie Użytkownika**: Filtr "Przypisane osoby" na stronie Zleceń teraz natychmiast aktualizuje listę po jego wyczyszczeniu za pomocą przycisku "Wyczyść".
+- **Wyrównanie Etykiety Filtra**: Poprawiono wyrównanie etykiety filtra "Przypisane osoby" na stronie Zleceń, aby zapewnić jej prawidłowe umiejscowienie nad komponentem multiselect, zgodnie z pozostałymi filtrami.
+
 ## 2025-07-22
 ## Dodano
 - **Widok osi czasu harmonogramu (Timeline View):** Wprowadzono nowy widok osi czasu dla harmonogramu, umożliwiający poziome wyświetlanie spotkań.

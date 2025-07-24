@@ -1,3 +1,14 @@
+## 2025-07-23
+### Added
+- **Build Date Display**: Implemented a mechanism to display the application's build date in the main layout, providing clear versioning information.
+- **Scheduler Summary Table**: Added a summary table on the Scheduler page (Timeline view) that shows work order counts per person, broken down by status. This provides an at-a-glance overview of each team member's workload.
+- **Orders Page Filtering**: Introduced a new filter for "Assigned persons" on the Orders page, allowing users to narrow down the work order list by specific team members.
+
+### Fixed
+- **Scheduler Drag & Drop**: Corrected an issue where dragging a work order from the grid to the Scheduler's timeline did not correctly assign the appointment to the target person (resource).
+- **Filter UI Behavior**: The "Assigned persons" filter on the Orders page now updates the list instantly when cleared via the "Clear" button.
+- **Filter Label Alignment**: Fixed the alignment of the "Assigned persons" filter label on the Orders page to ensure it is positioned correctly above the multiselect component, consistent with other filters.
+
 ## 2025-07-22
 ## Added
 - **Scheduler Timeline View:** Introduced a new Timeline view for the scheduler, allowing for horizontal display of appointments.

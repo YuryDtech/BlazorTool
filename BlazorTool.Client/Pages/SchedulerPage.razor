@@ -16,7 +16,7 @@
 @inject UserState UserState
 
 @cellStyles
-<h3>Scheduler</h3>
+
 <div class="filter-controls-row">
     <div style="flex-basis: 66%; flex-shrink:1; flex-grow:0; border-right: outset; display: flex; align-items: top; gap: 1rem;">
         <div style="max-width: 400px;">
@@ -379,13 +379,17 @@
         if (args.DestinationComponentId == "Scheduler1" && SchedulerRef != null)
         {
             var slot = SchedulerRef.GetTimeSlotFromDropIndex(args.DestinationIndex);
+            bool isTimelineView = CurrentView == SchedulerView.Timeline;
             object resourceValue = Person.NotAssigned.Name; // Default to "Not assigned"
-
-            // slot.Resources is a List<KeyValuePair<string, object>>, not a Dictionary. Use LINQ to find the resource.
-            var resourceKvp = slot.Resources.FirstOrDefault(kvp => kvp.Key == "AssignedPerson");
-            if (resourceKvp.Key != null) // Check if a resource was found
+            if (isTimelineView)
             {
-                resourceValue = resourceKvp.Value;
+
+                // slot.Resources is a List<KeyValuePair<string, object>>, not a Dictionary. Use LINQ to find the resource.
+                var resourceKvp = slot.Resources.FirstOrDefault(kvp => kvp.Key == "AssignedPerson");
+                if (resourceKvp.Key != null) // Check if a resource was found
+                {
+                    resourceValue = resourceKvp.Value;
+                }                
             }
 
             foreach (var wo in args.Items)
@@ -396,7 +400,7 @@
                     End = slot.Start.AddHours(8),
                     IsAllDay = slot.IsAllDay,
                     TakeDate = slot.Start,
-                    AssignedPerson = resourceValue as string ?? Person.NotAssigned.Name
+                    AssignedPerson = isTimelineView ? (resourceValue as string ?? Person.NotAssigned.Name) : wo.AssignedPerson
                 };
 
                 var result = await ApptService.UpdateAppointment(newAppointment);

@@ -98,6 +98,7 @@ else
                  RowDraggable="false"
                  @ref="@GridRef"
                  Sortable="true"
+                 Resizable="true"
                  Pageable="true"
                  PageSize="20"
                  OnRowRender="@OnRowRenderHandler"
@@ -107,18 +108,18 @@ else
         </GridSettings>
         <GridColumns>
             <GridColumn Field="@nameof(WorkOrderView.WorkOrderID)" Editable="false" Visible="false"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.DepName)" Title="DepName"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.DeviceName)" Title="Device"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.DeviceCategory)"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.WOReason)"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.ModPerson)"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.WOState)"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.WOLevel)"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.AssignedPerson)" Title="AssignedPerson"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.AddDate)"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.StartDate)" Title="Start Date"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.EndDate)" Title="End Date"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.CloseDate)"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.DepName)" Title="DepName" Resizable="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.DeviceName)" Title="Device" Resizable="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.DeviceCategory)" Resizable="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.WOReason)" Resizable="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.ModPerson)" Resizable="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.WOState)" Resizable="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.WOLevel)" Resizable="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.AssignedPerson)" Title="AssignedPerson" Resizable="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.AddDate)" Resizable="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.StartDate)" Title="Start Date" Resizable="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.EndDate)" Title="End Date" Resizable="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.CloseDate)" Resizable="true"></GridColumn>
         </GridColumns>
     </TelerikGrid>
 

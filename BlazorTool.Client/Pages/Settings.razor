@@ -50,7 +50,7 @@
 
     protected string? StatusMessage { get; set; }
     protected string? StatusMessageClass { get; set; } // e.g., "text-success" or "text-danger"
-    string currentUser = "testUser"; // Placeholder for current user, replace with actual user logic"
+    string currentUser = "test User"; // Placeholder for current user, replace with actual user logic"
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,9 +58,9 @@
         {
             Navigation.NavigateTo("/login");
         }
-        // TODO: Load saved settings (e.g., from localStorage or a service)
+        currentUser = UserState.UserName ?? "unknown user";
         await LoadSettingsAsync();
-        await InvokeAsync(StateHasChanged); // Ensure UI updates if settings are loaded asynchronously
+        await InvokeAsync(StateHasChanged);
     }
 
     protected async Task LoadSettingsAsync()
