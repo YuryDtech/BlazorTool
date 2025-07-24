@@ -3,7 +3,7 @@
 @inject UserState UserState
 @inject NavigationManager Navigation
 @inject ApiServiceClient ApiClient
-@inject HttpClient Http
+@inject IHttpClientFactory HttpClientFactory
 
 <TelerikRootComponent>
     <div class="page">
@@ -63,15 +63,17 @@
             FormattedVersion = $"Version {versionNumber}";
         }
     }
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // buildDate = await Http.GetStringAsync("buildinfo.txt");
+            var Http = HttpClientFactory.CreateClient("ServerHost");
+            buildDate = await Http.GetStringAsync("buildinfo.txt");
         }
         catch (Exception)
         {
-            // buildDate = "не удалось загрузить";
+            buildDate = "не удалось загрузить";
         }
 
         await UserState.InitializationTask;

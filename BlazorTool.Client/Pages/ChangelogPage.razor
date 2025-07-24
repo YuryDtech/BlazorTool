@@ -1,5 +1,5 @@
 ﻿@page "/changelog"
-@inject HttpClient Http
+@inject IHttpClientFactory HttpClientFactory
 @using Markdig
 
 <h3>Changelog Page</h3>
@@ -34,6 +34,7 @@ else
     
         try
         {
+            var Http = HttpClientFactory.CreateClient("ServerHost");
             var markdownEn = await Http.GetStringAsync(changelogUrl);
             changelogContent = Markdig.Markdown.ToHtml(markdownEn ?? "");
 

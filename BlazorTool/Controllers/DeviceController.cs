@@ -37,7 +37,7 @@ namespace BlazorTool.Controllers
                     foreach (var id in machineIDs)
                         qp.Add($"MachineIDs={id}");
 
-                var url = "api/v1/device/getlist" + (qp.Count > 0 ? "?" + string.Join("&", qp) : "");
+                var url = "device/getlist" + (qp.Count > 0 ? "?" + string.Join("&", qp) : "");
                 
                 var response = await client.GetAsync(url); // Use the named client
                 response.EnsureSuccessStatusCode();

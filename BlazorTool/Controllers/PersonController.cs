@@ -49,7 +49,7 @@ namespace BlazorTool.Controllers
 
                 // Directly call the external API using the basicAuthClient
                 //var externalApiResponse = await basicAuthClient.GetAsync("api/v1/other/getuserslist");
-                var wrapper = await basicAuthClient.GetFromJsonAsync<ApiResponse<Person>>("api/v1/other/getuserslist");
+                var wrapper = await basicAuthClient.GetFromJsonAsync<ApiResponse<Person>>("other/getuserslist");
                 //externalApiResponse.EnsureSuccessStatusCode(); // Throws an exception if the HTTP response status is an error code.
 
                 return Ok(wrapper);

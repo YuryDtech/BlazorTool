@@ -1,13 +1,14 @@
+using Blazored.LocalStorage;
 using BlazorTool.Client.Models;
 using BlazorTool.Client.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Diagnostics;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Diagnostics;
 using System.Text.Json;
-using Microsoft.Extensions.Configuration;
-using Blazored.LocalStorage;
-using System.Net.Http;
 
 
 
@@ -22,6 +23,18 @@ builder.Services.AddScoped<AuthHeaderHandler>(sp =>
 });
 
 var serverBaseUrl = builder.Configuration["InternalApiBaseUrl"] ?? builder.HostEnvironment.BaseAddress;
+
+builder.Services.AddHttpClient("ServerHost", client =>
+{
+    // BaseAddress for the server, where the Blazor app is hosted
+        var uriBuilder = new UriBuilder(serverBaseUrl);
+        uriBuilder.Path = string.Empty; // Remove the path part
+        uriBuilder.Query = string.Empty; // Remove the query part
+
+    client.BaseAddress = uriBuilder.Uri;
+})
+.AddHttpMessageHandler<AuthHeaderHandler>();
+
 if (serverBaseUrl.Contains("localhost") && !serverBaseUrl.Contains("/api"))
 {
     serverBaseUrl += "api/v1/";

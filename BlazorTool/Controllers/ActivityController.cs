@@ -25,7 +25,7 @@ namespace BlazorTool.Controllers
             try
             {
                 var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
-                var request = new HttpRequestMessage(HttpMethod.Get, $"api/v1/act/getlist?woID={woID}&lang={lang}");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"act/getlist?woID={woID}&lang={lang}");
 
                 var response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode();

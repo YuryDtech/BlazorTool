@@ -55,7 +55,7 @@ builder.Services.AddHttpClient("InternalApiClient", client =>
 });
 
 builder.Services.AddScoped<ApiServiceClient>(sp =>
-    new ApiServiceClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("InternalApiClient"), // Changed to InternalApiClient
+    new ApiServiceClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("InternalApiClient"),
     sp.GetRequiredService<UserState>()));
 
 

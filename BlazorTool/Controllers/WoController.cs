@@ -37,7 +37,7 @@ namespace BlazorTool.Controllers
                 if (q.IsPlan.HasValue) qp.Add($"IsPlan={q.IsPlan.Value}");
                 if (q.IsWithPerson.HasValue) qp.Add($"IsWithPerson={q.IsWithPerson.Value}");
 
-                var url = "api/v1/wo/getlist?" + string.Join("&", qp);
+                var url = "wo/getlist?" + string.Join("&", qp);
 
                 var response = await client.GetAsync(url); // Use the named client
                 response.EnsureSuccessStatusCode();
@@ -75,7 +75,7 @@ namespace BlazorTool.Controllers
                 var qp = new List<string>();
                 qp.Add($"PersonID={q.PersonID}");
                 qp.Add($"Lang={q.Lang}");
-                var url = "api/v1/wo/getdict?" + string.Join("&", qp);
+                var url = "wo/getdict?" + string.Join("&", qp);
 
                 var response = await client.GetAsync(url); // Use the named client
                 response.EnsureSuccessStatusCode();
@@ -111,7 +111,7 @@ namespace BlazorTool.Controllers
             try
             {
                 var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient"); // Get named client
-                string url = $"api/v1/wo/get?WorkOrderID={WorkOrderID}";
+                string url = $"wo/get?WorkOrderID={WorkOrderID}";
                 var response = await client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
                 var apiResponse = await response.Content.ReadFromJsonAsync<SingleResponse<WorkOrderInfo>>();
@@ -145,7 +145,7 @@ namespace BlazorTool.Controllers
             try
             {
                 var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
-                var url = "api/v1/wo/create";
+                var url = "wo/create";
 
                 var response = await client.PostAsJsonAsync(url, createRequest);
                 response.EnsureSuccessStatusCode();
@@ -192,7 +192,7 @@ namespace BlazorTool.Controllers
             try
             {
                 var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
-                var url = "api/v1/wo/close";
+                var url = "wo/close";
 
                 var response = await client.PutAsJsonAsync(url, request);
 
@@ -249,7 +249,7 @@ namespace BlazorTool.Controllers
             try
             {
                 var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
-                var url = "api/v1/wo/update";
+                var url = "wo/update";
 
                 var response = await client.PutAsJsonAsync(url, request);
 
