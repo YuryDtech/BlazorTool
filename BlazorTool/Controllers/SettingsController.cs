@@ -3,6 +3,7 @@ using BlazorTool.Client.Services;
 using BlazorTool.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using static System.Net.WebRequestMethods;
@@ -16,16 +17,24 @@ namespace BlazorTool.Controllers
         private readonly ApiServiceClient _apiServiceClient;
         private readonly HttpClient _http = new HttpClient();
         private const string SettingsDirectory = "Settings";
+        private readonly IWebHostEnvironment _env;
+        private readonly IConfiguration _configuration;
 
-        public SettingsController(ApiServiceClient apiServiceClient)
+        public SettingsController(ApiServiceClient apiServiceClient, IWebHostEnvironment env, IConfiguration configuration)
         {
             _apiServiceClient = apiServiceClient;
+            _env = env;
+            _configuration = configuration;
         }
 
         // GET: Settings var url = $"api/v1/settings/get?key=address}";
         [HttpGet("get")]
         public string Read(string key, string user)
         {
+            if (key == "apiAddress")
+            {
+                return _configuration["ExternalApi:BaseUrl"] ?? string.Empty;
+            }
             //read settings from server local file
             string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SettingsDirectory, user + ".json");
             var settings = new UserSettings(file);
@@ -38,15 +47,36 @@ namespace BlazorTool.Controllers
         {
             try
             {
+                if (key == "apiAddress")
+                {
+                    var appSettingsPath = Path.Combine(_env.ContentRootPath, "appsettings.json");
+                    var json = System.IO.File.ReadAllText(appSettingsPath);
+                    var jsonObj = System.Text.Json.Nodes.JsonNode.Parse(json).AsObject();
+
+                    var externalApiNode = jsonObj.ContainsKey("ExternalApi") 
+                        ? jsonObj["ExternalApi"].AsObject() 
+                        : new System.Text.Json.Nodes.JsonObject();
+                    
+                    externalApiNode["BaseUrl"] = value;
+                    jsonObj["ExternalApi"] = externalApiNode;
+
+                    var options = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
+                    System.IO.File.WriteAllText(appSettingsPath, jsonObj.ToJsonString(options));
+
+                    return true; 
+                }
+
                 string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SettingsDirectory, user + ".json");
                 var settings = new UserSettings(file);
                 settings.SetSetting(user, key, value);
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
-                return false;
+                Console.WriteLine($"Error saving setting: {ex.Message}");
+                Debug.WriteLine($"Error saving setting: {ex.Message}");
             }
+            return false;
         }
 
         [HttpPost("check")]

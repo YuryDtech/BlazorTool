@@ -4,15 +4,20 @@
 @inject NavigationManager Navigation
 @inject ApiServiceClient ApiClient
 @inject IHttpClientFactory HttpClientFactory
+@inject AppConfiguration AppConfig
+@implements IDisposable
 
 <TelerikRootComponent>
     <div class="page">
         <div class="sidebar">
             <NavMenu />
         </div>
-
+        
         <main>
             <div class="top-row px-4">
+                <span class="api-address-display">
+                    API server: @AppConfig.ApiAddress
+                </span>
                 @if(UserState.IsAuthenticated)
                 {
                     <span class="user-name">Hello, @UserState.UserName!</span>
@@ -62,6 +67,7 @@
         {
             FormattedVersion = $"Version {versionNumber}";
         }
+        AppConfig.OnChange += StateHasChanged;
     }
 
     protected override async Task OnInitializedAsync()
@@ -75,7 +81,8 @@
         {
             buildDate = "не удалось загрузить";
         }
-
+        
+        await AppConfig.InitializeAsync();
         await UserState.InitializationTask;
 
         // If user state is not authenticated locally, redirect to login
@@ -113,5 +120,10 @@
     {
         await UserState.ClearAsync();
         Navigation.NavigateTo("/login");
+    }
+
+    public void Dispose()
+    {
+        AppConfig.OnChange -= StateHasChanged;
     }
 }

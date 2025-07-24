@@ -1,53 +1,49 @@
 ﻿@page "/settings"
 @using BlazorTool.Client.Services
+@inject ApiServiceClient apiService
 @inject NavigationManager Navigation
-@inject BlazorTool.Client.Services.ApiServiceClient apiService
 @inject UserState UserState
+@inject AppConfiguration AppConfig
 
 <h3>Settings</h3>
-<p class="active">user=@UserState.UserName</p>
 <div class="container">
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="apiUrl" class="form-label">API Address</label>
-            <div class="input-group">
-                <input type="text" id="apiUrl" class="form-control" @bind="ApiAddress" />
-                <button class="btn btn-outline-secondary" type="button" @onclick="TestApiAddress">Test API Address</button>
+    @if (UserState.UserName == "MES")
+    {
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="apiUrl" class="form-label">API Address</label>
+                <div class="input-group">
+                    <input type="text" id="apiUrl" class="form-control" @bind="ApiAddress" />
+                    <button class="btn btn-outline-secondary" type="button" @onclick="TestApiAddress">Test API Address</button>
+                </div>
             </div>
         </div>
-    </div>
+    }
 
     <div class="row mb-3">
         <div class="col-md-6">
             <label for="language" class="form-label">Language</label>
-            <select id="language" class="form-select" @bind="@SelectedLanguage">
-                <option value="en-En">English</option>
+            <select id="language" class="form-select" @bind="SelectedLanguage">
                 <option value="pl-Pl">Polski</option>
-                <option value="fr-Fr">Français</option>
-                <option value="ru-Ru">Русский</option> 
-                {!-- Add more languages as needed --}
+                <option value="en-US">English</option>
             </select>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-12">
-            <button class="btn btn-primary" @onclick="SaveSettings">Save Settings</button>
-        </div>
-    </div>
-</div>
+    <button class="btn btn-primary" @onclick="SaveSettingsAsync">Save Settings</button>
 
-@if (!string.IsNullOrEmpty(StatusMessage))
-{
-    <div class="mt-3">
-        <p class="status-message @StatusMessageClass">@StatusMessage</p>
-    </div>
-}
+    @if (!string.IsNullOrEmpty(StatusMessage))
+    {
+        <div class="mt-3 @StatusMessageClass">
+            @StatusMessage
+        </div>
+    }
+</div>
 
 @code{
     protected string? ApiAddress { get; set; }
-    protected string? SelectedLanguage { get; set; } = "pl-Pl"; 
-
+    protected string? SelectedLanguage { get; set; } = "pl-Pl";
+    private bool isAdmin = false;
     protected string? StatusMessage { get; set; }
     protected string? StatusMessageClass { get; set; } // e.g., "text-success" or "text-danger"
     string currentUser = "test User"; // Placeholder for current user, replace with actual user logic"
@@ -59,91 +55,86 @@
             Navigation.NavigateTo("/login");
         }
         currentUser = UserState.UserName ?? "unknown user";
+        isAdmin = UserState.UserName == "MES";
         await LoadSettingsAsync();
         await InvokeAsync(StateHasChanged);
     }
 
     protected async Task LoadSettingsAsync()
     {
-        ApiAddress = await LoadSettingAsync("apiAddress");
+        ApiAddress = isAdmin ? await LoadSettingAsync("apiAddress") : string.Empty;
         SelectedLanguage = await LoadSettingAsync("selectedLanguage") ?? "pl-Pl"; // Set default if not found
+    }
+
+    protected async Task<string?> LoadSettingAsync(string key)
+    {
+        return await apiService.LoadSettingAsync(key, currentUser);
     }
 
     protected async Task<bool> TestApiAddress()
     {
-        StatusMessage = string.Empty;
         if (string.IsNullOrWhiteSpace(ApiAddress))
         {
             StatusMessage = "API Address cannot be empty.";
             StatusMessageClass = "text-danger";
-            return false; 
-        }
-
-        try
-        {
-            var response = await apiService.CheckApiAddress(ApiAddress);
-            if (!response.Item1)
-            {
-                StatusMessage = response.Item2; 
-                StatusMessageClass = "text-danger";
-                return false;
-            }
-            StatusMessage = $"Successfully connected to API at '{ApiAddress}'.";
-            StatusMessageClass = "text-success";
-            return true;
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Error testing API address: {ex.Message}";
-            StatusMessageClass = "text-danger";
             return false;
         }
+
+        var result = await apiService.CheckApiAddressAsync(ApiAddress);
+        StatusMessage = result.Message;
+        StatusMessageClass = result.Success ? "text-success" : "text-danger";
+        return result.Success;
     }
 
-    protected async Task SaveSettings()
+    protected async Task SaveSettingsAsync()
     {
         StatusMessage = string.Empty;
         try
         {
-            
-            var testResult = await TestApiAddress();
-            if (!testResult)
+            if (isAdmin)
             {
-                StatusMessage = "Wrong API address"; // corrected spelling of "address"
-                StatusMessageClass = "text-danger";
-                return;
+                var testResult = await TestApiAddress();
+                if (!testResult)
+                {
+                    StatusMessage = "Wrong API address"; // corrected spelling of "address"
+                    StatusMessageClass = "text-danger";
+                    return;
+                }
+                if (!ApiAddress.EndsWith('/')) ApiAddress += "/";
             }
 
-            var s1 = await SaveSettingAsync("apiAddress", ApiAddress, currentUser);
+            var s1 = isAdmin ? await SaveSettingAsync("apiAddress", ApiAddress, currentUser) : true;
             var s2 = await SaveSettingAsync("selectedLanguage", SelectedLanguage, currentUser); 
             if (s1 && s2)
             {
                 StatusMessage = "Settings saved successfully!";
                 StatusMessageClass = "text-success";
+                if (isAdmin)
+                {
+                    await AppConfig.LoadApiAddressAsync(); // Notify the app of the change
+                }
             }
             else
             {
-                StatusMessage = "Failed to save settings.";
+                StatusMessage = "Failed to save one or more settings.";
                 StatusMessageClass = "text-danger";
-                return;
             }
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error saving settings: {ex.Message}";
+            StatusMessage = $"An error occurred: {ex.Message}";
             StatusMessageClass = "text-danger";
         }
     }
 
-    protected async Task<bool> SaveSettingAsync(string key, string value, string user)
+    protected async Task<bool> SaveSettingAsync(string? key, string? value, string? user)
     {
+        if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(value) || string.IsNullOrWhiteSpace(user))
+        {
+            return false;
+        }
+
         var result = await apiService.SaveSettingAsync(key, value, user);
         return result;
-    }
-
-    protected async Task<string?> LoadSettingAsync(string key)
-    {
-        var result = await apiService.GetSettingAsync(key, currentUser);
-        return result; 
     }
 }

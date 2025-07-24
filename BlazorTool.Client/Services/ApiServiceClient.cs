@@ -25,11 +25,12 @@ namespace BlazorTool.Client.Services
         private List<Device> _devicesCache = new List<Device>();
         private readonly UserState _userState;
         private List<Dict> _dictCache = new List<Dict>();
-
+        public string BaseAddress;
         public ApiServiceClient(HttpClient http, UserState userState)
         {
             _http = http;
             _userState = userState;
+            BaseAddress = _http.BaseAddress?.ToString() ?? string.Empty;
         }
 
         
