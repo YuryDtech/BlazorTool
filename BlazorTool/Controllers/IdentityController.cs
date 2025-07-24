@@ -42,7 +42,7 @@ namespace BlazorTool.Controllers
                 var basicAuth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{basicAuthUsername}:{basicAuthPassword}"));
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basicAuth);
             }
-            var externalApiRelativeUrl = $"api/v1/identity/loginpass?UserName={Uri.EscapeDataString(loginRequest.Username)}&Password={Uri.EscapeDataString(loginRequest.Password)}";
+            var externalApiRelativeUrl = $"identity/loginpass?UserName={Uri.EscapeDataString(loginRequest.Username)}&Password={Uri.EscapeDataString(loginRequest.Password)}";
             var request = new HttpRequestMessage(HttpMethod.Get, externalApiRelativeUrl);
             Console.WriteLine($"Request URL: {request.RequestUri}");
             Console.WriteLine("BaseUrl= " + client.BaseAddress);

@@ -21,9 +21,14 @@ builder.Services.AddScoped<AuthHeaderHandler>(sp =>
     return new AuthHeaderHandler(userState);
 });
 
-builder.Services.AddHttpClient("ServerApi", client =>
+var serverBaseUrl = builder.Configuration["InternalApiBaseUrl"] ?? builder.HostEnvironment.BaseAddress;
+if (serverBaseUrl.Contains("localhost") && !serverBaseUrl.Contains("/api"))
 {
-    var serverBaseUrl = builder.Configuration["InternalApiBaseUrl"] ?? builder.HostEnvironment.BaseAddress;
+    serverBaseUrl += "api/v1/";
+}
+
+builder.Services.AddHttpClient("ServerApi", client =>
+{    
     client.BaseAddress = new Uri(serverBaseUrl);
 })
 .AddHttpMessageHandler<AuthHeaderHandler>();
@@ -35,7 +40,6 @@ builder.Services.AddScoped<ApiServiceClient>(sp =>
 builder.Services.AddScoped<AppointmentService>();
 
 builder.Services.AddScoped(sp => {
-    var serverBaseUrl = builder.Configuration["InternalApiBaseUrl"] ?? builder.HostEnvironment.BaseAddress;
     return new HttpClient { BaseAddress = new Uri(serverBaseUrl) };
 });
 

@@ -70,7 +70,7 @@
                 Password = Password
             };
 
-            var response = await ApiServiceClient.PostSingleAsync<LoginRequest, IdentityData>("api/v1/identity/loginpassword", loginRequest);
+            var response = await ApiServiceClient.PostSingleAsync<LoginRequest, IdentityData>("identity/loginpassword", loginRequest);
 
             if (response != null && response.IsValid && response.Data != null)
             {
@@ -79,6 +79,7 @@
                 UserState.Token = identityData.Token;
                 UserState.Password = Password; // Save password to UserState for token refresh
                 await UserState.SaveIdentityDataAsync(identityData); // Save identityData to local storage
+
                 Navigation.NavigateTo("/");
             }
             else

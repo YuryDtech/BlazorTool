@@ -150,7 +150,7 @@ namespace BlazorTool.Client.Services
             if (isPlan.HasValue) qp.Add($"IsPlan={isPlan.Value}");
             if (isWithPerson.HasValue) qp.Add($"IsWithPerson={isWithPerson.Value}");
 
-            var url = "api/v1/wo/getlist?" + string.Join("&", qp);
+            var url = "wo/getlist?" + string.Join("&", qp);
 
             try
             {
@@ -315,7 +315,7 @@ namespace BlazorTool.Client.Services
         public async Task<WorkOrderInfo?> GetWOInfo(int workOrderID)
         {
             if (workOrderID < 0) return null;
-            var url = "api/v1/wo/get?WorkOrderID=" + workOrderID;
+            var url = "wo/get?WorkOrderID=" + workOrderID;
             try
             {
                 var wrapper = await _http.GetFromJsonAsync<SingleResponse<WorkOrderInfo>>(url);
@@ -408,7 +408,7 @@ namespace BlazorTool.Client.Services
                 StateID = stateId
             };
 
-            var result = await PutSingleAsync<UpdateWorkOrderRequest, bool>("api/v1/wo/update", request);
+            var result = await PutSingleAsync<UpdateWorkOrderRequest, bool>("wo/update", request);
 
             // --- Cache Update ---
             if (result.IsValid)
@@ -533,7 +533,7 @@ namespace BlazorTool.Client.Services
                 };
             }
 
-            var url = "api/v1/wo/create";
+            var url = "wo/create";
             try
             {
 
@@ -560,7 +560,7 @@ namespace BlazorTool.Client.Services
                     Console.WriteLine($"[{_userState.UserName}] = = = = = = Work order saved successfully. ID: {apiResponse.Data.WorkOrderID}\n");
                     Debug.WriteLine($"[{_userState.UserName}] = = = = = = Work order saved successfully. ID: {apiResponse.Data.WorkOrderID}\n");
                     //request new order from API
-                    //url = $"api/v1/wo/get?WorkOrderID={apiResponse.Data.WorkOrderID}";
+                    //url = $"wo/get?WorkOrderID={apiResponse.Data.WorkOrderID}";
                     var updatedResponse = await GetWorkOrdersAsync( workOrderID: apiResponse.Data.WorkOrderID); //TODO add userstate.lang
                     if (updatedResponse != null && updatedResponse.Count != 0)
                     {
@@ -649,7 +649,7 @@ namespace BlazorTool.Client.Services
                 LevelID = workOrder.LevelID ?? 0,
             };
 
-            var result = await PutSingleAsync<CloseWorkOrderRequest, bool>("api/v1/wo/close", request);
+            var result = await PutSingleAsync<CloseWorkOrderRequest, bool>("wo/close", request);
 
             if (result.IsValid && result.Data)
             {
@@ -663,7 +663,7 @@ namespace BlazorTool.Client.Services
         #region Activity
         public async Task<List<Activity>> GetActivityByWO(int workorder_id)
         {
-            var url = $"api/v1/activity/getlist?woID={workorder_id}";
+            var url = $"activity/getlist?woID={workorder_id}";
             try
             {
                 var response = await _http.GetAsync(url);
@@ -688,7 +688,7 @@ namespace BlazorTool.Client.Services
         #region users
         public async Task<List<Person>> GetAllPersons()
         {
-            var url = "api/v1/other/getuserslist";
+            var url = "other/getuserslist";
             try
             {
                 Console.WriteLine("====== Start GetAllPersons() request: " + _http.BaseAddress + url);
@@ -744,7 +744,7 @@ namespace BlazorTool.Client.Services
                 foreach (var id in machineIDs)
                     qp.Add($"MachineIDs={id}");
             Console.WriteLine($" ====    name:{name} MachineIDs.count={machineIDs?.Count()}");
-            var url = "api/v1/device/getlist" + (qp.Count > 0 ? "?" + string.Join("&", qp) : "");
+            var url = "device/getlist" + (qp.Count > 0 ? "?" + string.Join("&", qp) : "");
             try
             {
                 var response = await _http.GetAsync(url);
@@ -781,7 +781,7 @@ namespace BlazorTool.Client.Services
             var qp = new List<string>();
             qp.Add($"PersonID={personID}");
             qp.Add($"Lang={lang}");
-            var url = "api/v1/wo/getdict?" + string.Join("&", qp);
+            var url = "wo/getdict?" + string.Join("&", qp);
             try
             {
                 var wrapper = await _http.GetFromJsonAsync<ApiResponse<Dict>>(url);
@@ -879,7 +879,7 @@ namespace BlazorTool.Client.Services
             _dictCache.Add(newDict); 
             Console.WriteLine($"[{_userState.UserName}] = = = = = = Dictionary with name '{name}' and ListType {listType} added to cache.");
             return true;
-           //TODO SAVE return await PostSingleAsync<Dict, Dict>("api/v1/wo/adddict", newDict) is { IsValid: true, Data: { } };
+           //TODO SAVE return await PostSingleAsync<Dict, Dict>("wo/adddict", newDict) is { IsValid: true, Data: { } };
         }
 
         public async Task<ApiResponse<TResponse>> PostAsync<TRequest, TResponse>(string url, TRequest data)
@@ -977,7 +977,7 @@ namespace BlazorTool.Client.Services
 
         public async Task<(bool, string)> CheckApiAddress(string address)
         {
-            var url = "api/v1/settings/check";
+            var url = "settings/check";
             var content = new FormUrlEncodedContent(new[]
             {
                 new KeyValuePair<string, string>("address", address)
@@ -1007,7 +1007,7 @@ namespace BlazorTool.Client.Services
         
         public async Task<string> GetSettingAsync(string key, string user)
         {
-            var url = $"api/v1/settings/get?key={Uri.EscapeDataString(key)}&user={Uri.EscapeDataString(user)}";
+            var url = $"settings/get?key={Uri.EscapeDataString(key)}&user={Uri.EscapeDataString(user)}";
             try
             {
                 var response = await _http.GetAsync(url);
@@ -1032,7 +1032,7 @@ namespace BlazorTool.Client.Services
 
         public async Task<bool> SaveSettingAsync(string key, string value, string user)
         {
-            var url = "api/v1/settings/set";
+            var url = "settings/set";
             var content = new FormUrlEncodedContent(new[]
             {
                 new KeyValuePair<string, string>("key", key),
@@ -1068,7 +1068,7 @@ namespace BlazorTool.Client.Services
         #region Session
         public async Task<HttpResponseMessage> CheckSessionAsync()
         {
-            return await _http.GetAsync("api/v1/identity/check-session");
+            return await _http.GetAsync("identity/check-session");
         }
         #endregion
     }

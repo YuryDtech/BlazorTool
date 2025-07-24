@@ -36,7 +36,7 @@
 </TelerikRootComponent>
 @code{
     private string FormattedVersion { get; set; } = "Version";
-    private string buildDate = "загрузка...";
+    private string buildDate = AppInfo.BuildDate;
 
     protected override void OnInitialized()
     {
@@ -67,11 +67,11 @@
     {
         try
         {
-            buildDate = await Http.GetStringAsync("buildinfo.txt");
+            // buildDate = await Http.GetStringAsync("buildinfo.txt");
         }
         catch (Exception)
         {
-            buildDate = "не удалось загрузить";
+            // buildDate = "не удалось загрузить";
         }
 
         await UserState.InitializationTask;
