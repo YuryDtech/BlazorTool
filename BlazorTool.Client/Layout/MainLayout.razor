@@ -5,7 +5,6 @@
 @inject ApiServiceClient ApiClient
 @inject IHttpClientFactory HttpClientFactory
 @* @inject AppConfiguration AppConfig *@
-@implements IDisposable
 
 <TelerikRootComponent>
     <div class="page">
@@ -31,12 +30,6 @@
                 @Body
             </article>
         </main>
-    </div>
-
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
     </div>
 </TelerikRootComponent>
 @code{

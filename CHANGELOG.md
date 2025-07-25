@@ -1,3 +1,11 @@
+## 2025-07-24
+### Changed
+- **API Address Configuration**: The external API address can now be configured on the Settings page by the "MES" user. The address is stored globally for the application in the `appsettings.json` file on the server.
+- **API Address Handling**: The application's server-side calls were unified to correctly handle API server addresses with or without the `/api/v1` suffix, using the centralized address from the configuration.
+
+### Fixed
+- **Scheduler Drag & Drop**: Fixed a critical bug where dragging a work order from the grid to the Scheduler would fail if the Scheduler was not in "Timeline" view. The assignment logic now correctly applies only to the Timeline view, preventing errors in other views.
+
 ## 2025-07-23
 ### Added
 - **Build Date Display**: Implemented a mechanism to display the application's build date in the main layout, providing clear versioning information.

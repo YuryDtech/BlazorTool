@@ -1,3 +1,11 @@
+## 2025-07-24
+### Zmieniono
+- **Konfiguracja Adresu API**: Adres zewnętrznego API może być teraz konfigurowany na stronie Ustawień przez użytkownika "MES". Adres jest przechowywany globalnie dla aplikacji w pliku `appsettings.json` na serwerze.
+- **Obsługa Adresu API**: Wywołania po stronie serwera zostały ujednolicone, aby poprawnie obsługiwać adresy serwerów API z przyrostkiem `/api/v1` lub bez niego, korzystając ze scentralizowanego adresu z konfiguracji.
+
+### Naprawiono
+- **Przeciąganie i Upuszczanie w Harmonogramie**: Naprawiono krytyczny błąd, który powodował, że przeciągnięcie zlecenia z siatki do Harmonogramu kończyło się niepowodzeniem, jeśli Harmonogram nie był w widoku "Osi czasu" (Timeline). Logika przypisywania jest teraz poprawnie stosowana tylko w widoku Osi czasu, co zapobiega błędom w innych widokach.
+
 ## 2025-07-23
 ### Dodano
 - **Wyświetlanie Daty Kompilacji**: Wprowadzono mechanizm wyświetlania daty kompilacji aplikacji w głównym layoucie, co dostarcza jasnej informacji o wersji.
