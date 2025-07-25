@@ -34,8 +34,8 @@ builder.Services.AddHttpClient("ServerHost", client =>
     client.BaseAddress = uriBuilder.Uri;
 })
 .AddHttpMessageHandler<AuthHeaderHandler>();
-
-if (serverBaseUrl.Contains("localhost") && !serverBaseUrl.Contains("/api"))
+//TODO get AbsolutePath from ExternalApiBaseUrl
+if (!serverBaseUrl.Contains("/api"))
 {
     serverBaseUrl += "api/v1/";
 }
