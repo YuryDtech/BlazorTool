@@ -4,20 +4,16 @@
 @inject NavigationManager Navigation
 @inject ApiServiceClient ApiClient
 @inject IHttpClientFactory HttpClientFactory
-@* @inject AppConfiguration AppConfig *@
 
 <TelerikRootComponent>
     <div class="page">
         <div class="sidebar">
             <NavMenu />
         </div>
-        
+
         <main>
             <div class="top-row px-4">
-                <span class="api-address-display">
-                    @* API server: @AppConfig.ApiAddress *@
-                </span>
-                @if(UserState.IsAuthenticated)
+                @if (UserState.IsAuthenticated)
                 {
                     <span class="user-name">Hello, @UserState.UserName!</span>
                     <button class="btn btn-link logout-button" @onclick="Logout">Logout</button>
@@ -30,6 +26,12 @@
                 @Body
             </article>
         </main>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
     </div>
 </TelerikRootComponent>
 @code{
@@ -60,7 +62,6 @@
         {
             FormattedVersion = $"Version {versionNumber}";
         }
-        // AppConfig.OnChange += StateHasChanged;
     }
 
     protected override async Task OnInitializedAsync()
@@ -113,10 +114,5 @@
     {
         await UserState.ClearAsync();
         Navigation.NavigateTo("/login");
-    }
-
-    public void Dispose()
-    {
-        // AppConfig.OnChange -= StateHasChanged;
     }
 }
