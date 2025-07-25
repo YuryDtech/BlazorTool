@@ -67,13 +67,14 @@ namespace BlazorTool.Controllers
 
                     var options = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
                     System.IO.File.WriteAllText(appSettingsPath, jsonObj.ToJsonString(options));
-
+                    Console.WriteLine($"API address saved to appsettings.json: {value}");
                     return true; 
                 }
 
                 string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SettingsDirectory, user + ".json");
                 var settings = new UserSettings(file);
                 settings.SetSetting(user, key, value);
+                Console.WriteLine($"Setting saved: {user} - {key} = {value}");
                 return true;
             }
             catch(Exception ex)

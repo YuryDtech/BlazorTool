@@ -1,7 +1,7 @@
 ﻿using BlazorTool.Client.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Caching.Memory; // Added
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -56,10 +56,14 @@ namespace BlazorTool.Controllers
                 if (apiResponse != null && apiResponse.IsValid && apiResponse.Data != null)
                 {
                     // Cache the IdentityData for the user
-                    _cache.Set($"IdentityData_{apiResponse.Data.PersonID}", apiResponse.Data, TimeSpan.FromHours(1)); // Cache for 1 hour
+                    _cache.Set($"IdentityData_{apiResponse.Data.PersonID}", apiResponse.Data, TimeSpan.FromHours(5));
+                    Console.WriteLine($"User {apiResponse.Data.Name} logged in successfully");
                 }
             }
-
+            else
+                {
+                    Console.WriteLine($"Login failed with status code {statusCode}: {content}");
+                }
             foreach (var header in response.Content.Headers)
             {
                 Response.Headers[header.Key] = header.Value.ToArray();

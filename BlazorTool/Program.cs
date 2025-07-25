@@ -18,16 +18,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddMemoryCache();
-
+var ApiAddress = new Uri(builder.Configuration["ExternalApi:BaseUrl"]!);
+Console.WriteLine("External Api BaseAddress: " + ApiAddress);
 builder.Services.AddHttpClient("ExternalApiBasicAuthClient", client =>
 {
     // BaseAddress EXTERNAL API, where get token
-    client.BaseAddress = new Uri(builder.Configuration["ExternalApi:BaseUrl"]!);
+    client.BaseAddress = ApiAddress;
 });
 
 builder.Services.AddHttpClient("ExternalApiBearerAuthClient", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["ExternalApi:BaseUrl"]!);
+    client.BaseAddress = ApiAddress;
 })
 .AddHttpMessageHandler<ServerAuthHeaderHandler>();
 
@@ -48,6 +49,7 @@ builder.Services.AddScoped<UserState>();
 string? internalApiBaseUrl = null;
 
 internalApiBaseUrl = getLocalServerAddress(builder);
+Console.WriteLine("Internal Api BaseUrl: " + internalApiBaseUrl);
 //internal controllers Blazor Host
 builder.Services.AddHttpClient("InternalApiClient", client =>
 {
@@ -65,15 +67,17 @@ builder.Services.AddRazorComponents()
 builder.Services.AddControllers();
 builder.Services.AddTelerikBlazor();
 builder.Services.AddScoped<AppointmentService>();
-
+builder.Logging.AddConsole();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
+    Console.WriteLine("======= APPLICATION (Server) STARTING in Development mode...");
 }
 else
 {
+    Console.WriteLine("======= APPLICATION (Server) STARTING in Production mode...");
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
@@ -110,10 +114,7 @@ static string getLocalServerAddress(WebApplicationBuilder builder)
             internalApiBaseUrl = "http://localhost:5168"; //default fallback URL
             Console.WriteLine("======= SERVER: ASPNETCORE_URLS is empty or invalid, falling back to default http://localhost:5168");
         }
-        else
-        {
-            Console.WriteLine($"======= SERVER: InternalApiClient BaseAddress set to {internalApiBaseUrl} from ASPNETCORE_URLS");
-        }
+
     }
     else //prodaction or other environment
     {

@@ -45,7 +45,7 @@ namespace BlazorTool.Controllers
                 var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<WorkOrder>>();
 
                 var data = wrapper?.Data ?? new List<WorkOrder>();
-
+                Console.WriteLine($"WOController --> GetList returned {data.Count} workorders");
                 return Ok(new
                 {
                     data,
@@ -55,7 +55,7 @@ namespace BlazorTool.Controllers
             }
             catch (Exception ex)
             {
-                // TODO: logging ex
+                Console.WriteLine($"WOController --> Error in GetList: {ex.Message}");
                 return StatusCode(500, new
                 {
                     data = Array.Empty<object>(),
@@ -66,7 +66,7 @@ namespace BlazorTool.Controllers
         }
 
         [HttpGet("getdict")]
-        public async Task<IActionResult> GetWOCategories([FromQuery] WOCategoriesParameters q)
+        public async Task<IActionResult> GetWODicts([FromQuery] WOCategoriesParameters q)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace BlazorTool.Controllers
                 var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Dict>>();
 
                 var data = wrapper?.Data ?? new List<Dict>();
-
+                Console.WriteLine($"WOController --> GetWODicts returned {data.Count} items");
                 return Ok(new
                 {
                     data,
@@ -151,12 +151,13 @@ namespace BlazorTool.Controllers
                 response.EnsureSuccessStatusCode();
 
                 var apiResponse = await response.Content.ReadFromJsonAsync<SingleResponse<WorkOrder>>();
-
+                Console.WriteLine($"requested URL: {client.BaseAddress}/{url}");
+                Console.WriteLine($"WOController --> Create returned WorkOrderID: {apiResponse?.Data?.WorkOrderID}");
                 return Ok(apiResponse);
             }
             catch (Exception ex)
             {
-                // TODO: logging ex
+                Console.WriteLine($"WOController --> Error in Create: {ex.Message}");
                 return StatusCode(500, new SingleResponse<WorkOrder>
                 {
                     IsValid = false,
@@ -200,6 +201,7 @@ namespace BlazorTool.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var apiResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<bool>>(responseContent);
+                    Console.WriteLine($"WOController --> CloseWorkOrder returned: {apiResponse?.IsValid}");
                     return Ok(apiResponse);
                 }
                 else
@@ -209,11 +211,12 @@ namespace BlazorTool.Controllers
                         var errorResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<bool>>(responseContent);
                         if (errorResponse != null)
                         {
+                            Console.WriteLine($"WOController --> CloseWorkOrder error: {string.Join(", ", errorResponse.Errors)}");
                             return StatusCode((int)response.StatusCode, errorResponse);
                         }
                     }
                     catch { }
-
+                    Console.WriteLine($"WOController --> CloseWorkOrder API Error: {response.ReasonPhrase}, Content: {responseContent}");
                     return StatusCode((int)response.StatusCode, new SingleResponse<bool>
                     {
                         IsValid = false,
@@ -223,6 +226,7 @@ namespace BlazorTool.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"WOController --> Error in CloseWorkOrder: {ex.Message}");
                 return StatusCode(500, new SingleResponse<bool>
                 {
                     IsValid = false,
@@ -257,6 +261,7 @@ namespace BlazorTool.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var apiResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<bool>>(responseContent);
+                    Console.WriteLine($"WOController --> WorkOrderID={request.WorkOrderID} updated: {apiResponse?.IsValid}");
                     return Ok(apiResponse);
                 }
                 else
@@ -266,11 +271,12 @@ namespace BlazorTool.Controllers
                         var errorResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<bool>>(responseContent);
                         if (errorResponse != null && errorResponse.Errors.Any())
                         {
+                            Console.WriteLine($"WOController --> UpdateWorkOrder error: {string.Join(", ", errorResponse.Errors)}");
                             return StatusCode((int)response.StatusCode, errorResponse);
                         }
                     }
                     catch {  }
-
+                    Console.WriteLine($"WOController --> UpdateWorkOrder API Error: {response.ReasonPhrase}, Content: {responseContent}");
                     return StatusCode((int)response.StatusCode, new SingleResponse<bool>
                     {
                         IsValid = false,
@@ -280,6 +286,7 @@ namespace BlazorTool.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"WOController --> Error in UpdateWorkOrder: {ex.Message}");  
                 return StatusCode(500, new SingleResponse<bool>
                 {
                     IsValid = false,

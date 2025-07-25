@@ -1,7 +1,7 @@
 ﻿using BlazorTool.Client.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http; // Added
-using System.Net.Http.Json; // Added
+using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace BlazorTool.Controllers
 {
@@ -9,11 +9,11 @@ namespace BlazorTool.Controllers
     [ApiController]
     public class DeviceController : ControllerBase
     {
-        private readonly IHttpClientFactory _httpClientFactory; // Changed
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public DeviceController(IHttpClientFactory httpClientFactory) // Changed
+        public DeviceController(IHttpClientFactory httpClientFactory) 
         {
-            _httpClientFactory = httpClientFactory; // Changed
+            _httpClientFactory = httpClientFactory; 
         }
 
         [HttpGet("getlist")]
@@ -26,7 +26,7 @@ namespace BlazorTool.Controllers
         {
             try
             {
-                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient"); // Get named client
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient"); 
 
                 var qp = new List<string>();
                 if (!string.IsNullOrWhiteSpace(lang)) qp.Add($"Lang={Uri.EscapeDataString(lang)}");
@@ -39,11 +39,10 @@ namespace BlazorTool.Controllers
 
                 var url = "device/getlist" + (qp.Count > 0 ? "?" + string.Join("&", qp) : "");
                 
-                var response = await client.GetAsync(url); // Use the named client
+                var response = await client.GetAsync(url); 
                 response.EnsureSuccessStatusCode();
 
                 var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Device>>();
-
                 return Ok(new
                 {
                     data = wrapper?.Data ?? new List<Device>(),

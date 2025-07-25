@@ -12,7 +12,7 @@
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
 @inject UserState UserState
 @rowStyles
-
+<CheckSession ApiServiceClient="@apiService" UserState="@UserState" />
 <label>Devices:</label>
 @if (isDevicesLoading)
 {

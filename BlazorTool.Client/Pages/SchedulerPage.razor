@@ -14,8 +14,10 @@
 @inject AppointmentService ApptService
 @inject NavigationManager Navigation
 @inject UserState UserState
+@inject ILogger<SchedulerPage> Logger
 
 @cellStyles
+<CheckSession apiService="@apiService" UserState="@UserState" />
 
 <div class="filter-controls-row">
     <div style="flex-basis: 66%; flex-shrink:1; flex-grow:0; border-right: outset; display: flex; align-items: top; gap: 1rem;">
@@ -294,10 +296,10 @@
         Console.WriteLine($"--- Initialized SCHEDULER PAGE. WASM = {isWASM}");
         Console.WriteLine($"--- OnInitializedAsync completed.");
         await UserState.InitializationTask; // Ensure UserState is loaded
-        if (!UserState.IsAuthenticated)
-        {
-            Navigation.NavigateTo("/login");
-        }
+        // if (!UserState.IsAuthenticated)
+        // {
+        //     Navigation.NavigateTo("/login");
+        // }
         await HardLoadData();
     }
 
@@ -697,4 +699,5 @@
         public string Value { get; set; }
         public string Color { get; set; } // must be a valid CSS string
     }
+        
 }

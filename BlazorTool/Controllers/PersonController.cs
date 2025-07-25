@@ -48,14 +48,13 @@ namespace BlazorTool.Controllers
                 basicAuthClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 
                 // Directly call the external API using the basicAuthClient
-                //var externalApiResponse = await basicAuthClient.GetAsync("api/v1/other/getuserslist");
                 var wrapper = await basicAuthClient.GetFromJsonAsync<ApiResponse<Person>>("other/getuserslist");
-                //externalApiResponse.EnsureSuccessStatusCode(); // Throws an exception if the HTTP response status is an error code.
-
+                Console.WriteLine($"Request persons. Count = {wrapper?.Data?.Count ?? 0}");
                 return Ok(wrapper);
             }
             catch (HttpRequestException ex)
             {
+                Console.WriteLine($"Error PersonController. ==> getuserslist. :: {ex.Message}");
                 return StatusCode(500, new ApiResponse<Person>
                 {
                     Data = new List<Person>(),
@@ -65,6 +64,7 @@ namespace BlazorTool.Controllers
             }
             catch (JsonException ex)
             {
+                Console.WriteLine($"Error deserializing PersonController. ==> getuserslist. :: {ex.Message}");
                 return StatusCode(500, new ApiResponse<Person>
                 {
                     Data = new List<Person>(),
@@ -74,6 +74,7 @@ namespace BlazorTool.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Unexpected error in PersonController. ==> getuserslist. :: {ex.Message}");
                 return StatusCode(500, new ApiResponse<Person>
                 {
                     Data = new List<Person>(),

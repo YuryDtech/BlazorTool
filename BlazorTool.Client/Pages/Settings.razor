@@ -3,7 +3,9 @@
 @inject ApiServiceClient apiService
 @inject NavigationManager Navigation
 @inject UserState UserState
+@inject ILogger<Settings> Logger
 
+<BlazorTool.Client.Components.CheckSession ApiServiceClient="@apiService" UserState="@UserState" />
 <h3>Settings</h3>
 <div class="container">
     @if (isAdmin)
@@ -54,10 +56,12 @@
     {
         if (!UserState.IsAuthenticated)
         {
+            Logger.LogWarning("User is not authenticated, redirecting to login page.");
             Navigation.NavigateTo("/login");
         }
         currentUser = UserState.UserName ?? "unknown user";
         isAdmin = UserState.UserName == "MES" || UserState.UserName?.ToLower() == "admin";
+        Logger.LogInformation($"Current user: {currentUser}, Is Admin: {isAdmin}");
         await LoadSettingsAsync();
         await InvokeAsync(StateHasChanged);
     }
