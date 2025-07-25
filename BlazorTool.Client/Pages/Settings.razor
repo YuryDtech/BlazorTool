@@ -6,7 +6,7 @@
 
 <h3>Settings</h3>
 <div class="container">
-    @if (UserState.UserName == "MES")
+    @if (isAdmin)
     {
         <div class="row mb-3">
             <div class="col-md-6">
@@ -57,7 +57,7 @@
             Navigation.NavigateTo("/login");
         }
         currentUser = UserState.UserName ?? "unknown user";
-        isAdmin = UserState.UserName == "MES";
+        isAdmin = UserState.UserName == "MES" || UserState.UserName?.ToLower() == "admin";
         await LoadSettingsAsync();
         await InvokeAsync(StateHasChanged);
     }

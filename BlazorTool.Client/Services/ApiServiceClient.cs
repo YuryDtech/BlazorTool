@@ -1012,7 +1012,6 @@ namespace BlazorTool.Client.Services
                 var response = await _http.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                // Предполагаем, что GetSettingAsync возвращает простую строку
                 var settingValue = await response.Content.ReadAsStringAsync();
 
                 return settingValue;

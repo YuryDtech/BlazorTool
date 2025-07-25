@@ -24,6 +24,7 @@ namespace BlazorTool.Client.Services
 
         public string? UserName { get; set; }
         public string? Password { get; set; }
+        public string? LangCode { get; set; }
         public string? Token { get; set; }
         public int? PersonID { get; set; } // Added PersonID property
         public bool IsAuthenticated => !string.IsNullOrEmpty(UserName);
@@ -33,7 +34,8 @@ namespace BlazorTool.Client.Services
         {
             UserName = identityData.Name;
             Token = identityData.Token;
-            PersonID = identityData.PersonID; // Populate PersonID
+            PersonID = identityData.PersonID;
+            LangCode = identityData.LangCode;
             RightMatrix = identityData.RigthMatrix;
             await _localStorageService.SetItemAsStringAsync("identityData", JsonConvert.SerializeObject(identityData));
             Console.WriteLine($"UserState: Saved identity data for {UserName} with PersonID {PersonID}");
@@ -50,6 +52,7 @@ namespace BlazorTool.Client.Services
                     UserName = identityData.Name;
                     Token = identityData.Token;
                     PersonID = identityData.PersonID;
+                    LangCode = identityData.LangCode;
                     RightMatrix = identityData.RigthMatrix;
                 }
             }
@@ -60,7 +63,8 @@ namespace BlazorTool.Client.Services
             UserName = null;
             Password = null;
             Token = null;
-            PersonID = null; // Clear PersonID
+            PersonID = null;
+            LangCode = null;
             RightMatrix = null;
             await _localStorageService.RemoveItemAsync("identityData");
         }

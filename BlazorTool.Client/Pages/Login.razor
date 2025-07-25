@@ -1,12 +1,14 @@
 ﻿@page "/login"
 @using BlazorTool.Client.Models
+@using BlazorTool.Client.Services
 @inject NavigationManager Navigation
-@inject BlazorTool.Client.Services.UserState UserState
-@inject BlazorTool.Client.Services.ApiServiceClient ApiServiceClient
+@inject UserState UserState
+@inject AppStateService AppState
+@inject ApiServiceClient ApiServiceClient
 
 <div class="login-container">
     <form @onsubmit="HandleLogin">
-        <h2>Login to the @AppInfo.Name</h2>
+        <h2>Login to the @AppState.Settings.ApplicationName</h2>
         <div class="form-group">
             <label for="username">User name</label>
             <TelerikComboBox Data="@Persons"

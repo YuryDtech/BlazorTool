@@ -29,11 +29,16 @@ namespace BlazorTool.Controllers
 
         // GET: Settings var url = $"api/v1/settings/get?key=address}";
         [HttpGet("get")]
-        public string Read(string key, string user)
+        public string Read(string key, string? user)
         {
             if (key == "apiAddress")
             {
                 return _configuration["ExternalApi:BaseUrl"] ?? string.Empty;
+            }
+
+            if (string.IsNullOrEmpty(user))
+            {
+                return _configuration[key] ?? string.Empty;
             }
             //read settings from server local file
             string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SettingsDirectory, user + ".json");

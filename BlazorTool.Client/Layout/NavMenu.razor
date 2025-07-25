@@ -1,6 +1,9 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using BlazorTool.Client.Services
+@inject AppStateService AppState
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">@AppInfo.Name</a>
+        <a class="navbar-brand" href="">@AppState.Settings.ApplicationName</a>
     </div>
 </div>
 
@@ -32,4 +35,7 @@
             </div>
         </div>
     </nav>
+    <span class="api-info-footer">
+        <span>@AppState.Settings.ApiBaseUrl</span>
+    </span>
 </div>
