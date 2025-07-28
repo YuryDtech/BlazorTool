@@ -11,11 +11,25 @@ namespace BlazorTool.Client.Services
         
         public ApplicationSettings Settings { get; private set; }
         public bool IsInitialized { get; private set; } = false;
+        public bool UseOriginalColors { get; private set; } = true;
+
+        public event Action OnChange;
 
         public AppStateService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
+
+        public void SetUseOriginalColors(bool value)
+        {
+            if (UseOriginalColors != value)
+            {
+                UseOriginalColors = value;
+                NotifyStateChanged();
+            }
+        }
+
+        private void NotifyStateChanged() => OnChange?.Invoke();
 
         public async Task InitializeAsync()
         {

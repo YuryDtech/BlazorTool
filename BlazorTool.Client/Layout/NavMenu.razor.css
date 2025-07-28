@@ -119,14 +119,22 @@
     padding-bottom: 35px;
 }
 
-.api-info-footer {
-    position: absolute; /* Вырываем элемент из общего потока */
-    bottom: 0; /* Прижимаем к низу родительского блока */
-    left: 0; /* Выравниваем по левому краю */
-    width: 100%; /* Растягиваем на всю ширину родителя */
-    /* Стилизация */
-    font-size: 0.85em; /* Уменьшаем шрифт */
-    color: #6c757d; /* Цвет как у класса .text-secondary */
-    padding: 0 1rem 0.5rem 1rem; /* Внутренние отступы, чтобы текст совпадал с меню */
-    box-sizing: border-box; /* Чтобы padding не увеличивал общую ширину */
+.nav-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0 1rem 0.5rem 1rem;
+    box-sizing: border-box;
+}
+
+.nav-footer .form-check-label {
+    color: #d7d7d7; /* Match nav link color */
+}
+
+.nav-footer .api-info {
+    display: block; /* Ensure it takes its own line */
+    font-size: 0.85em;
+    color: #6c757d;
+    margin-top: 0.5rem; /* Add some space above the API URL */
 }

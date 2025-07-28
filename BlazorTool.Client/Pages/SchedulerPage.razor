@@ -14,6 +14,7 @@
 @inject AppointmentService ApptService
 @inject NavigationManager Navigation
 @inject UserState UserState
+@inject AppStateService AppState
 @inject ILogger<SchedulerPage> Logger
 
 @cellStyles
@@ -90,10 +91,8 @@
             }
         </div>
         
-
-
-        <TelerikScheduler TItem="SchedulerAppointment"
-                          Id="Scheduler1"
+            <TelerikScheduler TItem="SchedulerAppointment"
+            Id="Scheduler1"
                           Data="@Appointments"
                           @ref="SchedulerRef"
                           @bind-Date="SchedulerDate"
@@ -145,8 +144,12 @@
                     </ItemTemplate>
                 </SchedulerTimelineView>
             </SchedulerViews>
-        </TelerikScheduler>
-
+            </TelerikScheduler>
+       
+            <TelerikLoaderContainer  Visible="@isLoading" Text="Loading appointments..." Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Large">
+                </TelerikLoaderContainer>
+        
+       
         @if (CurrentView == SchedulerView.Timeline)
         {
             <SchedulerSummary Appointments="@Appointments" />
@@ -283,15 +286,36 @@
     private int slotDuration = 180; //in minutes for TimelineView
     private int slotDivisions = 1; //for TimelineView
     private int numberOfDays = 5; //for TimelineView alt=3
-    private List<Resource> statuses = new List<Resource>
+    private List<Resource> statuses = new List<Resource>();
+
+    private List<Resource> GetStatuses(List<SchedulerAppointment> appointments)
     {
-        new Resource { Text = "Not started", Value = "Nie rozpoczęte", Color = "LightCoral" },
-        new Resource { Text = "In progress", Value = "W trakcie realizacji", Color = "LightYellow" },
-        new Resource { Text = "In progress", Value = "Zawieszone", Color = "lightsteelblue" },
-        new Resource { Text = "Completed", Value = "Zakończony", Color = "LightGreen" },
-        new Resource { Text = "Completed", Value = "Zakończone", Color = "LightGreen" },
-    };
-    
+        List<Resource> resources = new List<Resource>();
+        if (AppState.UseOriginalColors)
+        {
+            var st = appointments.Select(a => a.WOState).Distinct().ToList();
+            foreach(var s in st)
+            {
+                var status =  new Resource
+                {
+                    Text = s,
+                    Value = s,
+                    Color = appointments.FirstOrDefault(a=>a.WOState == s)?.StateColor ?? "LightGray"
+                };
+                resources.Add(status);
+            }            
+        }else
+        resources = new List<Resource>
+            {
+                new Resource { Text = "Not started", Value = "Nie rozpoczęte", Color = "LightCoral" },
+                new Resource { Text = "In progress", Value = "W trakcie realizacji", Color = "LightYellow" },
+                new Resource { Text = "In progress", Value = "Zawieszone", Color = "lightsteelblue" },
+                new Resource { Text = "Completed", Value = "Zakończony", Color = "LightGreen" },
+                new Resource { Text = "Completed", Value = "Zakończone", Color = "LightGreen" },
+            };
+        return resources;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         var isWASM = JSRuntime is IJSInProcessRuntime;
@@ -303,6 +327,12 @@
         // {
         //     Navigation.NavigateTo("/login");
         // }
+        AppState.OnChange +=() =>
+        {
+            cellStyles = RenderStatesStyle(_allOrders);
+            statuses = GetStatuses(_allAppointments);
+            StateHasChanged();
+        };
         await HardLoadData();
     }
 
@@ -336,6 +366,7 @@
         // ListDicts = (await apiService.GetWODictionaries(1));
         _allOrders = await apiService.GetWorkOrdersCachedAsync();
         _allAppointments = await ApptService.GetTakenAppointments(_allOrders);
+        statuses = GetStatuses(_allAppointments);
         Console.WriteLine($"--- LoadData: _allAppointments loaded. Count: {_allAppointments.Count}");    
          Departments = (await apiService.GetWODepartments(UserState.PersonID, UserState.LangCode ?? "pl-PL")).Select(c => c.Name).Distinct().ToList();
         Departments.Insert(0, "All");
@@ -672,7 +703,8 @@
         foreach (var color in uniqueColors)
         {
             var safeName = color.TrimStart('#');
-            switch (safeName.ToLowerInvariant())
+            if (!AppState.UseOriginalColors)
+               switch(safeName.ToLowerInvariant())
             {
                 case "lime":
                 case "1bf151":
@@ -690,7 +722,8 @@
                     break;
                 default:
                     break;
-            }
+            } else
+                safeName = color;
             sb.AppendLine($".state-{color.TrimStart('#')} {{");
             sb.AppendLine($"    background-color: {safeName};");
             sb.AppendLine("}");

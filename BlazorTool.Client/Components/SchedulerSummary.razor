@@ -1,4 +1,6 @@
 @using BlazorTool.Client.Models
+@inject AppStateService AppState
+@using BlazorTool.Client.Services
 
 <div class="summary-table-container">
     @if (SummaryData.Any())
@@ -23,8 +25,8 @@
                         @foreach (var status in Statuses)
                         {
                             var count = summary.StatusCounts.GetValueOrDefault(status, 0);
-                            var colorClass = GetColorClass(StatusColors.GetValueOrDefault(status));
-                            <td class="@colorClass">
+                            var color = GetColor(StatusColors.GetValueOrDefault(status));
+                            <td style="background-color:@color">
                                 @count
                             </td>
                         }
@@ -46,6 +48,11 @@
     protected override void OnParametersSet()
     {
         GenerateSummaryData();
+        AppState.OnChange += () =>
+        {
+            GenerateSummaryData();
+            StateHasChanged();
+        };
     }
 
     private void GenerateSummaryData()
@@ -68,7 +75,7 @@
         StatusColors = Appointments
             .Where(a => !string.IsNullOrEmpty(a.WOState) && !string.IsNullOrEmpty(a.StateColor))
             .GroupBy(a => a.WOState)
-            .ToDictionary(g => g.Key, g => g.First().StateColor.TrimStart('#').ToLowerInvariant());
+            .ToDictionary(g => g.Key, g => g.First().StateColor.ToLowerInvariant());
 
         var personGroups = Appointments.GroupBy(a => a.AssignedPerson);
         var newSummaryData = new List<PersonWorkOrderSummary>();
@@ -88,27 +95,30 @@
         SummaryData = newSummaryData.OrderBy(s => s.PersonName).ToList();
     }
 
-    private string GetColorClass(string? color)
+    private string GetColor(string? color)
     {
         if (string.IsNullOrEmpty(color))
         {
-            return "state-default";
+            return "";
         }
-
-        switch (color)
+        if (AppState.UseOriginalColors)
         {
-            case "lime":
-            case "1bf151":
-                return "state-lime";
-            case "red":
-                return "state-red";
-            case "yellow":
-            case "ffff80":
-                return "state-yellow";
-            case "silver":
-                return "state-silver";
-            default:
-                return "state-default";
+            return color;
+        }
+        switch (color.ToLowerInvariant())
+        {
+        case "lime":
+        case "#1bf151":
+            return "LightGreen";
+        case "red":
+            return "LightCoral";
+        case "yellow":
+        case "#ffff80":
+            return "LightYellow";
+        case "silver":
+            return "LightSteelBlue";
+        default:
+            return "";
         }
     }
 

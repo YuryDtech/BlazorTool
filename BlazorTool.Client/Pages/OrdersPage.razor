@@ -11,12 +11,15 @@
 @inject NavigationManager Navigation
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
 @inject UserState UserState
+@inject AppStateService AppState
 @rowStyles
 <CheckSession apiService="@apiService" UserState="@UserState" />
 <label>Devices:</label>
+
 @if (isDevicesLoading)
 {
-    <div>loading device list...</div>
+    <TelerikLoaderContainer Visible="@isDevicesLoading" Text="Loading devices list...">
+    </TelerikLoaderContainer>
 }else
 {    
 <div class="filter-controls-row">
@@ -86,7 +89,7 @@
 </div>
 }
 
-<h3>Orders</h3>
+<h3>Orders (@OrderDevicesForGrid.Count)</h3>
 @if (isOrdersLoading)
 {
     <div>loading order list...</div>
@@ -182,17 +185,10 @@ else
         dicts = await apiService.GetWODictionaries(1);
         allPersons = await apiService.GetAllPersons();
         personNames = allPersons.Select(p => p.Name).ToList();
-        if (!UserState.IsAuthenticated)
-        {
-            Navigation.NavigateTo("/login");
-        }
         currentUser.PersonId = UserState.PersonID ?? -1;
-        currentUser.Name = UserState.UserName ?? string.Empty;
-        workOrderStates = dicts?.Where(d => d.ListType == (int)WOListTypeEnum.State)
-                               .Select(d => d.Name)
-                               .Distinct()
-                               .ToList() ?? null;
-        workOrderStates?.Insert(0, "All");
+        currentUser.Name = UserState.UserName ?? string.Empty;        
+        OrdersForGrid = await apiService.GetWorkOrdersAsync(lang: UserState.LangCode);
+        workOrderStates?.AddRange(OrdersForGrid.Select(o => o.WOState ?? string.Empty).Distinct().ToList());
         devices = await apiService.GetAllDevicesCachedAsync();
         deviceCategories = devices.Select(d => d.DeviceCategory).Distinct().ToList();
         deviceCategories?.Insert(0,"All");
@@ -200,6 +196,11 @@ else
         deviceTypes?.Insert(0, "All");
         isDevicesLoading = false;
         StateHasChanged();
+        AppState.OnChange +=() =>
+        {
+            rowStyles = RenderStatesStyle(OrdersForGrid);
+            StateHasChanged();
+        };
         await LoadData();
     }
 
@@ -249,14 +250,26 @@ else
     }
     private async Task<List<WorkOrder>> GetFilteredOrders(IEnumerable<Device> devices)
     {
-        var orders = await apiService.GetWorkOrdersCachedAsync(devices);
-        var statesFromOrders = orders.Select(o => o.WOState).Distinct().ToList();
-        workOrderStates = workOrderStates.Union(statesFromOrders).ToList();
+        List<WorkOrder> orders = new List<WorkOrder>();
+        if (selectedDeviceIds.Count == 0 && 
+            selectedState == "All" && 
+            selectedPersons.Count == 0 && 
+            selectedDeviceCategory == "All" &&
+            selectedDeviceType == "All"
+        )
+        {
+            orders = await apiService.GetWorkOrdersCachedAsync();
+        }
+        else
+        {
+            orders = await apiService.GetWorkOrdersCachedAsync(devices);
+        }
+
         var result = orders.Where(o => 
             (o.WOState == selectedState || selectedState == "All" || string.IsNullOrWhiteSpace(selectedState)) &&
             (selectedPersons.Count == 0 || selectedPersons.Contains(o.AssignedPerson))
         ).ToList();
-        selectedDeviceIds = result.Select(d => d.MachineID).Distinct().ToList();
+        //selectedDeviceIds = result.Select(d => d.MachineID).Distinct().ToList();
         return result;
     }
 
@@ -449,21 +462,30 @@ else
         foreach (var color in uniqueColors)
         {
             var safeName = color.TrimStart('#');
-            switch(safeName.ToLowerInvariant())
+             
+            if (!AppState.UseOriginalColors)
+               switch(safeName.ToLowerInvariant())
             {
                 case "lime":
+                case "1bf151":
                     safeName = "LightGreen";
                     break;
                 case "red":
                     safeName = "LightCoral";
                     break;
                 case "yellow":
+                case "ffff80":
                     safeName = "LightYellow";
-                    break;                
+                    break;
+                case "silver":
+                    safeName = "LightSteelBlue";
+                    break;
                 default:
                     break;
-            } 
-            sb.AppendLine($".k-grid .k-master-row.state-{color} {{");
+            } else
+                safeName = color;
+
+            sb.AppendLine($".k-grid .k-master-row.state-{color.TrimStart('#')} {{");
             sb.AppendLine($"    background-color: {safeName};");
             sb.AppendLine("}");
         }
