@@ -1,4 +1,16 @@
 ## 2025-07-28
+### Added
+- **Color Scheme Switcher**: Added a "Use original colors" checkbox in the navigation menu. This allows users to switch between the original colors provided by the API and a standardized, high-contrast color palette for better readability.
+
+### Changed
+- **UI/UX**:
+    - Replaced basic loading indicators with `TelerikLoaderContainer` on the `OrdersPage` and `SchedulerPage` for a more consistent and professional user experience.
+    - The total order count is now displayed in the `OrdersPage` header.
+- **Refactoring**:
+    - Centralized color management into `AppStateService` to ensure a consistent color scheme across all components (`SchedulerSummary`, `OrdersPage`, `SchedulerPage`).
+    - Components now subscribe to `AppStateService.OnChange` to dynamically update their appearance when the color scheme is changed.
+
+## 2025-07-28
 ### Changed
 - **API Address Change**: Implemented a mechanism to restart the application after changing the external API address on the Settings page. This ensures that the new address is correctly applied.
 - **Confirmation for API Change**: Added a Telerik confirmation dialog on the Settings page, which appears when a user attempts to change the API address. The dialog displays both the old and new addresses and warns that the application will restart.
