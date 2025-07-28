@@ -1,45 +1,47 @@
 @using BlazorTool.Client.Models
-@using BlazorTool.Client.Pages
-@using Telerik.Blazor.Components.Scheduler
 
 <div class="summary-table-container">
-    <table class="summary-table">
-        <thead>
-            <tr>
-                <th>Person</th>
-                <th>Total</th>
-                @foreach (var status in Statuses)
-                {
-                    <th>@status.Text</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var summary in SummaryData)
-            {
+    @if (SummaryData.Any())
+    {
+        <table class="summary-table">
+            <thead>
                 <tr>
-                    <td>@summary.PersonName</td>
-                    <td>@summary.TotalCount</td>
+                    <th>Person</th>
+                    <th>Total</th>
                     @foreach (var status in Statuses)
                     {
-                        <td class="summary-cell-@GetColorName(status.Value.ToString())">
-                            @summary.StatusCounts.GetValueOrDefault(status.Value.ToString(), 0)
-                        </td>
+                        <th>@status</th>
                     }
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var summary in SummaryData)
+                {
+                    <tr>
+                        <td>@summary.PersonName</td>
+                        <td>@summary.TotalCount</td>
+                        @foreach (var status in Statuses)
+                        {
+                            var count = summary.StatusCounts.GetValueOrDefault(status, 0);
+                            var colorClass = GetColorClass(StatusColors.GetValueOrDefault(status));
+                            <td class="@colorClass">
+                                @count
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>
 
 @code {
     [Parameter]
     public List<SchedulerAppointment> Appointments { get; set; } = new();
 
-    [Parameter]
-    public List<SchedulerPage.Resource> Statuses { get; set; } = new();
-
     private List<PersonWorkOrderSummary> SummaryData { get; set; } = new();
+    private List<string> Statuses { get; set; } = new();
+    private Dictionary<string, string> StatusColors { get; set; } = new();
 
     protected override void OnParametersSet()
     {
@@ -51,11 +53,24 @@
         if (Appointments == null || !Appointments.Any())
         {
             SummaryData.Clear();
+            Statuses.Clear();
+            StatusColors.Clear();
             return;
         }
 
-        var personGroups = Appointments.GroupBy(a => a.AssignedPerson);
+        Statuses = Appointments
+            .Where(a => !string.IsNullOrEmpty(a.WOState))
+            .Select(a => a.WOState)
+            .Distinct()
+            .OrderBy(s => s)
+            .ToList();
 
+        StatusColors = Appointments
+            .Where(a => !string.IsNullOrEmpty(a.WOState) && !string.IsNullOrEmpty(a.StateColor))
+            .GroupBy(a => a.WOState)
+            .ToDictionary(g => g.Key, g => g.First().StateColor.TrimStart('#').ToLowerInvariant());
+
+        var personGroups = Appointments.GroupBy(a => a.AssignedPerson);
         var newSummaryData = new List<PersonWorkOrderSummary>();
 
         foreach (var group in personGroups)
@@ -64,8 +79,8 @@
             {
                 PersonName = string.IsNullOrEmpty(group.Key) ? "Not assigned" : group.Key,
                 TotalCount = group.Count(),
-                StatusCounts = group.GroupBy(a => a.StateColor)
-                                    .ToDictionary(g => g.Key, g => g.Count())
+                StatusCounts = group.GroupBy(a => a.WOState)
+                                     .ToDictionary(g => g.Key, g => g.Count())
             };
             newSummaryData.Add(summary);
         }
@@ -73,8 +88,35 @@
         SummaryData = newSummaryData.OrderBy(s => s.PersonName).ToList();
     }
 
-    private string GetColorName(string colorValue)
+    private string GetColorClass(string? color)
     {
-        return colorValue?.ToLowerInvariant() ?? "default";
+        if (string.IsNullOrEmpty(color))
+        {
+            return "state-default";
+        }
+
+        switch (color)
+        {
+            case "lime":
+            case "1bf151":
+                return "state-lime";
+            case "red":
+                return "state-red";
+            case "yellow":
+            case "ffff80":
+                return "state-yellow";
+            case "silver":
+                return "state-silver";
+            default:
+                return "state-default";
+        }
+    }
+
+    public class PersonWorkOrderSummary
+    {
+        public string PersonName { get; set; } = string.Empty;
+        public int TotalCount { get; set; }
+        public Dictionary<string, int> StatusCounts { get; set; } = new();
     }
 }
+

@@ -26,19 +26,23 @@
     font-weight: bold;
 }
 
-/* Cell colors based on RenderStatesStyle logic */
-.summary-cell-red {
+/* Cell colors based on state */
+.state-red {
     background-color: LightCoral;
 }
 
-.summary-cell-yellow {
+.state-yellow {
     background-color: LightYellow;
 }
 
-.summary-cell-lime {
+.state-lime {
     background-color: LightGreen;
 }
 
-.summary-cell-default {
+.state-silver {
+    background-color: LightSteelBlue;
+}
+
+.state-default {
     background-color: #fff;
 }

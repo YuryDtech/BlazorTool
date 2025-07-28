@@ -117,7 +117,7 @@
                 <SchedulerGroupSettings Orientation="SchedulerGroupOrientation.Vertical" Resources="@(CurrentView == SchedulerView.Timeline ? new List<string> { "AssignedPerson" } : null)" />
             </SchedulerSettings>
             <SchedulerResources>
-                <SchedulerResource Field="StateColor" Title="StateColor" Data="@statuses" />
+                <SchedulerResource Field="WOState" Title="WOState" Data="@statuses" />
                 <SchedulerResource Field="AssignedPerson" Title="Person" Data="@PersonResources" ValueField="Name" TextField="Name" />
             </SchedulerResources>
             
@@ -149,7 +149,7 @@
 
         @if (CurrentView == SchedulerView.Timeline)
         {
-            <SchedulerSummary Appointments="@Appointments" Statuses="@statuses" />
+            <SchedulerSummary Appointments="@Appointments" />
         }
     </div>
 
@@ -285,26 +285,13 @@
     private int numberOfDays = 5; //for TimelineView alt=3
     private List<Resource> statuses = new List<Resource>
     {
-        new Resource { Text = "Not starded", Value = "Red", Color = "LightCoral" },
-        new Resource { Text = "In Progress", Value = "Yellow", Color = "LightYellow" },
-        new Resource { Text = "Completed", Value = "Lime", Color = "LightGreen" },
+        new Resource { Text = "Not started", Value = "Nie rozpoczęte", Color = "LightCoral" },
+        new Resource { Text = "In progress", Value = "W trakcie realizacji", Color = "LightYellow" },
+        new Resource { Text = "In progress", Value = "Zawieszone", Color = "lightsteelblue" },
+        new Resource { Text = "Completed", Value = "Zakończony", Color = "LightGreen" },
+        new Resource { Text = "Completed", Value = "Zakończone", Color = "LightGreen" },
     };
-    //     private List<Resource> GenerateStatuses()
-    // {
-
-    //     return Statuses.Select(s => new Resource
-    //     {
-    //         Text = s.Name,
-    //         Value = s.,
-    //         Color = s.Color
-    //     }).ToList();
-    // }
-
-    // private string GetColorFromStatusId(int statusId)
-    // {
-    //     var status = statuses.FirstOrDefault(s => s.Value == statusId);
-    //     return status?.Color ?? "LightGray"; Default color if not found
-    // }
+    
     protected override async Task OnInitializedAsync()
     {
         var isWASM = JSRuntime is IJSInProcessRuntime;
@@ -688,18 +675,23 @@
             switch (safeName.ToLowerInvariant())
             {
                 case "lime":
+                case "1bf151":
                     safeName = "LightGreen";
                     break;
                 case "red":
                     safeName = "LightCoral";
                     break;
                 case "yellow":
+                case "ffff80":
                     safeName = "LightYellow";
+                    break;
+                case "silver":
+                    safeName = "LightSteelBlue";
                     break;
                 default:
                     break;
             }
-            sb.AppendLine($".state-{color} {{");
+            sb.AppendLine($".state-{color.TrimStart('#')} {{");
             sb.AppendLine($"    background-color: {safeName};");
             sb.AppendLine("}");
         }
