@@ -1,3 +1,15 @@
+## 2025-07-28
+### Zmieniono
+- **Zmiana Adresu API**: Wprowadzono mechanizm restartu aplikacji po zmianie adresu zewnętrznego API na stronie Ustawień. Zapewnia to poprawne zastosowanie nowego adresu.
+- **Potwierdzenie Zmiany API**: Dodano okno dialogowe Telerik na stronie Ustawień, które pojawia się, gdy użytkownik próbuje zmienić adres API. Dialog wyświetla stary i nowy adres oraz ostrzega, że aplikacja zostanie ponownie uruchomiona.
+- **Refaktoryzacja**:
+    - Zastąpiono przestarzały `ListTypeEnum` poprawnym `WOListTypeEnum` w całej aplikacji klienckiej.
+    - Ulepszono logikę ładowania danych i filtrowania na stronie `SchedulerPage` dla działów i kategorii urządzeń.
+    - Zrefaktoryzowano `ApiServiceClient`, aby poprawnie obsługiwał `personID` (który może być null) w metodach związanych ze słownikami.
+
+### Naprawiono
+- **Obsługa Błędów**: Ulepszono obsługę wyjątków w `UserSettings.cs`, aby zapewnić, że błędy są prawidłowo zgłaszane i logowane.
+
 ## 2025-07-24
 ### Zmieniono
 - **Konfiguracja Adresu API**: Adres zewnętrznego API może być teraz konfigurowany na stronie Ustawień przez użytkownika "MES". Adres jest przechowywany globalnie dla aplikacji w pliku `appsettings.json` na serwerze.

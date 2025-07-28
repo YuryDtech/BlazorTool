@@ -1,6 +1,6 @@
 namespace BlazorTool.Client.Models
 {
-    public enum ListTypeEnum
+    public enum WOListTypeEnum
     {
         Category = 1,
         Level = 2,

@@ -1,3 +1,15 @@
+## 2025-07-28
+### Changed
+- **API Address Change**: Implemented a mechanism to restart the application after changing the external API address on the Settings page. This ensures that the new address is correctly applied.
+- **Confirmation for API Change**: Added a Telerik confirmation dialog on the Settings page, which appears when a user attempts to change the API address. The dialog displays both the old and new addresses and warns that the application will restart.
+- **Refactoring**:
+    - Replaced the obsolete `ListTypeEnum` with the correct `WOListTypeEnum` across the client-side application.
+    - Improved data loading and filtering logic on the `SchedulerPage` for departments and device categories.
+    - Refactored `ApiServiceClient` to correctly handle nullable `personID` in dictionary-related methods.
+
+### Fixed
+- **Error Handling**: Improved exception handling in `UserSettings.cs` to ensure errors are properly thrown and logged.
+
 ## 2025-07-24
 ### Changed
 - **API Address Configuration**: The external API address can now be configured on the Settings page by the "MES" user. The address is stored globally for the application in the `appsettings.json` file on the server.

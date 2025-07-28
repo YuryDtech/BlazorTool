@@ -19,12 +19,14 @@ namespace BlazorTool.Controllers
         private const string SettingsDirectory = "Settings";
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _configuration;
+        private readonly IHostApplicationLifetime _lifetime;
 
-        public SettingsController(ApiServiceClient apiServiceClient, IWebHostEnvironment env, IConfiguration configuration)
+        public SettingsController(ApiServiceClient apiServiceClient, IWebHostEnvironment env, IConfiguration configuration, IHostApplicationLifetime lifetime)
         {
             _apiServiceClient = apiServiceClient;
             _env = env;
             _configuration = configuration;
+            _lifetime = lifetime;
         }
 
         // GET: Settings var url = $"api/v1/settings/get?key=address}";
@@ -68,6 +70,10 @@ namespace BlazorTool.Controllers
                     var options = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
                     System.IO.File.WriteAllText(appSettingsPath, jsonObj.ToJsonString(options));
                     Console.WriteLine($"API address saved to appsettings.json: {value}");
+                    Console.WriteLine("Application will now shut down to apply changes.");
+                    // Trigger application shutdown
+                    _lifetime.StopApplication();
+
                     return true; 
                 }
 

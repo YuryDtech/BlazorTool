@@ -106,11 +106,12 @@ namespace BlazorTool.Services
                     allSettings = new Dictionary<string, Dictionary<string, object>>(StringComparer.OrdinalIgnoreCase);
                 }
             }
-            catch (JsonException)
+            catch (JsonException ex)
             {
                 // If the file is corrupt, start with a new settings dictionary.
                 // Consider logging this and backing up the corrupt file.
                 allSettings = new Dictionary<string, Dictionary<string, object>>(StringComparer.OrdinalIgnoreCase);
+                throw ex;
             }
             catch (Exception ex)
             {
@@ -118,6 +119,7 @@ namespace BlazorTool.Services
                 // Consider logging this error: Console.WriteLine($"Error reading settings file for SetSetting: {ex.Message}");
                 // Depending on policy, you might re-throw or start fresh. For now, start fresh.
                 allSettings = new Dictionary<string, Dictionary<string, object>>(StringComparer.OrdinalIgnoreCase);
+                throw ex;
             }
 
 
@@ -139,7 +141,7 @@ namespace BlazorTool.Services
                 // Handle potential IO exceptions during write
                 // Consider logging this error: Console.WriteLine($"Error writing settings: {ex.Message}");
                 // Depending on desired behavior, you might re-throw or have a retry mechanism.
-                throw; // Re-throw for now so the caller is aware of the failure.
+                throw ex; // Re-throw for now so the caller is aware of the failure.
             }
         }
     }

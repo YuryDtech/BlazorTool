@@ -106,9 +106,7 @@ namespace BlazorTool.Client.Services
         {
             var result = new List<WorkOrder>();
             if (deviceIds == null || deviceIds.Count() == 0)
-            {
-                return result;
-            }
+            {}
             foreach (var deviceId in deviceIds)
             {
                 if (!_workOrdersCache.TryGetValue(deviceId, out var list))
@@ -775,8 +773,14 @@ namespace BlazorTool.Client.Services
         #endregion
 
         #region Other functions
-        public async Task<List<Dict>> GetWODictionaries(int personID, string lang = "pl-PL")
+        public async Task<List<Dict>> GetWODictionaries(int? personID, string lang = "pl-PL")
         {
+            if (personID == null || personID <= 0)
+            {
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
+                Debug.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
+                return new List<Dict>();
+            }
             var qp = new List<string>();
             qp.Add($"PersonID={personID}");
             qp.Add($"Lang={lang}");
@@ -815,7 +819,7 @@ namespace BlazorTool.Client.Services
                 return new List<Dict>();
             }
         }
-        public async Task<List<Dict>> GetWODictionariesCached(int personID, string lang = "pl-PL")
+        public async Task<List<Dict>> GetWODictionariesCached(int? personID, string lang = "pl-PL")
         {
             if (_dictCache.Count == 0)
             {//is need cache with personID and lang ?
@@ -825,37 +829,50 @@ namespace BlazorTool.Client.Services
             
         }
 
-        public async Task<List<Dict>> GetWOCategories(int personID, string lang = "pl-PL")
+        public async Task<List<Dict>> GetWOCategories(int? personID, string lang = "pl-PL")
         {
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Category)
+            if (personID == null || personID <= 0)
+            {
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
+                Debug.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
+                return new List<Dict>();
+            }
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.Category)
                 .Distinct()
                 .ToList();
         }
 
-        public async Task<List<Dict>> GetWOStates(int personID, string lang = "pl-PL")
+        public async Task<List<Dict>> GetWOStates(int? personID, string lang = "pl-PL")
         {
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.State)
+            if (personID == null || personID <= 0)
+            {
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
+                Debug.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
+                return new List<Dict>();
+            }
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.State)
                 .Distinct()
                 .ToList();
         }
 
         public async Task<List<Dict>> GetWOLevels(int personID, string lang = "pl-PL")
         {
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Level)
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.Level)
                 .Distinct()
                 .ToList();
         }
 
         public async Task<List<Dict>> GetWOReasons(int personID, string lang = "pl-PL")
         {
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Reason)
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.Reason)
                 .Distinct()
                 .ToList();
         }
 
-        public async Task<List<Dict>> GetWODepartments(int personID, string lang = "pl-PL")
+        public async Task<List<Dict>> GetWODepartments(int? personID, string lang = "pl-PL")
         {
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)ListTypeEnum.Department)
+            if (personID == null) return new List<Dict>();
+            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.Department)
                 .Distinct()
                 .ToList();
         }

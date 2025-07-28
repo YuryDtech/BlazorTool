@@ -3,9 +3,25 @@
 @inject ApiServiceClient apiService
 @inject NavigationManager Navigation
 @inject UserState UserState
+@inject AppStateService AppState
 @inject ILogger<Settings> Logger
 
-<BlazorTool.Client.Components.CheckSession ApiServiceClient="@apiService" UserState="@UserState" />
+<BlazorTool.Client.Components.CheckSession ApiService="@apiService" UserState="@UserState" />
+
+<TelerikDialog @bind-Visible="isConfirmDialogVisible">
+    <DialogTitle>Confirmation</DialogTitle>
+    <DialogContent>
+        <p>Are you sure you want to change the API address?</p>
+        <p><strong>Old Address:</strong> @oldApiAddress</p>
+        <p><strong>New Address:</strong> @ApiAddress</p>
+        <p class="text-danger">The application will restart!</p>
+    </DialogContent>
+    <DialogButtons>
+        <TelerikButton OnClick="@ConfirmSave" ThemeColor="primary">Confirm</TelerikButton>
+        <TelerikButton OnClick="@CancelSave">Cancel</TelerikButton>
+    </DialogButtons>
+</TelerikDialog>
+
 <h3>Settings</h3>
 <div class="container">
     @if (isAdmin)
@@ -52,12 +68,16 @@
     protected string? StatusMessageClass { get; set; } // e.g., "text-success" or "text-danger"
     string currentUser = "test User"; // Placeholder for current user, replace with actual user logic"
 
+    private bool isConfirmDialogVisible = false;
+    private string oldApiAddress = "";
+
     protected override async Task OnInitializedAsync()
     {
         if (!UserState.IsAuthenticated)
         {
             Logger.LogWarning("User is not authenticated, redirecting to login page.");
             Navigation.NavigateTo("/login");
+            return;
         }
         currentUser = UserState.UserName ?? "unknown user";
         isAdmin = UserState.UserName == "MES" || UserState.UserName?.ToLower() == "admin";
@@ -68,7 +88,15 @@
 
     protected async Task LoadSettingsAsync()
     {
-        ApiAddress = isAdmin ? await LoadSettingAsync("apiAddress") : string.Empty;
+        if (isAdmin)
+        {
+            ApiAddress = await LoadSettingAsync("apiAddress");
+            oldApiAddress = AppState.Settings.ApiBaseUrl ?? ApiAddress ?? "";
+            if (string.IsNullOrEmpty(AppState.Settings.ApiBaseUrl) && !string.IsNullOrEmpty(ApiAddress))
+            {
+                AppState.Settings.ApiBaseUrl = ApiAddress;
+            }
+        }
         SelectedLanguage = await LoadSettingAsync("selectedLanguage") ?? "pl-Pl"; // Set default if not found
     }
 
@@ -111,26 +139,59 @@
     protected async Task SaveSettingsAsync()
     {
         StatusMessage = string.Empty;
-        try
-        {
-            if (isAdmin)
-            {
-                var testResult = await TestApiAddress();
-                if (!testResult)
-                {
-                    StatusMessage = "Wrong API address"; // corrected spelling of "address"
-                    StatusMessageClass = "text-danger";
-                    return;
-                }
-                if (!ApiAddress.EndsWith('/')) ApiAddress += "/";
-            }
 
-            var s1 = isAdmin ? await SaveSettingAsync("apiAddress", ApiAddress, currentUser) : true;
-            var s2 = await SaveSettingAsync("selectedLanguage", SelectedLanguage, currentUser); 
+        if (isAdmin)
+        {
+            var testResult = await TestApiAddress();
+            if (!testResult)
+            {
+                StatusMessage = "Wrong API address";
+                StatusMessageClass = "text-danger";
+                return;
+            }
+            if (!ApiAddress.EndsWith('/')) ApiAddress += "/";
+        }
+
+        // If user is admin and the API address has changed, show confirmation dialog
+        if (isAdmin && !string.IsNullOrEmpty(ApiAddress) && ApiAddress != oldApiAddress)
+        {
+            isConfirmDialogVisible = true;
+            return;
+        }
+
+        // If no confirmation is needed, proceed with saving other settings
+        await ProceedWithSave();
+    }
+
+    private async Task ConfirmSave()
+    {
+        isConfirmDialogVisible = false;
+        await ProceedWithSave();
+    }
+
+    private void CancelSave()
+    {
+        isConfirmDialogVisible = false;
+        ApiAddress = oldApiAddress; // Revert the change in the input
+        StatusMessage = "Canceled.";
+        StatusMessageClass = "text-info";
+    }
+
+    private async Task ProceedWithSave()
+    {
+        try
+        {          
+            var s1 = (isAdmin && ApiAddress != oldApiAddress) ? await SaveSettingAsync("apiAddress", ApiAddress, currentUser) : true;
+            var s2 = await SaveSettingAsync("selectedLanguage", SelectedLanguage, currentUser);
             if (s1 && s2)
             {
                 StatusMessage = "Settings saved successfully!";
                 StatusMessageClass = "text-success";
+                if (isAdmin && ApiAddress != oldApiAddress)
+                {
+                    // Update the AppState with the new address
+                    AppState.Settings.ApiBaseUrl = ApiAddress;
+                }
             }
             else
             {
@@ -144,6 +205,7 @@
             StatusMessageClass = "text-danger";
         }
     }
+
 
     protected async Task<bool> SaveSettingAsync(string? key, string? value, string? user)
     {

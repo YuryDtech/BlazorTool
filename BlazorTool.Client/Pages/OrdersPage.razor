@@ -12,7 +12,7 @@
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
 @inject UserState UserState
 @rowStyles
-<CheckSession ApiServiceClient="@apiService" UserState="@UserState" />
+<CheckSession apiService="@apiService" UserState="@UserState" />
 <label>Devices:</label>
 @if (isDevicesLoading)
 {
@@ -188,7 +188,7 @@ else
         }
         currentUser.PersonId = UserState.PersonID ?? -1;
         currentUser.Name = UserState.UserName ?? string.Empty;
-        workOrderStates = dicts?.Where(d => d.ListType == (int)ListTypeEnum.State)
+        workOrderStates = dicts?.Where(d => d.ListType == (int)WOListTypeEnum.State)
                                .Select(d => d.Name)
                                .Distinct()
                                .ToList() ?? null;

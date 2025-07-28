@@ -23,7 +23,7 @@
     <div style="flex-basis: 66%; flex-shrink:1; flex-grow:0; border-right: outset; display: flex; align-items: top; gap: 1rem;">
         <div style="max-width: 400px;">
         <label>Assigned persons: </label>
-            <TelerikMultiSelect Data="@Persons"
+            <TelerikMultiSelect Data="@PersonsNames"
                                 @bind-Value="@selectedAssignedPersons"
                                 TagMode="@MultiSelectTagMode.Multiple"
                                 Placeholder="Select assigned persons"
@@ -46,7 +46,7 @@
         </div>
         <div>
             <label>Device: </label>
-            <TelerikComboBox Data="@AssetNumbers"
+            <TelerikComboBox Data="@WO_AssetNo"
                              Placeholder="Select asset..."
                              Filterable="true"
                              AllowCustom="true"
@@ -215,7 +215,7 @@
     <WindowContent>
         <AppointmentEditor Appointment="@CurrentAppointment" 
             isEditable=true 
-            ListPersons="@Persons.Where(c=>c != "All").Concat(new List<string>(){"Not assigned"}).ToList()"
+            ListPersons="@PersonsNames.Where(c=>c != "All").Concat(new List<string>(){"Not assigned"}).ToList()"
             currentUser="@currentUser"
             OnAppointmentChanged="@RefreshData" />
     </WindowContent>
@@ -269,13 +269,13 @@
     private List<Person> allPersons = new();
     private List<Person> PersonResources { get; set; } = new();
     private List<string> selectedAssignedPersons = new();
-    private List<string> Persons = new();
+    private List<string> PersonsNames = new();
     private List<string> Departments = new(); 
     private string selectedDepartment = "All";
     private bool isCBAllOrdersSelected = false; //show executed orders in grid
-    private List<string?> DeviceCategories = new();//for Orders grid filter
+    private List<string> DeviceCategories = new();//for Orders grid filter
     private string selectedCategory = "All";
-    private List<string> AssetNumbers = new();
+    private List<string> WO_AssetNo = new();
     private string selectedAssetNo = "All";
     private Person currentUser = new Person();
     private string popupMessage = string.Empty;
@@ -289,13 +289,29 @@
         new Resource { Text = "In Progress", Value = "Yellow", Color = "LightYellow" },
         new Resource { Text = "Completed", Value = "Lime", Color = "LightGreen" },
     };
+    //     private List<Resource> GenerateStatuses()
+    // {
 
+    //     return Statuses.Select(s => new Resource
+    //     {
+    //         Text = s.Name,
+    //         Value = s.,
+    //         Color = s.Color
+    //     }).ToList();
+    // }
+
+    // private string GetColorFromStatusId(int statusId)
+    // {
+    //     var status = statuses.FirstOrDefault(s => s.Value == statusId);
+    //     return status?.Color ?? "LightGray"; Default color if not found
+    // }
     protected override async Task OnInitializedAsync()
     {
         var isWASM = JSRuntime is IJSInProcessRuntime;
         Console.WriteLine($"--- Initialized SCHEDULER PAGE. WASM = {isWASM}");
         Console.WriteLine($"--- OnInitializedAsync completed.");
         await UserState.InitializationTask; // Ensure UserState is loaded
+        // moved  to CheckSession component
         // if (!UserState.IsAuthenticated)
         // {
         //     Navigation.NavigateTo("/login");
@@ -305,12 +321,12 @@
 
     private async Task HardLoadData()
     {
-        Console.WriteLine("--- HardLoadData called.");
+        Console.WriteLine("--- HardLoadData started.");
         isLoading = true;
         StateHasChanged();
         allPersons = await apiService.GetAllPersons();
         Console.WriteLine($"--- HardLoadData: allPersons loaded. Count: {allPersons.Count}");
-        Persons = allPersons.Select(c => c.Name).ToList();
+        PersonsNames = allPersons.Select(c => c.Name).ToList();
         _allOrders = await apiService.GetWorkOrdersAsync(); //from API, not cache
         ApptService.ClearAppointments(); //clear cache
         if (!UserState.IsAuthenticated)
@@ -326,22 +342,21 @@
 
     private async Task LoadData()
     {
-        Console.WriteLine("--- LoadData called.");
+        Console.WriteLine("--- LoadData started.");
         isLoading = true;
         StateHasChanged();
         //Persons = (await apiService.GetAllPersons()).Select(c => c.Name).ToList();
         // ListDicts = (await apiService.GetWODictionaries(1));
         _allOrders = await apiService.GetWorkOrdersCachedAsync();
         _allAppointments = await ApptService.GetTakenAppointments(_allOrders);
-        Console.WriteLine($"--- LoadData: _allAppointments loaded. Count: {_allAppointments.Count}");
-        Departments = new List<string> { "All" };
-        Departments.AddRange(_allOrders.Where(d => !string.IsNullOrWhiteSpace(d.DepName)).Select(x => x.DepName).Distinct().ToList());
-        DeviceCategories = new List<string?> { "All" };
-        DeviceCategories.AddRange(_allOrders.Select(x => x.DeviceCategory).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct());
-        AssetNumbers = new List<string> { "All" };
-        AssetNumbers.AddRange(_allOrders.Where(d => !string.IsNullOrWhiteSpace(d.AssetNo)).Select(x => x.AssetNo).Distinct().ToList());
+        Console.WriteLine($"--- LoadData: _allAppointments loaded. Count: {_allAppointments.Count}");    
+         Departments = (await apiService.GetWODepartments(UserState.PersonID, UserState.LangCode ?? "pl-PL")).Select(c => c.Name).Distinct().ToList();
+        Departments.Insert(0, "All");
+        DeviceCategories = (await apiService.GetWOCategories(UserState.PersonID, UserState.LangCode ?? "pl-PL")).Select(c => c.Name).Distinct().ToList();
+        DeviceCategories.Insert(0, "All");
+        WO_AssetNo = new List<string> { "All" };
+        WO_AssetNo.AddRange(_allOrders.Where(d => !string.IsNullOrWhiteSpace(d.AssetNo)).Select(x => x.AssetNo).Distinct().ToList());
         DisplayAppointments(); 
-        Console.WriteLine($"--- LoadData: DisplayAppointments called.");
         DisplayOrders();
         isLoading = false;
         StateHasChanged();

@@ -420,7 +420,7 @@
         {
             WorkOrder.WOCategory = categoryName;
             WorkOrder.CategoryID = newValue;
-            await apiService.AddNewWODict(categoryName, (int)ListTypeEnum.Category);
+            await apiService.AddNewWODict(categoryName, (int)WOListTypeEnum.Category);
         }
     }
 
@@ -435,7 +435,7 @@
             DepAlarm = "bg-warning";
         else DepAlarm = string.Empty;
 
-        await apiService.AddNewWODict(departmentName, (int)ListTypeEnum.Department);
+        await apiService.AddNewWODict(departmentName, (int)WOListTypeEnum.Department);
 
     }
 
@@ -446,7 +446,7 @@
         {
             WorkOrder.WOLevel = levelName;
             WorkOrder.LevelID = newValue;
-            await apiService.AddNewWODict(levelName, (int)ListTypeEnum.Level);
+            await apiService.AddNewWODict(levelName, (int)WOListTypeEnum.Level);
         }
 
         if (string.IsNullOrEmpty(levelName) || levelName == notSpecified)
