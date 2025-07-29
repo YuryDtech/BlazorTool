@@ -377,7 +377,7 @@ namespace BlazorTool.Client.Services
             int? stateId = null;
             if (!string.IsNullOrWhiteSpace(workOrder.WOState))
             {
-                var states = await GetWOStates(_userState.PersonID.Value);
+                var states = GetWOStates(_userState.PersonID.Value);
                 stateId = states.FirstOrDefault(s => s.Name.Equals(workOrder.WOState, StringComparison.OrdinalIgnoreCase))?.Id;
             }
 
@@ -655,6 +655,16 @@ namespace BlazorTool.Client.Services
             return result;
         }
 
+        public async Task<int> GetWOStateID(int? workorderID)
+        { 
+            if (workorderID == null || workorderID <= 0) return 0;
+            var woInfo = await GetWOInfo(workorderID??0);
+            if (woInfo != null && woInfo.StateID.HasValue && woInfo.StateID.Value > 0)
+            {
+                return woInfo.StateID.Value;
+            }else
+                return 0;
+        }
         #endregion
 
         #region Activity
@@ -819,16 +829,44 @@ namespace BlazorTool.Client.Services
                 return new List<Dict>();
             }
         }
-        public async Task<List<Dict>> GetWODictionariesCached(int? personID, string lang = "pl-PL")
+        public List<Dict> GetWODictionariesCached(int? personID, string lang = "pl-PL")
         {
             if (_dictCache.Count == 0)
             {//is need cache with personID and lang ?
-                _dictCache = await GetWODictionaries(personID, lang);
+                _dictCache = GetWODictionaries(personID, lang).Result;
             }
             return _dictCache;
             
         }
 
+        public async Task<string> GetStateColor(int? workorderID)
+        {
+            var stateId = await GetWOStateID(workorderID);
+            if (stateId == 0)
+                return "primary";
+
+            return GetColorByStateId(stateId);
+        }
+
+        public string ConvertStateColor(string state)
+        {
+            var states = GetWOStates(_userState.PersonID);
+            var stateId = states.FirstOrDefault(s => s.Name == state)?.Id;
+            return GetColorByStateId(stateId ?? 0);
+        }
+
+        private string GetColorByStateId(int stateId)
+        {
+            return stateId switch
+            {
+                5 => "bg-success-light",
+                0 => "bg-success-light",
+                1 => "bg-danger-light",
+                2 => "bg-warning-light",
+                6 => "bg-warning-light",
+                _ => "bg-gray-light"
+            };
+        }
         public async Task<List<Dict>> GetWOCategories(int? personID, string lang = "pl-PL")
         {
             if (personID == null || personID <= 0)
@@ -837,12 +875,12 @@ namespace BlazorTool.Client.Services
                 Debug.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
                 return new List<Dict>();
             }
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.Category)
+            return (GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.Category)
                 .Distinct()
                 .ToList();
         }
 
-        public async Task<List<Dict>> GetWOStates(int? personID, string lang = "pl-PL")
+        public List<Dict> GetWOStates(int? personID, string lang = "pl-PL")
         {
             if (personID == null || personID <= 0)
             {
@@ -850,21 +888,21 @@ namespace BlazorTool.Client.Services
                 Debug.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
                 return new List<Dict>();
             }
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.State)
+            return (GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.State)
                 .Distinct()
                 .ToList();
         }
 
         public async Task<List<Dict>> GetWOLevels(int personID, string lang = "pl-PL")
         {
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.Level)
+            return (GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.Level)
                 .Distinct()
                 .ToList();
         }
 
         public async Task<List<Dict>> GetWOReasons(int personID, string lang = "pl-PL")
         {
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.Reason)
+            return (GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.Reason)
                 .Distinct()
                 .ToList();
         }
@@ -872,7 +910,7 @@ namespace BlazorTool.Client.Services
         public async Task<List<Dict>> GetWODepartments(int? personID, string lang = "pl-PL")
         {
             if (personID == null) return new List<Dict>();
-            return (await GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.Department)
+            return (GetWODictionariesCached(personID)).Where(d => d.ListType == (int)WOListTypeEnum.Department)
                 .Distinct()
                 .ToList();
         }

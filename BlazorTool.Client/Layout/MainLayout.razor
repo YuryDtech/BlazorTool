@@ -80,28 +80,28 @@
 
         Logger.LogInformation($"User [{UserState.UserName}] is authenticated from userState");
         // If on a page other than login, verify session with the server
-        if (!Navigation.Uri.EndsWith("/login", StringComparison.OrdinalIgnoreCase))
-        {
-            try
-            {
-                var response = await ApiClient.CheckSessionAsync();
-                if (!response.IsSuccessStatusCode)
-                {
-                    // Server session expired or invalid, clear local state and redirect
-                    Logger.LogWarning($"[{UserState.UserName}] == Session check failed with status code: {response.StatusCode}");
-                    await UserState.ClearAsync();
-                    Navigation.NavigateTo("/login");
-                }
-            }
-            catch (Exception ex)
-            {
-                // Handle potential network errors or API unavailability
-                Logger.LogError(ex, "Failed to check session for user {UserName}", UserState.UserName);
-                Console.WriteLine($"Failed to check session: {ex.Message}");
-                await UserState.ClearAsync();
-                Navigation.NavigateTo("/login");
-            }
-        }
+        // if (!Navigation.Uri.EndsWith("/login", StringComparison.OrdinalIgnoreCase))
+        // {
+        //     try
+        //     {
+        //         var response = await ApiClient.CheckSessionAsync();
+        //         if (!response.IsSuccessStatusCode)
+        //         {
+        //             Server session expired or invalid, clear local state and redirect
+        //             Logger.LogWarning($"[{UserState.UserName}] == Session check failed with status code: {response.StatusCode}");
+        //             await UserState.ClearAsync();
+        //             Navigation.NavigateTo("/login");
+        //         }
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Handle potential network errors or API unavailability
+        //         Logger.LogError(ex, "Failed to check session for user {UserName}", UserState.UserName);
+        //         Console.WriteLine($"Failed to check session: {ex.Message}");
+        //         await UserState.ClearAsync();
+        //         Navigation.NavigateTo("/login");
+        //     }
+        // }
     }
 
     private async Task Logout()

@@ -107,6 +107,12 @@
     margin-bottom: 2px;
 }
 
+.custom-highlight {
+    background-color: floralwhite;
+    padding: 1rem;
+
+}
+
 .field-value {
     background-color: #f8f9fa;
     padding: 10px 12px;

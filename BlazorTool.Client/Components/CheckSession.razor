@@ -5,9 +5,13 @@
 @code {
     [Parameter] public ApiServiceClient apiService { get; set; }
     [Parameter] public UserState UserState { get; set; }
-    
+
     protected override async Task OnInitializedAsync()
     {
+        if (Navigation.Uri.EndsWith("/login", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
         await UserState.InitializationTask; // Ensure UserState is loaded
         // Ensure the user is authenticated before checking the session
         if (UserState.IsAuthenticated)
@@ -17,7 +21,7 @@
         else
         {
             Logger.LogWarning("User is not authenticated, redirecting to login page.");
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo("/login", forceLoad: true);
         }
     }
     private async Task checkSession()

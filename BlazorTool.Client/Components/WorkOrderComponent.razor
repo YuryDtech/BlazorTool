@@ -15,12 +15,12 @@
 
     <!-- Status-->
 <div class="position-absolute top-50 end-0 translate-middle-y p-2">
-    <span class="badge @GetStateColor(@WorkOrder.StateColor) fs-3">
+    <span class="badge @StateColor fs-3">
         @WorkOrder.WOState
     </span>
 </div>
 
-    <div class="position-absolute top-50 end-50 translate-middle-y  fs-5 ">
+    <div class="position-absolute top-50 end-50 translate-middle-y custom-highlight fs-5 p-3 rounded">
                 <div class="@DeviceAlarm"><strong>Device:</strong>
                     @if (isNewWorkOrder && isEditable)
                     {
@@ -293,7 +293,7 @@
     private List<Dict> ListCategories = new List<Dict>();
     private List<string> ListDepartments = new List<string>();
     private List<Dict> ListLevels = new List<Dict>();
-
+    private string StateColor = string.Empty;
     protected override async Task OnInitializedAsync()
     {
         isNewWorkOrder = WorkOrder?.WorkOrderID == 0;
@@ -301,6 +301,7 @@
         ListCategories = await apiService.GetWOCategories(currentUser?.PersonId ?? 1);
         ListLevels = await apiService.GetWOLevels(currentUser?.PersonId ?? 1);
         ListDepartments = (await apiService.GetWODepartments(currentUser?.PersonId ?? 1)).Select(c=>c.Name).ToList();
+        StateColor = await apiService.GetStateColor(WorkOrder?.WorkOrderID);
         if (isNewWorkOrder) {
             WorkOrder.EndDate = WorkOrder.StartDate?.AddHours(1);
             DeviceAlarm = string.IsNullOrWhiteSpace(WorkOrder?.AssetNo) ? "bg-warning" : string.Empty;
@@ -456,21 +457,7 @@
 
     #endregion Event Handlers
 
-    private string GetStateColor(string? StateColor)
-    {
-        if (string.IsNullOrEmpty(StateColor))
-            return "primary";
-            
-        return StateColor.ToLower() switch
-        {
-            "lime" => "bg-success",
-            "red" => "bg-danger",
-            "yellow" => "bg-warning",
-            _ => "bg-dark"
-        };
-    }
-
-    private string FormatDateTime(DateTime? dateTime)
+     private string FormatDateTime(DateTime? dateTime)
     {
         if (!dateTime.HasValue)
             return "Not specified";

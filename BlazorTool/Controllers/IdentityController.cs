@@ -20,13 +20,13 @@ namespace BlazorTool.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
-        private readonly IMemoryCache _cache; // Added
+        private readonly IMemoryCache _cache;
 
         public IdentityController(IHttpClientFactory httpClientFactory, IConfiguration configuration, IMemoryCache cache)       
         {
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
-            _cache = cache; // Added
+            _cache = cache;
         }
 
         [HttpPost("loginpassword")]

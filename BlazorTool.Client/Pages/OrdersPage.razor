@@ -431,7 +431,8 @@ else
     {
         var item = args.Item as WorkOrderView;
 
-        args.Class += "state-" + item?.StateColor?.TrimStart('#');
+        // args.Class += "state-" + item?.StateColor?.TrimStart('#');
+        args.Class += GetStateColorClass(item);
     }
 
     void OnRowClick(GridRowClickEventArgs args)
@@ -462,27 +463,27 @@ else
         foreach (var color in uniqueColors)
         {
             var safeName = color.TrimStart('#');
-             
+
             if (!AppState.UseOriginalColors)
-               switch(safeName.ToLowerInvariant())
-            {
-                case "lime":
-                case "1bf151":
-                    safeName = "LightGreen";
-                    break;
-                case "red":
-                    safeName = "LightCoral";
-                    break;
-                case "yellow":
-                case "ffff80":
-                    safeName = "LightYellow";
-                    break;
-                case "silver":
-                    safeName = "LightSteelBlue";
-                    break;
-                default:
-                    break;
-            } else
+                switch(safeName.ToLowerInvariant())
+                {
+                    case "lime":
+                    case "1bf151":
+                        safeName = "LightGreen";
+                        break;
+                    case "red":
+                        safeName = "LightCoral";
+                        break;
+                    case "yellow":
+                    case "ffff80":
+                        safeName = "LightYellow";
+                        break;
+                    case "silver":
+                        safeName = "LightSteelBlue";
+                        break;
+                    default:
+                        break;
+                } else
                 safeName = color;
 
             sb.AppendLine($".k-grid .k-master-row.state-{color.TrimStart('#')} {{");
@@ -492,6 +493,15 @@ else
         sb.AppendLine("</style>");
 
         return new MarkupString(sb.ToString());
+    }
+
+    private string GetStateColorClass(WorkOrder WO)
+    {
+        if (AppState.UseOriginalColors)
+        {
+            return "state-" + WO.StateColor.TrimStart('#');
+        }
+        return apiService.ConvertStateColor(WO.WOState);
     }
     #endregion
 

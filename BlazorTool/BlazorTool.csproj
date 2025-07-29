@@ -19,23 +19,21 @@
   <ItemGroup>
     <Folder Include="Models\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\app.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Target Name="CopyChangelogToWwwRoot" BeforeTargets="Build">
     <ItemGroup>
       <!-- Указываем исходный файл. Путь относительный к файлу .csproj -->
       <ChangelogFile1 Include="..\CHANGELOG.md" />
       <ChangelogFile2 Include="..\CHANGELOG_PL.md" />
     </ItemGroup>
-    <Copy
-      SourceFiles="@(ChangelogFile1)"
-      DestinationFolder="$(MSBuildProjectDirectory)\wwwroot"
-      SkipUnchangedFiles="true" 
-      />
+    <Copy SourceFiles="@(ChangelogFile1)" DestinationFolder="$(MSBuildProjectDirectory)\wwwroot" SkipUnchangedFiles="true" />
     <Message Text="CHANGELOG.md скопирован в wwwroot." Importance="high" />
-	<Copy
-      SourceFiles="@(ChangelogFile2)"
-      DestinationFolder="$(MSBuildProjectDirectory)\wwwroot"
-      SkipUnchangedFiles="true" 
-      />
+	<Copy SourceFiles="@(ChangelogFile2)" DestinationFolder="$(MSBuildProjectDirectory)\wwwroot" SkipUnchangedFiles="true" />
     <Message Text="CHANGELOG_PL.md скопирован в wwwroot." Importance="high" />
   </Target>
 </Project>

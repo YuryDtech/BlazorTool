@@ -102,6 +102,6 @@ namespace BlazorTool.Client.Models
         public DateTime? PersonTakeDate { get; set; }
 
         [JsonPropertyName("deviceCategoryID")]
-        public int? DeviceCategoryID { get; set; }
+        public int? DeviceCategoryID { get; set; }        
     }
 }

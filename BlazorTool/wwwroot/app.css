@@ -89,12 +89,7 @@ h1:focus {
 
     /* Optional: Style for the Telerik Button inside this specific popup */
     .warning-popup .k-button {
-        /* ????? ???????? ???? ????? ??? ??????, ???? ????? ?????????????? ??????????? */
-        /* background-color: #007bff; */
-        /* color: white; */
-        /* border: none; */
-        /* padding: 10px 20px; */
-        /* border-radius: 5px; */
+
         cursor: pointer;
         transition: background-color 0.2s ease;
     }
@@ -103,3 +98,19 @@ h1:focus {
             /* background-color: #0056b3; */
         }
 
+
+.bg-success-light {
+    background-color: #8bfc6a !important; 
+}
+
+.bg-danger-light {
+    background-color: #ffa9a9 !important;
+}
+
+.bg-warning-light {
+    background-color: #f7b86a !important;
+}
+
+.bg-gray-light {
+    background-color: #aaaaaa !important;
+}
