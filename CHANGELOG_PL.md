@@ -1,17 +1,14 @@
 ## 2025-07-28
 ### Dodano
-- **Przełącznik Schematów Kolorów**: Dodano pole wyboru "Użyj oryginalnych kolorów" w menu nawigacyjnym. Pozwala to użytkownikom przełączać się między oryginalnymi kolorami dostarczanymi przez API a standaryzowaną paletą kolorów o wysokim kontraście, co poprawia czytelność.
+- **Przełącznik Schematów Kolorów**: Dodano pole wyboru "Użyj oryginalnych kolorów" w menu nawigacyjnym. Pozwala to użytkownikom przełączać się między oryginalnymi kolorami dostarczanymi przez API a standaryzowaną paletą kolorów.
 
 ### Zmieniono
 - **Interfejs Użytkownika (UI/UX)**:
-    - Zastąpiono podstawowe wskaźniki ładowania komponentem `TelerikLoaderContainer` na stronach `OrdersPage` i `SchedulerPage`, aby zapewnić spójne i profesjonalne wrażenia z użytkowania.
+    - Zastąpiono podstawowe wskaźniki ładowania komponentem `TelerikLoaderContainer` na stronach `OrdersPage` i `SchedulerPage`.
     - Całkowita liczba zleceń jest teraz wyświetlana w nagłówku strony `OrdersPage`.
 - **Refaktoryzacja**:
     - Scentralizowano zarządzanie kolorami w `AppStateService`, aby zapewnić spójny schemat kolorów we wszystkich komponentach (`SchedulerSummary`, `OrdersPage`, `SchedulerPage`).
     - Komponenty subskrybują teraz `AppStateService.OnChange`, aby dynamicznie aktualizować swój wygląd po zmianie schematu kolorów.
-
-## 2025-07-28
-### Zmieniono
 - **Zmiana Adresu API**: Wprowadzono mechanizm restartu aplikacji po zmianie adresu zewnętrznego API na stronie Ustawień. Zapewnia to poprawne zastosowanie nowego adresu.
 - **Potwierdzenie Zmiany API**: Dodano okno dialogowe Telerik na stronie Ustawień, które pojawia się, gdy użytkownik próbuje zmienić adres API. Dialog wyświetla stary i nowy adres oraz ostrzega, że aplikacja zostanie ponownie uruchomiona.
 - **Refaktoryzacja**:
