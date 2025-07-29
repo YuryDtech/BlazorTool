@@ -71,7 +71,7 @@ namespace BlazorTool.Controllers
                     System.IO.File.WriteAllText(appSettingsPath, jsonObj.ToJsonString(options));
                     Console.WriteLine($"API address saved to appsettings.json: {value}");
                     Console.WriteLine("Application will now shut down to apply changes.");
-                    // Trigger application shutdown
+                    
                     _lifetime.StopApplication();
 
                     return true; 

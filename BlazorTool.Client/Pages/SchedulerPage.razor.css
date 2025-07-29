@@ -1,4 +1,4 @@
-::deep .month-view-slot {
+﻿::deep .month-view-slot {
     height: 150px;
     /* Use flexbox to control alignment */
     display: flex;
@@ -54,4 +54,11 @@
     color: #ff0000;
 }
 
-   
+
+::deep .context-menu-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

@@ -61,6 +61,7 @@
 </div>
 
 @code{
+
     protected string? ApiAddress { get; set; }
     protected string? SelectedLanguage { get; set; } = "pl-Pl";
     private bool isAdmin = false;
@@ -70,6 +71,7 @@
 
     private bool isConfirmDialogVisible = false;
     private string oldApiAddress = "";
+    private bool needRestart = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -139,34 +141,33 @@
     protected async Task SaveSettingsAsync()
     {
         StatusMessage = string.Empty;
-
-        if (isAdmin)
+        needRestart = isAdmin && !string.IsNullOrEmpty(ApiAddress) && ApiAddress != oldApiAddress;
+        if (needRestart)
         {
             var testResult = await TestApiAddress();
             if (!testResult)
             {
                 StatusMessage = "Wrong API address";
                 StatusMessageClass = "text-danger";
+                needRestart = false;
                 return;
             }
-            if (!ApiAddress.EndsWith('/')) ApiAddress += "/";
-        }
 
-        // If user is admin and the API address has changed, show confirmation dialog
-        if (isAdmin && !string.IsNullOrEmpty(ApiAddress) && ApiAddress != oldApiAddress)
-        {
+            if (!ApiAddress.EndsWith('/')) ApiAddress += "/";
+
+            // If user is admin and the API address has changed, show confirmation dialog
             isConfirmDialogVisible = true;
             return;
-        }
+        }       
 
         // If no confirmation is needed, proceed with saving other settings
-        await ProceedWithSave();
+        await ProceedWithSave(needRestart);
     }
 
     private async Task ConfirmSave()
     {
         isConfirmDialogVisible = false;
-        await ProceedWithSave();
+        await ProceedWithSave(true);
     }
 
     private void CancelSave()
@@ -177,26 +178,31 @@
         StatusMessageClass = "text-info";
     }
 
-    private async Task ProceedWithSave()
+    private async Task ProceedWithSave(bool needRestart)
     {
         try
         {          
-            var s1 = (isAdmin && ApiAddress != oldApiAddress) ? await SaveSettingAsync("apiAddress", ApiAddress, currentUser) : true;
-            var s2 = await SaveSettingAsync("selectedLanguage", SelectedLanguage, currentUser);
-            if (s1 && s2)
+            var s1 = await SaveSettingAsync("selectedLanguage", SelectedLanguage, currentUser);
+            if (s1)
             {
                 StatusMessage = "Settings saved successfully!";
                 StatusMessageClass = "text-success";
-                if (isAdmin && ApiAddress != oldApiAddress)
-                {
-                    // Update the AppState with the new address
-                    AppState.Settings.ApiBaseUrl = ApiAddress;
-                }
             }
             else
             {
                 StatusMessage = "Failed to save one or more settings.";
                 StatusMessageClass = "text-danger";
+            }
+
+
+
+            if (needRestart)
+            {
+                await SaveSettingAsync("apiAddress", ApiAddress, currentUser);
+                AppState.Settings.ApiBaseUrl = ApiAddress;
+                StatusMessage += " The application will restart to apply the new API address.";
+                // Clear client-side cache and force a full page reload
+                Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
             }
         }
         catch (Exception ex)

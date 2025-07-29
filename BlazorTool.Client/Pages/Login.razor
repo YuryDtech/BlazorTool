@@ -15,9 +15,10 @@
                              TextField="Name"
                              ValueField="Name"
                              @bind-Value="@Username"
-                             Placeholder="Select or enter user name..."
-                             Filterable="true"
-                             AllowCustom="true"
+                             Placeholder="Select user name..."
+                             Filterable="false"
+                             AllowCustom="false"
+                             
                              Width="100%">
             </TelerikComboBox>
         </div>
@@ -32,7 +33,7 @@
         <button type="submit" class="btn-login" disabled="@isLoading">
             @if (isLoading)
             {
-                <TelerikLoader Type="LoaderType.ConvergingSpinner" Size="Telerik.Blazor.ThemeConstants.Loader.Size.Small" />
+                <TelerikLoaderContainer Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Small" Text="Checking..." />
             }
             else
             {

@@ -150,11 +150,16 @@
 
     async Task CancelEditing()
     {
-        if (isNewAppointment) return;
+        if (isNewAppointment)
+        {
+            await OnAppointmentChanged.InvokeAsync(null);
+            return;
+        }
 
         // Reset the appointment to the original one
         Appointment = _OriginAppointment.ShallowCopy();
         await OnAppointmentChanged.InvokeAsync(Appointment);
+        return;
     }
 
     private bool IsValidAppointment()
