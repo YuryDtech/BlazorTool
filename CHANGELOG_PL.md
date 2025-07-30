@@ -1,3 +1,20 @@
+## 2025-07-29
+### Dodano
+- **Menu Kontekstowe Harmonogramu**: Wprowadzono menu kontekstowe (prawy przycisk myszy) w Harmonogramie. Użytkownicy mogą teraz:
+    - Tworzyć nowe spotkania, klikając prawym przyciskiem myszy na pustym slocie czasowym.
+    - Otwierać, usuwać lub duplikować istniejące spotkania, klikając na nie prawym przyciskiem myszy.
+
+### Zmieniono
+- **Ustawienia**: Zmiana adresu API na stronie Ustawień teraz automatycznie przeładowuje aplikację, aby zapewnić poprawne zastosowanie nowych ustawień.
+- **Interfejs Użytkownika (UI/UX)**:
+    - Na stronie `OrdersPage` widok siatki został zwarty dzięki dostosowaniu wypełnienia i wyraźniejszym separatorom wierszy.
+    - Na stronie `Login` zaktualizowano wskaźnik ładowania, a rozwijana lista wyboru użytkownika nie pozwala już na wprowadzanie własnego tekstu.
+- **Schemat Kolorów**: Zrefaktoryzowano logikę kolorów statusu, aby opierała się na identyfikatorach stanu (State ID), zapewniając spójną reprezentację kolorów w całej aplikacji (z uwzględnieniem ustawienia "Użyj oryginalnych kolorów"). Wprowadzono nowe, jaśniejsze kolory tła dla lepszej czytelności.
+
+### Naprawiono
+- **Uwierzytelnianie**: Naprawiono błąd, który mógł powodować nieprawidłowe uruchomienie sprawdzania sesji na stronie logowania, prowadząc do pętli przekierowań.
+- **Edytor Spotkań**: Anulowanie tworzenia nowego spotkania teraz poprawnie zamyka okno edytora.
+
 ## 2025-07-28
 ### Dodano
 - **Przełącznik Schematów Kolorów**: Dodano pole wyboru "Użyj oryginalnych kolorów" w menu nawigacyjnym. Pozwala to użytkownikom przełączać się między oryginalnymi kolorami dostarczanymi przez API a standaryzowaną paletą kolorów.

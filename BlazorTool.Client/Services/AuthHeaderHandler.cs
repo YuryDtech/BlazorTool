@@ -15,6 +15,11 @@ namespace BlazorTool.Client.Services
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            if (request.RequestUri.ToString().Contains("identity/loginpass"))
+            {
+                // Skip adding the X-Person-ID header for login requests
+                return await base.SendAsync(request, cancellationToken);
+            }
             // Wait for the UserState to be initialized and load data from local storage
             await _userState.InitializationTask;
             if (_userState != null && !_userState.PersonID.HasValue)

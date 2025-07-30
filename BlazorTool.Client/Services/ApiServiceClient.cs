@@ -25,6 +25,8 @@ namespace BlazorTool.Client.Services
         private List<Device> _devicesCache = new List<Device>();
         private readonly UserState _userState;
         private List<Dict> _dictCache = new List<Dict>();
+        private List<Person> _personsCache = new List<Person>();
+
         public ApiServiceClient(HttpClient http, UserState userState)
         {
             _http = http;
@@ -695,6 +697,11 @@ namespace BlazorTool.Client.Services
         #region users
         public async Task<List<Person>> GetAllPersons()
         {
+            if (_personsCache.Any())
+            {
+                return _personsCache;
+            }
+
             var url = "other/getuserslist";
             try
             {
@@ -707,7 +714,9 @@ namespace BlazorTool.Client.Services
                 }
                 var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Person>>();
                 Console.WriteLine($"\n= = = = = = = = = response {_http.BaseAddress}{url} \n====== Users: " + wrapper?.Data.Count.ToString() + "\n");
-                return wrapper?.Data ?? new List<Person>();
+
+                _personsCache = wrapper?.Data ?? new List<Person>();
+                return _personsCache;
             }
             catch (HttpRequestException ex)
             {
@@ -721,7 +730,14 @@ namespace BlazorTool.Client.Services
             }
         }
 
-
+        public Person? GetPersonByIDCached(int personID)
+        {
+            if (_personsCache.Any())
+            {
+                return _personsCache.FirstOrDefault(p => p.PersonId == personID);
+            }
+            return null;
+        }
         #endregion
 
         #region Devices

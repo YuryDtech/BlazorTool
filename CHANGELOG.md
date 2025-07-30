@@ -1,3 +1,20 @@
+## 2025-07-29
+### Added
+- **Scheduler Context Menu**: Implemented a right-click context menu in the Scheduler. Users can now:
+    - Create new appointments by right-clicking on an empty time slot.
+    - Open, remove, or duplicate existing appointments by right-clicking on them.
+
+### Changed
+- **Settings**: Changing the API address on the Settings page now automatically reloads the application to ensure the new settings are applied correctly.
+- **UI/UX**:
+    - On the `OrdersPage`, the grid view has been made more compact with adjusted padding and clearer row separators.
+    - On the `Login` page, the loading indicator has been updated, and the user selection dropdown no longer allows custom input.
+- **Color Scheme**: Refactored the status color logic to be based on State IDs, ensuring consistent color representation across the application (respecting the "Use original colors" setting). New, lighter background colors have been introduced for better readability.
+
+### Fixed
+- **Authentication**: Fixed an issue where a session check could incorrectly trigger on the login page, causing a redirect loop.
+- **Appointment Editor**: Canceling the creation of a new appointment now correctly closes the editor window.
+
 ## 2025-07-28
 ### Added
 - **Color Scheme Switcher**: Added a "Use original colors" checkbox in the navigation menu. This allows users to switch between the original colors provided by the API and a custom color palette.

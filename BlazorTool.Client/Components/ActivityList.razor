@@ -26,7 +26,10 @@
         <div class="activity-list-body">
             @foreach (var activity in activities)
             {
-                <ActivityDisplay ActivityItem="activity" />
+
+                var personIds = activity.ActPersons.Split('#').Where(x=>!string.IsNullOrWhiteSpace(x));
+                var persons = personIds.Select(id => ApiClient.GetPersonByIDCached(int.Parse(id))).ToList();
+                <ActivityDisplay ActivityItem="activity" Persons="@persons"/>
             }
         </div>
     }

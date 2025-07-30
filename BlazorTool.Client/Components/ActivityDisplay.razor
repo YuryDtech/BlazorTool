@@ -7,7 +7,7 @@
         <span class="activity-description" title="Description">@ActivityItem.Description</span>
         <span class="activity-workload" title="Work Load">@ActivityItem.WorkLoad.ToString("F2") h</span>
         <span class="activity-workers" title="Workers">@ActivityItem.Workers worker(s)</span>
-        <span class="activity-persons" title="Assigned Persons">@ActivityItem.ActPersons</span>
+        <span class="activity-persons" title="Assigned Persons">@String.Join(',', Persons?.Select(p => p.Name).ToList() ?? new List<string>())</span>
         <span class="activity-date" title="Date Added">@ActivityItem.AddDate.ToString("dd.MM.yyyy HH:mm")</span>
     </div>
 }
@@ -15,4 +15,6 @@
 @code {
     [Parameter]
     public Activity? ActivityItem { get; set; }
+    [Parameter]
+    public List<Person>? Persons { get; set; }
 }
