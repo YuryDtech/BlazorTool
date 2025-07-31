@@ -257,7 +257,7 @@ else
         }
         isDevicesLoading = true;
         StateHasChanged();
-        dicts = await apiService.GetWODictionaries(1);
+        dicts = apiService.GetWODictionariesCached();
         allPersons = await apiService.GetAllPersons();
         personNames = allPersons.Select(p => p.Name).ToList();
         currentUser.PersonId = UserState.PersonID ?? -1;

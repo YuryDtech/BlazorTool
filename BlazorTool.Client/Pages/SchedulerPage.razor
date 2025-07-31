@@ -399,9 +399,9 @@
         _allAppointments = await ApptService.GetTakenAppointments(_allOrders);
         statuses = GetStatuses(_allAppointments);
         Console.WriteLine($"--- LoadData: _allAppointments loaded. Count: {_allAppointments.Count}");    
-        Departments = (await apiService.GetWODepartments(UserState.PersonID, UserState.LangCode ?? "pl-PL")).Select(c => c.Name).Distinct().ToList();
+        Departments = apiService.GetWODepartments().Select(c => c.Name).Distinct().ToList();
         Departments.Insert(0, "All");
-        DeviceCategories = (await apiService.GetWOCategories(UserState.PersonID, UserState.LangCode ?? "pl-PL")).Select(c => c.Name).Distinct().ToList();
+        DeviceCategories = apiService.GetWOCategories().Select(c => c.Name).Distinct().ToList();
         DeviceCategories.Insert(0, "All");
         WO_AssetNo = new List<string> { "All" };
         WO_AssetNo.AddRange(_allOrders.Where(d => !string.IsNullOrWhiteSpace(d.AssetNo)).Select(x => x.AssetNo).Distinct().ToList());

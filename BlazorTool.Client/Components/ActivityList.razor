@@ -45,7 +45,7 @@
     {
         if (WorkOrderId > 0)
         {
-            activities = await ApiClient.GetActivityByWO(WorkOrderId);
+            activities = await ApiClient.GetActivitiesByWO(WorkOrderId);
             activities.Sort((x, y) => x.AddDate.CompareTo(y.AddDate));
         }
     }
