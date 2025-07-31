@@ -159,7 +159,6 @@
         // Reset the appointment to the original one
         Appointment = _OriginAppointment.ShallowCopy();
         await OnAppointmentChanged.InvokeAsync(Appointment);
-        return;
     }
 
     private bool IsValidAppointment()

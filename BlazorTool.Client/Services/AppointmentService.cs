@@ -49,7 +49,8 @@ namespace BlazorTool.Client.Services
                     }
                     _appointments = GetAppointmentsFromOrders(orders);
                 }
-                return _appointments.Where(x => !string.IsNullOrWhiteSpace(x.DepName) && x.Start != null).ToList();
+                //return _appointments.Where(x => !string.IsNullOrWhiteSpace(x.DepName) && x.Start != null).ToList();
+                return _appointments.Where(x => x.Start != null).ToList();
         }
 
         public SchedulerAppointment? GetAppointmentById(int id)

@@ -207,7 +207,7 @@
         else
         {
             <div style="display:flex; justify-content:space-between; align-items: center">
-                <p mb-0>Untaken orders (no Department and  StartDate): @UntakenOrders.Count()</p>
+                <p mb-0>Orders without StartDate: @UntakenOrders.Count()</p>
                 <div style="display:flex; align-items:center; gap: 5px;">
                     <TelerikCheckBox Size="lg" OnChange="@DisplayOrders" Id="OrdersCheckBox" @bind-Value="@isCBAllOrdersSelected" />
                     <label for="OrdersCheckBox">show completed orders </label>
@@ -252,7 +252,7 @@
 </div>
 
 <TelerikWindow Modal="false" MinWidth="1200px" MaxHeight="95vh" Visible="@customEditFormShown" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
-    <WindowTitle>Appointment #@CurrentAppointment.WorkOrderID</WindowTitle>
+    <WindowTitle>#@CurrentAppointment.WorkOrderID</WindowTitle>
     <WindowActions>
         <WindowAction Name="Close" OnClick="@CancelEditing" />
     </WindowActions>
@@ -547,9 +547,9 @@
         return _allOrders.Where(x =>
             // string.IsNullOrEmpty(x.AssignedPerson) &&
             (selectedCategory == "All" || x.DeviceCategory == selectedCategory) &&
-            (isCBAllOrdersSelected || (x.WOState?.ToLowerInvariant() != "zakończony")) &&
-            ((x.StartDate == null) || 
-            (string.IsNullOrEmpty(x.DepName)))
+            (isCBAllOrdersSelected || x.CloseDate == null) &&
+            // ((x.StartDate == null) || (string.IsNullOrEmpty(x.DepName)))
+            (x.StartDate == null)
         ).ToList();
     }
 
@@ -634,11 +634,13 @@
 
     //when order window closed
     //On create, Update
-    async Task RefreshData(SchedulerAppointment editedAppointment)
+    async Task RefreshData(SchedulerAppointment? editedAppointment)
     {
         if (editedAppointment == null)//was removed or cancelled NEW
         {
-
+            customEditFormShown = false;
+            isOrderCardOpen = false;
+            return;
         }
         else
         {
@@ -661,7 +663,6 @@
     {
         args.IsCancelled = true;//prevent built-in edit form from showing up
         SchedulerAppointment item = args.Item as SchedulerAppointment;
-        customEditFormShown = true;
         if (!args.IsNew) // an edit operation, otherwise - an insert operation
         {
             //copying is implemented in the appointment model and it is needed because
@@ -671,11 +672,13 @@
         }
         else
         {
-            CurrentAppointment = new SchedulerAppointment();
-            CurrentAppointment.Start = _clickedSlotContext.Start;
-            CurrentAppointment.End = _clickedSlotContext.End;
-            CurrentAppointment.IsAllDay = false; // Explicitly set to false
+            CurrentAppointment = item ?? new SchedulerAppointment();
+            CurrentAppointment.Start = args.Start;
+            CurrentAppointment.End = args.End;
+            CurrentAppointment.IsAllDay = item?.IsAllDay ?? true;
+ 
         }
+        customEditFormShown = true;
     }
 
     void CancelEditing()
@@ -825,7 +828,7 @@
 
     private void OnAddAppointment()
     {
-        Console.WriteLine($"[{currentUser}]:  Add new appointment at {_clickedSlotContext?.Start}");
+        Console.WriteLine($"[{currentUser}]:  Adding new appointment at {_clickedSlotContext?.Start}");
         // Implement logic to open a form for adding a new appointment
         // You can use _clickedSlotContext.Start and _clickedSlotContext.End to pre-fill the form
         if (_clickedSlotContext != null)
@@ -850,7 +853,7 @@
 
     private void OnOpenAppointment()
     {
-        Console.WriteLine($"[{currentUser}]:  Open appointment: {_clickedAppointment?.Title}");
+        Console.WriteLine($"[{currentUser.Name}]:  Open appointment: {_clickedAppointment?.Title}");
         // Implement logic to open the existing appointment for editing
         if (_clickedAppointment != null)
         {
@@ -861,7 +864,7 @@
 
     private async Task OnRemoveAppointment()
     {
-        Console.WriteLine($"[{currentUser}]:  Remove appointment: {_clickedAppointment?.Title}");
+        Console.WriteLine($"[{currentUser.Name}]:  Remove appointment: {_clickedAppointment?.Title}");
         // Implement logic to remove the appointment
         if (_clickedAppointment != null)
         {
@@ -872,7 +875,7 @@
 
     private void OnDuplicateAppointment()
     {
-        Console.WriteLine($"[{currentUser}]:  Duplicate appointment: {_clickedAppointment?.Title}");
+        Console.WriteLine($"[{currentUser.Name}]:  Duplicate appointment: {_clickedAppointment?.Title}");
         // Implement logic to duplicate the appointment
         if (_clickedAppointment != null)
         {
