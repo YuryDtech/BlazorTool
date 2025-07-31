@@ -39,16 +39,26 @@
 
     <div class="row mb-3">
         <div class="col-md-6">
-            <label for="language" class="form-label">Language</label>
+            @* <label for="language" class="form-label">Language</label>
             <select id="language" class="form-select" @bind="@SelectedLanguage">
                 <option value="pl-Pl">Polski</option>
                 <option value="en-US">English</option>
                 <option value="fr-Fr">Français</option>
                 <option value="ru-Ru">Русский</option>
                 {!-- Add more languages as needed --}
-            </select>
+            </select> *@
         </div>
     </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="form-check">
+                <TelerikCheckBox Id="color-switcher" @bind-Value="@UseOriginalColors" />
+                <label class="form-check-label" for="color-switcher">Use original colors</label>
+            </div>
+        </div>
+    </div>
+
 
     <button class="btn btn-primary" @onclick="SaveSettingsAsync">Save Settings</button>
 
@@ -63,11 +73,12 @@
 @code{
 
     protected string? ApiAddress { get; set; }
-    protected string? SelectedLanguage { get; set; } = "pl-Pl";
+    // protected string? SelectedLanguage { get; set; } = "pl-Pl";
     private bool isAdmin = false;
     protected string? StatusMessage { get; set; }
     protected string? StatusMessageClass { get; set; } // e.g., "text-success" or "text-danger"
     string currentUser = "test User"; // Placeholder for current user, replace with actual user logic"
+    private bool UseOriginalColors { get; set; }
 
     private bool isConfirmDialogVisible = false;
     private string oldApiAddress = "";
@@ -85,6 +96,7 @@
         isAdmin = UserState.UserName == "MES" || UserState.UserName?.ToLower() == "admin";
         Logger.LogInformation($"Current user: {currentUser}, Is Admin: {isAdmin}");
         await LoadSettingsAsync();
+        UseOriginalColors = UserState.UseOriginalColors;
         await InvokeAsync(StateHasChanged);
     }
 
@@ -99,7 +111,8 @@
                 AppState.Settings.ApiBaseUrl = ApiAddress;
             }
         }
-        SelectedLanguage = await LoadSettingAsync("selectedLanguage") ?? "pl-Pl"; // Set default if not found
+        //SelectedLanguage = UserState.LangCode;
+        UseOriginalColors = UserState.UseOriginalColors;
     }
 
     protected async Task<string?> LoadSettingAsync(string key)
@@ -158,7 +171,7 @@
             // If user is admin and the API address has changed, show confirmation dialog
             isConfirmDialogVisible = true;
             return;
-        }       
+        }
 
         // If no confirmation is needed, proceed with saving other settings
         await ProceedWithSave(needRestart);
@@ -181,10 +194,12 @@
     private async Task ProceedWithSave(bool needRestart)
     {
         try
-        {          
-            var s1 = await SaveSettingAsync("selectedLanguage", SelectedLanguage, currentUser);
-            if (s1)
+        {
+            // var s1 = await SaveSettingAsync("selectedLanguage", SelectedLanguage, currentUser);
+            var s2 = await SaveSettingAsync("useOriginalColors", UseOriginalColors.ToString(), currentUser);
+            if (s2)
             {
+                UserState.UseOriginalColors = UseOriginalColors;
                 StatusMessage = "Settings saved successfully!";
                 StatusMessageClass = "text-success";
             }

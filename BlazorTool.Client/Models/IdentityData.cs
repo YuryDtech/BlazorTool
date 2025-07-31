@@ -24,5 +24,8 @@ namespace BlazorTool.Client.Models
 
         [JsonPropertyName("expires")]
         public DateTime Expires { get; set; }
+
+        [JsonPropertyName("useOriginalColors")]
+        public bool UseOriginalColors { get; set; } = true;
     }
 }

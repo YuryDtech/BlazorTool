@@ -11,7 +11,6 @@
 @inject NavigationManager Navigation
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
 @inject UserState UserState
-@inject AppStateService AppState
 @rowStyles
 <CheckSession apiService="@apiService" UserState="@UserState" />
 <label>Devices:</label>
@@ -272,11 +271,6 @@ else
         deviceTypes?.Insert(0, "All");
         isDevicesLoading = false;
         StateHasChanged();
-        AppState.OnChange +=() =>
-        {
-            rowStyles = RenderStatesStyle(OrdersForGrid);
-            StateHasChanged();
-        };
         await LoadData();
     }
 
@@ -540,7 +534,7 @@ else
         {
             var safeName = color.TrimStart('#');
 
-            if (!AppState.UseOriginalColors)
+            if (!UserState.UseOriginalColors)
                 switch(safeName.ToLowerInvariant())
                 {
                     case "lime":
@@ -573,7 +567,7 @@ else
 
     private string GetStateColorClass(WorkOrder WO)
     {
-        if (AppState.UseOriginalColors)
+        if (UserState.UseOriginalColors)
         {
             return "state-" + WO.StateColor.TrimStart('#');
         }

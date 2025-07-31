@@ -332,7 +332,7 @@
     private List<Resource> GetStatuses(List<SchedulerAppointment> appointments)
     {
         List<Resource> resources = new List<Resource>();
-        if (AppState.UseOriginalColors)
+        if (UserState.UseOriginalColors)
         {
             var st = appointments.Select(a => a.WOState).Distinct().ToList();
             foreach(var s in st)
@@ -363,17 +363,7 @@
         Console.WriteLine($"--- Initialized SCHEDULER PAGE. WASM = {isWASM}");
         Console.WriteLine($"--- OnInitializedAsync completed.");
         await UserState.InitializationTask; // Ensure UserState is loaded
-        // moved  to CheckSession component
-        // if (!UserState.IsAuthenticated)
-        // {
-        //     Navigation.NavigateTo("/login");
-        // }
-        AppState.OnChange +=() =>
-        {
-            cellStyles = RenderStatesStyle(_allOrders);
-            statuses = GetStatuses(_allAppointments);
-            StateHasChanged();
-        };
+
         await HardLoadData();
     }
 
@@ -747,7 +737,7 @@
         foreach (var color in uniqueColors)
         {
             var safeName = color.TrimStart('#');
-            if (!AppState.UseOriginalColors)
+            if (!UserState.UseOriginalColors)
                 switch(safeName.ToLowerInvariant())
                 {
                     case "lime":

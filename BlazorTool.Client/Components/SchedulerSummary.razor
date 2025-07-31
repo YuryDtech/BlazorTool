@@ -1,5 +1,5 @@
 @using BlazorTool.Client.Models
-@inject AppStateService AppState
+@inject UserState userState
 @using BlazorTool.Client.Services
 
 <div class="summary-table-container">
@@ -48,11 +48,6 @@
     protected override void OnParametersSet()
     {
         GenerateSummaryData();
-        AppState.OnChange += () =>
-        {
-            GenerateSummaryData();
-            StateHasChanged();
-        };
     }
 
     private void GenerateSummaryData()
@@ -101,7 +96,7 @@
         {
             return "";
         }
-        if (AppState.UseOriginalColors)
+        if (userState.UseOriginalColors)
         {
             return color;
         }

@@ -26,9 +26,12 @@ namespace BlazorTool.Client.Services
         public string? Password { get; set; }
         public string LangCode { get; set; } = "pl-pl"; 
         public string? Token { get; set; }
-        public int? PersonID { get; set; } // Added PersonID property
+        public int? PersonID { get; set; }
         public bool IsAuthenticated => !string.IsNullOrEmpty(UserName);
         public RightMatrix? RightMatrix { get; set; }
+        public bool UseOriginalColors { get; set; } = true;
+
+
 
         public async Task SaveIdentityDataAsync(IdentityData identityData)
         {
@@ -37,8 +40,8 @@ namespace BlazorTool.Client.Services
             PersonID = identityData.PersonID;
             LangCode = identityData.LangCode;
             RightMatrix = identityData.RigthMatrix;
+            UseOriginalColors = identityData.UseOriginalColors;
             await _localStorageService.SetItemAsStringAsync("identityData", JsonConvert.SerializeObject(identityData));
-            Console.WriteLine($"UserState: Saved identity data for {UserName} with PersonID {PersonID}");
         }
 
         public async Task LoadIdentityDataAsync()
@@ -54,6 +57,7 @@ namespace BlazorTool.Client.Services
                     PersonID = identityData.PersonID;
                     LangCode = identityData.LangCode;
                     RightMatrix = identityData.RigthMatrix;
+                    UseOriginalColors = identityData.UseOriginalColors;
                 }
             }
         }
@@ -66,6 +70,7 @@ namespace BlazorTool.Client.Services
             PersonID = null;
             LangCode = null;
             RightMatrix = null;
+            UseOriginalColors = true;
             await _localStorageService.RemoveItemAsync("identityData");
         }
     }

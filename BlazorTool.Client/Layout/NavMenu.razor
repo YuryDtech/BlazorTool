@@ -36,12 +36,6 @@
         </div>
     </nav>
     <div class="nav-footer">
-        <div class="form-check mb-2">
-            <TelerikCheckBox Id="color-switcher"
-                             Value="@AppState.UseOriginalColors"
-                             ValueChanged="@((bool val) => AppState.SetUseOriginalColors(val))" />
-            <label class="form-check-label" for="color-switcher">Use original colors</label>
-        </div>
         <span class="api-info">@AppState.Settings.ApiBaseUrl</span>
     </div>
 </div>
