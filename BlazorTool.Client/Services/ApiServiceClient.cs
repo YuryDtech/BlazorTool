@@ -847,10 +847,10 @@ namespace BlazorTool.Client.Services
         }
         public List<Dict> GetWODictionariesCached(int? personID, string lang = "pl-PL")
         {
-            if (_dictCache.Count == 0)
-            {//is need cache with personID and lang ?
-                _dictCache = GetWODictionaries(personID, lang).Result;
-            }
+            //if (_dictCache.Count == 0)
+            //{//is need cache with personID and lang ?
+            //    _dictCache = GetWODictionaries(personID, lang).Result;
+            //}
             return _dictCache;
             
         }
@@ -932,7 +932,7 @@ namespace BlazorTool.Client.Services
         }
 
         public async Task<bool> AddNewWODict(string name, int listType, bool isDefault = false, int? machineCategoryId = null)
-        {
+        {//TODO: remove this method, dict is only read from API
             if (string.IsNullOrEmpty(name) || listType < 1 || listType > 5) return false;
             Dict newDict = new Dict
             {

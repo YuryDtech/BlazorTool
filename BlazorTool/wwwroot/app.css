@@ -115,6 +115,11 @@ h1:focus {
     background-color: #aaaaaa !important;
 }
 
+.custom-row td {
+    border-bottom: 1px solid #b7b4b4 !important;
+    padding-block: 0.1rem !important; 
+}
+
 .vertical-stack-container {
     display: flex; 
     flex-direction: column; 

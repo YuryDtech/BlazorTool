@@ -1,14 +1,22 @@
+## 2025-07-30
+### Added
+- **Advanced Grid Filters**: Implemented advanced filtering capabilities in `TelerikGrid` on the `OrdersPage`, including filters for Department, Reason, Modified Person, Assigned Person, Work Order State, Work Order Level, Add Date, and Start Date.
+- **Person View in Activities**: Added the ability to view assigned persons by name in `ActivityDisplay` and `ActivityList` components.
+- **Person Data Caching**: Implemented caching for person data in `ApiServiceClient` to improve performance.
+### Changed
+- **UI/UX - Orders Page**: Old filters for Device Type and Order State were removed.
+- **UI/UX - Work Order Status Colors**: Updated the display logic for workorder status colors to be based on `StateID` for consistency. Introduced new, lighter background colors for better readability.
+### Fixed
+- **Authentication Bug**:old user in cache. Modified the authentication header handling to clear user state upon login requests. 
+
 ## 2025-07-29
 ### Added
 - **Scheduler Context Menu**: Implemented a right-click context menu in the Scheduler. Users can now:
     - Create new appointments by right-clicking on an empty time slot.
-    - Open, remove, or duplicate existing appointments by right-clicking on them.
-
+    - Open, remove, or duplicate existing appointments by right-clicking on them.	
 ### Changed
 - **Settings**: Changing the API address on the Settings page now automatically reloads the application to ensure the new settings are applied correctly.
-- **UI/UX**:
-    - On the `OrdersPage`, the grid view has been made more compact with adjusted padding and clearer row separators.
-    - On the `Login` page, the loading indicator has been updated, and the user selection dropdown no longer allows custom input.
+
 - **Color Scheme**: Refactored the status color logic to be based on State IDs, ensuring consistent color representation across the application (respecting the "Use original colors" setting). New, lighter background colors have been introduced for better readability.
 
 ### Fixed

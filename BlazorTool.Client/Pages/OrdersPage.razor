@@ -98,7 +98,6 @@ else
 {
     <TelerikGrid Data="@OrderDevicesForGrid"
                  Id="Grid1"
-                 Class="orders-grid"
                  RowDraggable="false"
                  @ref="@GridRef"
                  Sortable="true"
@@ -113,8 +112,9 @@ else
             <GridSearchBox Width="200px"/>
         </GridToolBarTemplate>
         <GridColumns>
-            <GridColumn Field="@nameof(WorkOrderView.WorkOrderID)" Editable="false" Visible="false"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.DepName)" Title="DepName" Resizable="true">
+            <GridColumn Field="@nameof(WorkOrderView.WorkOrderID)" Title="ID" Width="4rem" Filterable="false" Editable="false" Visible="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.WODesc)" Editable="false" Visible="false"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.DepName)" Title="DepName" Width="8rem" Resizable="true">
         <FilterMenuTemplate>
                     <CustomFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Department).Select(d => d.Name).Distinct()"
                                               context="@context"
@@ -156,7 +156,7 @@ else
                     </CustomFilterMenuTemplate>
         </FilterMenuTemplate>
     </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.WOLevel)" Resizable="true">
+            <GridColumn Field="@nameof(WorkOrderView.WOLevel)" Width="45rm" Resizable="true">
         <FilterMenuTemplate>
             <CustomFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Level).Select(d => d.Name).Distinct()"
                                       context="@context"
@@ -164,7 +164,7 @@ else
                     </CustomFilterMenuTemplate>
         </FilterMenuTemplate>
     </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.AddDate)" Resizable="true">
+            <GridColumn Field="@nameof(WorkOrderView.AddDate)" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true">
                 <FilterMenuButtonsTemplate Context="filterContext">
                     <div class="vertical-stack-container">
 
@@ -181,7 +181,7 @@ else
 
                 </FilterMenuButtonsTemplate>
     </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.StartDate)" Title="Start Date" Resizable="true">
+            <GridColumn Field="@nameof(WorkOrderView.StartDate)" Title="Start Date" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true">
        <FilterMenuButtonsTemplate Context="filterContext">
            <div class="vertical-stack-container">
 
@@ -197,8 +197,8 @@ else
                     </div>
         </FilterMenuButtonsTemplate>
     </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.EndDate)" Resizable="true"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.CloseDate)" Resizable="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.EndDate)" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.CloseDate)" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Visible="false" Resizable="true"></GridColumn>
         </GridColumns>
     </TelerikGrid>
 
@@ -506,7 +506,7 @@ else
     void OnRowRenderHandler(GridRowRenderEventArgs args)
     {
         var item = args.Item as WorkOrderView;
-
+        args.Class = " custom-row ";
         // args.Class += "state-" + item?.StateColor?.TrimStart('#');
         args.Class += GetStateColorClass(item);
     }

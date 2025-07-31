@@ -1,9 +1,21 @@
+## 2025-07-30
+### Dodano
+- **Zaawansowane Filtry Grid**: Wprowadzono zaawansowane możliwości filtrowania w `TelerikGrid` na stronie `OrdersPage`, w tym filtry dla Department, Reason, Modified Person, Assigned Person, Work Order State, Work Order Level, Add Date i Start Date.
+- **Widok Osób w Aktywnościach**: Dodano możliwość przeglądania przypisanych osób po nazwisku w komponentach `ActivityDisplay` i `ActivityList`.
+- **Cache Danych Osób**: Zaimplementowano cache dla danych osób w `ApiServiceClient` w celu poprawy wydajności.
+
+### Zmieniono
+- **UI/UX - Orders Page**: Usunięto stare filtry dla Device Type i Order State.
+- **UI/UX - Kolory Statusu Zlecenia**: Zaktualizowano logikę wyświetlania kolorów statusu zlecenia, aby opierała się na `StateID` dla spójności. Wprowadzono nowe, jaśniejsze kolory tła dla lepszej czytelności.
+
+### Naprawiono
+- **Błąd Uwierzytelniania**: Zmodyfikowano obsługę nagłówków uwierzytelniania, aby czyścić stan użytkownika po żądaniach logowania.
+
 ## 2025-07-29
 ### Dodano
 - **Menu Kontekstowe Harmonogramu**: Wprowadzono menu kontekstowe (prawy przycisk myszy) w Harmonogramie. Użytkownicy mogą teraz:
     - Tworzyć nowe spotkania, klikając prawym przyciskiem myszy na pustym slocie czasowym.
     - Otwierać, usuwać lub duplikować istniejące spotkania, klikając na nie prawym przyciskiem myszy.
-
 ### Zmieniono
 - **Ustawienia**: Zmiana adresu API na stronie Ustawień teraz automatycznie przeładowuje aplikację, aby zapewnić poprawne zastosowanie nowych ustawień.
 - **Interfejs Użytkownika (UI/UX)**:
@@ -28,7 +40,7 @@
     - Komponenty subskrybują teraz `AppStateService.OnChange`, aby dynamicznie aktualizować swój wygląd po zmianie schematu kolorów.
 - **Zmiana Adresu API**: Wprowadzono mechanizm restartu aplikacji po zmianie adresu zewnętrznego API na stronie Ustawień. Zapewnia to poprawne zastosowanie nowego adresu.
 - **Potwierdzenie Zmiany API**: Dodano okno dialogowe Telerik na stronie Ustawień, które pojawia się, gdy użytkownik próbuje zmienić adres API. Dialog wyświetla stary i nowy adres oraz ostrzega, że aplikacja zostanie ponownie uruchomiona.
-- **Refaktoryzacja**:
+- **Refaktoryzacja**: 
     - Zastąpiono przestarzały `ListTypeEnum` poprawnym `WOListTypeEnum` w całej aplikacji klienckiej.
     - Ulepszono logikę ładowania danych i filtrowania na stronie `SchedulerPage` dla działów i kategorii urządzeń.
     - Zrefaktoryzowano `ApiServiceClient`, aby poprawnie obsługiwał `personID` (który może być null) w metodach związanych ze słownikami.
