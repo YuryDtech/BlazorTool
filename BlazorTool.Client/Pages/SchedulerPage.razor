@@ -105,13 +105,16 @@
                           OnDelete="@OnDeleteAppointment"
                           OnEdit="@EditHandler"
                           OnCellRender="@OnSchedulerCellRender"
-                          IdField="Id"
-                          StartField="Start"
-                          EndField="End"
-                          TitleField="Title"
-                          DescriptionField="Description"
-                          IsAllDayField="IsAllDay"
-                          Height="@(CurrentView == SchedulerView.Timeline ? "60hv" : "80hv")">
+                          ConfirmDelete="true"
+                          IdField="@nameof(SchedulerAppointment.WorkOrderID)"
+                          StartField="@nameof(SchedulerAppointment.Start)"
+                          EndField="@nameof(SchedulerAppointment.End)"
+                          TitleField="@nameof(SchedulerAppointment.Title)"
+                          DescriptionField="@nameof(SchedulerAppointment.WODesc)"
+                          IsAllDayField="@nameof(SchedulerAppointment.IsAllDay)"
+                          Height="80hv"
+                          >
+                          @* Height="@(CurrentView == SchedulerView.Timeline ? "60hv" : "80hv")"  *@
             <SchedulerSettings>
                 <SchedulerGroupSettings Orientation="SchedulerGroupOrientation.Vertical" Resources="@(CurrentView == SchedulerView.Timeline ? new List<string> { "AssignedPerson" } : null)" />
             </SchedulerSettings>
@@ -166,11 +169,12 @@
                         }
                     </SlotTemplate>
                 </SchedulerMonthView>
-                <SchedulerTimelineView NumberOfDays="@numberOfDays" StartTime="@DayStart" EndTime="@DayEnd" 
-                    ColumnWidth="@columnWidth" SlotDivisions="@slotDivisions" SlotDuration="@slotDuration">                    
+                <SchedulerTimelineView NumberOfDays="@numberOfDays" StartTime="@DayStart" EndTime="@DayEnd"
+                                       ColumnWidth="@columnWidth" SlotDivisions="@slotDivisions" SlotDuration="@slotDuration">                    
                     <ItemTemplate>
                         <div @oncontextmenu:preventDefault @oncontextmenu="@( (MouseEventArgs e) => ShowContextMenuFromAppointment(e, context as SchedulerAppointment) )">
                             <SchedulerItem Item="@(context as SchedulerAppointment)" View="@SchedulerView.Timeline" />
+                            
                         </div>
                     </ItemTemplate>
                     <SlotTemplate>
