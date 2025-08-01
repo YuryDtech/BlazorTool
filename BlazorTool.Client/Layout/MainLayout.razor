@@ -85,6 +85,7 @@
         // }
 
         Logger.LogInformation($"User [{UserState.UserName}] is authenticated from userState");
+        Logger.LogInformation($"======== DEBUG: Localizer[MainLayout_Version]={Localizer["MainLayout_Version"]}");
         // If on a page other than login, verify session with the server
         // if (!Navigation.Uri.EndsWith("/login", StringComparison.OrdinalIgnoreCase))
         // {

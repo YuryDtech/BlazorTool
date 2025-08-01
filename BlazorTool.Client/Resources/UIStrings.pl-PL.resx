@@ -118,28 +118,28 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Greeting" xml:space="preserve">
-    <value>Hello!</value>
+    <value>Cześć!</value>
   </data>
   <data name="OrdersPage_LoadingDevicesList" xml:space="preserve">
-    <value>Loading devices list...</value>
+    <value>Ładowanie listy urządzeń...</value>
   </data>
   <data name="OrdersPage_SelectAll" xml:space="preserve">
-    <value>Select All</value>
+    <value>Zaznacz wszystko</value>
   </data>
   <data name="OrdersPage_SelectDevices" xml:space="preserve">
-    <value>Select devices</value>
+    <value>Wybierz urządzenia</value>
   </data>
   <data name="OrdersPage_DeviceCategory" xml:space="preserve">
-    <value>Device category</value>
+    <value>Kategoria urządzenia</value>
   </data>
   <data name="OrdersPage_SelectCategory" xml:space="preserve">
-    <value>Select category...</value>
+    <value>Wybierz kategorię...</value>
   </data>
   <data name="OrdersPage_Orders" xml:space="preserve">
-    <value>Orders</value>
+    <value>Zlecenia</value>
   </data>
   <data name="OrdersPage_LoadingOrderList" xml:space="preserve">
-    <value>loading order list...</value>
+    <value>Ładowanie listy zleceń...</value>
   </data>
   <data name="WorkOrder_ID" xml:space="preserve">
     <value>ID</value>
@@ -151,464 +151,464 @@
     <value>Device</value>
   </data>
   <data name="OrdersPage_Filter" xml:space="preserve">
-    <value>Filter</value>
+    <value>Filtruj</value>
   </data>
   <data name="OrdersPage_Clear" xml:space="preserve">
-    <value>Clear</value>
+    <value>Wyczyść</value>
   </data>
   <data name="OrdersPage_LastYear" xml:space="preserve">
-    <value>Last Year</value>
+    <value>Ostatni rok</value>
   </data>
   <data name="OrdersPage_Quarter" xml:space="preserve">
-    <value>Quarter</value>
+    <value>Kwartał</value>
   </data>
   <data name="OrdersPage_Month" xml:space="preserve">
-    <value>Month</value>
+    <value>Miesiąc</value>
   </data>
   <data name="Start_Date" xml:space="preserve">
-    <value>Start Date</value>
+    <value>Data rozpoczęcia</value>
   </data>
   <data name="OrdersPage_Close" xml:space="preserve">
-    <value>Close</value>
+    <value>Zamknij</value>
   </data>
   <data name="OrdersPage_Devices" xml:space="preserve">
-    <value>Devices:</value>
+    <value>Urządzenia:</value>
   </data>
   <data name="OrdersPage_Compact" xml:space="preserve">
-    <value>Compact</value>
+    <value>Kompaktowy</value>
   </data>
   <data name="OrdersPage_Extended" xml:space="preserve">
-    <value>Extended</value>
+    <value>Rozszerzony</value>
   </data>
   <data name="WorkOrder_Description" xml:space="preserve">
-    <value>Description:</value>
+    <value>Opis:</value>
   </data>
   <data name="Device_Category" xml:space="preserve">
     <value>DeviceCategory</value>
   </data>
   <data name="WorkOrder_Reason" xml:space="preserve">
-    <value>Reason:</value>
+    <value>Powód:</value>
   </data>
   <data name="Modified_Person" xml:space="preserve">
     <value>ModPerson</value>
   </data>
   <data name="Assigned_Person" xml:space="preserve">
-    <value>Assigned Person</value>
+    <value>Przypisane osoby</value>
   </data>
   <data name="WorkOrder_State" xml:space="preserve">
     <value>WOState</value>
   </data>
   <data name="WorkOrder_Level" xml:space="preserve">
-    <value>Level:</value>
+    <value>Poziom:</value>
   </data>
   <data name="Add_Date" xml:space="preserve">
-    <value>AddDate</value>
+    <value>Data dodania</value>
   </data>
   <data name="End_Date" xml:space="preserve">
     <value>EndDate</value>
   </data>
   <data name="Close_Date" xml:space="preserve">
-    <value>Close Date</value>
+    <value>CloseDate</value>
   </data>
   <data name="NavMenu_NavigationMenu" xml:space="preserve">
-    <value>Navigation menu</value>
+    <value>Menu nawigacyjne</value>
   </data>
   <data name="NavMenu_Main" xml:space="preserve">
-    <value>Main</value>
+    <value>Główna</value>
   </data>
   <data name="NavMenu_Orders" xml:space="preserve">
-    <value>Orders</value>
+    <value>Zlecenia</value>
   </data>
   <data name="NavMenu_Scheduler" xml:space="preserve">
-    <value>Scheduler</value>
+    <value>Harmonogram</value>
   </data>
   <data name="NavMenu_Settings" xml:space="preserve">
-    <value>Settings</value>
+    <value>Ustawienia</value>
   </data>
   <data name="Login_LoginToThe" xml:space="preserve">
-    <value>Login to the</value>
+    <value>Zaloguj się do</value>
   </data>
   <data name="Login_UserName" xml:space="preserve">
-    <value>User name</value>
+    <value>Nazwa użytkownika</value>
   </data>
   <data name="Login_SelectUserName" xml:space="preserve">
-    <value>Select user name...</value>
+    <value>Wybierz nazwę użytkownika...</value>
   </data>
   <data name="Login_Password" xml:space="preserve">
-    <value>Password</value>
+    <value>Hasło</value>
   </data>
   <data name="Login_Checking" xml:space="preserve">
-    <value>Checking...</value>
+    <value>Sprawdzanie...</value>
   </data>
   <data name="Login_Enter" xml:space="preserve">
-    <value>Enter</value>
+    <value>Zaloguj</value>
   </data>
   <data name="Login_EmptyField" xml:space="preserve">
-    <value>Empty field</value>
+    <value>Puste pole</value>
   </data>
   <data name="Login_LoginFailed" xml:space="preserve">
-    <value>Login failed. Please check your credentials.</value>
+    <value>Logowanie nie powiodło się. Sprawdź swoje dane.</value>
   </data>
   <data name="Login_AnErrorOccurred" xml:space="preserve">
-    <value>An error occurred:</value>
+    <value>Wystąpił błąd:</value>
   </data>
   <data name="Home_Orders" xml:space="preserve">
-    <value>ORDERS</value>
+    <value>ZLECENIA</value>
   </data>
   <data name="Home_Scheduler" xml:space="preserve">
-    <value>SCHEDULER</value>
+    <value>HARMONOGRAM</value>
   </data>
   <data name="Settings_Confirmation" xml:space="preserve">
-    <value>Confirmation</value>
+    <value>Potwierdzenie</value>
   </data>
   <data name="Settings_ConfirmApiChange" xml:space="preserve">
-    <value>Are you sure you want to change the API address?</value>
+    <value>Czy na pewno chcesz zmienić adres API?</value>
   </data>
   <data name="Settings_OldAddress" xml:space="preserve">
-    <value>Old Address:</value>
+    <value>Stary adres:</value>
   </data>
   <data name="Settings_NewAddress" xml:space="preserve">
-    <value>New Address:</value>
+    <value>Nowy adres:</value>
   </data>
   <data name="Settings_AppRestart" xml:space="preserve">
-    <value>The application will restart!</value>
+    <value>Aplikacja zostanie uruchomiona ponownie!</value>
   </data>
   <data name="Settings_Confirm" xml:space="preserve">
-    <value>Confirm</value>
+    <value>Potwierdź</value>
   </data>
   <data name="Settings_Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Anuluj</value>
   </data>
   <data name="Settings_Title" xml:space="preserve">
-    <value>Settings</value>
+    <value>Ustawienia</value>
   </data>
   <data name="Settings_ApiAddress" xml:space="preserve">
-    <value>API Address</value>
+    <value>Adres API</value>
   </data>
   <data name="Settings_TestApiAddress" xml:space="preserve">
-    <value>Test API Address</value>
+    <value>Przetestuj adres API</value>
   </data>
   <data name="Settings_UseOriginalColors" xml:space="preserve">
-    <value>Use original colors</value>
+    <value>Użyj oryginalnych kolorów</value>
   </data>
   <data name="Settings_SaveSettings" xml:space="preserve">
-    <value>Save Settings</value>
+    <value>Zapisz ustawienia</value>
   </data>
   <data name="Settings_ApiAddressEmpty" xml:space="preserve">
-    <value>API Address cannot be empty.</value>
+    <value>Adres API nie może być pusty.</value>
   </data>
   <data name="Settings_ApiConnected" xml:space="preserve">
-    <value>Successfully connected to API at</value>
+    <value>Pomyślnie połączono z API pod adresem</value>
   </data>
   <data name="Settings_ApiTestError" xml:space="preserve">
-    <value>Error testing API address:</value>
+    <value>Błąd podczas testowania adresu API:</value>
   </data>
   <data name="Settings_WrongApiAddress" xml:space="preserve">
-    <value>Wrong API address</value>
+    <value>Nieprawidłowy adres API</value>
   </data>
   <data name="Settings_Canceled" xml:space="preserve">
-    <value>Canceled.</value>
+    <value>Anulowano.</value>
   </data>
   <data name="Settings_SettingsSaved" xml:space="preserve">
-    <value>Settings saved successfully!</value>
+    <value>Ustawienia zapisano pomyślnie!</value>
   </data>
   <data name="Settings_SaveFailed" xml:space="preserve">
-    <value>Failed to save one or more settings.</value>
+    <value>Nie udało się zapisać jednej lub więcej ustawień.</value>
   </data>
   <data name="Settings_RestartApplyApi" xml:space="preserve">
-    <value>The application will restart to apply the new API address.</value>
+    <value>Aplikacja zostanie ponownie uruchomiona, aby zastosować nowy adres API.</value>
   </data>
   <data name="Settings_AnErrorOccurred" xml:space="preserve">
-    <value>An error occurred:</value>
+    <value>Wystąpił błąd:</value>
   </data>
   <data name="MainLayout_ApplicationLoading" xml:space="preserve">
-    <value>Application is loading ...</value>
+    <value>Aplikacja się ładuje...</value>
   </data>
   <data name="MainLayout_Hello" xml:space="preserve">
-    <value>Hello,</value>
+    <value>Cześć,</value>
     <comment>Hello,</comment>
   </data>
   <data name="MainLayout_Logout" xml:space="preserve">
-    <value>Logout</value>
+    <value>Wyloguj</value>
   </data>
   <data name="MainLayout_Version" xml:space="preserve">
-    <value>Version</value>
+    <value>Wersja</value>
   </data>
   <data name="Scheduler_AssignedPersons" xml:space="preserve">
-    <value>Assigned persons:</value>
+    <value>Przypisane osoby:</value>
   </data>
   <data name="Scheduler_SelectAssignedPersons" xml:space="preserve">
-    <value>Select assigned persons</value>
+    <value>Wybierz przypisane osoby</value>
   </data>
   <data name="Scheduler_Department" xml:space="preserve">
-    <value>Department:</value>
+    <value>Dział:</value>
   </data>
   <data name="Scheduler_SelectDepartment" xml:space="preserve">
-    <value>Select department...</value>
+    <value>Wybierz dział...</value>
   </data>
   <data name="Scheduler_Device" xml:space="preserve">
-    <value>Device:</value>
+    <value>Urządzenie:</value>
   </data>
   <data name="Scheduler_SelectAsset" xml:space="preserve">
-    <value>Select asset...</value>
+    <value>Wybierz urządzenie...</value>
   </data>
   <data name="Scheduler_DeviceCategory" xml:space="preserve">
-    <value>Device category:</value>
+    <value>Kategoria urządzenia:</value>
   </data>
   <data name="Scheduler_SelectDeviceCategory" xml:space="preserve">
-    <value>Select device category...</value>
+    <value>Wybierz kategorię urządzenia...</value>
   </data>
   <data name="Scheduler_ScheduledOrders" xml:space="preserve">
-    <value>Scheduled orders:</value>
+    <value>Zaplanowane zlecenia:</value>
   </data>
   <data name="Scheduler_ReloadAllData" xml:space="preserve">
-    <value>Reload all data</value>
+    <value>Przeładuj wszystkie dane</value>
   </data>
   <data name="Scheduler_ColumnWidth" xml:space="preserve">
-    <value>Column Width:</value>
+    <value>Szerokość kolumn:</value>
   </data>
   <data name="Scheduler_SlotDuration" xml:space="preserve">
-    <value>Slot Duration (min):</value>
+    <value>Czas trwania slotu (min):</value>
   </data>
   <data name="Scheduler_NumberOfDays" xml:space="preserve">
-    <value>Number of days:</value>
+    <value>Liczba dni:</value>
   </data>
   <data name="Scheduler_LoadingAppointments" xml:space="preserve">
-    <value>Loading appointments...</value>
+    <value>Ładowanie terminów...</value>
   </data>
   <data name="Scheduler_LoadingOrders" xml:space="preserve">
-    <value>Loading orders…</value>
+    <value>Ładowanie zleceń...</value>
   </data>
   <data name="Scheduler_OrdersWithoutStartDate" xml:space="preserve">
-    <value>Orders without StartDate:</value>
+    <value>Zlecenia bez daty rozpoczęcia:</value>
   </data>
   <data name="Scheduler_ShowCompletedOrders" xml:space="preserve">
-    <value>show completed orders</value>
+    <value>pokaż zakończone zlecenia</value>
   </data>
   <data name="Scheduler_NotStarted" xml:space="preserve">
-    <value>Not started</value>
+    <value>Nierozpoczęte</value>
   </data>
   <data name="Scheduler_InProgress" xml:space="preserve">
-    <value>In progress</value>
+    <value>W toku</value>
   </data>
   <data name="Scheduler_Completed" xml:space="preserve">
-    <value>Completed</value>
+    <value>Zakończone</value>
   </data>
   <data name="Scheduler_FailedToCloseAppointment" xml:space="preserve">
-    <value>Failed to close appointment.</value>
+    <value>Nie udało się zamknąć terminu.</value>
   </data>
   <data name="Scheduler_AddNew" xml:space="preserve">
-    <value>Add new...</value>
+    <value>Dodaj nowe...</value>
   </data>
   <data name="Scheduler_Open" xml:space="preserve">
-    <value>Open</value>
+    <value>Otwórz</value>
   </data>
   <data name="Scheduler_Remove" xml:space="preserve">
-    <value>Remove</value>
+    <value>Usuń</value>
   </data>
   <data name="Scheduler_Duplicate" xml:space="preserve">
-    <value>Duplicate</value>
+    <value>Duplikuj</value>
   </data>
   <data name="AppointmentEditor_AssetNo" xml:space="preserve">
-    <value>AssetNo:</value>
+    <value>Nr majątku:</value>
   </data>
   <data name="AppointmentEditor_Start" xml:space="preserve">
-    <value>Start:</value>
+    <value>Początek:</value>
   </data>
   <data name="AppointmentEditor_End" xml:space="preserve">
-    <value>End:</value>
+    <value>Koniec:</value>
   </data>
   <data name="AppointmentEditor_Save" xml:space="preserve">
-    <value>Save</value>
+    <value>Zapisz</value>
   </data>
   <data name="AppointmentEditor_Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Anuluj</value>
   </data>
   <data name="AppointmentEditor_DeleteFromScheduler" xml:space="preserve">
-    <value>Delete from scheduler</value>
+    <value>Usuń z harmonogramu</value>
   </data>
   <data name="AppointmentEditor_FinishOrder" xml:space="preserve">
-    <value>Finish order</value>
+    <value>Zakończ zlecenie</value>
   </data>
   <data name="AppointmentEditor_FillRequiredFields" xml:space="preserve">
-    <value>Please fill in all required fields.</value>
+    <value>Proszę wypełnić wszystkie wymagane pola.</value>
   </data>
   <data name="AppointmentEditor_FailedToSave" xml:space="preserve">
-    <value>Failed to save appointment.</value>
+    <value>Nie udało się zapisać terminu.</value>
   </data>
   <data name="AppointmentEditor_FailedToClose" xml:space="preserve">
-    <value>Failed to close appointment.</value>
+    <value>Nie udało się zamknąć terminu.</value>
   </data>
   <data name="WorkOrder_OrderNo" xml:space="preserve">
-    <value>Order №</value>
+    <value>Zlecenie №</value>
   </data>
   <data name="WorkOrder_Device" xml:space="preserve">
-    <value>Device:</value>
+    <value>Urządzenie:</value>
   </data>
   <data name="WorkOrder_NoDevice" xml:space="preserve">
-    <value>no device</value>
+    <value>brak urządzenia</value>
   </data>
   <data name="WorkOrder_Category" xml:space="preserve">
-    <value>Category:</value>
+    <value>Kategoria:</value>
   </data>
   <data name="WorkOrder_DescriptionTitle" xml:space="preserve">
-    <value>Description</value>
+    <value>Opis</value>
   </data>
   <data name="WorkOrder_SelectWOCategory" xml:space="preserve">
-    <value>Select WO category...</value>
+    <value>Wybierz kategorię zlecenia...</value>
   </data>
   <data name="WorkOrder_NotSpecified" xml:space="preserve">
-    <value>Not specified</value>
+    <value>Nie określono</value>
   </data>
   <data name="WorkOrder_SelectWOLevel" xml:space="preserve">
-    <value>Select WO level...</value>
+    <value>Wybierz poziom zlecenia...</value>
   </data>
   <data name="WorkOrder_Executors" xml:space="preserve">
-    <value>Executors</value>
+    <value>Wykonawcy</value>
   </data>
   <data name="WorkOrder_AssignedPerson" xml:space="preserve">
-    <value>Assigned Person:</value>
+    <value>Przypisana osoba:</value>
   </data>
   <data name="WorkOrder_SelectPerson" xml:space="preserve">
-    <value>Select person...</value>
+    <value>Wybierz osobę...</value>
   </data>
   <data name="WorkOrder_TakePersons" xml:space="preserve">
-    <value>Take Persons:</value>
+    <value>Przypisz osoby:</value>
   </data>
   <data name="WorkOrder_Department" xml:space="preserve">
-    <value>Department:</value>
+    <value>Dział:</value>
   </data>
   <data name="WorkOrder_Dates" xml:space="preserve">
-    <value>Dates</value>
+    <value>Daty</value>
   </data>
   <data name="WorkOrder_Added" xml:space="preserve">
-    <value>Added:</value>
+    <value>Dodano:</value>
   </data>
   <data name="WorkOrder_AcceptedForProcessing" xml:space="preserve">
-    <value>Accepted for processing:</value>
+    <value>Przyjęto do realizacji:</value>
   </data>
   <data name="WorkOrder_Start" xml:space="preserve">
-    <value>Start:</value>
+    <value>Początek:</value>
   </data>
   <data name="WorkOrder_End" xml:space="preserve">
-    <value>End:</value>
+    <value>Koniec:</value>
   </data>
   <data name="WorkOrder_Closed" xml:space="preserve">
-    <value>Closed:</value>
+    <value>Zamknięto:</value>
   </data>
   <data name="WorkOrder_PersonTakeDate" xml:space="preserve">
-    <value>Person Take Date:</value>
+    <value>Data podjęcia przez osobę:</value>
   </data>
   <data name="WorkOrder_Statistics" xml:space="preserve">
-    <value>Statistics</value>
+    <value>Statystyki</value>
   </data>
   <data name="WorkOrder_Actions" xml:space="preserve">
-    <value>Actions</value>
+    <value>Akcje</value>
   </data>
   <data name="WorkOrder_Files" xml:space="preserve">
-    <value>Files</value>
+    <value>Pliki</value>
   </data>
   <data name="WorkOrder_Parts" xml:space="preserve">
-    <value>Parts</value>
+    <value>Części</value>
   </data>
   <data name="WorkOrder_PlanActCount" xml:space="preserve">
     <value>PlanActCount</value>
   </data>
   <data name="WorkOrder_IneffectiveCount" xml:space="preserve">
-    <value>Ineffective Count</value>
+    <value>Liczba nieskutecznych</value>
   </data>
   <data name="WorkOrder_Cost" xml:space="preserve">
-    <value>Cost</value>
+    <value>Koszt</value>
   </data>
   <data name="WorkOrder_RecentChanges" xml:space="preserve">
-    <value>Recent Changes</value>
+    <value>Ostatnie zmiany</value>
   </data>
   <data name="WorkOrder_ChangeDate" xml:space="preserve">
-    <value>Change Date:</value>
+    <value>Data zmiany:</value>
   </data>
   <data name="WorkOrder_ModifiedBy" xml:space="preserve">
-    <value>Modified By:</value>
+    <value>Zmodyfikował:</value>
   </data>
   <data name="WorkOrder_NoWorkOrderFound" xml:space="preserve">
-    <value>No workorder found for ID=</value>
+    <value>Nie znaleziono zlecenia dla ID=</value>
   </data>
   <data name="ActivityList_ActivitiesForWorkOrder" xml:space="preserve">
-    <value>Activities for Work Order:</value>
+    <value>Aktywności dla zlecenia:</value>
   </data>
   <data name="ActivityList_TotalWorkload" xml:space="preserve">
-    <value>Total workload:</value>
+    <value>Łączne obciążenie:</value>
   </data>
   <data name="ActivityList_HoursAbbreviation" xml:space="preserve">
     <value>h</value>
   </data>
   <data name="ActivityList_LoadingActivities" xml:space="preserve">
-    <value>Loading activities...</value>
+    <value>Ładowanie aktywności...</value>
   </data>
   <data name="ActivityList_NoActivitiesFound" xml:space="preserve">
-    <value>No activities found for this work order.</value>
+    <value>Nie znaleziono aktywności dla tego zlecenia.</value>
   </data>
   <data name="ActivityList_Category" xml:space="preserve">
-    <value>Category</value>
+    <value>Kategoria</value>
   </data>
   <data name="ActivityList_Description" xml:space="preserve">
-    <value>Description</value>
+    <value>Opis</value>
   </data>
   <data name="ActivityList_Workload" xml:space="preserve">
-    <value>Workload</value>
+    <value>Obciążenie</value>
   </data>
   <data name="ActivityList_Workers" xml:space="preserve">
-    <value>Workers</value>
+    <value>Pracownicy</value>
   </data>
   <data name="ActivityList_Assigned" xml:space="preserve">
-    <value>Assigned</value>
+    <value>Przypisano</value>
   </data>
   <data name="ActivityList_Date" xml:space="preserve">
-    <value>Date</value>
+    <value>Data</value>
   </data>
   <data name="SchedulerSummary_Person" xml:space="preserve">
-    <value>Person</value>
+    <value>Osoba</value>
   </data>
   <data name="SchedulerSummary_Total" xml:space="preserve">
-    <value>Total</value>
+    <value>Razem</value>
   </data>
   <data name="SchedulerSummary_NotAssigned" xml:space="preserve">
-    <value>Not assigned</value>
+    <value>Nieprzypisane</value>
   </data>
   <data name="ActivityDisplay_Category" xml:space="preserve">
-    <value>Category</value>
+    <value>Kategoria</value>
   </data>
   <data name="ActivityDisplay_Description" xml:space="preserve">
-    <value>Description</value>
+    <value>Opis</value>
   </data>
   <data name="ActivityDisplay_WorkLoad" xml:space="preserve">
-    <value>Work Load</value>
+    <value>Obciążenie</value>
   </data>
   <data name="ActivityDisplay_HoursAbbreviation" xml:space="preserve">
     <value>h</value>
   </data>
   <data name="ActivityDisplay_Workers" xml:space="preserve">
-    <value>Workers</value>
+    <value>Pracownicy</value>
   </data>
   <data name="ActivityDisplay_WorkersCount" xml:space="preserve">
-    <value>worker(s)</value>
+    <value>pracownik(ów)</value>
   </data>
   <data name="ActivityDisplay_AssignedPersons" xml:space="preserve">
-    <value>Assigned Persons</value>
+    <value>Przypisane osoby</value>
   </data>
   <data name="ActivityDisplay_DateAdded" xml:space="preserve">
-    <value>Date Added</value>
+    <value>Data dodania</value>
   </data>
   <data name="CheckSession_NotAuthenticated" xml:space="preserve">
-    <value>User is not authenticated, redirecting to login page.</value>
+    <value>Użytkownik nie jest uwierzytelniony, przekierowanie do strony logowania.</value>
   </data>
   <data name="CheckSession_SessionCheckFailed" xml:space="preserve">
-    <value>Session check failed with status code:</value>
+    <value>Sprawdzenie sesji nie powiodło się, kod statusu:</value>
   </data>
   <data name="CheckSession_FailedToCheckSession" xml:space="preserve">
-    <value>Failed to check session:</value>
+    <value>Nie udało się sprawdzić sesji:</value>
   </data>
   <data name="CustomFilterMenuTemplate_All" xml:space="preserve">
-    <value>All</value>
+    <value>Wszystkie</value>
   </data>
   <data name="SchedulerItem_Arrow" xml:space="preserve">
     <value>=&gt;</value>
@@ -617,13 +617,13 @@
     <value>:</value>
   </data>
   <data name="ChangelogPage_Title" xml:space="preserve">
-    <value>Changelog Page</value>
+    <value>Strona dziennika zmian</value>
   </data>
   <data name="ChangelogPage_Loading" xml:space="preserve">
-    <value>Loading changelog...</value>
+    <value>Ładowanie dziennika zmian...</value>
   </data>
   <data name="ChangelogPage_ErrorLoading" xml:space="preserve">
-    <value>Error loading changelog:</value>
+    <value>Błąd ładowania dziennika zmian:</value>
   </data>
   <data name="App_Title" xml:space="preserve">
     <value>FlexiCMMS</value>

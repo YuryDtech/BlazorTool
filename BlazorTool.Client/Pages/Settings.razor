@@ -40,14 +40,12 @@
 
     <div class="row mb-3">
         <div class="col-md-6">
-            @* <label for="language" class="form-label">Language</label>
+            <label for="language" class="form-label">Language</label>
             <select id="language" class="form-select" @bind="@SelectedLanguage">
-                <option value="pl-Pl">Polski</option>
+                <option value="pl-PL">Polski</option>
                 <option value="en-US">English</option>
-                <option value="fr-Fr">Français</option>
-                <option value="ru-Ru">Русский</option>
                 {!-- Add more languages as needed --}
-            </select> *@
+            </select>
         </div>
     </div>
 
@@ -74,7 +72,7 @@
 @code{
 
     protected string? ApiAddress { get; set; }
-    // protected string? SelectedLanguage { get; set; } = "pl-Pl";
+    protected string? SelectedLanguage { get; set; } = "pl-Pl";
     private bool isAdmin = false;
     protected string? StatusMessage { get; set; }
     protected string? StatusMessageClass { get; set; } // e.g., "text-success" or "text-danger"
@@ -112,7 +110,7 @@
                 AppState.Settings.ApiBaseUrl = ApiAddress;
             }
         }
-        //SelectedLanguage = UserState.LangCode;
+        SelectedLanguage = UserState.LangCode;
         UseOriginalColors = UserState.UseOriginalColors;
     }
 
@@ -193,14 +191,17 @@
     }
 
     private async Task ProceedWithSave(bool needRestart)
-    {
+    { 
+        bool needReload = false;
         try
         {
-            // var s1 = await SaveSettingAsync("selectedLanguage", SelectedLanguage, currentUser);
+            var s1 = await SaveSettingAsync("selectedLanguage", SelectedLanguage, currentUser);
             var s2 = await SaveSettingAsync("useOriginalColors", UseOriginalColors.ToString(), currentUser);
-            if (s2)
+            if (s1 && s2)
             {
                 UserState.UseOriginalColors = UseOriginalColors;
+                UserState.LangCode = SelectedLanguage;
+                needReload = await UserState.SwitchLanguage(SelectedLanguage);
                 StatusMessage = Localizer["Settings_SettingsSaved"];
                 StatusMessageClass = "text-success";
             }
@@ -210,14 +211,17 @@
                 StatusMessageClass = "text-danger";
             }
 
-
-
             if (needRestart)
             {
                 await SaveSettingAsync("apiAddress", ApiAddress, currentUser);
                 AppState.Settings.ApiBaseUrl = ApiAddress;
                 StatusMessage += Localizer["Settings_RestartApplyApi"];
                 // Clear client-side cache and force a full page reload
+                Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+            }
+            else if (needReload)
+            {
+                // If language changed, reload the page to apply new language settings
                 Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
             }
         }

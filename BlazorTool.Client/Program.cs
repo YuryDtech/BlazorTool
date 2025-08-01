@@ -20,18 +20,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Services.AddTelerikBlazor();
 builder.Services.AddBlazoredLocalStorage();
 
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-
-const string defaultCulture = "en-EN";
-var supportedCultures = new[] { "en-EN", "pl-PL" };
-
-builder.Services.Configure<RequestLocalizationOptions>(options =>
-{
-    options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture(defaultCulture);
-    options.SupportedCultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
-    options.SupportedUICultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
-});
-
+builder.Services.AddLocalization();
 
 builder.Services.AddScoped<AuthHeaderHandler>(sp =>
 {

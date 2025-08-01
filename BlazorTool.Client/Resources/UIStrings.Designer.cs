@@ -29,7 +29,7 @@ namespace BlazorTool.Client.Resources {
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public UIStrings() {
+        internal UIStrings() {
         }
         
         /// <summary>
@@ -340,7 +340,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AssignedPerson.
+        ///   Looks up a localized string similar to Assigned Person.
         /// </summary>
         public static string Assigned_Person {
             get {
@@ -403,7 +403,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CloseDate.
+        ///   Looks up a localized string similar to Close Date.
         /// </summary>
         public static string Close_Date {
             get {

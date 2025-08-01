@@ -40,7 +40,7 @@ namespace BlazorTool.Client.Services
 
 
 
-        public async Task SaveIdentityDataAsync(IdentityData identityData)
+        public async Task<bool> SaveIdentityDataAsync(IdentityData identityData)
         {
             _logger.LogInformation("DEBUG: SaveIdentityDataAsync started. LangCode from data: {LangCode}", identityData.LangCode);
             UserName = identityData.Name;
@@ -50,20 +50,47 @@ namespace BlazorTool.Client.Services
             RightMatrix = identityData.RigthMatrix;
             UseOriginalColors = identityData.UseOriginalColors;
             var cultureInfo = new CultureInfo(identityData.LangCode);
+            bool isForceReload = identityData.LangCode != CultureInfo.CurrentCulture.Name;
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
             _logger.LogInformation("DEBUG: Culture set to {CultureName} in SaveIdentityDataAsync.", cultureInfo.Name);
             await _localStorageService.SetItemAsStringAsync("identityData", JsonConvert.SerializeObject(identityData));
             NotifyStateChanged();
+            return isForceReload;
         }
 
-        public async Task LoadIdentityDataAsync()
+        public async Task<bool> SwitchLanguage(string langCode)
+        {
+            bool isForceReload = langCode != CultureInfo.CurrentCulture.Name;
+            LangCode = langCode;
+            await SaveToLocalStorage();
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(langCode);
+            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(langCode);
+            OnChange?.Invoke();
+            return isForceReload;
+        }
+
+        public async Task SaveToLocalStorage()
+        {
+            IdentityData data = new IdentityData
+            {
+                Name = this.UserName,
+                Token = this.Token,
+                PersonID = this.PersonID ?? 0,
+                LangCode = this.LangCode,
+                RigthMatrix = this.RightMatrix,
+                UseOriginalColors = this.UseOriginalColors
+            };
+            await _localStorageService.SetItemAsStringAsync("identityData", JsonConvert.SerializeObject(data));
+        }
+        public async Task<bool> LoadIdentityDataAsync()
         {
             _logger.LogInformation("DEBUG: LoadIdentityDataAsync started.");
             string? identityDataJson = await _localStorageService.GetItemAsStringAsync("identityData");
             if (!string.IsNullOrEmpty(identityDataJson))
             {
                 IdentityData? identityData = JsonConvert.DeserializeObject<IdentityData>(identityDataJson);
+                bool isForceReload = false;
                 if (identityData != null)
                 {
                     _logger.LogInformation("DEBUG: Loaded LangCode from storage: {LangCode}", identityData.LangCode);
@@ -73,15 +100,18 @@ namespace BlazorTool.Client.Services
                     LangCode = identityData.LangCode;
                     RightMatrix = identityData.RigthMatrix;
                     UseOriginalColors = identityData.UseOriginalColors;
+                    isForceReload = identityData.LangCode != CultureInfo.CurrentCulture.Name;
                     var cultureInfo = new CultureInfo(identityData.LangCode);
                     CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
                     CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
                     _logger.LogInformation("DEBUG: Culture set to {CultureName} in LoadIdentityDataAsync.", cultureInfo.Name);
                 }
+                    return isForceReload;
             }
             else
             {
                 _logger.LogWarning("DEBUG: No identityData found in local storage.");
+                return false; 
             }
         }
 
