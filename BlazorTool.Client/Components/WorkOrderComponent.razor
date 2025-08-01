@@ -170,20 +170,38 @@
                 <CardBody Class="p-2">
                     <div class="dates-grid">
                         <div class="date-item">
+                            <label class="@DatesAlarm">@Localizer["WorkOrder_Start"]</label>
+                                <TelerikDateTimePicker @bind-Value="@WorkOrder.StartDate"
+                                                       OnChange="@(OnDateChanged)"
+                                                       Width="100%"
+                                                       Size="sm" 
+                                                       ReadOnly=@(isEditable == false)
+                                                       Class="@DatesAlarm"
+                                                       Format="@dateTimeFormat"
+                                                       >
+                                    <DateTimePickerSteps Year="1" Month="1" Day="1" Hour="1" Minute="5"/>
+                                                       </TelerikDateTimePicker>
+                        </div>
+                        <div class="date-item">
+                            <label>@Localizer["WorkOrder_End"]</label>
+                                <TelerikDateTimePicker @bind-Value="@WorkOrder.EndDate"
+                                                       OnChange="@(OnDateChanged)"
+                                                       Width="100%"
+                                                       Size="sm" 
+                                                       ReadOnly=@(isEditable == false)
+                                                       Class="@DatesAlarm"
+                                                       Format="@dateTimeFormat"
+                                                       >
+                                    <DateTimePickerSteps Year="1" Month="1" Day="1" Hour="1" Minute="5" />
+                                </TelerikDateTimePicker>
+                        </div>
+                        <div class="date-item">
                             <label>@Localizer["WorkOrder_Added"]</label>
                             <div class="date-value">@FormatDateTime(WorkOrder.AddDate)</div>
                         </div>
                         <div class="date-item">
                             <label>@Localizer["WorkOrder_AcceptedForProcessing"]</label>
                             <div class="date-value">@FormatDateTime(WorkOrder.TakeDate)</div>
-                        </div>
-                        <div class="date-item">
-                            <label class=@StartDateAlarm>@Localizer["WorkOrder_Start"]</label>
-                            <div class="date-value @StartDateAlarm">@FormatDateTime(WorkOrder.StartDate)</div>
-                        </div>
-                        <div class="date-item">
-                            <label>@Localizer["WorkOrder_End"]</label>
-                            <div class="date-value">@FormatDateTime(WorkOrder.EndDate)</div>
                         </div>
                         <div class="date-item">
                             <label>@Localizer["WorkOrder_Closed"]</label>
@@ -284,6 +302,8 @@
 
 @code {
 
+
+
     [Parameter] public WorkOrder? WorkOrder { get; set; }
     [Parameter] public List<string>? ListPersons { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
@@ -296,12 +316,13 @@
     // private int listTypeForDepartment = 5;
     private string notAssigned = "Not assigned";
     private string notSpecified = "Not specified";
+    private string dateTimeFormat = "dd.MM.yyyy HH:mm";
     private string CategoryAlarm = string.Empty;
     private string DeviceAlarm = string.Empty;
     private string DescriptionAlarm = string.Empty;
     private string LevelAlarm = string.Empty;
     private string ReasonAlarm = string.Empty;
-    private string StartDateAlarm = string.Empty;
+    private string DatesAlarm = string.Empty;
     private bool showActivities = false;
     private bool isNewWorkOrder = false;
     private List<Device>? ListDevices { get; set; } = new List<Device>();
@@ -380,9 +401,9 @@
         //     DepAlarm = "bg-warning";
         // }
 
-        if (WorkOrder?.StartDate == null || WorkOrder.StartDate == DateTime.MinValue)
+        if (isValidDates())
         {
-            StartDateAlarm = "bg-warning";
+            DatesAlarm = "bg-warning";
         }
 
         if (string.IsNullOrEmpty(WorkOrder?.WODesc))
@@ -511,14 +532,37 @@
         else ReasonAlarm = string.Empty;
     }
 
+    private void OnDateChanged()
+    {
+        if (isValidDates())
+        {
+            DatesAlarm = "bg-warning";
+        }
+        else
+        {
+            DatesAlarm = string.Empty;
+        }
+    }
+
     #endregion Event Handlers
 
-     private string FormatDateTime(DateTime? dateTime)
+    private string FormatDateTime(DateTime? dateTime)
     {
         if (!dateTime.HasValue)
             return @Localizer["WorkOrder_NotSpecified"];
-            
+
         return dateTime.Value.ToString("dd.MM.yyyy HH:mm");
+    }
+
+    private bool isValidDates()
+    {
+
+        return isEditable && 
+              WorkOrder?.StartDate == null ||
+              WorkOrder?.StartDate == DateTime.MinValue ||
+              WorkOrder?.EndDate == null ||
+              WorkOrder?.EndDate == DateTime.MinValue ||
+              WorkOrder?.StartDate > WorkOrder?.EndDate;
     }
 }
 
