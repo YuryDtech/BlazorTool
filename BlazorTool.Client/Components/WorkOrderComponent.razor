@@ -138,10 +138,6 @@
                                                  >
                             </TelerikComboBox>
                     </div>
-                    <div class="field-group">
-                        <label>@Localizer["WorkOrder_TakePersons"]</label>
-                        <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.TakePersons) ? @Localizer["WorkOrder_NotSpecified"] : WorkOrder.TakePersons)</div>
-                    </div>
                     <div class="field-group" >
                             <label>@Localizer["WorkOrder_Department"]</label>
                                 <TelerikComboBox Data="@ListDepartments"
@@ -156,6 +152,10 @@
                                 >
                                                  
                                 </TelerikComboBox>
+                    </div>
+                    <div class="field-group">
+                        <label>@Localizer["WorkOrder_TakePersons"]</label>
+                        <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.TakePersons) ? @Localizer["WorkOrder_NotSpecified"] : WorkOrder.TakePersons)</div>
                     </div>
                 </CardBody>
             </TelerikCard>
@@ -310,6 +310,7 @@
     private List<Dict> ListDepartments = new List<Dict>();
     private List<Dict> ListLevels = new List<Dict>();
     private List<Dict> ListReasons = new List<Dict>();
+    private string takePersons = string.Empty;
     private string StateColor = string.Empty;
     protected override async Task OnInitializedAsync()
     {
@@ -323,6 +324,20 @@
         if (isNewWorkOrder) {
             WorkOrder.EndDate = WorkOrder.StartDate?.AddHours(1);
             DeviceAlarm = string.IsNullOrWhiteSpace(WorkOrder?.AssetNo) ? "bg-warning" : string.Empty;
+        }
+
+        var takePersonsIDs = WorkOrder?.TakePersons?.Split('#') ?? Array.Empty<string>();
+        foreach(var id in takePersonsIDs)
+        {
+            if (int.TryParse(id, out int personId) && personId > 0)
+            {
+                var person = apiService.GetPersonByIDCached(personId);
+                if (person != null)
+                {
+                    takePersons += $"{person.Name}, ";
+                }
+            }
+            takePersons = takePersons.TrimEnd(',', ' ');
         }
         selectedDevice = ListDevices?.FirstOrDefault(d => d.MachineID == WorkOrder?.MachineID);
 

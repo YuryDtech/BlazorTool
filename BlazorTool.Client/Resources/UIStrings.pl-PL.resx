@@ -473,7 +473,7 @@
     <value>Wybierz osobę...</value>
   </data>
   <data name="WorkOrder_TakePersons" xml:space="preserve">
-    <value>Przypisz osoby:</value>
+    <value>Uczestnicy:</value>
   </data>
   <data name="WorkOrder_Department" xml:space="preserve">
     <value>Dział:</value>
