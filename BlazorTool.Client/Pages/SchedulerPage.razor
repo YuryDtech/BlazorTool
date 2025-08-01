@@ -257,7 +257,7 @@
 </div>
 
 <TelerikWindow Modal="false" MinWidth="1200px" MaxHeight="95vh" Visible="@customEditFormShown" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
-    <WindowTitle>#@CurrentAppointment.WorkOrderID</WindowTitle>
+    <WindowTitle>@Localizer["WorkOrder_OrderNo"]@CurrentAppointment.WorkOrderID</WindowTitle>
     <WindowActions>
         <WindowAction Name="Close" OnClick="@CancelEditing" />
     </WindowActions>

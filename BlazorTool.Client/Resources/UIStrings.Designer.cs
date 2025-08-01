@@ -1375,7 +1375,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Device:.
+        ///   Looks up a localized string similar to Device.
         /// </summary>
         public static string WorkOrder_Device {
             get {

@@ -443,7 +443,7 @@
     <value>Order №</value>
   </data>
   <data name="WorkOrder_Device" xml:space="preserve">
-    <value>Device:</value>
+    <value>Device</value>
   </data>
   <data name="WorkOrder_NoDevice" xml:space="preserve">
     <value>no device</value>

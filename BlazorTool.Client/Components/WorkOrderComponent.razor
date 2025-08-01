@@ -11,45 +11,43 @@
   @if(WorkOrder != null)
         {
     <!-- HEADER -->
-    <CardHeader Class="position-relative">
-    <h2 class="mb-1">@Localizer["WorkOrder_OrderNo"]@WorkOrder.WorkOrderID</h2>
+        <CardHeader Class="d-flex justify-content-between align-items-center flex-wrap p-3">
 
-    <!-- Status-->
-<div class="position-absolute top-50 end-0 translate-middle-y p-2">
-    <span class="badge @StateColor fs-3">
-        @WorkOrder.WOState
-    </span>
-</div>
-
-    <div class="position-absolute top-50 end-50 translate-middle-y custom-highlight fs-5 p-3 rounded">
-                <div class="@DeviceAlarm"><strong>@Localizer["WorkOrder_Device"]</strong>
+            <div class="custom-highlight fs-5 p-3 rounded">
+                <div class="@DeviceAlarm">
+                    <strong>@Localizer["WorkOrder_Device"]: </strong>
                     @if (isNewWorkOrder && isEditable)
                     {
-                       <TelerikComboBox Data="@ListDevices"
-                                        ValueField="@nameof(Device.MachineID)"
-                                        TextField="@nameof(Device.AssetNo)"
-                                        Placeholder="Select device..."
-                                        ValueChanged="@((int devId) => OnDeviceChanged(devId))"
-                                        Width="250px"
-                                        ShowClearButton=false
-                                        AllowCustom=false
-                                        Class="@DeviceAlarm"
-                                        Size="sm"
-                                        >
-                                        
-                        </TelerikComboBox> 
+                        <TelerikComboBox Data="@ListDevices"
+                                         ValueField="@nameof(Device.MachineID)"
+                                         TextField="@nameof(Device.AssetNo)"
+                                         Placeholder="Select device..."
+                                         ValueChanged="@((int devId) => OnDeviceChanged(devId))"
+                                         Width="250px"
+                                         ShowClearButton="false"
+                                         AllowCustom="false"
+                                         Class="@DeviceAlarm"
+                                         Size="sm">
+                        </TelerikComboBox>
                     }
                     else
                     {
-                        @(selectedDevice?.AssetNo ?? WorkOrder.AssetNo ?? @Localizer["WorkOrder_NoDevice"])
+                        @(" " + selectedDevice?.AssetNo ?? WorkOrder.AssetNo ?? @Localizer["WorkOrder_NoDevice"])
                     }
                 </div>
                 <div><strong>Category:</strong> @(WorkOrder.DeviceCategory ?? selectedDevice?.DeviceCategory ?? @Localizer["WorkOrder_NoDevice"])</div>
-    </div>
-  </CardHeader> 
+            </div>
+
+            <div>
+                <span class="badge @StateColor fs-3">
+                    @WorkOrder.WOState
+                </span>
+            </div>
+
+        </CardHeader>
 
     <!-- INFO CARDS GRID -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-3">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-2">
         <!-- Description -->
         <div class="col">
             <TelerikCard Class="h-100">
@@ -307,7 +305,7 @@
     [Parameter] public WorkOrder? WorkOrder { get; set; }
     [Parameter] public List<string>? ListPersons { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
-    [Parameter] public EventCallback OnStateChanged { get; set; }
+    [Parameter] public EventCallback<bool> OnStateChanged { get; set; }
     [Parameter] public Person? currentUser { get; set; }
     // private int listTypeForCategory = 1;
     // private int listTypeForLevel = 2;
@@ -401,7 +399,7 @@
         //     DepAlarm = "bg-warning";
         // }
 
-        if (isValidDates())
+        if (!isValidDates())
         {
             DatesAlarm = "bg-warning";
         }
@@ -431,6 +429,7 @@
             WorkOrder.AddDate = DateTime.Now;
             WorkOrder.ModDate = DateTime.Now;
         }
+        isValidWorkOrder();
 
     }
 
@@ -443,6 +442,7 @@
         {
             WorkOrder.AssignedPerson = personName ?? string.Empty;
         }
+        isValidWorkOrder();
     }
 
     private void OnDescriptionChanged()
@@ -455,6 +455,7 @@
         {
             DescriptionAlarm = "bg-warning";
         }
+        isValidWorkOrder();
     }
 
     private async Task OnDeviceChanged(int devId)
@@ -473,6 +474,7 @@
         {
             DeviceAlarm = "bg-warning";
         }
+        isValidWorkOrder();
     }
 
     private void ToggleActivities()
@@ -491,6 +493,7 @@
         if (string.IsNullOrEmpty(categoryName))
             CategoryAlarm = "bg-warning";
         else CategoryAlarm = string.Empty;
+        isValidWorkOrder();
     }
 
     private void OnDepartmentChanged(string? newValue)
@@ -502,6 +505,7 @@
         // if (string.IsNullOrEmpty(departmentName) || departmentName == notAssigned || departmentName == "All")
         //     DepAlarm = "bg-warning";
         // else DepAlarm = string.Empty;
+        isValidWorkOrder();
     }
 
     private void OnLevelChanged(int? newValue)
@@ -516,6 +520,7 @@
         if (string.IsNullOrEmpty(levelName) || levelName == notSpecified)
             LevelAlarm = "bg-warning";
         else LevelAlarm = string.Empty;
+        isValidWorkOrder();
     }
 
     private void OnReasonChanged(int? newValue)
@@ -530,11 +535,12 @@
         if (string.IsNullOrEmpty(reasonName) || reasonName == notSpecified)
             ReasonAlarm = "bg-warning";
         else ReasonAlarm = string.Empty;
+        isValidWorkOrder();
     }
 
     private void OnDateChanged()
     {
-        if (isValidDates())
+        if (!isValidDates())
         {
             DatesAlarm = "bg-warning";
         }
@@ -542,6 +548,7 @@
         {
             DatesAlarm = string.Empty;
         }
+        isValidWorkOrder();
     }
 
     #endregion Event Handlers
@@ -556,13 +563,26 @@
 
     private bool isValidDates()
     {
+        var v1 = WorkOrder?.StartDate != null ;
+        var v2 = WorkOrder?.StartDate != DateTime.MinValue;
+        var v3 = WorkOrder?.EndDate != null;
+        var v4 = WorkOrder?.EndDate != DateTime.MinValue;
+        var v5 = WorkOrder?.StartDate <= WorkOrder?.EndDate;
+        return isEditable && v1 && v2 && v3 && v4 && v5;
+              
+    }
 
-        return isEditable && 
-              WorkOrder?.StartDate == null ||
-              WorkOrder?.StartDate == DateTime.MinValue ||
-              WorkOrder?.EndDate == null ||
-              WorkOrder?.EndDate == DateTime.MinValue ||
-              WorkOrder?.StartDate > WorkOrder?.EndDate;
+    private bool isValidWorkOrder()
+    {
+        var isValid =  WorkOrder != null &&
+               string.IsNullOrEmpty(DescriptionAlarm) &&
+               string.IsNullOrEmpty(DeviceAlarm) &&
+               string.IsNullOrEmpty(CategoryAlarm) &&
+               string.IsNullOrEmpty(LevelAlarm) &&
+               string.IsNullOrEmpty(ReasonAlarm) &&
+               isValidDates();
+        OnStateChanged.InvokeAsync(isValid);
+        return isValid;
     }
 }
 

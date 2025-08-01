@@ -6,23 +6,7 @@
 @inject IStringLocalizer<Resources.UIStrings> Localizer
 
 <EditForm Model="@Appointment" OnValidSubmit="@SaveAppointment">
-    <DataAnnotationsValidator />
-    <label class="width100">
-        @Localizer["AppointmentEditor_AssetNo"]<br />
-        <TelerikTextBox @bind-Value="@Appointment.AssetNo" Width="100%" Class="@titleAlarm" OnChange="@OnTitleChange"/>
-    </label>
-    <br />
-     <div class="datetime-row">
-        <label>
-            @Localizer["AppointmentEditor_Start"]<br />
-            <TelerikDateTimePicker @bind-Value="@Appointment.Start" Width="100%" />
-        </label>
-        <label>
-            @Localizer["AppointmentEditor_End"]<br />
-            <TelerikDateTimePicker @bind-Value="@Appointment.End" Width="100%" />
-        </label>
-    </div>
-    <ValidationSummary />
+   
       <div class="button-row">
         <TelerikButton Class="popup-target" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">@Localizer["AppointmentEditor_Save"]</TelerikButton>
 
@@ -38,7 +22,7 @@
     ListPersons="@ListPersons" 
     isEditable=@isEditable
     currentUser="@currentUser"
-                    OnStateChanged="@(() => {StateHasChanged();OnTitleChange();})">
+                    OnStateChanged="@((isValid) => {isValidData = isValid; StateHasChanged();})">
 </WorkOrderComponent>
 
 <TelerikPopup @ref="@PopupRef"
@@ -57,6 +41,7 @@
 </TelerikPopup>
 
 @code{
+
     //communcation with the parent component where the scheduler is
     [Parameter] public SchedulerAppointment Appointment { get; set; }
     [Parameter] public EventCallback<SchedulerAppointment?> OnAppointmentChanged { get; set; }
@@ -71,6 +56,7 @@
     private SchedulerAppointment? _OriginAppointment; // Used to store the original appointment for cancellation
     private WorkOrderInfo? workOrderInfo = null; //additional information about the work order /wo/get?WorkOrderID=
     private bool isWOClosed = false;
+    private bool isValidData = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -94,9 +80,9 @@
 
     async Task SaveAppointment()
     {
-        if (!IsValidAppointment())
+        if (!isValidData)
         {
-            Console.WriteLine("--- IS INVALID");
+            Console.WriteLine("---- > Workorder data IS INVALID");
             popupMessage = Localizer["AppointmentEditor_FillRequiredFields"];
             PopupRef?.Show();
             return;
@@ -182,18 +168,6 @@
                !string.IsNullOrWhiteSpace(Appointment.WOLevel) &&
                !string.IsNullOrWhiteSpace(Appointment.WOCategory) &&
                !string.IsNullOrWhiteSpace(Appointment.WOReason);
-    }
-
-    private void OnTitleChange()
-    {
-        if (string.IsNullOrWhiteSpace(Appointment.AssetNo))
-        {
-            titleAlarm = "bg-warning";
-        }
-        else
-        {
-            titleAlarm = string.Empty;
-        }
     }
 
     private bool IsWOClosed()

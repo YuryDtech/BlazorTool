@@ -23,7 +23,7 @@ form {
     justify-content: center;
     gap: 50px;
     margin-top: 0px;
-    padding: 20px;
+    padding-bottom: 16px;
 }
 
 /* Styles for the inner content div with class "warning-popup" */

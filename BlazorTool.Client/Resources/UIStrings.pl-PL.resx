@@ -443,7 +443,7 @@
     <value>Zlecenie №</value>
   </data>
   <data name="WorkOrder_Device" xml:space="preserve">
-    <value>Urządzenie:</value>
+    <value>Urządzenie</value>
   </data>
   <data name="WorkOrder_NoDevice" xml:space="preserve">
     <value>brak urządzenia</value>
