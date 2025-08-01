@@ -142,9 +142,9 @@
                             <label>@Localizer["WorkOrder_Department"]</label>
                                 <TelerikComboBox Data="@ListDepartments"
                                                  Value="@WorkOrder.DepName"
-                                                 ValueField="@nameof(WorkOrder.DepName)"
-                                                 TextField="@nameof(WorkOrder.DepName)"
-                                                 Placeholder="Select department..."
+                                                 ValueField="Name"
+                                                 TextField="Name"
+                                                 Placeholder="@Localizer["Scheduler_SelectDepartment"]"
                                                  ValueChanged="@((string name) => OnDepartmentChanged(name))"
                                                  Width="100%"
                                                  ReadOnly=@(isEditable == false)
