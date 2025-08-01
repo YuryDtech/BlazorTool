@@ -76,7 +76,7 @@
             };
 
             var response = await ApiServiceClient.PostSingleAsync<LoginRequest, IdentityData>("identity/loginpassword", loginRequest);
-
+            await UserState.InitializationTask;
             if (response != null && response.IsValid && response.Data != null)
             {
                 var identityData = response.Data;
@@ -87,8 +87,6 @@
                 UserState.UseOriginalColors = bool.TryParse(await ApiServiceClient.LoadSettingAsync("useOriginalColors", identityData.Name), out var useColors) && useColors;
                 identityData.UseOriginalColors = UserState.UseOriginalColors;
                 bool isForceReload = await UserState.SaveIdentityDataAsync(identityData); // Save identityData to local storage
-                await ApiServiceClient.GetWODictionaries(identityData.PersonID, identityData.LangCode);
-
                 Navigation.NavigateTo("/", isForceReload);
             }
             else

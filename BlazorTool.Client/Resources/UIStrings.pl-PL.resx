@@ -196,7 +196,7 @@
     <value>Przypisane osoby</value>
   </data>
   <data name="WorkOrder_State" xml:space="preserve">
-    <value>WOState</value>
+    <value>Status</value>
   </data>
   <data name="WorkOrder_Level" xml:space="preserve">
     <value>Poziom:</value>
@@ -627,5 +627,8 @@
   </data>
   <data name="App_Title" xml:space="preserve">
     <value>FlexiCMMS</value>
+  </data>
+  <data name="WorkOrder_SelectWOReason" xml:space="preserve">
+    <value>Wybierz przyczynę zlecenia...</value>
   </data>
 </root>

@@ -30,7 +30,7 @@ namespace BlazorTool.Client.Services
         public ApiServiceClient(HttpClient http, UserState userState)
         {
             _http = http;
-            _userState = userState;
+            _userState = userState;            
         }
 
         

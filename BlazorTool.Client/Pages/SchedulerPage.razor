@@ -264,7 +264,7 @@
     <WindowContent>
         <AppointmentEditor Appointment="@CurrentAppointment" 
             isEditable=true 
-            ListPersons="@PersonsNames.Where(c=>c != "All").Concat(new List<string>(){"Not assigned"}).ToList()"
+            ListPersons="@PersonsNames.Where(c=>c != "All").ToList()"
             currentUser="@currentUser"
             OnAppointmentChanged="@RefreshData" />
     </WindowContent>
@@ -298,6 +298,7 @@
 </TelerikPopup>
 
 @code {
+
     private List<SchedulerAppointment> Appointments { get; set; } = new();    
     private List<SchedulerAppointment> _allAppointments { get; set; } = new();    
     private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }
@@ -386,6 +387,8 @@
         {
             Navigation.NavigateTo("/login");
         }
+
+        await apiService.GetWODictionaries(UserState.PersonID, UserState.LangCode);
         currentUser.PersonId = UserState.PersonID ?? -1;
         currentUser.Name = UserState.UserName ?? string.Empty;
         await LoadData();
@@ -677,9 +680,10 @@
         }
         else
         {
+            bool isStartEqualsEnd = args.Start == args.End;
             CurrentAppointment = item ?? new SchedulerAppointment();
-            CurrentAppointment.Start = args.Start;
-            CurrentAppointment.End = args.End;
+            CurrentAppointment.Start = isStartEqualsEnd ? args.Start.AddHours(8) : args.Start;
+            CurrentAppointment.End = isStartEqualsEnd ? args.End.AddHours(16) : args.End;
             CurrentAppointment.IsAllDay = item?.IsAllDay ?? true;
  
         }
@@ -838,9 +842,10 @@
         // You can use _clickedSlotContext.Start and _clickedSlotContext.End to pre-fill the form
         if (_clickedSlotContext != null)
         {
-            CurrentAppointment = new SchedulerAppointment() { 
-                Start = _clickedSlotContext.Start, 
-                End = _clickedSlotContext.End, 
+            bool isStartEqualsEnd = _clickedSlotContext.Start == _clickedSlotContext.End;
+            CurrentAppointment = new SchedulerAppointment() {
+                Start = isStartEqualsEnd ? _clickedSlotContext.Start.AddHours(8) : _clickedSlotContext.Start,
+                End = isStartEqualsEnd ? _clickedSlotContext.Start.AddHours(16) : _clickedSlotContext.End,
                 IsAllDay = true };
             if (_clickedSlotContext.Resources != null && _clickedSlotContext.Resources.Any())
             {

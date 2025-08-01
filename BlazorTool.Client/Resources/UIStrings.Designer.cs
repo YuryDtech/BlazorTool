@@ -1537,7 +1537,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select WO category....
+        ///   Looks up a localized string similar to Select category....
         /// </summary>
         public static string WorkOrder_SelectWOCategory {
             get {
@@ -1546,11 +1546,20 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select WO level....
+        ///   Looks up a localized string similar to Select level....
         /// </summary>
         public static string WorkOrder_SelectWOLevel {
             get {
                 return ResourceManager.GetString("WorkOrder_SelectWOLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select reason....
+        /// </summary>
+        public static string WorkOrder_SelectWOReason {
+            get {
+                return ResourceManager.GetString("WorkOrder_SelectWOReason", resourceCulture);
             }
         }
         
@@ -1564,7 +1573,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WOState.
+        ///   Looks up a localized string similar to Status.
         /// </summary>
         public static string WorkOrder_State {
             get {

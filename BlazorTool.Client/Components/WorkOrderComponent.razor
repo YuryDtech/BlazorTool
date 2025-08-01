@@ -79,12 +79,25 @@
                                                  Width="100%"
                                                  ReadOnly=@(isEditable == false)
                                                  ShowClearButton=false
-                                                 AllowCustom=false>
+                                                 AllowCustom=false
+                                                 Class="@CategoryAlarm"
+                                                 >
                                 </TelerikComboBox>
                     </div>
                     <div class="field-group">
                         <label>@Localizer["WorkOrder_Reason"]</label>
-                        <div class="field-value">@(WorkOrder?.WOReason ?? @Localizer["WorkOrder_NotSpecified"])</div>
+                            <TelerikComboBox Data="@ListReasons"
+                                             ValueField="@nameof(Dict.Id)"
+                                             TextField="@nameof(Dict.Name)"
+                                             Value="@(WorkOrder?.ReasonID ?? 0)"
+                                             Placeholder="@Localizer["WorkOrder_SelectWOReason"]"
+                                             ValueChanged="@((int reasonId) => OnReasonChanged(reasonId))"
+                                             Width="100%"
+                                             ReadOnly=@(isEditable == false)
+                                             ShowClearButton=false
+                                             AllowCustom=false
+                                             Class="@ReasonAlarm">
+                            </TelerikComboBox>
                     </div>
                     <div class="field-group">
                         <label>@Localizer["WorkOrder_Level"]</label>
@@ -121,7 +134,7 @@
                                              ValueChanged="@((string name) => OnAssignedPersonChanged(name))"
                                              Width="100%"
                                              ReadOnly=@(isEditable == false)
-                                             ShowClearButton=false
+                                             ShowClearButton=true
                                                  >
                             </TelerikComboBox>
                     </div>
@@ -130,15 +143,16 @@
                         <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.TakePersons) ? @Localizer["WorkOrder_NotSpecified"] : WorkOrder.TakePersons)</div>
                     </div>
                     <div class="field-group" >
-                            <label class=@DepAlarm>@Localizer["WorkOrder_Department"]</label>
+                            <label>@Localizer["WorkOrder_Department"]</label>
                                 <TelerikComboBox Data="@ListDepartments"
                                                  Value="@WorkOrder.DepName"
+                                                 ValueField="@nameof(WorkOrder.DepName)"
+                                                 TextField="@nameof(WorkOrder.DepName)"
                                                  Placeholder="Select department..."
                                                  ValueChanged="@((string name) => OnDepartmentChanged(name))"
                                                  Width="100%"
                                                  ReadOnly=@(isEditable == false)
-                                                 ShowClearButton=false
-                                Class="@DepAlarm"
+                                                 ShowClearButton=true                                
                                 >
                                                  
                                 </TelerikComboBox>
@@ -282,18 +296,20 @@
     // private int listTypeForDepartment = 5;
     private string notAssigned = "Not assigned";
     private string notSpecified = "Not specified";
-    private string DepAlarm = string.Empty;
+    private string CategoryAlarm = string.Empty;
     private string DeviceAlarm = string.Empty;
     private string DescriptionAlarm = string.Empty;
     private string LevelAlarm = string.Empty;
+    private string ReasonAlarm = string.Empty;
     private string StartDateAlarm = string.Empty;
     private bool showActivities = false;
     private bool isNewWorkOrder = false;
     private List<Device>? ListDevices { get; set; } = new List<Device>();
     private Device? selectedDevice;
     private List<Dict> ListCategories = new List<Dict>();
-    private List<string> ListDepartments = new List<string>();
+    private List<Dict> ListDepartments = new List<Dict>();
     private List<Dict> ListLevels = new List<Dict>();
+    private List<Dict> ListReasons = new List<Dict>();
     private string StateColor = string.Empty;
     protected override async Task OnInitializedAsync()
     {
@@ -301,7 +317,8 @@
         ListDevices = await apiService.GetAllDevicesCachedAsync();
         ListCategories =  apiService.GetWOCategories();
         ListLevels =  apiService.GetWOLevels();
-        ListDepartments =  apiService.GetWODepartments().Select(c=>c.Name).ToList();
+        ListReasons = apiService.GetWOReasons();
+        ListDepartments =  apiService.GetWODepartments();
         StateColor = await apiService.GetStateColor(WorkOrder?.WorkOrderID);
         if (isNewWorkOrder) {
             WorkOrder.EndDate = WorkOrder.StartDate?.AddHours(1);
@@ -315,36 +332,38 @@
             if (!string.IsNullOrEmpty(WorkOrder?.AssignedPerson))
                 ListPersons.Add(WorkOrder.AssignedPerson) ;
 
-            ListPersons.Add(notAssigned);
+            // ListPersons.Add(notAssigned);
 
-        }else
-        if (!ListPersons.Contains(notAssigned))
-        {
-            ListPersons.Add(notAssigned);
         }
+        // else
+        // if (!ListPersons.Contains(notAssigned))
+        // {
+        //     ListPersons.Add(notAssigned);
+        // }
 
-        if (ListDepartments != null)
-        {
-            if (ListDepartments.Contains("All"))
-                ListDepartments.RemoveAll(d => d == "All");
+        // if (ListDepartments != null)
+        // {
+        //     if (ListDepartments.Contains("All"))
+        //         ListDepartments.RemoveAll(d => d == "All");
 
-            if (!ListDepartments.Contains(notAssigned))
-            {
-                ListDepartments.Add(notAssigned);
-            }
-        }
-        else if (WorkOrder != null && !string.IsNullOrEmpty(WorkOrder.DepName))
-        {
-            ListDepartments = new List<string>() { WorkOrder.DepName };
-        }else
-        {
-            ListDepartments = new List<string>();
-        }
+        //     if (!ListDepartments.Contains(notAssigned))
+        //     {
+        //         ListDepartments.Add(notAssigned);
+        //     }
+        // }
+        // else 
+        // if (WorkOrder != null && !string.IsNullOrEmpty(WorkOrder.DepName))
+        // {
+        //     ListDepartments = new List<string>() { WorkOrder.DepName };
+        // }else
+        // {
+        //     ListDepartments = new List<string>();
+        // }
 
-        if (string.IsNullOrEmpty(WorkOrder?.DepName) || WorkOrder.DepName == notAssigned)
-        {
-            DepAlarm = "bg-warning";
-        }
+        // if (string.IsNullOrEmpty(WorkOrder?.DepName) || WorkOrder.DepName == notAssigned)
+        // {
+        //     DepAlarm = "bg-warning";
+        // }
 
         if (WorkOrder?.StartDate == null || WorkOrder.StartDate == DateTime.MinValue)
         {
@@ -356,9 +375,19 @@
             DescriptionAlarm = "bg-warning";
         }
 
-        if (string.IsNullOrEmpty(WorkOrder?.WOLevel) || WorkOrder.WOLevel == notSpecified)
+        if (string.IsNullOrEmpty(WorkOrder?.WOLevel))
         {
             LevelAlarm = "bg-warning";
+        }
+
+        if (string.IsNullOrEmpty(WorkOrder?.WOReason))
+        {
+            ReasonAlarm = "bg-warning";
+        }
+
+        if (string.IsNullOrEmpty(WorkOrder?.WOCategory))
+        {
+            CategoryAlarm = "bg-warning";
         }
 
         if (isNewWorkOrder && WorkOrder != null)
@@ -371,12 +400,12 @@
 
 
     #region Event Handlers
-    private async Task OnAssignedPersonChanged(object newValue)
+    private void OnAssignedPersonChanged(object newValue)
     {
         var personName = newValue as string;
-        if (WorkOrder != null && !string.IsNullOrEmpty(personName))
+        if (WorkOrder != null)
         {
-            WorkOrder.AssignedPerson = personName == notAssigned ? string.Empty : personName;
+            WorkOrder.AssignedPerson = personName ?? string.Empty;
         }
     }
 
@@ -415,45 +444,56 @@
         showActivities = !showActivities;
     }
 
-    private async Task OnCategoryChanged(int newValue)
+    private void OnCategoryChanged(int newValue)
     {
         var categoryName = ListCategories?.FirstOrDefault(c => c.Id == newValue)?.Name;
         if (WorkOrder != null && !string.IsNullOrEmpty(categoryName))
         {
             WorkOrder.WOCategory = categoryName;
             WorkOrder.CategoryID = newValue;
-            await apiService.AddNewWODict(categoryName, (int)WOListTypeEnum.Category);
         }
+        if (string.IsNullOrEmpty(categoryName))
+            CategoryAlarm = "bg-warning";
+        else CategoryAlarm = string.Empty;
     }
 
-    private async Task OnDepartmentChanged(object newValue)
+    private void OnDepartmentChanged(string? newValue)
     {
-        var departmentName = newValue as string; // Updated variable name
-        if (WorkOrder != null && !string.IsNullOrEmpty(departmentName))
+        if (WorkOrder != null)
         {
-            WorkOrder.DepName = departmentName == notAssigned ? string.Empty : departmentName;
+            WorkOrder.DepName = newValue ?? string.Empty;
         }
-        if (string.IsNullOrEmpty(departmentName) || departmentName == notAssigned || departmentName == "All")
-            DepAlarm = "bg-warning";
-        else DepAlarm = string.Empty;
-
-        await apiService.AddNewWODict(departmentName, (int)WOListTypeEnum.Department);
-
+        // if (string.IsNullOrEmpty(departmentName) || departmentName == notAssigned || departmentName == "All")
+        //     DepAlarm = "bg-warning";
+        // else DepAlarm = string.Empty;
     }
 
-    private async Task OnLevelChanged(int newValue)
+    private void OnLevelChanged(int? newValue)
     {
         var levelName = ListLevels?.FirstOrDefault(l => l.Id == newValue)?.Name;
         if (WorkOrder != null && !string.IsNullOrEmpty(levelName))
         {
             WorkOrder.WOLevel = levelName;
             WorkOrder.LevelID = newValue;
-            await apiService.AddNewWODict(levelName, (int)WOListTypeEnum.Level);
         }
 
         if (string.IsNullOrEmpty(levelName) || levelName == notSpecified)
             LevelAlarm = "bg-warning";
         else LevelAlarm = string.Empty;
+    }
+
+    private void OnReasonChanged(int? newValue)
+    {
+        var reasonName = ListReasons?.FirstOrDefault(r => r.Id == newValue)?.Name;
+        if (WorkOrder != null && !string.IsNullOrEmpty(reasonName))
+        {
+            WorkOrder.WOReason = reasonName;
+            WorkOrder.ReasonID = newValue;
+        }
+
+        if (string.IsNullOrEmpty(reasonName) || reasonName == notSpecified)
+            ReasonAlarm = "bg-warning";
+        else ReasonAlarm = string.Empty;
     }
 
     #endregion Event Handlers

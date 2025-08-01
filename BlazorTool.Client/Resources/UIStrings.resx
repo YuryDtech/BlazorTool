@@ -196,7 +196,7 @@
     <value>Assigned Person</value>
   </data>
   <data name="WorkOrder_State" xml:space="preserve">
-    <value>WOState</value>
+    <value>Status</value>
   </data>
   <data name="WorkOrder_Level" xml:space="preserve">
     <value>Level:</value>
@@ -455,13 +455,13 @@
     <value>Description</value>
   </data>
   <data name="WorkOrder_SelectWOCategory" xml:space="preserve">
-    <value>Select WO category...</value>
+    <value>Select category...</value>
   </data>
   <data name="WorkOrder_NotSpecified" xml:space="preserve">
     <value>Not specified</value>
   </data>
   <data name="WorkOrder_SelectWOLevel" xml:space="preserve">
-    <value>Select WO level...</value>
+    <value>Select level...</value>
   </data>
   <data name="WorkOrder_Executors" xml:space="preserve">
     <value>Executors</value>
@@ -627,5 +627,8 @@
   </data>
   <data name="App_Title" xml:space="preserve">
     <value>FlexiCMMS</value>
+  </data>
+  <data name="WorkOrder_SelectWOReason" xml:space="preserve">
+    <value>Select reason...</value>
   </data>
 </root>

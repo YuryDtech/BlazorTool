@@ -50,6 +50,10 @@
 
 
 
+
+
+
+
     private string buildDate = "N/A";
 
     private string formattedVersion = string.Empty;
@@ -59,6 +63,9 @@
 
         // Initialize app settings first, which is required for the rest of the app
         await AppState.InitializeAsync();
+        await UserState.InitializationTask;
+
+        await UserState.LoadIdentityDataAsync();
         formattedVersion = Localizer["MainLayout_Version"];
         // Now that settings are loaded, we can proceed with other initializations
         try
@@ -74,7 +81,6 @@
             // buildDate = "N/A";
         }
 
-        await UserState.InitializationTask;
         Logger.LogInformation("DEBUG: UserState InitializationTask awaited. Current UI Culture: {Culture}", CultureInfo.CurrentUICulture.Name);
 
         // If user state is not authenticated locally, redirect to login
