@@ -2,19 +2,36 @@ using Blazored.LocalStorage;
 using BlazorTool.Client.Models;
 using BlazorTool.Client.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.AspNetCore.Builder;
 
 
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
 builder.Services.AddTelerikBlazor();
 builder.Services.AddBlazoredLocalStorage();
+
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+const string defaultCulture = "en-EN";
+var supportedCultures = new[] { "en-EN", "pl-PL" };
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture(defaultCulture);
+    options.SupportedCultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+    options.SupportedUICultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+});
+
 
 builder.Services.AddScoped<AuthHeaderHandler>(sp =>
 {
@@ -63,7 +80,12 @@ builder.Services.AddSingleton<AppStateService>();
 
 Console.WriteLine("======= APPLICATION (Client) STARTING...");
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+
+var userState = host.Services.GetRequiredService<UserState>();
+await userState.InitializationTask;
+
+await host.RunAsync();
 
 public static class AppInfo
 {

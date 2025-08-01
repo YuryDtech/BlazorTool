@@ -5,33 +5,34 @@
 @inject UserState UserState
 @inject AppStateService AppState
 @inject ILogger<Settings> Logger
+@inject IStringLocalizer<Resources.UIStrings> Localizer
 
 <BlazorTool.Client.Components.CheckSession ApiService="@apiService" UserState="@UserState" />
 
 <TelerikDialog @bind-Visible="isConfirmDialogVisible">
-    <DialogTitle>Confirmation</DialogTitle>
+    <DialogTitle>@Localizer["Settings_Confirmation"]</DialogTitle>
     <DialogContent>
-        <p>Are you sure you want to change the API address?</p>
-        <p><strong>Old Address:</strong> @oldApiAddress</p>
-        <p><strong>New Address:</strong> @ApiAddress</p>
-        <p class="text-danger">The application will restart!</p>
+        <p>@Localizer["Settings_ConfirmApiChange"]</p>
+        <p><strong>@Localizer["Settings_OldAddress"]</strong> @oldApiAddress</p>
+        <p><strong>@Localizer["Settings_NewAddress"]</strong> @ApiAddress</p>
+        <p class="text-danger">@Localizer["Settings_AppRestart"]</p>
     </DialogContent>
     <DialogButtons>
-        <TelerikButton OnClick="@ConfirmSave" ThemeColor="primary">Confirm</TelerikButton>
-        <TelerikButton OnClick="@CancelSave">Cancel</TelerikButton>
+        <TelerikButton OnClick="@ConfirmSave" ThemeColor="primary">@Localizer["Settings_Confirm"]</TelerikButton>
+        <TelerikButton OnClick="@CancelSave">@Localizer["Settings_Cancel"]</TelerikButton>
     </DialogButtons>
 </TelerikDialog>
 
-<h3>Settings</h3>
+<h3>@Localizer["Settings_Title"]</h3>
 <div class="container">
     @if (isAdmin)
     {
         <div class="row mb-3">
             <div class="col-md-6">
-                <label for="apiUrl" class="form-label">API Address</label>
+                <label for="apiUrl" class="form-label">@Localizer["Settings_ApiAddress"]</label>
                 <div class="input-group">
                     <input type="text" id="apiUrl" class="form-control" @bind="ApiAddress" />
-                    <button class="btn btn-outline-secondary" type="button" @onclick="TestApiAddress">Test API Address</button>
+                    <button class="btn btn-outline-secondary" type="button" @onclick="TestApiAddress">@Localizer["Settings_TestApiAddress"]</button>
                 </div>
             </div>
         </div>
@@ -54,13 +55,13 @@
         <div class="col-md-6">
             <div class="form-check">
                 <TelerikCheckBox Id="color-switcher" @bind-Value="@UseOriginalColors" />
-                <label class="form-check-label" for="color-switcher">Use original colors</label>
+                <label class="form-check-label" for="color-switcher">@Localizer["Settings_UseOriginalColors"]</label>
             </div>
         </div>
     </div>
 
 
-    <button class="btn btn-primary" @onclick="SaveSettingsAsync">Save Settings</button>
+    <button class="btn btn-primary" @onclick="SaveSettingsAsync">@Localizer["Settings_SaveSettings"]</button>
 
     @if (!string.IsNullOrEmpty(StatusMessage))
     {
@@ -125,7 +126,7 @@
         StatusMessage = string.Empty;
         if (string.IsNullOrWhiteSpace(ApiAddress))
         {
-            StatusMessage = "API Address cannot be empty.";
+            StatusMessage = Localizer["Settings_ApiAddressEmpty"];
             StatusMessageClass = "text-danger";
             return false;
         }
@@ -139,13 +140,13 @@
                 StatusMessageClass = "text-danger";
                 return false;
             }
-            StatusMessage = $"Successfully connected to API at '{ApiAddress}'.";
+            StatusMessage = $"{Localizer["Settings_ApiConnected"]} '{ApiAddress}'.";
             StatusMessageClass = "text-success";
             return true;
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error testing API address: {ex.Message}";
+            StatusMessage = $"{Localizer["Settings_ApiTestError"]} {ex.Message}";
             StatusMessageClass = "text-danger";
             return false;
         }
@@ -160,7 +161,7 @@
             var testResult = await TestApiAddress();
             if (!testResult)
             {
-                StatusMessage = "Wrong API address";
+                StatusMessage = Localizer["Settings_WrongApiAddress"];
                 StatusMessageClass = "text-danger";
                 needRestart = false;
                 return;
@@ -187,7 +188,7 @@
     {
         isConfirmDialogVisible = false;
         ApiAddress = oldApiAddress; // Revert the change in the input
-        StatusMessage = "Canceled.";
+        StatusMessage = Localizer["Settings_Canceled"];
         StatusMessageClass = "text-info";
     }
 
@@ -200,12 +201,12 @@
             if (s2)
             {
                 UserState.UseOriginalColors = UseOriginalColors;
-                StatusMessage = "Settings saved successfully!";
+                StatusMessage = Localizer["Settings_SettingsSaved"];
                 StatusMessageClass = "text-success";
             }
             else
             {
-                StatusMessage = "Failed to save one or more settings.";
+                StatusMessage = Localizer["Settings_SaveFailed"];
                 StatusMessageClass = "text-danger";
             }
 
@@ -215,14 +216,14 @@
             {
                 await SaveSettingAsync("apiAddress", ApiAddress, currentUser);
                 AppState.Settings.ApiBaseUrl = ApiAddress;
-                StatusMessage += " The application will restart to apply the new API address.";
+                StatusMessage += Localizer["Settings_RestartApplyApi"];
                 // Clear client-side cache and force a full page reload
                 Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
             }
         }
         catch (Exception ex)
         {
-            StatusMessage = $"An error occurred: {ex.Message}";
+            StatusMessage = $"{Localizer["Settings_AnErrorOccurred"]} {ex.Message}";
             StatusMessageClass = "text-danger";
         }
     }

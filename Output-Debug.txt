@@ -1,117 +1,88 @@
-﻿15:23:23:931	Verbose logs are written to:
-15:23:23:931	C:\Users\yfilionchyk\AppData\Local\Temp\visualstudio-js-debugger.txt
-15:23:25:184	CSS Hot Reload ignoring http://localhost:5168/bootstrap/bootstrap.min.css because it was inaccessible or had more than 7000 rules.
-15:23:25:184	CSS Hot Reload ignoring https://blazor.cdn.telerik.com/blazor/6.2.0/kendo-theme-bootstrap/swatches/bootstrap-urban.css because it was inaccessible or had more than 7000 rules.
-15:23:26:208	[0m[48;5;127m[38;5;231mdotnet[0m[1m Loaded 11.02 MB resources[0m
-15:23:26:208	This application was built with linking (tree shaking) disabled. 
-15:23:26:208	Published applications will be significantly smaller if you install wasm-tools workload. 
-15:23:26:208	See also https://aka.ms/dotnet-wasm-features[0m
-15:23:26:208	Loaded 11.02 MB resources from cache
-15:23:26:208	Debugging hotkey: Shift+Alt+D (when application has focus)
-15:23:26:456	======= APPLICATION (Client) STARTING...
-15:23:27:204	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
-15:23:27:204	      Start processing HTTP request GET http://localhost:5168/api/v1/settings/get?*
-15:23:27:204	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
-15:23:27:204	      Start processing HTTP request GET http://localhost:5168/api/v1/settings/get?*
-15:23:27:447	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
-15:23:27:447	      Sending HTTP request GET http://localhost:5168/api/v1/settings/get?*
-15:23:27:710	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
-15:23:27:710	      Sending HTTP request GET http://localhost:5168/api/v1/settings/get?*
-15:23:27:710	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
-15:23:27:710	      Received HTTP response headers after 85.4ms - 200
-15:23:27:710	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
-15:23:27:710	      End processing HTTP request after 495.5ms - 200
-15:23:27:710	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
-15:23:27:710	      Received HTTP response headers after 32.2999ms - 200
-15:23:27:710	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
-15:23:27:710	      End processing HTTP request after 498.3ms - 200
-15:23:27:710	info: System.Net.Http.HttpClient.ServerHost.LogicalHandler[100]
-15:23:27:710	      Start processing HTTP request GET http://localhost:5168/buildinfo.txt
-15:23:27:710	info: System.Net.Http.HttpClient.ServerHost.ClientHandler[100]
-15:23:27:710	      Sending HTTP request GET http://localhost:5168/buildinfo.txt
-15:23:27:710	info: System.Net.Http.HttpClient.ServerHost.ClientHandler[101]
-15:23:27:710	      Received HTTP response headers after 23.3ms - 200
-15:23:27:710	info: System.Net.Http.HttpClient.ServerHost.LogicalHandler[101]
-15:23:27:710	      End processing HTTP request after 27.8ms - 200
-15:23:27:710	info: BlazorTool.Client.Layout.MainLayout[0]
-15:23:27:710	      User [admin] is authenticated from userState
-15:23:27:710	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
-15:23:27:710	      Start processing HTTP request GET http://localhost:5168/api/v1/identity/check-session
-15:23:27:710	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
-15:23:27:710	      Sending HTTP request GET http://localhost:5168/api/v1/identity/check-session
-15:23:27:710	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
-15:23:27:710	      Received HTTP response headers after 66.6ms - 401
-15:23:27:710	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
-15:23:27:710	      End processing HTTP request after 67.8ms - 401
-15:23:27:710	warn: BlazorTool.Client.Components.CheckSession[0]
-15:23:27:710	      [admin] == Session check failed with status code: Unauthorized
-15:23:27:710	====== Start GetAllPersons() request: http://localhost:5168/api/v1/other/getuserslist
-15:23:27:710	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
-15:23:27:710	      Start processing HTTP request GET http://localhost:5168/api/v1/other/getuserslist
-15:23:27:710	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
-15:23:27:710	      Sending HTTP request GET http://localhost:5168/api/v1/other/getuserslist
-15:23:27:946	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
-15:23:27:946	      Received HTTP response headers after 248ms - 200
-15:23:27:946	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
-15:23:27:946	      End processing HTTP request after 249.2ms - 200
-15:23:28:209	
-15:23:28:209	= = = = = = = = = response http://localhost:5168/api/v1/other/getuserslist 
-15:23:28:209	====== Users: 19
-15:23:28:209	
-15:23:41:655	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
-15:23:41:655	      Start processing HTTP request POST http://localhost:5168/api/v1/identity/loginpassword
-15:23:41:655	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
-15:23:41:655	      Sending HTTP request POST http://localhost:5168/api/v1/identity/loginpassword
-15:23:41:901	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
-15:23:41:901	      Received HTTP response headers after 47.5ms - 200
-15:23:41:901	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
-15:23:41:901	      End processing HTTP request after 64.8ms - 200
-15:23:41:901	UserState: Saved identity data for admin with PersonID 1
-15:23:43:661	--- Initialized SCHEDULER PAGE. WASM = True
-15:23:43:661	--- OnInitializedAsync completed.
-15:23:43:661	--- HardLoadData started.
-15:23:43:661	--- HardLoadData: allPersons loaded. Count: 19
-15:23:43:661	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
-15:23:43:661	      Start processing HTTP request GET http://localhost:5168/api/v1/wo/getlist?*
-15:23:44:163	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
-15:23:44:163	      Sending HTTP request GET http://localhost:5168/api/v1/wo/getlist?*
-15:23:44:163	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
-15:23:44:163	      Received HTTP response headers after 212.1ms - 200
-15:23:44:163	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
-15:23:44:163	      End processing HTTP request after 659.7ms - 200
-15:23:45:684	[admin] = = = = = = = API response-> WorkOrder.Count: 2198
-15:23:45:935	--- LoadData started.
-15:23:45:935	[admin] Work orders found in cache: 80
-15:23:45:935	
-15:23:46:186	--- LoadData: _allAppointments loaded. Count: 1789
-15:23:46:186	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
-15:23:46:186	      Start processing HTTP request GET http://localhost:5168/api/v1/wo/getdict?*
-15:23:46:186	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
-15:23:46:186	      Sending HTTP request GET http://localhost:5168/api/v1/wo/getdict?*
-15:23:46:186	crit: Microsoft.AspNetCore.Components.WebAssembly.Rendering.WebAssemblyRenderer[100]
-15:23:46:186	      Unhandled exception rendering component: Cannot wait on monitors on this runtime.
-15:23:46:186	System.PlatformNotSupportedException: Cannot wait on monitors on this runtime.
-15:23:46:186	   at System.Threading.Monitor.ObjWait(Int32 millisecondsTimeout, Object obj)
-15:23:46:186	   at System.Threading.Monitor.Wait(Object obj, Int32 millisecondsTimeout)
-15:23:46:186	   at System.Threading.ManualResetEventSlim.Wait(Int32 millisecondsTimeout, CancellationToken cancellationToken)
-15:23:46:186	   at System.Threading.Tasks.Task.SpinThenBlockingWait(Int32 millisecondsTimeout, CancellationToken cancellationToken)
-15:23:46:186	   at System.Threading.Tasks.Task.InternalWaitCore(Int32 millisecondsTimeout, CancellationToken cancellationToken)
-15:23:46:186	   at System.Threading.Tasks.Task.InternalWait(Int32 millisecondsTimeout, CancellationToken cancellationToken)
-15:23:46:186	   at System.Threading.Tasks.Task`1[[System.Collections.Generic.List`1[[BlazorTool.Client.Models.Dict, BlazorTool.Client, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]].GetResultCore(Boolean waitCompletionNotification)
-15:23:46:186	   at System.Threading.Tasks.Task`1[[System.Collections.Generic.List`1[[BlazorTool.Client.Models.Dict, BlazorTool.Client, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]].get_Result()
-15:23:46:186	   at BlazorTool.Client.Services.ApiServiceClient.GetWODictionariesCached(Nullable`1 personID, String lang) in C:\Users\yfilionchyk\source\repos\BlazorTool\BlazorTool.Client\Services\ApiServiceClient.cs:line 852
-15:23:46:186	   at BlazorTool.Client.Services.ApiServiceClient.GetWODepartments(Nullable`1 personID, String lang) in C:\Users\yfilionchyk\source\repos\BlazorTool\BlazorTool.Client\Services\ApiServiceClient.cs:line 929
-15:23:46:186	   at BlazorTool.Client.Pages.SchedulerPage.LoadData() in C:\Users\yfilionchyk\source\repos\BlazorTool\BlazorTool.Client\Pages\SchedulerPage.razor:line 412
-15:23:46:186	   at BlazorTool.Client.Pages.SchedulerPage.HardLoadData() in C:\Users\yfilionchyk\source\repos\BlazorTool\BlazorTool.Client\Pages\SchedulerPage.razor:line 396
-15:23:46:186	   at BlazorTool.Client.Pages.SchedulerPage.OnInitializedAsync() in C:\Users\yfilionchyk\source\repos\BlazorTool\BlazorTool.Client\Pages\SchedulerPage.razor:line 377
-15:23:46:186	   at Microsoft.AspNetCore.Components.ComponentBase.RunInitAndSetParametersAsync()
-15:23:46:186	   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
-15:23:46:186	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
-15:23:46:186	      Received HTTP response headers after 26.1ms - 200
-15:23:46:186	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
-15:23:46:186	      End processing HTTP request after 27ms - 200
-15:23:46:186	
-15:23:46:186	
-15:23:46:186	[admin] = = = = = = = response Dict.Count: 94
-15:23:46:186	
-15:23:46:186	
+﻿09:01:05:377	Verbose logs are written to:
+09:01:05:377	C:\Users\yfilionchyk\AppData\Local\Temp\visualstudio-js-debugger.txt
+09:01:06:634	CSS Hot Reload ignoring http://localhost:5168/bootstrap/bootstrap.min.css because it was inaccessible or had more than 7000 rules.
+09:01:06:634	CSS Hot Reload ignoring https://blazor.cdn.telerik.com/blazor/6.2.0/kendo-theme-bootstrap/swatches/bootstrap-urban.css because it was inaccessible or had more than 7000 rules.
+09:01:07:418	[0m[48;5;127m[38;5;231mdotnet[0m[1m Loaded 11.37 MB resources[0m
+09:01:07:418	This application was built with linking (tree shaking) disabled. 
+09:01:07:418	Published applications will be significantly smaller if you install wasm-tools workload. 
+09:01:07:418	See also https://aka.ms/dotnet-wasm-features[0m
+09:01:07:418	Loaded 11.37 MB resources from cache
+09:01:07:418	Debugging hotkey: Shift+Alt+D (when application has focus)
+09:01:07:669	======= APPLICATION (Client) STARTING...
+09:01:07:669	info: BlazorTool.Client.Services.UserState[0]
+09:01:07:669	      DEBUG: LoadIdentityDataAsync started.
+09:01:07:917	info: BlazorTool.Client.Services.UserState[0]
+09:01:07:917	      DEBUG: Loaded LangCode from storage: pl-PL
+09:01:07:917	info: BlazorTool.Client.Services.UserState[0]
+09:01:07:917	      DEBUG: Culture set to pl-PL in LoadIdentityDataAsync.
+09:01:08:414	info: BlazorTool.Client.Services.UserState[0]
+09:01:08:414	      DEBUG: LoadIdentityDataAsync started.
+09:01:08:414	info: BlazorTool.Client.Layout.MainLayout[0]
+09:01:08:414	      DEBUG: MainLayout OnInitializedAsync started. Current UI Culture: pl-PL
+09:01:08:414	info: BlazorTool.Client.Services.UserState[0]
+09:01:08:414	      DEBUG: LoadIdentityDataAsync started.
+09:01:08:414	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
+09:01:08:414	      Start processing HTTP request GET http://localhost:5168/api/v1/settings/get?*
+09:01:08:414	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
+09:01:08:414	      Start processing HTTP request GET http://localhost:5168/api/v1/settings/get?*
+09:01:08:663	info: BlazorTool.Client.Services.UserState[0]
+09:01:08:663	      DEBUG: Loaded LangCode from storage: pl-PL
+09:01:08:663	info: BlazorTool.Client.Services.UserState[0]
+09:01:08:663	      DEBUG: Culture set to pl-PL in LoadIdentityDataAsync.
+09:01:08:663	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
+09:01:08:663	      Sending HTTP request GET http://localhost:5168/api/v1/settings/get?*
+09:01:08:663	info: BlazorTool.Client.Services.UserState[0]
+09:01:08:663	      DEBUG: Loaded LangCode from storage: pl-PL
+09:01:08:663	info: BlazorTool.Client.Services.UserState[0]
+09:01:08:663	      DEBUG: Culture set to pl-PL in LoadIdentityDataAsync.
+09:01:08:663	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
+09:01:08:663	      Sending HTTP request GET http://localhost:5168/api/v1/settings/get?*
+09:01:08:663	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
+09:01:08:663	      Received HTTP response headers after 69.9ms - 200
+09:01:08:663	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
+09:01:08:663	      End processing HTTP request after 264.3ms - 200
+09:01:08:663	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
+09:01:08:663	      Received HTTP response headers after 22.3ms - 200
+09:01:08:663	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
+09:01:08:663	      End processing HTTP request after 263.6999ms - 200
+09:01:08:663	info: BlazorTool.Client.Services.UserState[0]
+09:01:08:663	      DEBUG: LoadIdentityDataAsync started.
+09:01:08:663	info: System.Net.Http.HttpClient.ServerHost.LogicalHandler[100]
+09:01:08:663	      Start processing HTTP request GET http://localhost:5168/buildinfo.txt
+09:01:08:663	info: BlazorTool.Client.Services.UserState[0]
+09:01:08:663	      DEBUG: Loaded LangCode from storage: pl-PL
+09:01:08:663	info: BlazorTool.Client.Services.UserState[0]
+09:01:08:663	      DEBUG: Culture set to pl-PL in LoadIdentityDataAsync.
+09:01:08:663	info: System.Net.Http.HttpClient.ServerHost.ClientHandler[100]
+09:01:08:663	      Sending HTTP request GET http://localhost:5168/buildinfo.txt
+09:01:08:663	info: System.Net.Http.HttpClient.ServerHost.ClientHandler[101]
+09:01:08:663	      Received HTTP response headers after 21.9ms - 200
+09:01:08:663	info: System.Net.Http.HttpClient.ServerHost.LogicalHandler[101]
+09:01:08:663	      End processing HTTP request after 26ms - 200
+09:01:08:663	info: BlazorTool.Client.Layout.MainLayout[0]
+09:01:08:663	      DEBUG: UserState InitializationTask awaited. Current UI Culture: pl-PL
+09:01:08:663	info: BlazorTool.Client.Layout.MainLayout[0]
+09:01:08:663	      User [Maintenance manager] is authenticated from userState
+09:01:08:663	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
+09:01:08:663	      Start processing HTTP request GET http://localhost:5168/api/v1/identity/check-session
+09:01:08:663	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
+09:01:08:663	      Sending HTTP request GET http://localhost:5168/api/v1/identity/check-session
+09:01:08:915	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
+09:01:08:915	      Received HTTP response headers after 56.3999ms - 401
+09:01:08:915	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
+09:01:08:915	      End processing HTTP request after 57.0999ms - 401
+09:01:08:915	warn: BlazorTool.Client.Components.CheckSession[0]
+09:01:08:915	      [Maintenance manager] == Session check failed with status code: Unauthorized
+09:01:08:915	====== Start GetAllPersons() request: http://localhost:5168/api/v1/other/getuserslist
+09:01:08:915	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[100]
+09:01:08:915	      Start processing HTTP request GET http://localhost:5168/api/v1/other/getuserslist
+09:01:08:915	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[100]
+09:01:08:915	      Sending HTTP request GET http://localhost:5168/api/v1/other/getuserslist
+09:01:09:162	info: System.Net.Http.HttpClient.ServerApi.ClientHandler[101]
+09:01:09:162	      Received HTTP response headers after 254.1ms - 200
+09:01:09:162	info: System.Net.Http.HttpClient.ServerApi.LogicalHandler[101]
+09:01:09:162	      End processing HTTP request after 255.1ms - 200
+09:01:09:162	
+09:01:09:162	= = = = = = = = = response http://localhost:5168/api/v1/other/getuserslist 
+09:01:09:162	====== Users: 11
+09:01:09:162	

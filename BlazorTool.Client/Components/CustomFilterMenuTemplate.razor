@@ -1,7 +1,8 @@
-﻿
+﻿@inject IStringLocalizer<Resources.UIStrings> Localizer
+
 @foreach (var value in Values)
 {
-    @if (value == "All") // part of handling nulls - show meaningful text for the end user
+    @if (value == @Localizer["CustomFilterMenuTemplate_All"]) // part of handling nulls - show meaningful text for the end user
     {
         continue;
     }

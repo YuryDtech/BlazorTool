@@ -1,19 +1,20 @@
 @using BlazorTool.Client.Models
 @using Telerik.Blazor.Components
+@inject IStringLocalizer<Resources.UIStrings> Localizer
 
 <div class="scheduler-item-wrapper view-@View.ToString().ToLower()">
     @if (View == SchedulerView.Month)
     {
         <div class="scheduler-item-month">
             <span class="item-asset">[@Item.AppointmentId] @Item.AssetNo</span>
-            <span class="item-assignee">=> @Item.DepName: @Item.AssignedPerson</span>
+            <span class="item-assignee">@Localizer["SchedulerItem_Arrow"] @Item.DepName: @Item.AssignedPerson</span>
         </div>
     }
     else if(View == SchedulerView.Timeline)
     {
         <div class="scheduler-item-month">
             <span class="item-asset">[@Item.AppointmentId] @Item.AssetNo</span>
-            <span class="item-assignee">=> @Item.DepName: @Item.Description</span>
+            <span class="item-assignee">@Localizer["SchedulerItem_Arrow"] @Item.DepName: @Item.Description</span>
         </div>
     }
     else // Week or Day view
@@ -23,7 +24,7 @@
             <div class="item-body">
                 @if (!string.IsNullOrEmpty(Item.DepName))
                 {
-                    <span>@Item.DepName:</span>
+                    <span>@Item.DepName@Localizer["SchedulerItem_Colon"]</span>
                 }
                 <span>@Item.AssignedPerson</span>
             </div>

@@ -2,16 +2,17 @@
 @using BlazorTool.Client.Models
 @using System.Globalization
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
+@inject IStringLocalizer<Resources.UIStrings> Localizer
 
 
-<PageTitle>Order №@(WorkOrder?.WorkOrderID)</PageTitle>
+<PageTitle>@Localizer["WorkOrder_OrderNo"]@(WorkOrder?.WorkOrderID)</PageTitle>
 
 <div class="work-order-container @(showActivities ? "activities-visible" : "")">
   @if(WorkOrder != null)
         {
     <!-- HEADER -->
     <CardHeader Class="position-relative">
-    <h2 class="mb-1">Order №@WorkOrder.WorkOrderID</h2>
+    <h2 class="mb-1">@Localizer["WorkOrder_OrderNo"]@WorkOrder.WorkOrderID</h2>
 
     <!-- Status-->
 <div class="position-absolute top-50 end-0 translate-middle-y p-2">
@@ -21,7 +22,7 @@
 </div>
 
     <div class="position-absolute top-50 end-50 translate-middle-y custom-highlight fs-5 p-3 rounded">
-                <div class="@DeviceAlarm"><strong>Device:</strong>
+                <div class="@DeviceAlarm"><strong>@Localizer["WorkOrder_Device"]</strong>
                     @if (isNewWorkOrder && isEditable)
                     {
                        <TelerikComboBox Data="@ListDevices"
@@ -40,10 +41,10 @@
                     }
                     else
                     {
-                        @(selectedDevice?.AssetNo ?? WorkOrder.AssetNo ?? "no device")
+                        @(selectedDevice?.AssetNo ?? WorkOrder.AssetNo ?? @Localizer["WorkOrder_NoDevice"])
                     }
                 </div>
-                <div><strong>Category:</strong> @(WorkOrder.DeviceCategory ?? selectedDevice?.DeviceCategory ?? "no device")</div>
+                <div><strong>Category:</strong> @(WorkOrder.DeviceCategory ?? selectedDevice?.DeviceCategory ?? @Localizer["WorkOrder_NoDevice"])</div>
     </div>
   </CardHeader> 
 
@@ -53,11 +54,11 @@
         <div class="col">
             <TelerikCard Class="h-100">
                 <CardHeader Class="py-1 px-2">
-                    <CardTitle>Description</CardTitle>
+                    <CardTitle>@Localizer["WorkOrder_DescriptionTitle"]</CardTitle>
                 </CardHeader>
                 <CardBody Class="p-2 card-body-description">
                     <div class="field-group ">
-                        <label>Description:</label>
+                        <label>@Localizer["WorkOrder_Description"]</label>
                         
                                 <TelerikTextArea @bind-Value="@WorkOrder.WODesc"
                                                  ReadOnly=@(isEditable == false) 
@@ -68,12 +69,12 @@
                                              />
                     </div>
                     <div class="field-group">
-                        <label>Category:</label>
+                        <label>@Localizer["WorkOrder_Category"]</label>
                             <TelerikComboBox Data="@ListCategories"
                                                     ValueField="@nameof(Dict.Id)"
                                                     TextField="@nameof(Dict.Name)"
                                                  Value="@(WorkOrder?.CategoryID ?? 0)"
-                                                 Placeholder="Select WO category..."
+                                                 Placeholder="@Localizer["WorkOrder_SelectWOCategory"]"
                                                  ValueChanged="@((int id) => OnCategoryChanged(id))"
                                                  Width="100%"
                                                  ReadOnly=@(isEditable == false)
@@ -82,16 +83,16 @@
                                 </TelerikComboBox>
                     </div>
                     <div class="field-group">
-                        <label>Reason:</label>
-                        <div class="field-value">@(WorkOrder?.WOReason ?? "Not specified")</div>
+                        <label>@Localizer["WorkOrder_Reason"]</label>
+                        <div class="field-value">@(WorkOrder?.WOReason ?? @Localizer["WorkOrder_NotSpecified"])</div>
                     </div>
                     <div class="field-group">
-                        <label>Level:</label>
+                        <label>@Localizer["WorkOrder_Level"]</label>
                             <TelerikComboBox Data="@ListLevels"
                                              ValueField="@nameof(Dict.Id)"
                                              TextField="@nameof(Dict.Name)"
                                              Value="@(WorkOrder?.LevelID ?? 0)"
-                                             Placeholder="Select WO level..."
+                                             Placeholder="@Localizer["WorkOrder_SelectWOLevel"]"
                                              ValueChanged="@((int levelId) => OnLevelChanged(levelId))"
                                              Width="100%"
                                              ReadOnly=@(isEditable == false)
@@ -109,14 +110,14 @@
         <div class="col">
             <TelerikCard Class="h-100">
                 <CardHeader Class="py-1 px-2">
-                    <CardTitle>Executors</CardTitle>
+                    <CardTitle>@Localizer["WorkOrder_Executors"]</CardTitle>
                 </CardHeader>
                 <CardBody Class="p-2">
                     <div class="field-group">
-                        <label>Assigned Person:</label>
+                        <label>@Localizer["WorkOrder_AssignedPerson"]</label>
                             <TelerikComboBox Data="@ListPersons"
                                              Value="@WorkOrder.AssignedPerson"
-                                             Placeholder="Select person..."
+                                             Placeholder="@Localizer["WorkOrder_SelectPerson"]"
                                              ValueChanged="@((string name) => OnAssignedPersonChanged(name))"
                                              Width="100%"
                                              ReadOnly=@(isEditable == false)
@@ -125,11 +126,11 @@
                             </TelerikComboBox>
                     </div>
                     <div class="field-group">
-                        <label>Take Persons:</label>
-                        <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.TakePersons) ? "Not specified" : WorkOrder.TakePersons)</div>
+                        <label>@Localizer["WorkOrder_TakePersons"]</label>
+                        <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.TakePersons) ? @Localizer["WorkOrder_NotSpecified"] : WorkOrder.TakePersons)</div>
                     </div>
                     <div class="field-group" >
-                            <label class=@DepAlarm>Department:</label>
+                            <label class=@DepAlarm>@Localizer["WorkOrder_Department"]</label>
                                 <TelerikComboBox Data="@ListDepartments"
                                                  Value="@WorkOrder.DepName"
                                                  Placeholder="Select department..."
@@ -150,32 +151,32 @@
         <div class="col">
             <TelerikCard Class="h-100">
                 <CardHeader Class="py-1 px-2">
-                    <CardTitle>Dates</CardTitle>
+                    <CardTitle>@Localizer["WorkOrder_Dates"]</CardTitle>
                 </CardHeader>
                 <CardBody Class="p-2">
                     <div class="dates-grid">
                         <div class="date-item">
-                            <label>Added:</label>
+                            <label>@Localizer["WorkOrder_Added"]</label>
                             <div class="date-value">@FormatDateTime(WorkOrder.AddDate)</div>
                         </div>
                         <div class="date-item">
-                            <label>Accepted for processing:</label>
+                            <label>@Localizer["WorkOrder_AcceptedForProcessing"]</label>
                             <div class="date-value">@FormatDateTime(WorkOrder.TakeDate)</div>
                         </div>
                         <div class="date-item">
-                            <label class="@StartDateAlarm">Start:</label>
+                            <label class=@StartDateAlarm>@Localizer["WorkOrder_Start"]</label>
                             <div class="date-value @StartDateAlarm">@FormatDateTime(WorkOrder.StartDate)</div>
                         </div>
                         <div class="date-item">
-                            <label>End:</label>
+                            <label>@Localizer["WorkOrder_End"]</label>
                             <div class="date-value">@FormatDateTime(WorkOrder.EndDate)</div>
                         </div>
                         <div class="date-item">
-                            <label>Closed:</label>
+                            <label>@Localizer["WorkOrder_Closed"]</label>
                             <div class="date-value">@FormatDateTime(WorkOrder.CloseDate)</div>
                         </div>
                         <div class="date-item">
-                            <label>Person Take Date:</label>
+                            <label>@Localizer["WorkOrder_PersonTakeDate"]</label>
                             <div class="date-value">@FormatDateTime(WorkOrder.PersonTakeDate)</div>
                         </div>
                     </div>
@@ -188,29 +189,29 @@
     <!-- Statistics -->
     <TelerikCard Class="stats-card">
         <CardHeader>
-            <CardTitle>Statistics</CardTitle>
+            <CardTitle>@Localizer["WorkOrder_Statistics"]</CardTitle>
         </CardHeader>
         <CardBody>
             <div class="stats-grid">
                 <div class="stat-item" @onclick="ToggleActivities">
                     <div class="stat-number">@(WorkOrder.ActCount ?? 0)</div>
-                    <div class="stat-label">Actions</div>
+                    <div class="stat-label">@Localizer["WorkOrder_Actions"]</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">@(WorkOrder.FileCount ?? 0)</div>
-                    <div class="stat-label">Files</div>
+                    <div class="stat-label">@Localizer["WorkOrder_Files"]</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">@(WorkOrder.PartCount ?? 0)</div>
-                    <div class="stat-label">Parts</div>
+                    <div class="stat-label">@Localizer["WorkOrder_Parts"]</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">@(WorkOrder.PlanActCount ?? 0)</div>
-                    <div class="stat-label">PlanActCount</div>
+                    <div class="stat-label">@Localizer["WorkOrder_PlanActCount"]</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">@(WorkOrder.IneffectiveCount ?? 0)</div>
-                    <div class="stat-label">Ineffective Count</div>
+                    <div class="stat-label">@Localizer["WorkOrder_IneffectiveCount"]</div>
                 </div>
                 <div class="stat-item">
                         @if (WorkOrder.Cost.HasValue)
@@ -222,7 +223,7 @@
                         {
                             <span class="cost-amount no-cost">Not specified</span>
                         }
-                        <div class="stat-label-cost">Cost</div>
+                        <div class="stat-label-cost">@Localizer["WorkOrder_Cost"]</div>
                 </div>
             </div>
                 <div >
@@ -240,16 +241,16 @@
     {
         <TelerikCard Class="modification-card">
             <CardHeader>
-                <CardTitle>Recent Changes</CardTitle>
+                <CardTitle>@Localizer["WorkOrder_RecentChanges"]</CardTitle>
             </CardHeader>
             <CardBody>
                 <div class="modification-info">
                     <div class="field-group">
-                        <label>Change Date:</label>
+                        <label>@Localizer["WorkOrder_ChangeDate"]</label>
                         <div class="field-value">@FormatDateTime(WorkOrder.ModDate)</div>
                     </div>
                     <div class="field-group">
-                        <label>Modified By:</label>
+                        <label>@Localizer["WorkOrder_ModifiedBy"]</label>
                         <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.ModPerson) ? "Not specified" : WorkOrder.ModPerson)</div>
                     </div>
                 </div>
@@ -259,7 +260,7 @@
     }
     else
     {
-    <p class="error">No workorder found for ID=@WorkOrder.WorkOrderID</p>
+    <p class="error">@Localizer["WorkOrder_NoWorkOrderFound"]@WorkOrder.WorkOrderID</p>
     }
 
 </div>
@@ -460,7 +461,7 @@
      private string FormatDateTime(DateTime? dateTime)
     {
         if (!dateTime.HasValue)
-            return "Not specified";
+            return @Localizer["WorkOrder_NotSpecified"];
             
         return dateTime.Value.ToString("dd.MM.yyyy HH:mm");
     }

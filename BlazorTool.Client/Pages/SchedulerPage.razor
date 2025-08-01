@@ -16,6 +16,7 @@
 @inject UserState UserState
 @inject AppStateService AppState
 @inject ILogger<SchedulerPage> Logger
+@inject IStringLocalizer<Resources.UIStrings> Localizer
 
 @cellStyles
 <CheckSession apiService="@apiService" UserState="@UserState" />
@@ -23,11 +24,11 @@
 <div class="filter-controls-row">
     <div style="flex-basis: 66%; flex-shrink:1; flex-grow:0; border-right: outset; display: flex; align-items: top; gap: 1rem;">
         <div style="max-width: 400px;">
-        <label>Assigned persons: </label>
+        <label>@Localizer["Scheduler_AssignedPersons"] </label>
             <TelerikMultiSelect Data="@PersonsNames"
                                 @bind-Value="@selectedAssignedPersons"
                                 TagMode="@MultiSelectTagMode.Multiple"
-                                Placeholder="Select assigned persons"
+                                Placeholder="@Localizer["Scheduler_SelectAssignedPersons"]"
                                 AutoClose="false"
                                 OnClose="@OnAssignedPersonsClosed"
                                 OnChange="@OnPersonSelectChanged"
@@ -37,18 +38,18 @@
             </TelerikMultiSelect>
         </div>
         <div>
-            <label>Department: </label>
+            <label>@Localizer["Scheduler_Department"] </label>
             <TelerikComboBox Data="@Departments" TextField="Department"
-                             Placeholder="Select department..." Filterable="false"
+                             Placeholder="@Localizer["Scheduler_SelectDepartment"]" Filterable="false"
                              AllowCustom="false" Value="@selectedDepartment"
                              ValueChanged="@((string dep) => OnDepartmentChanged(dep))"
                              Size="sm">
             </TelerikComboBox>
         </div>
         <div>
-            <label>Device: </label>
+            <label>@Localizer["Scheduler_Device"] </label>
             <TelerikComboBox Data="@WO_AssetNo"
-                             Placeholder="Select asset..."
+                             Placeholder="@Localizer["Scheduler_SelectAsset"]"
                              Filterable="true"
                              AllowCustom="true"
                              Value="@selectedAssetNo"
@@ -61,11 +62,11 @@
     </div>
     @* device categories filter *@
     <div style="flex-basis: 32%; flex-shrink:1; display: flex;  flex-grow:0; align-items: center; gap: 1rem;">
-        <label>Device category: </label>
+        <label>@Localizer["Scheduler_DeviceCategory"] </label>
         <div style="min-width:30px">
             <TelerikComboBox Data="@DeviceCategories" TextField="DeviceType"
                              Value="@selectedCategory"
-                             Placeholder="Select device category..." Filterable="true"
+                             Placeholder="@Localizer["Scheduler_SelectDeviceCategory"]" Filterable="true"
                              ValueChanged="@((string cat) => OnCategoryChanged(cat))">
             </TelerikComboBox>
         </div>
@@ -76,16 +77,16 @@
 <div style="display:flex; gap:1rem;">
     <div style="flex-basis: 66%; flex-shrink:1; flex-grow:0;">
         <div style="display:flex; flex-direction: row; gap:10px">
-            <div><p>Scheduled orders: @Appointments.Count()</p></div>
-            <div><TelerikButton OnClick="@HardLoadData" Size="Small" ThemeColor="@ThemeConstants.Button.ThemeColor.Tertiary">Reload all data</TelerikButton></div>
+            <div><p>@Localizer["Scheduler_ScheduledOrders"] @Appointments.Count()</p></div>
+            <div><TelerikButton OnClick="@HardLoadData" Size="Small" ThemeColor="@ThemeConstants.Button.ThemeColor.Tertiary">@Localizer["Scheduler_ReloadAllData"]</TelerikButton></div>
             @if (CurrentView == SchedulerView.Timeline)
             {
             <div style="display:flex; flex-direction: row; gap:10px; align-items:center;">
-                <label>Column Width:</label>
+                <label>@Localizer["Scheduler_ColumnWidth"]</label>
                 <TelerikNumericTextBox @bind-Value="@columnWidth" Width="80px" Min="10" Max="200" Step="10" Size="Small" />
-                <label>Slot Duration (min):</label>
+                <label>@Localizer["Scheduler_SlotDuration"]</label>
                 <TelerikNumericTextBox @bind-Value="@slotDuration" Width="110px" Min="15" Max="1440" Step="15" Size="Small" />
-                <label>Number of days:</label>
+                <label>@Localizer["Scheduler_NumberOfDays"]</label>
                 <TelerikNumericTextBox @bind-Value="@numberOfDays" Width="80px" Min="1" Max="14" Step="1" Size="Small" />
             </div>                
             }
@@ -189,7 +190,7 @@
             </SchedulerViews>
             </TelerikScheduler>
        
-            <TelerikLoaderContainer  Visible="@isLoading" Text="Loading appointments..." Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Large">
+            <TelerikLoaderContainer  Visible="@isLoading" Text="@Localizer["Scheduler_LoadingAppointments"]" Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Large">
                 </TelerikLoaderContainer>
         
        
@@ -205,16 +206,16 @@
         @if (isLoading)
         {
         <div style="display:flex; justify-content:space-between; align-items: center; align-content: center">
-            <p>Loading orders…</p>
+            <p>@Localizer["Scheduler_LoadingOrders"]</p>
         </div>
         }
         else
         {
             <div style="display:flex; justify-content:space-between; align-items: center">
-                <p mb-0>Orders without StartDate: @UntakenOrders.Count()</p>
+                <p mb-0>@Localizer["Scheduler_OrdersWithoutStartDate"] @UntakenOrders.Count()</p>
                 <div style="display:flex; align-items:center; gap: 5px;">
                     <TelerikCheckBox Size="lg" OnChange="@DisplayOrders" Id="OrdersCheckBox" @bind-Value="@isCBAllOrdersSelected" />
-                    <label for="OrdersCheckBox">show completed orders </label>
+                    <label for="OrdersCheckBox">@Localizer["Scheduler_ShowCompletedOrders"] </label>
                 </div>
             </div>
             <TelerikTooltip TargetSelector=".tooltip-target" Width="300px"/>
@@ -352,11 +353,11 @@
         }else
             resources = new List<Resource>
             {
-                new Resource { Text = "Not started", Value = "Nie rozpoczęte", Color = "LightCoral" },
-                new Resource { Text = "In progress", Value = "W trakcie realizacji", Color = "LightYellow" },
-                new Resource { Text = "In progress", Value = "Zawieszone", Color = "lightsteelblue" },
-                new Resource { Text = "Completed", Value = "Zakończony", Color = "LightGreen" },
-                new Resource { Text = "Completed", Value = "Zakończone", Color = "LightGreen" },
+                new Resource { Text = @Localizer["Scheduler_NotStarted"], Value = "Nie rozpoczęte", Color = "LightCoral" },
+                new Resource { Text = @Localizer["Scheduler_InProgress"], Value = "W trakcie realizacji", Color = "LightYellow" },
+                new Resource { Text = @Localizer["Scheduler_InProgress"], Value = "Zawieszone", Color = "lightsteelblue" },
+                new Resource { Text = @Localizer["Scheduler_Completed"], Value = "Zakończony", Color = "LightGreen" },
+                new Resource { Text = @Localizer["Scheduler_Completed"], Value = "Zakończone", Color = "LightGreen" },
             };
         return resources;
     }
@@ -614,7 +615,7 @@
             if (!result.IsValid)
             {
                 string errors = string.Join(Environment.NewLine, result.Errors);
-                popupMessage = errors ?? "Failed to close appointment.";
+                popupMessage = errors ?? Localizer["Scheduler_FailedToCloseAppointment"];
                 PopupRef?.Show();
                 Console.WriteLine($"Failed to delete appointment: {string.Join(", ", result.Errors)}");
                 return; // Exit if deletion failed
@@ -793,7 +794,7 @@
         _clickedAppointment = null;
         MenuItems = new List<ContextMenuItem>
         {
-            new ContextMenuItem { Text = "Add new...", Value = "Add", Icon = SvgIcon.Plus }
+            new ContextMenuItem { Text = @Localizer["Scheduler_AddNew"], Value = "Add", Icon = SvgIcon.Plus }
         };
         await ContextMenuRef?.ShowAsync(e.ClientX, e.ClientY)!;
     }
@@ -804,9 +805,9 @@
         _clickedSlotContext = null;
         MenuItems = new List<ContextMenuItem>
         {
-            new ContextMenuItem { Text = "Open", Value = "Open", Icon = SvgIcon.FolderOpen },
-            new ContextMenuItem { Text = "Remove", Value = "Remove", Icon = SvgIcon.Trash },
-            new ContextMenuItem { Text = "Duplicate", Value = "Duplicate", Icon = SvgIcon.Copy }
+            new ContextMenuItem { Text = @Localizer["Scheduler_Open"], Value = "Open", Icon = SvgIcon.FolderOpen },
+            new ContextMenuItem { Text = @Localizer["Scheduler_Remove"], Value = "Remove", Icon = SvgIcon.Trash },
+            new ContextMenuItem { Text = @Localizer["Scheduler_Duplicate"], Value = "Duplicate", Icon = SvgIcon.Copy }
         };
         await ContextMenuRef?.ShowAsync(e.ClientX, e.ClientY)!;
     }

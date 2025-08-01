@@ -1,6 +1,7 @@
 @using BlazorTool.Client.Models
 @inject UserState userState
 @using BlazorTool.Client.Services
+@inject IStringLocalizer<Resources.UIStrings> Localizer
 
 <div class="summary-table-container">
     @if (SummaryData.Any())
@@ -8,8 +9,8 @@
         <table class="summary-table">
             <thead>
                 <tr>
-                    <th>Person</th>
-                    <th>Total</th>
+                    <th>@Localizer["SchedulerSummary_Person"]</th>
+                    <th>@Localizer["SchedulerSummary_Total"]</th>
                     @foreach (var status in Statuses)
                     {
                         <th>@status</th>
@@ -79,7 +80,7 @@
         {
             var summary = new PersonWorkOrderSummary
             {
-                PersonName = string.IsNullOrEmpty(group.Key) ? "Not assigned" : group.Key,
+                PersonName = string.IsNullOrEmpty(group.Key) ? Localizer["SchedulerSummary_NotAssigned"] : group.Key,
                 TotalCount = group.Count(),
                 StatusCounts = group.GroupBy(a => a.WOState)
                                      .ToDictionary(g => g.Key, g => g.Count())

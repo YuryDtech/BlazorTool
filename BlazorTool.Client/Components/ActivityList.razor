@@ -1,27 +1,28 @@
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
 @inject ApiServiceClient ApiClient
+@inject IStringLocalizer<Resources.UIStrings> Localizer
 
 <div class="activity-list-container">
-    <h5>Activities for Work Order: @WorkOrderId.    (Total workload: @activities?.Sum(x=>x.WorkLoad).ToString("F2") h)</h5>
+    <h5>@Localizer["ActivityList_ActivitiesForWorkOrder"] @WorkOrderId.    (@Localizer["ActivityList_TotalWorkload"] @activities?.Sum(x=>x.WorkLoad).ToString("F2") @Localizer["ActivityList_HoursAbbreviation"])</h5>
 
     @if (activities == null)
     {
-        <p><em>Loading activities...</em></p>
+        <p><em>@Localizer["ActivityList_LoadingActivities"]</em></p>
     }
     else if (activities.Count == 0)
     {
-        <p>No activities found for this work order.</p>
+        <p>@Localizer["ActivityList_NoActivitiesFound"]</p>
     }
     else
     {
         <div class="activity-list-header">
-            <span class="activity-category">Category</span>
-            <span class="activity-description">Description</span>
-            <span class="activity-workload">Workload</span>
-            <span class="activity-workers">Workers</span>
-            <span class="activity-persons">Assigned</span>
-            <span class="activity-date">Date</span>
+            <span class="activity-category">@Localizer["ActivityList_Category"]</span>
+            <span class="activity-description">@Localizer["ActivityList_Description"]</span>
+            <span class="activity-workload">@Localizer["ActivityList_Workload"]</span>
+            <span class="activity-workers">@Localizer["ActivityList_Workers"]</span>
+            <span class="activity-persons">@Localizer["ActivityList_Assigned"]</span>
+            <span class="activity-date">@Localizer["ActivityList_Date"]</span>
         </div>
         <div class="activity-list-body">
             @foreach (var activity in activities)

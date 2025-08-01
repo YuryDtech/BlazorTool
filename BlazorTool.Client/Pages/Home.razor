@@ -1,7 +1,9 @@
 ﻿@page "/"
 @inject NavigationManager NavigationManager
-<TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Warning" @onclick="OnOrderClick">ORDERS</TelerikButton>
-<TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Success" @onclick="OnSchedulerClick">SCHEDULER</TelerikButton>
+@inject IStringLocalizer<Resources.UIStrings> Localizer
+
+<TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Warning" @onclick="OnOrderClick">@Localizer["Home_Orders"]</TelerikButton>
+<TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Success" @onclick="OnSchedulerClick">@Localizer["Home_Scheduler"]</TelerikButton>
 @code {
 
     private void OnOrderClick()

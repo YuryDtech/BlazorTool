@@ -1,8 +1,10 @@
 ﻿@page "/changelog"
 @inject IHttpClientFactory HttpClientFactory
+@inject IStringLocalizer<Resources.UIStrings> Localizer
+
 @using Markdig
 
-<h3>Changelog Page</h3>
+<h3>@Localizer["ChangelogPage_Title"]</h3>
 
 @if (!string.IsNullOrEmpty(changelogContent))
 {
@@ -21,7 +23,7 @@
 }
 else
 {
-    <p>Loading changelog...</p>
+    <p>@Localizer["ChangelogPage_Loading"]</p>
 }
 
 @code {
@@ -43,8 +45,8 @@ else
         }
         catch (Exception ex)
         {
-            changelogContent = $"<p>Error loading changelog: {ex.Message}</p>";
-            changelogContent_PL = $"<p>Error loading changelog: {ex.Message}</p>";
+            changelogContent = $"<p>{Localizer["ChangelogPage_ErrorLoading"]} {ex.Message}</p>";
+            changelogContent_PL = $"<p>{Localizer["ChangelogPage_ErrorLoading"]} {ex.Message}</p>";
         }
     }
 }

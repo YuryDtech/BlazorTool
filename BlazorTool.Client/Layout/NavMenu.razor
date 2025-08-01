@@ -1,5 +1,6 @@
 ﻿@using BlazorTool.Client.Services
 @inject AppStateService AppState
+@inject IStringLocalizer<Resources.UIStrings> Localizer
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -7,30 +8,30 @@
     </div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<input type="checkbox" title="@Localizer["NavMenu_NavigationMenu"]" class="navbar-toggler" />
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="navbar-nav flex-column">
         <div class="nav-item">
             <NavLink class="nav-link d-flex align-items-center px-3 py-2" href="/" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill me-2" aria-hidden="true"></span>
-                <span>Main</span>
+                <span>@Localizer["NavMenu_Main"]</span>
             </NavLink>
         </div>
         <div class="nav-item">
             <NavLink class="nav-link d-flex align-items-center px-3 py-2" href="orders">
                 <span class="bi bi-cart-fill me-2" aria-hidden="true"></span>
-                <span>Orders</span>
+                <span>@Localizer["NavMenu_Orders"]</span>
             </NavLink>
         </div>
         <div class="nav-item">
             <NavLink class="nav-link d-flex align-items-center px-3 py-2" href="scheduler">
                 <span class="bi bi-calendar-fill me-2" aria-hidden="true"></span>
-                <span>Scheduler</span>
+                <span>@Localizer["NavMenu_Scheduler"]</span>
             </NavLink>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="settings">
-                    <span class="bi bi-gear-fill-nav-menu" aria-hidden="true"></span> Settings
+                    <span class="bi bi-gear-fill-nav-menu" aria-hidden="true"></span> @Localizer["NavMenu_Settings"]
                 </NavLink>
             </div>
         </div>

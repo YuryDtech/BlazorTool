@@ -5,17 +5,18 @@
 @inject UserState UserState
 @inject AppStateService AppState
 @inject ApiServiceClient ApiServiceClient
+@inject IStringLocalizer<Resources.UIStrings> Localizer
 
 <div class="login-container">
     <form @onsubmit="HandleLogin">
-        <h2>Login to the @AppState.Settings.ApplicationName</h2>
+        <h2>@Localizer["Login_LoginToThe"] @AppState.Settings.ApplicationName</h2>
         <div class="form-group">
-            <label for="username">User name</label>
+            <label for="username">@Localizer["Login_UserName"]</label>
             <TelerikComboBox Data="@Persons"
                              TextField="Name"
                              ValueField="Name"
                              @bind-Value="@Username"
-                             Placeholder="Select user name..."
+                             Placeholder="@Localizer["Login_SelectUserName"]"
                              Filterable="false"
                              AllowCustom="false"
                              
@@ -23,7 +24,7 @@
             </TelerikComboBox>
         </div>
         <div class="form-group">
-            <label for="password">Password</label>
+            <label for="password">@Localizer["Login_Password"]</label>
             <input id="password" type="password" class="form-control" @bind="Password" autocomplete="current-password" />
         </div>
         @if (!string.IsNullOrEmpty(ErrorMessage))
@@ -33,11 +34,11 @@
         <button type="submit" class="btn-login" disabled="@isLoading">
             @if (isLoading)
             {
-                <TelerikLoaderContainer Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Small" Text="Checking..." />
+                <TelerikLoaderContainer Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Small" Text="@Localizer["Login_Checking"]" />
             }
             else
             {
-                <span>Enter</span>
+                <span>@Localizer["Login_Enter"]</span>
             }
         </button>
     </form>
@@ -61,7 +62,7 @@
         ErrorMessage = string.Empty;
         if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
         {
-            ErrorMessage = "Empty field";
+            ErrorMessage = Localizer["Login_EmptyField"];
             return;
         }
 
@@ -91,12 +92,12 @@
             }
             else
             {
-                ErrorMessage = response?.Errors?.FirstOrDefault() ?? "Login failed. Please check your credentials.";
+                ErrorMessage = response?.Errors?.FirstOrDefault() ?? Localizer["Login_LoginFailed"];
             }
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"An error occurred: {ex.Message}";
+            ErrorMessage = $"{Localizer["Login_AnErrorOccurred"]} {ex.Message}";
         }
         finally
         {

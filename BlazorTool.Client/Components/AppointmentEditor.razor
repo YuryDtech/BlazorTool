@@ -3,33 +3,34 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Telerik.Blazor.Components.Scheduler.Models
 @inject AppointmentService ApptService
+@inject IStringLocalizer<Resources.UIStrings> Localizer
 
 <EditForm Model="@Appointment" OnValidSubmit="@SaveAppointment">
     <DataAnnotationsValidator />
     <label class="width100">
-        AssetNo:<br />
+        @Localizer["AppointmentEditor_AssetNo"]<br />
         <TelerikTextBox @bind-Value="@Appointment.AssetNo" Width="100%" Class="@titleAlarm" OnChange="@OnTitleChange"/>
     </label>
     <br />
      <div class="datetime-row">
         <label>
-            Start:<br />
+            @Localizer["AppointmentEditor_Start"]<br />
             <TelerikDateTimePicker @bind-Value="@Appointment.Start" Width="100%" />
         </label>
         <label>
-            End:<br />
+            @Localizer["AppointmentEditor_End"]<br />
             <TelerikDateTimePicker @bind-Value="@Appointment.End" Width="100%" />
         </label>
     </div>
     <ValidationSummary />
       <div class="button-row">
-        <TelerikButton Class="popup-target" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Save</TelerikButton>
+        <TelerikButton Class="popup-target" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">@Localizer["AppointmentEditor_Save"]</TelerikButton>
 
-    <TelerikButton OnClick="@CancelEditing"  ButtonType="ButtonType.Button" >Cancel</TelerikButton>
-    <TelerikButton OnClick="@DeleteAppointment" ButtonType="ButtonType.Button">Delete from scheduler</TelerikButton>
+    <TelerikButton OnClick="@CancelEditing"  ButtonType="ButtonType.Button" >@Localizer["AppointmentEditor_Cancel"]</TelerikButton>
+    <TelerikButton OnClick="@DeleteAppointment" ButtonType="ButtonType.Button">@Localizer["AppointmentEditor_DeleteFromScheduler"]</TelerikButton>
         @if (!isWOClosed)
         {
-            <TelerikButton OnClick="@CloseAppointment" ButtonType="ButtonType.Button" ThemeColor="@ThemeConstants.Button.ThemeColor.Warning">Finish order</TelerikButton>
+            <TelerikButton OnClick="@CloseAppointment" ButtonType="ButtonType.Button" ThemeColor="@ThemeConstants.Button.ThemeColor.Warning">@Localizer["AppointmentEditor_FinishOrder"]</TelerikButton>
         }
     </div>
 </EditForm>
@@ -66,7 +67,7 @@
     private bool isNewAppointment = false;
     private string titleAlarm = string.Empty;
     private TelerikPopup? PopupRef { get; set; }
-    private string popupMessage = "Please fill in all required fields.";
+    private string popupMessage = string.Empty;
     private SchedulerAppointment? _OriginAppointment; // Used to store the original appointment for cancellation
     private WorkOrderInfo? workOrderInfo = null; //additional information about the work order /wo/get?WorkOrderID=
     private bool isWOClosed = false;
@@ -88,6 +89,7 @@
             workOrderInfo = await ApptService.GetWorkOrderInfo(Appointment);
             isWOClosed = IsWOClosed();
         }
+        string popupMessage = Localizer["AppointmentEditor_FillRequiredFields"];
     }
 
     async Task SaveAppointment()
@@ -95,7 +97,7 @@
         if (!IsValidAppointment())
         {
             Console.WriteLine("--- IS INVALID");
-            popupMessage = "Please fill in all required fields.";
+            popupMessage = Localizer["AppointmentEditor_FillRequiredFields"];
             PopupRef?.Show();
             return;
         }
@@ -104,7 +106,7 @@
         if (!result.IsValid)
         {
             string errors = string.Join(Environment.NewLine, result.Errors);
-            popupMessage = errors ?? "Failed to save appointment.";
+            popupMessage = errors ?? Localizer["AppointmentEditor_FailedToSave"];
             PopupRef?.Show();
             return;
         }
@@ -119,7 +121,7 @@
         if (!tryClose.IsValid)
         {
             string errors = string.Join(Environment.NewLine, tryClose.Errors);
-            popupMessage = errors ?? "Failed to close appointment.";
+            popupMessage = errors ?? Localizer["AppointmentEditor_FailedToClose"];
             PopupRef?.Show();
             return;
         }
@@ -137,7 +139,7 @@
         if (!result.IsValid)
         {
             string errors = string.Join(Environment.NewLine, result.Errors);
-            popupMessage = errors ?? "Failed to close appointment.";
+            popupMessage = errors ?? Localizer["AppointmentEditor_FailedToClose"];
             PopupRef?.Show();
             return;
         }
