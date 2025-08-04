@@ -170,8 +170,8 @@
                         }
                     </SlotTemplate>
                 </SchedulerMonthView>
-                <SchedulerTimelineView NumberOfDays="@numberOfDays" StartTime="@DayStart" EndTime="@DayEnd"
-                                       ColumnWidth="@columnWidth" SlotDivisions="@slotDivisions" SlotDuration="@slotDuration">                    
+                <SchedulerTimelineView NumberOfDays="@(numberOfDays ?? 3)" StartTime="@DayStart" EndTime="@DayEnd"
+                                       ColumnWidth="@(columnWidth ?? 15)" SlotDivisions="@(slotDivisions ?? 1)" SlotDuration="@(slotDuration ?? 15)">                    
                     <ItemTemplate>
                         <div @oncontextmenu:preventDefault @oncontextmenu="@( (MouseEventArgs e) => ShowContextMenuFromAppointment(e, context as SchedulerAppointment) )">
                             <SchedulerItem Item="@(context as SchedulerAppointment)" View="@SchedulerView.Timeline" />
@@ -329,10 +329,10 @@
     private string selectedAssetNo = "All";
     private Person currentUser = new Person();
     private string popupMessage = string.Empty;
-    private int columnWidth = 50; //for TimelineView alt=80
-    private int slotDuration = 180; //in minutes for TimelineView
-    private int slotDivisions = 1; //for TimelineView
-    private int numberOfDays = 5; //for TimelineView alt=3
+    private int? columnWidth = 50; //for TimelineView alt=80
+    private int? slotDuration = 180; //in minutes for TimelineView
+    private int? slotDivisions = 1; //for TimelineView
+    private int? numberOfDays = 5; //for TimelineView alt=3
     private List<Resource> statuses = new List<Resource>();
 
     private List<Resource> GetStatuses(List<SchedulerAppointment> appointments)
