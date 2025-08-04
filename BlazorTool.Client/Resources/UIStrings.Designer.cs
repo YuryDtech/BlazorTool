@@ -1267,7 +1267,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Accepted for processing:.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string WorkOrder_AcceptedForProcessing {
             get {
@@ -1281,6 +1281,15 @@ namespace BlazorTool.Client.Resources {
         public static string WorkOrder_Actions {
             get {
                 return ResourceManager.GetString("WorkOrder_Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New action.
+        /// </summary>
+        public static string WorkOrder_AddActivity {
+            get {
+                return ResourceManager.GetString("WorkOrder_AddActivity", resourceCulture);
             }
         }
         

@@ -503,7 +503,7 @@
     <value>Statystyki</value>
   </data>
   <data name="WorkOrder_Actions" xml:space="preserve">
-    <value>Akcje</value>
+    <value>Aktywności</value>
   </data>
   <data name="WorkOrder_Files" xml:space="preserve">
     <value>Pliki</value>
@@ -630,5 +630,8 @@
   </data>
   <data name="WorkOrder_SelectWOReason" xml:space="preserve">
     <value>Wybierz przyczynę zlecenia...</value>
+  </data>
+  <data name="WorkOrder_AddActivity" xml:space="preserve">
+    <value>Nowa aktywność</value>
   </data>
 </root>

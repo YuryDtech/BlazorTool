@@ -102,6 +102,49 @@ namespace BlazorTool.Client.Models
         public DateTime? PersonTakeDate { get; set; }
 
         [JsonPropertyName("deviceCategoryID")]
-        public int? DeviceCategoryID { get; set; }        
+        public int? DeviceCategoryID { get; set; }
+
+        public WorkOrder ShallowCopy()
+        {
+            return (WorkOrder)this.MemberwiseClone();
+        }
+
+        public void UpdateFrom(WorkOrder source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            WorkOrderID = source.WorkOrderID;
+            MachineID = source.MachineID;
+            AssetNo = source.AssetNo;
+            DeviceCategory = source.DeviceCategory;
+            WODesc = source.WODesc;
+            WOCategory = source.WOCategory;
+            WOState = source.WOState;
+            WOReason = source.WOReason;
+            AddDate = source.AddDate;
+            TakeDate = source.TakeDate;
+            CloseDate = source.CloseDate;
+            Cost = source.Cost;
+            TakePersons = source.TakePersons;
+            PlanID = source.PlanID;
+            StateColor = source.StateColor;
+            ModDate = source.ModDate;
+            ModPerson = source.ModPerson;
+            WOLevel = source.WOLevel;
+            LevelID = source.LevelID;
+            ActCount = source.ActCount;
+            DepName = source.DepName ?? string.Empty; 
+            AssignedPerson = source.AssignedPerson ?? string.Empty; 
+            FileCount = source.FileCount;
+            PartCount = source.PartCount;
+            PlanActCount = source.PlanActCount;
+            StartDate = source.StartDate;
+            EndDate = source.EndDate;
+            IsScheduledPlanned = source.IsScheduledPlanned;
+            CategoryID = source.CategoryID;
+            ReasonID = source.ReasonID;
+            IneffectiveCount = source.IneffectiveCount;
+            PersonTakeDate = source.PersonTakeDate;
+            DeviceCategoryID = source.DeviceCategoryID;
+        }
     }
 }

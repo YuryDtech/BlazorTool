@@ -7,7 +7,7 @@
         <span class="activity-category" title="@Localizer["ActivityDisplay_Category"]">@ActivityItem.ActCategory</span>
         <span class="activity-description" title="@Localizer["ActivityDisplay_Description"]">@ActivityItem.Description</span>
         <span class="activity-workload" title="@Localizer["ActivityDisplay_WorkLoad"]">@ActivityItem.WorkLoad.ToString("F2") @Localizer["ActivityDisplay_HoursAbbreviation"]</span>
-        <span class="activity-workers" title="@Localizer["ActivityDisplay_Workers"]">@ActivityItem.Workers @Localizer["ActivityDisplay_WorkersCount"]</span>
+        <span class="activity-workers" title="@Localizer["ActivityDisplay_Workers"]">@ActivityItem.Workers</span>
         <span class="activity-persons" title="@Localizer["ActivityDisplay_AssignedPersons"]">@String.Join(',', Persons?.Select(p => p.Name).ToList() ?? new List<string>())</span>
         <span class="activity-date" title="@Localizer["ActivityDisplay_DateAdded"]">@ActivityItem.AddDate.ToString("dd.MM.yyyy HH:mm")</span>
     </div>

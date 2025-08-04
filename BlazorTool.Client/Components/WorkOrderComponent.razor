@@ -57,33 +57,35 @@
                 <CardBody Class="p-2 card-body-description">
                     <div class="field-group ">
                         <label>@Localizer["WorkOrder_Description"]</label>
-                        
-                                <TelerikTextArea @bind-Value="@WorkOrder.WODesc"
-                                                 ReadOnly=@(isEditable == false) 
-                                                 Size="sm"
+                        <div class="control-wrapper">
+                            <TelerikTextArea @bind-Value="@WorkOrder.WODesc"
+                                             ReadOnly="@(isEditable == false)"
+                                             Size="sm"
                                              ResizeMode="@TextAreaResizeMode.Auto"
                                              Class="@DescriptionAlarm"
-                                             OnChange="@OnDescriptionChanged"
-                                             />
+                                             OnChange="@OnDescriptionChanged" />
+                        </div>
                     </div>
                     <div class="field-group">
                         <label>@Localizer["WorkOrder_Category"]</label>
+                        <div class="control-wrapper">
                             <TelerikComboBox Data="@ListCategories"
-                                                    ValueField="@nameof(Dict.Id)"
-                                                    TextField="@nameof(Dict.Name)"
-                                                 Value="@(WorkOrder?.CategoryID ?? 0)"
-                                                 Placeholder="@Localizer["WorkOrder_SelectWOCategory"]"
-                                                 ValueChanged="@((int id) => OnCategoryChanged(id))"
-                                                 Width="100%"
-                                                 ReadOnly=@(isEditable == false)
-                                                 ShowClearButton=false
-                                                 AllowCustom=false
-                                                 Class="@CategoryAlarm"
-                                                 >
-                                </TelerikComboBox>
+                                             ValueField="@nameof(Dict.Id)"
+                                             TextField="@nameof(Dict.Name)"
+                                             Value="@(WorkOrder?.CategoryID ?? 0)"
+                                             Placeholder="@Localizer["WorkOrder_SelectWOCategory"]"
+                                             ValueChanged="@((int id) => OnCategoryChanged(id))"
+                                             Width="100%"
+                                             ReadOnly="@(isEditable == false)"
+                                             ShowClearButton="false"
+                                             AllowCustom="false"
+                                             Class="@CategoryAlarm">
+                            </TelerikComboBox>
+                        </div>
                     </div>
                     <div class="field-group">
                         <label>@Localizer["WorkOrder_Reason"]</label>
+                        <div class="control-wrapper">
                             <TelerikComboBox Data="@ListReasons"
                                              ValueField="@nameof(Dict.Id)"
                                              TextField="@nameof(Dict.Name)"
@@ -91,14 +93,16 @@
                                              Placeholder="@Localizer["WorkOrder_SelectWOReason"]"
                                              ValueChanged="@((int reasonId) => OnReasonChanged(reasonId))"
                                              Width="100%"
-                                             ReadOnly=@(isEditable == false)
-                                             ShowClearButton=false
-                                             AllowCustom=false
+                                             ReadOnly="@(isEditable == false)"
+                                             ShowClearButton="false"
+                                             AllowCustom="false"
                                              Class="@ReasonAlarm">
                             </TelerikComboBox>
+                        </div>
                     </div>
                     <div class="field-group">
                         <label>@Localizer["WorkOrder_Level"]</label>
+                        <div class="control-wrapper">
                             <TelerikComboBox Data="@ListLevels"
                                              ValueField="@nameof(Dict.Id)"
                                              TextField="@nameof(Dict.Name)"
@@ -106,12 +110,12 @@
                                              Placeholder="@Localizer["WorkOrder_SelectWOLevel"]"
                                              ValueChanged="@((int levelId) => OnLevelChanged(levelId))"
                                              Width="100%"
-                                             ReadOnly=@(isEditable == false)
-                                             ShowClearButton=false
-                                             AllowCustom=false
-                                             Class="@LevelAlarm"
-                                             >
+                                             ReadOnly="@(isEditable == false)"
+                                             ShowClearButton="false"
+                                             AllowCustom="false"
+                                             Class="@LevelAlarm">
                             </TelerikComboBox>
+                        </div>
                     </div>
                 </CardBody>
             </TelerikCard>
@@ -153,7 +157,7 @@
                     </div>
                     <div class="field-group">
                         <label>@Localizer["WorkOrder_TakePersons"]</label>
-                        <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.TakePersons) ? @Localizer["WorkOrder_NotSpecified"] : WorkOrder.TakePersons)</div>
+                        <div class="field-value">@(string.IsNullOrEmpty(takePersons) ? @Localizer["WorkOrder_NotSpecified"] : takePersons)</div>
                     </div>
                 </CardBody>
             </TelerikCard>
@@ -256,15 +260,30 @@
                         <div class="stat-label-cost">@Localizer["WorkOrder_Cost"]</div>
                 </div>
             </div>
-                <div >
-                        @if (showActivities)
-                        {
-                            <ActivityList WorkOrderId="WorkOrder.WorkOrderID" />
-                        }
-                </div>
-            
+            <div class="activity-controls">
+                <TelerikButton OnClick="@(() => IsAddActivityWindowVisible = true)" Icon="@SvgIcon.Plus" ThemeColor="primary">@Localizer["WorkOrder_AddActivity"]</TelerikButton>
+            </div>
+            <div>
+                @if (showActivities)
+                {
+                    <ActivityList @ref="activityListComponent" WorkOrderId="WorkOrder.WorkOrderID" />
+                }
+            </div>
+
         </CardBody>
     </TelerikCard>
+
+    <TelerikWindow @bind-Visible="IsAddActivityWindowVisible" Modal="true" Width="800px">
+        <WindowTitle>
+                <strong>@Localizer["WorkOrder_OrderNo"] @WorkOrder.WorkOrderID</strong>
+        </WindowTitle>
+            <WindowActions>
+                <WindowAction Name="Close" />
+            </WindowActions>
+        <WindowContent>
+            <AddActivityForm WorkOrderID="@WorkOrder.WorkOrderID" OnActivityAdded="HandleActivityAdded" />
+        </WindowContent>
+    </TelerikWindow>
 
     <!-- Modification Information -->
     @if (WorkOrder.ModDate.HasValue || !string.IsNullOrEmpty(WorkOrder.ModPerson))
@@ -275,11 +294,11 @@
             </CardHeader>
             <CardBody>
                 <div class="modification-info">
-                    <div class="field-group">
+                    <div class="field-group mod">
                         <label>@Localizer["WorkOrder_ChangeDate"]</label>
                         <div class="field-value">@FormatDateTime(WorkOrder.ModDate)</div>
                     </div>
-                    <div class="field-group">
+                    <div class="field-group mod">
                         <label>@Localizer["WorkOrder_ModifiedBy"]</label>
                         <div class="field-value">@(string.IsNullOrEmpty(WorkOrder.ModPerson) ? "Not specified" : WorkOrder.ModPerson)</div>
                     </div>
@@ -302,11 +321,16 @@
 
 
 
+
+
+
+
     [Parameter] public WorkOrder? WorkOrder { get; set; }
     [Parameter] public List<string>? ListPersons { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
     [Parameter] public EventCallback<bool> OnStateChanged { get; set; }
     [Parameter] public Person? currentUser { get; set; }
+    private ActivityList? activityListComponent;
     // private int listTypeForCategory = 1;
     // private int listTypeForLevel = 2;
     // private int listTypeForReason = 3;
@@ -322,6 +346,7 @@
     private string ReasonAlarm = string.Empty;
     private string DatesAlarm = string.Empty;
     private bool showActivities = false;
+    private bool IsAddActivityWindowVisible { get; set; } = false;
     private bool isNewWorkOrder = false;
     private List<Device>? ListDevices { get; set; } = new List<Device>();
     private Device? selectedDevice;
@@ -331,6 +356,7 @@
     private List<Dict> ListReasons = new List<Dict>();
     private string takePersons = string.Empty;
     private string StateColor = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         isNewWorkOrder = WorkOrder?.WorkOrderID == 0;
@@ -366,38 +392,7 @@
             if (!string.IsNullOrEmpty(WorkOrder?.AssignedPerson))
                 ListPersons.Add(WorkOrder.AssignedPerson) ;
 
-            // ListPersons.Add(notAssigned);
-
-        }
-        // else
-        // if (!ListPersons.Contains(notAssigned))
-        // {
-        //     ListPersons.Add(notAssigned);
-        // }
-
-        // if (ListDepartments != null)
-        // {
-        //     if (ListDepartments.Contains("All"))
-        //         ListDepartments.RemoveAll(d => d == "All");
-
-        //     if (!ListDepartments.Contains(notAssigned))
-        //     {
-        //         ListDepartments.Add(notAssigned);
-        //     }
-        // }
-        // else 
-        // if (WorkOrder != null && !string.IsNullOrEmpty(WorkOrder.DepName))
-        // {
-        //     ListDepartments = new List<string>() { WorkOrder.DepName };
-        // }else
-        // {
-        //     ListDepartments = new List<string>();
-        // }
-
-        // if (string.IsNullOrEmpty(WorkOrder?.DepName) || WorkOrder.DepName == notAssigned)
-        // {
-        //     DepAlarm = "bg-warning";
-        // }
+        }        
 
         if (!isValidDates())
         {
@@ -430,7 +425,35 @@
             WorkOrder.ModDate = DateTime.Now;
         }
         isValidWorkOrder();
+    }
 
+    private async Task HandleActivityAdded(bool success)
+    {
+        if (success)
+        {
+            IsAddActivityWindowVisible = false;
+            // Optionally, refresh the activity list or statistics here
+            // For example, re-fetch the work order to update ActCount
+            if (WorkOrder != null)
+            {
+                await apiService.RefreshWorkOrderInCacheAsync(WorkOrder.WorkOrderID);
+                var updatedWorkOrder = await apiService.GetWorkOrderByIdCachedAsync(WorkOrder.WorkOrderID);
+                if (updatedWorkOrder != null)
+                {
+                    WorkOrder.UpdateFrom(updatedWorkOrder);
+                }
+                await activityListComponent?.RefreshActivitiesAsync();
+            }
+
+            await OnStateChanged.InvokeAsync(true);
+        }
+        else
+        {
+            // Handle the case where adding the activity failed
+            Console.WriteLine("Failed to add activity.");
+            
+        }
+        // You might want to show an error message if success is false
     }
 
 

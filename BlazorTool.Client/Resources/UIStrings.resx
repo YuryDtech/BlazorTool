@@ -631,4 +631,7 @@
   <data name="WorkOrder_SelectWOReason" xml:space="preserve">
     <value>Select reason...</value>
   </data>
+  <data name="WorkOrder_AddActivity" xml:space="preserve">
+    <value>New action</value>
+  </data>
 </root>

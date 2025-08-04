@@ -1,3 +1,26 @@
+## 2025-08-04
+### Dodano
+- **Dodawanie Aktywności**: Zaimplementowano funkcję dodawania nowych aktywności bezpośrednio z widoku zlecenia pracy, włączając w to dedykowany formularz i punkt końcowy API.
+
+### Naprawiono
+- **Odświeżanie Listy Aktywności**: Lista aktywności jest teraz automatycznie aktualizowana po dodaniu nowej aktywności.
+- **Trwałość Danych Zlecenia Pracy**: Naprawiono błąd, przez który szczegóły zlecenia (np. liczba aktywności) wracały do poprzedniego stanu po interakcjach w interfejsie użytkownika.
+
+### Zmieniono
+- **UI/UX**: Poprawiono układ i style komponentu `WorkOrderComponent` w celu zwiększenia czytelności i użyteczności.
+
+## 2025-08-01
+### Dodano
+- **Edycja Powodu Zlecenia Pracy**: Pole `WOReason` jest teraz edytowalne w edytorze zlecenia pracy.
+- **Widok Przypisanych Osób**: Dodano możliwość przeglądania przypisanych osób w szczegółach zlecenia pracy.
+- **Wsparcie dla Języka Polskiego**: Wprowadzono wsparcie dla języka polskiego. Język można przełączać po zalogowaniu oraz w Ustawieniach.
+### Zmieniono
+- **Walidacja Zlecenia Pracy**: Zmodyfikowano walidację danych zlecenia pracy w oknie edytora.
+- **Daty Zlecenia Pracy**: Pola `StartDate` i `EndDate` w edytorze zlecenia pracy są teraz edytowalne.
+### Naprawiono
+- **Błąd Listy Działów**: Naprawiono błąd związany z ładowaniem listy działów.
+- **Błąd Nowego Zlecenia Pracy**: Naprawiono błąd związany z tworzeniem nowego zlecenia pracy (spotkania).
+
 ## 2025-07-30
 ### Dodano
 - **Zaawansowane Filtry Grid**: Wprowadzono zaawansowane możliwości filtrowania w `TelerikGrid` na stronie `OrdersPage`, w tym filtry dla Department, Reason, Modified Person, Assigned Person, Work Order State, Work Order Level, Add Date i Start Date.

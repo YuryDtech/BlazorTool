@@ -1,3 +1,26 @@
+## 2025-08-04
+### Added
+- **Add Activity**: Implemented a feature to add new activities directly from the work order view, including a dedicated form and API endpoint.
+
+### Fixed
+- **Activity List Refresh**: The activity list now updates automatically after a new activity is added.
+- **Work Order Data Persistence**: Corrected a bug where work order details (like activity count) would revert to a previous state after UI interactions.
+
+### Changed
+- **UI/UX**: Improved the layout and styling of the `WorkOrderComponent` for better readability and usability.
+
+## 2025-08-01
+### Added
+- **Work Order Reason Editing**: The `WOReason` field is now editable in the work order editor.
+- **Assigned Person View**: Added the ability to view assigned persons in the work order details.
+- **Polish Language Support**: Released Polish language support. The language can be switched after login and in the Settings.
+### Changed
+- **Work Order Validation**: Modified the validation for work order data in the editor window.
+- **Work Order Dates**: The `StartDate` and `EndDate` fields in the work order editor are now editable.
+### Fixed
+- **Department List Bug**: Fixed an issue with loading the department list.
+- **New Work Order Bug**: Fixed a bug related to creating a new work order (appointment).
+
 ## 2025-07-30
 ### Added
 - **Advanced Grid Filters**: Implemented advanced filtering capabilities in `TelerikGrid` on the `OrdersPage`, including filters for Department, Reason, Modified Person, Assigned Person, Work Order State, Work Order Level, Add Date, and Start Date.

@@ -1,0 +1,117 @@
+@using BlazorTool.Client.Models
+@using BlazorTool.Client.Services
+@using Telerik.Blazor.Components
+@using System.ComponentModel.DataAnnotations
+
+@inject ApiServiceClient ApiClient
+@inject UserState UserState
+
+<div class="add-activity-form-container">
+    <TelerikForm Model="@ActivityModel" OnValidSubmit="@HandleValidSubmit">
+        <FormValidation>
+            <DataAnnotationsValidator />
+            <TelerikValidationSummary />
+        </FormValidation>
+    <FormItems>
+        <div class="form-layout">
+            <div class="form-left">
+                <FormItem Field="@nameof(ActivityModel.PersonID)" LabelText="Person">
+                    <Template>
+                        <TelerikComboBox Data="@People"
+                                         @bind-Value="@ActivityModel.PersonID"
+                                         ValueField="@nameof(Person.PersonId)"
+                                         TextField="@nameof(Person.Name)"
+                                         Placeholder="Select Person..."
+                                         Filterable="true"
+                                         ShowClearButton="true">
+                        </TelerikComboBox>
+                        <ValidationMessage For="@(() => ActivityModel.PersonID)" />
+                    </Template>
+                </FormItem>
+
+                <FormItem Field="@nameof(ActivityModel.CategoryID)" LabelText="Category">
+                    <Template>
+                        <TelerikComboBox Data="@Categories"
+                                         @bind-Value="@ActivityModel.CategoryID"
+                                         ValueField="@nameof(Dict.Id)"
+                                         TextField="@nameof(Dict.Name)"
+                                         Placeholder="Select Category..."
+                                         Filterable="true"
+                                         ShowClearButton="true">
+                        </TelerikComboBox>
+                        <ValidationMessage For="@(() => ActivityModel.CategoryID)" />
+                    </Template>
+                </FormItem>
+
+                <FormItem Field="@nameof(ActivityModel.WorkLoad)" LabelText="Workload">
+                    <Template>
+                        <TelerikNumericTextBox @bind-Value="ActivityModel.WorkLoad" Format="n2" />
+                        <ValidationMessage For="@(() => ActivityModel.WorkLoad)" />
+                    </Template>
+                </FormItem>
+            </div>
+
+            <div class="form-right">
+                <FormItem Field="@nameof(ActivityModel.Description)" LabelText="Description">
+                    <Template>
+                        <TelerikTextArea @bind-Value="ActivityModel.Description" Rows="5" />
+                        <ValidationMessage For="@(() => ActivityModel.Description)" />
+                    </Template>
+                </FormItem>
+            </div>
+        </div>
+    </FormItems>
+    <FormButtons>
+        <TelerikButton ButtonType="ButtonType.Submit" ThemeColor="primary">Add Activity</TelerikButton>
+    </FormButtons>
+</TelerikForm>
+    <div class="form-footer">
+        <p class="note">* All fields are required.</p>
+        <p>  </p>
+        <p>@ErrorMessage</p>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int WorkOrderID { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnActivityAdded { get; set; }
+
+    private AddActivity ActivityModel { get; set; } = new AddActivity();
+    private List<Person> People { get; set; } = new List<Person>();
+    private List<Dict> Categories { get; set; } = new List<Dict>();
+    private string ErrorMessage { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        ActivityModel.WorkOrderID = WorkOrderID;
+        ActivityModel.PersonID = UserState.PersonID ?? 0;
+        People = ApiClient.GetAllPersonsCached(); // From cache
+        Categories = ApiClient.GetWOCategories(); // From cache
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var response = await ApiClient.CreateActivityAsync(ActivityModel);
+        if (response.IsValid)
+        {
+            // Reset model for next entry
+            ActivityModel = new AddActivity
+            {
+                WorkOrderID = this.WorkOrderID,
+                PersonID = UserState.PersonID ?? 0
+            };
+            await OnActivityAdded.InvokeAsync(true);
+            StateHasChanged();
+        }
+        else
+        {
+            // Handle error (e.g., show notification)
+            Console.WriteLine($"Error creating activity: {string.Join(", ", response.Errors)}");
+            ErrorMessage = $"Error creating activity: {string.Join(", ", response.Errors)}";
+            await OnActivityAdded.InvokeAsync(false);
+        }
+    }
+}

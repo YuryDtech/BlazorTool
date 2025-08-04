@@ -696,6 +696,32 @@ namespace BlazorTool.Client.Services
                 return new List<Activity>();
             }
         }
+
+        public async Task<SingleResponse<ActivityResponse>> CreateActivityAsync(AddActivity activity)
+        {
+            var url = "activity/create";
+            try
+            {
+                var response = await _http.PostAsJsonAsync(url, activity);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var activityResponse = JsonConvert.DeserializeObject<ActivityResponse>(content);
+                    return new SingleResponse<ActivityResponse> { IsValid = true, Data = activityResponse };
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"ApiServiceClient: Failed to create activity. Status: {response.StatusCode}, Details: {errorContent}");
+                    return new SingleResponse<ActivityResponse> { IsValid = false, Errors = new List<string> { $"Server error: {errorContent}" } };
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during POST to {url}: {ex.Message}");
+                return new SingleResponse<ActivityResponse> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+            }
+        }
         #endregion
 
         #region users
@@ -732,6 +758,15 @@ namespace BlazorTool.Client.Services
                 Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
                 return new List<Person>();
             }
+        }
+
+        public List<Person> GetAllPersonsCached()
+        {
+            if (_personsCache.Any())
+            {
+                return _personsCache;
+            }
+            return new List<Person>();
         }
 
         public Person? GetPersonByIDCached(int personID)
