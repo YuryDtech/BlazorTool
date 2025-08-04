@@ -30,17 +30,37 @@
 
                 var personIds = activity.ActPersons.Split('#').Where(x=>!string.IsNullOrWhiteSpace(x));
                 var persons = personIds.Select(id => ApiClient.GetPersonByIDCached(int.Parse(id))).ToList();
-                <ActivityDisplay ActivityItem="activity" Persons="@persons"/>
+                <ActivityDisplay ActivityItem="activity" Persons="@persons" OnClick="JoinActivityClickAsync" />
             }
         </div>
     }
+
+    <TelerikWindow @bind-Visible="IsWindowVisible" Modal="true" Width="400px">
+        <WindowTitle>
+            <strong>@Localizer["WorkOrder_Action"] #@activityId</strong>
+        </WindowTitle>
+        <WindowActions>
+            <WindowAction Name="Close" />
+        </WindowActions>
+        <WindowContent>
+            <JoinToActivityForm ActivityID="@activityId" OnActivityAdded="HandleActivityAdded" />
+        </WindowContent>
+    </TelerikWindow>
 </div>
 
+
+
+
 @code {
+
     [Parameter]
     public int WorkOrderId { get; set; }
 
     private List<Activity>? activities;
+
+    private bool IsWindowVisible { get; set; } = false;
+
+    private int activityId = 0;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -59,6 +79,27 @@
                 activities.Sort((x, y) => x.AddDate.CompareTo(y.AddDate));
             }
             StateHasChanged();
+        }
+    }
+
+    private void JoinActivityClickAsync(int activityID)
+    {
+        activityId = activityID;
+        IsWindowVisible = true;
+    }
+
+    private async Task HandleActivityAdded(bool success)
+    {
+        if (success)
+        {
+            IsWindowVisible = false;
+            await RefreshActivitiesAsync();
+        }
+        else
+        {
+            // Handle the case where joining the activity failed
+            Console.WriteLine("Failed to join activity.");
+            IsWindowVisible = false;
         }
     }
 }

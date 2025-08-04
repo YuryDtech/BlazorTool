@@ -2,6 +2,7 @@
 @using BlazorTool.Client.Services
 @using Telerik.Blazor.Components
 @using System.ComponentModel.DataAnnotations
+@inject IStringLocalizer<Resources.UIStrings> Localizer
 
 @inject ApiServiceClient ApiClient
 @inject UserState UserState
@@ -15,13 +16,13 @@
     <FormItems>
         <div class="form-layout">
             <div class="form-left">
-                <FormItem Field="@nameof(ActivityModel.PersonID)" LabelText="Person">
+                    <FormItem Field="@nameof(ActivityModel.PersonID)" LabelText="@Localizer["SchedulerSummary_Person"]">
                     <Template>
                         <TelerikComboBox Data="@People"
                                          @bind-Value="@ActivityModel.PersonID"
                                          ValueField="@nameof(Person.PersonId)"
                                          TextField="@nameof(Person.Name)"
-                                         Placeholder="Select Person..."
+                                             Placeholder="@Localizer["WorkOrder_SelectPerson"]"
                                          Filterable="true"
                                          ShowClearButton="true">
                         </TelerikComboBox>
@@ -35,7 +36,7 @@
                                          @bind-Value="@ActivityModel.CategoryID"
                                          ValueField="@nameof(Dict.Id)"
                                          TextField="@nameof(Dict.Name)"
-                                         Placeholder="Select Category..."
+                                         Placeholder="@Localizer["WorkOrder_SelectWOCategory"]"
                                          Filterable="true"
                                          ShowClearButton="true">
                         </TelerikComboBox>
@@ -43,7 +44,7 @@
                     </Template>
                 </FormItem>
 
-                <FormItem Field="@nameof(ActivityModel.WorkLoad)" LabelText="Workload">
+                <FormItem Field="@nameof(ActivityModel.WorkLoad)" LabelText="@Localizer["ActivityList_Workload"]">
                     <Template>
                         <TelerikNumericTextBox @bind-Value="ActivityModel.WorkLoad" Format="n2" />
                         <ValidationMessage For="@(() => ActivityModel.WorkLoad)" />
@@ -52,7 +53,7 @@
             </div>
 
             <div class="form-right">
-                <FormItem Field="@nameof(ActivityModel.Description)" LabelText="Description">
+                <FormItem Field="@nameof(ActivityModel.Description)" LabelText="@Localizer["ActivityList_Description"]">
                     <Template>
                         <TelerikTextArea @bind-Value="ActivityModel.Description" Rows="5" />
                         <ValidationMessage For="@(() => ActivityModel.Description)" />
@@ -62,11 +63,12 @@
         </div>
     </FormItems>
     <FormButtons>
-        <TelerikButton ButtonType="ButtonType.Submit" ThemeColor="primary">Add Activity</TelerikButton>
+        <TelerikButton ButtonType="ButtonType.Submit" ThemeColor="primary">@Localizer["Add"]</TelerikButton>
+            <TelerikButton ButtonType="ButtonType.Button" OnClick="OnCancelhandler" ThemeColor="secondary">@Localizer["Settings_Cancel"]</TelerikButton>
     </FormButtons>
 </TelerikForm>
     <div class="form-footer">
-        <p class="note">* All fields are required.</p>
+        <p class="note">* @Localizer["All_Fields_Required"].</p>
         <p>  </p>
         <p>@ErrorMessage</p>
     </div>
@@ -113,5 +115,16 @@
             ErrorMessage = $"Error creating activity: {string.Join(", ", response.Errors)}";
             await OnActivityAdded.InvokeAsync(false);
         }
+    }
+
+    private void OnCancelhandler()
+    {
+        ActivityModel = new AddActivity
+        {
+            WorkOrderID = this.WorkOrderID,
+            PersonID = UserState.PersonID ?? 0
+        };
+        ErrorMessage = string.Empty;
+        OnActivityAdded.InvokeAsync(false);
     }
 }

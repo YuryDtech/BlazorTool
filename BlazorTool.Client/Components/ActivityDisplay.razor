@@ -8,14 +8,22 @@
         <span class="activity-description" title="@Localizer["ActivityDisplay_Description"]">@ActivityItem.Description</span>
         <span class="activity-workload" title="@Localizer["ActivityDisplay_WorkLoad"]">@ActivityItem.WorkLoad.ToString("F2") @Localizer["ActivityDisplay_HoursAbbreviation"]</span>
         <span class="activity-workers" title="@Localizer["ActivityDisplay_Workers"]">@ActivityItem.Workers</span>
-        <span class="activity-persons" title="@Localizer["ActivityDisplay_AssignedPersons"]">@String.Join(',', Persons?.Select(p => p.Name).ToList() ?? new List<string>())</span>
+        <div class="activity-persons" title="@Localizer["ActivityDisplay_AssignedPersons"]">
+            <button class="add-person-btn" @onclick="() => OnClick.InvokeAsync(ActivityItem.ActivityID)" title="@Localizer["ActivityDisplay_AddPerson"]">
+                +
+            </button>
+            @String.Join(", ", Persons?.Select(p => p.Name).ToList() ?? new List<string>())
+        </div>
         <span class="activity-date" title="@Localizer["ActivityDisplay_DateAdded"]">@ActivityItem.AddDate.ToString("dd.MM.yyyy HH:mm")</span>
     </div>
 }
+
 
 @code {
     [Parameter]
     public Activity? ActivityItem { get; set; }
     [Parameter]
     public List<Person>? Persons { get; set; }
+    [Parameter]
+    public EventCallback<int> OnClick { get; set; }
 }

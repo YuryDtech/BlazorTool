@@ -1,0 +1,100 @@
+﻿@using BlazorTool.Client.Models
+@using BlazorTool.Client.Services
+@using Telerik.Blazor.Components
+@using System.ComponentModel.DataAnnotations
+@inject IStringLocalizer<Resources.UIStrings> Localizer
+
+@inject ApiServiceClient ApiClient
+
+<div class="add-activity-form-container">
+    <p>@Localizer["WorkOrder_JoinAction"]</p><br />
+    <TelerikForm Model="@Model" OnValidSubmit="@HandleValidSubmit">
+        <FormValidation>
+            <DataAnnotationsValidator />
+            <TelerikValidationSummary />
+        </FormValidation>
+        <FormItems>
+            <div class="form-layout">
+                <div class="form-left">
+                    <FormItem Field="@nameof(Model.PersonID)" LabelText="@Localizer["SchedulerSummary_Person"]">
+                        <Template>
+                            <TelerikComboBox Data="@People"
+                                             @bind-Value="@Model.PersonID"
+                                             ValueField="@nameof(Person.PersonId)"
+                                             TextField="@nameof(Person.Name)"
+                                             Placeholder="@Localizer["WorkOrder_SelectPerson"]"
+                                             Filterable="true"
+                                             ShowClearButton="true">
+                            </TelerikComboBox>
+                            <ValidationMessage For="@(() => Model.PersonID)" />
+                        </Template>
+                    </FormItem>
+
+                    <FormItem Field="@nameof(Model.WorkLoad)" LabelText="@Localizer["ActivityList_Workload"]">
+                        <Template>
+                            <TelerikNumericTextBox @bind-Value="Model.WorkLoad" Format="n2" />
+                            <ValidationMessage For="@(() => Model.WorkLoad)" />
+                        </Template>
+                    </FormItem>
+                </div>
+
+            </div>
+        </FormItems>
+        <FormButtons>
+            <TelerikButton ButtonType="ButtonType.Submit" ThemeColor="primary">
+                @Localizer["Add"] @(People.FirstOrDefault(p=>p.PersonId == Model.PersonID)?.Name??"")</TelerikButton>
+            <TelerikButton ButtonType="ButtonType.Button" OnClick="OnCancelhandler" ThemeColor="secondary">@Localizer["Settings_Cancel"]</TelerikButton>
+        </FormButtons>
+
+    </TelerikForm>
+    <div class="form-footer">
+        <p>@ErrorMessage</p>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int ActivityID { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnActivityAdded { get; set; }
+
+    private JoinToActivity Model { get; set; } = new() { };
+    private List<Person> People { get; set; } = new List<Person>();
+    private string ErrorMessage { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        Model.PersonID = 1;
+        Model.WorkLoad = 0;
+        Model.ActivityID = ActivityID;
+        People = ApiClient.GetAllPersonsCached(); // From cache
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var response = await ApiClient.JoinToActivityAsync(Model);
+        if (response.IsValid)
+        {
+            // Reset model for next entry
+            Model = new JoinToActivity
+            {
+            };
+            await OnActivityAdded.InvokeAsync(true);
+            StateHasChanged();
+        }
+        else
+        {
+            // Handle error (e.g., show notification)
+            Console.WriteLine($"Error creating activity: {string.Join(", ", response.Errors)}");
+            ErrorMessage = $"Error creating activity: {string.Join(", ", response.Errors)}";
+            await OnActivityAdded.InvokeAsync(false);
+        }
+    }
+
+    private void OnCancelhandler()
+    {
+        ErrorMessage = string.Empty;
+        OnActivityAdded.InvokeAsync(false);
+    }
+}

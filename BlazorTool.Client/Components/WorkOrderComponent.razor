@@ -275,7 +275,7 @@
 
     <TelerikWindow @bind-Visible="IsAddActivityWindowVisible" Modal="true" Width="800px">
         <WindowTitle>
-                <strong>@Localizer["WorkOrder_OrderNo"] @WorkOrder.WorkOrderID</strong>
+                <strong>@Localizer["WorkOrder_AddActivity"]</strong>
         </WindowTitle>
             <WindowActions>
                 <WindowAction Name="Close" />
@@ -318,10 +318,6 @@
 
 
 @code {
-
-
-
-
 
 
 
@@ -442,7 +438,12 @@
                 {
                     WorkOrder.UpdateFrom(updatedWorkOrder);
                 }
-                await activityListComponent?.RefreshActivitiesAsync();
+                var task = activityListComponent?.RefreshActivitiesAsync();
+                if (task != null)
+                {
+
+                    await task;
+                }
             }
 
             await OnStateChanged.InvokeAsync(true);
@@ -451,7 +452,9 @@
         {
             // Handle the case where adding the activity failed
             Console.WriteLine("Failed to add activity.");
-            
+
+            IsAddActivityWindowVisible = false;
+
         }
         // You might want to show an error message if success is false
     }

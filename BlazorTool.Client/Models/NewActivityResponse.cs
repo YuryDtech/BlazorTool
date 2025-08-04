@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 namespace BlazorTool.Client.Models
 {
-    public class ActivityResponse
+    public class NewActivityResponse
     {
     //"activityID": 220,
     //"workOrderID": 217,
@@ -31,5 +31,23 @@ namespace BlazorTool.Client.Models
     [JsonProperty("workers")]
     public int Workers { get; set; }
 
+    }
+
+    public class AddToActivityResponse
+    {
+        [JsonProperty("activityID")]
+        public int ActivityID { get; set; }
+       
+        [JsonProperty("work_Load")]
+        public decimal WorkLoad { get; set; }
+
+        [JsonProperty("personID")]
+        public int PersonID { get; set; }
+
+        [JsonProperty("activityPersonID")]
+        public int ActivityPersonID { get; set; }
+        
+        [JsonProperty("add_Date")]
+        public DateTime AddDate { get; set; }
     }
 }

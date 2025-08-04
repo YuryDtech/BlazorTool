@@ -505,6 +505,9 @@
   <data name="WorkOrder_Actions" xml:space="preserve">
     <value>Aktywności</value>
   </data>
+  <data name="WorkOrder_Action" xml:space="preserve">
+    <value>Aktywność</value>
+  </data>
   <data name="WorkOrder_Files" xml:space="preserve">
     <value>Pliki</value>
   </data>
@@ -633,5 +636,17 @@
   </data>
   <data name="WorkOrder_AddActivity" xml:space="preserve">
     <value>Nowa aktywność</value>
+  </data>
+  <data name="ActivityDisplay_AddPerson" xml:space="preserve">
+    <value>Dodać pracownika</value>
+  </data>
+  <data name="WorkOrder_JoinAction" xml:space="preserve">
+    <value>Dodać osobę do wybranej aktywności</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Dodać</value>
+  </data>
+  <data name="All_Fields_Required" xml:space="preserve">
+    <value>Wszystkie pola są wymagane</value>
   </data>
 </root>

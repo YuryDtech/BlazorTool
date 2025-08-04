@@ -74,5 +74,37 @@ namespace BlazorTool.Controllers
                 return StatusCode(500, new { errors = new[] { ex.Message } });
             }
         }
+
+        [HttpPost("add")]
+        public async Task<IActionResult> Add([FromBody] AddToActivityResponse activity)
+        {
+            if (activity == null)
+            {
+                return BadRequest("Activity data is null.");
+            }
+
+            try
+            {
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
+                var jsonContent = JsonConvert.SerializeObject(activity);
+                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("actper/create", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    return Ok(responseBody);
+                }
+                else
+                {
+                    var errorBody = await response.Content.ReadAsStringAsync();
+                    return StatusCode((int)response.StatusCode, errorBody);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { errors = new[] { ex.Message } });
+            }
+        }
     }
 }

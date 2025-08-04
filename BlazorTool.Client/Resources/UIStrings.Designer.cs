@@ -61,6 +61,15 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Join new person.
+        /// </summary>
+        public static string ActivityDisplay_AddPerson {
+            get {
+                return ResourceManager.GetString("ActivityDisplay_AddPerson", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Assigned Persons.
         /// </summary>
         public static string ActivityDisplay_AssignedPersons {
@@ -232,11 +241,29 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        public static string Add {
+            get {
+                return ResourceManager.GetString("Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to AddDate.
         /// </summary>
         public static string Add_Date {
             get {
                 return ResourceManager.GetString("Add_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All fields are required.
+        /// </summary>
+        public static string All_Fields_Required {
+            get {
+                return ResourceManager.GetString("All_Fields_Required", resourceCulture);
             }
         }
         
@@ -1267,11 +1294,20 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Accepted for processing:.
         /// </summary>
         public static string WorkOrder_AcceptedForProcessing {
             get {
                 return ResourceManager.GetString("WorkOrder_AcceptedForProcessing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Action.
+        /// </summary>
+        public static string WorkOrder_Action {
+            get {
+                return ResourceManager.GetString("WorkOrder_Action", resourceCulture);
             }
         }
         
@@ -1434,6 +1470,15 @@ namespace BlazorTool.Client.Resources {
         public static string WorkOrder_IneffectiveCount {
             get {
                 return ResourceManager.GetString("WorkOrder_IneffectiveCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a person to the selected action.
+        /// </summary>
+        public static string WorkOrder_JoinAction {
+            get {
+                return ResourceManager.GetString("WorkOrder_JoinAction", resourceCulture);
             }
         }
         
