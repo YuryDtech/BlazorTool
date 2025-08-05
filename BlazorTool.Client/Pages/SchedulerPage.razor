@@ -243,12 +243,12 @@
                 
                 
                 <GridColumns>
-                    <GridColumn Field="@nameof(WorkOrder.AssetNo)" />
-                    <GridColumn Field="@nameof(WorkOrder.WOCategory)"/>
-                    <GridColumn Field="@nameof(WorkOrder.AddDate)" />
+                    <GridColumn Field="@nameof(WorkOrder.AssetNo)" Title="@Localizer[nameof(WorkOrder.AssetNo)]" />
+                    <GridColumn Field="@nameof(WorkOrder.WOCategory)" Title="@Localizer[nameof(WorkOrder.WOCategory)]" />
+                    <GridColumn Field="@nameof(WorkOrder.AddDate)" Title="@Localizer[nameof(WorkOrder.AddDate)]" />
                     @* <GridColumn Field="@nameof(WorkOrder.StartDate)" />
                     <GridColumn Field="@nameof(WorkOrder.EndDate)" /> *@
-                    <GridColumn Field="@nameof(WorkOrder.WOState)" />
+                    <GridColumn Field="@nameof(WorkOrder.WOState)" Title="@Localizer[nameof(WorkOrder.WOState)]" />
                 </GridColumns>
 
             </TelerikGrid>

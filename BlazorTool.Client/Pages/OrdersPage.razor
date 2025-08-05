@@ -30,10 +30,10 @@
                                TextField="@nameof(Tags.Description)"
                                Layout="RadioGroupLayout.Horizontal">
             </TelerikRadioGroup>
-            <TelerikButton OnClick="@selectAllDevices"
+            @* <TelerikButton OnClick="@selectAllDevices"
                             ThemeColor="@ThemeConstants.Button.ThemeColor.Base">
                 @Localizer["OrdersPage_SelectAll"]
-            </TelerikButton>
+            </TelerikButton> *@
 
         <TelerikMultiSelect Data="@devices"
                             @bind-Value="@selectedDeviceIds"
@@ -124,7 +124,7 @@ else
                     </CustomFilterMenuTemplate>
         </FilterMenuTemplate>
     </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.DeviceName)" Title="@Localizer[nameof(WorkOrderView.DeviceName)]" Resizable="true" Filterable="false"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.DeviceName)" Title="@Localizer[nameof(WorkOrder.AssetNo)]" Resizable="true" Filterable="false"></GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.WODesc)" Resizable="true" Filterable="true" Title="@Localizer[nameof(WorkOrderView.WODesc)]">
                 <Template>
                     @{
@@ -220,6 +220,7 @@ else
                    Width="1280px"
                    MaxHeight="95vh">
         <WindowTitle>
+            <strong>@Localizer["WorkOrder_OrderNo"] @selectedOrder.WorkOrderID</strong>
         </WindowTitle>
         <WindowContent>
              <WorkOrderComponent WorkOrder="@selectedOrder" isEditable=false currentUser="@currentUser"/>

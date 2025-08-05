@@ -61,6 +61,15 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Actions.
+        /// </summary>
+        public static string ActCount {
+            get {
+                return ResourceManager.GetString("ActCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Join new person.
         /// </summary>
         public static string ActivityDisplay_AddPerson {
@@ -250,11 +259,11 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AddDate.
+        ///   Looks up a localized string similar to Add date.
         /// </summary>
-        public static string Add_Date {
+        public static string AddDate {
             get {
-                return ResourceManager.GetString("Add_Date", resourceCulture);
+                return ResourceManager.GetString("AddDate", resourceCulture);
             }
         }
         
@@ -358,7 +367,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Start:.
+        ///   Looks up a localized string similar to Start.
         /// </summary>
         public static string AppointmentEditor_Start {
             get {
@@ -367,11 +376,29 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Device.
+        /// </summary>
+        public static string AssetNo {
+            get {
+                return ResourceManager.GetString("AssetNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Assigned Person.
         /// </summary>
-        public static string Assigned_Person {
+        public static string AssignedPerson {
             get {
-                return ResourceManager.GetString("Assigned_Person", resourceCulture);
+                return ResourceManager.GetString("AssignedPerson", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category ID.
+        /// </summary>
+        public static string CategoryID {
+            get {
+                return ResourceManager.GetString("CategoryID", resourceCulture);
             }
         }
         
@@ -430,11 +457,20 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Close Date.
+        ///   Looks up a localized string similar to Close date.
         /// </summary>
-        public static string Close_Date {
+        public static string CloseDate {
             get {
-                return ResourceManager.GetString("Close_Date", resourceCulture);
+                return ResourceManager.GetString("CloseDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cost.
+        /// </summary>
+        public static string Cost {
+            get {
+                return ResourceManager.GetString("Cost", resourceCulture);
             }
         }
         
@@ -448,20 +484,20 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DepName.
+        ///   Looks up a localized string similar to Department.
         /// </summary>
-        public static string Department_Name {
+        public static string DepName {
             get {
-                return ResourceManager.GetString("Department_Name", resourceCulture);
+                return ResourceManager.GetString("DepName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DeviceCategory.
+        ///   Looks up a localized string similar to Device.
         /// </summary>
-        public static string Device_Category {
+        public static string Device {
             get {
-                return ResourceManager.GetString("Device_Category", resourceCulture);
+                return ResourceManager.GetString("Device", resourceCulture);
             }
         }
         
@@ -475,11 +511,38 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EndDate.
+        ///   Looks up a localized string similar to Device Category.
         /// </summary>
-        public static string End_Date {
+        public static string DeviceCategory {
             get {
-                return ResourceManager.GetString("End_Date", resourceCulture);
+                return ResourceManager.GetString("DeviceCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device Category ID.
+        /// </summary>
+        public static string DeviceCategoryID {
+            get {
+                return ResourceManager.GetString("DeviceCategoryID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End date.
+        /// </summary>
+        public static string EndDate {
+            get {
+                return ResourceManager.GetString("EndDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Count.
+        /// </summary>
+        public static string FileCount {
+            get {
+                return ResourceManager.GetString("FileCount", resourceCulture);
             }
         }
         
@@ -507,6 +570,33 @@ namespace BlazorTool.Client.Resources {
         public static string Home_Scheduler {
             get {
                 return ResourceManager.GetString("Home_Scheduler", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ineffective actions count.
+        /// </summary>
+        public static string IneffectiveCount {
+            get {
+                return ResourceManager.GetString("IneffectiveCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is scheduled planned.
+        /// </summary>
+        public static string IsScheduledPlanned {
+            get {
+                return ResourceManager.GetString("IsScheduledPlanned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level ID.
+        /// </summary>
+        public static string LevelID {
+            get {
+                return ResourceManager.GetString("LevelID", resourceCulture);
             }
         }
         
@@ -592,6 +682,15 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Machine ID.
+        /// </summary>
+        public static string MachineID {
+            get {
+                return ResourceManager.GetString("MachineID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Application is loading ....
         /// </summary>
         public static string MainLayout_ApplicationLoading {
@@ -628,11 +727,20 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ModPerson.
+        ///   Looks up a localized string similar to Modification Date.
         /// </summary>
-        public static string Modified_Person {
+        public static string ModDate {
             get {
-                return ResourceManager.GetString("Modified_Person", resourceCulture);
+                return ResourceManager.GetString("ModDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modified by.
+        /// </summary>
+        public static string ModPerson {
+            get {
+                return ResourceManager.GetString("ModPerson", resourceCulture);
             }
         }
         
@@ -822,6 +930,42 @@ namespace BlazorTool.Client.Resources {
         public static string OrdersPage_SelectDevices {
             get {
                 return ResourceManager.GetString("OrdersPage_SelectDevices", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Part Count.
+        /// </summary>
+        public static string PartCount {
+            get {
+                return ResourceManager.GetString("PartCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Person take date.
+        /// </summary>
+        public static string PersonTakeDate {
+            get {
+                return ResourceManager.GetString("PersonTakeDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Planned actions count.
+        /// </summary>
+        public static string PlanActCount {
+            get {
+                return ResourceManager.GetString("PlanActCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plan ID.
+        /// </summary>
+        public static string PlanID {
+            get {
+                return ResourceManager.GetString("PlanID", resourceCulture);
             }
         }
         
@@ -1287,14 +1431,77 @@ namespace BlazorTool.Client.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Start Date.
         /// </summary>
-        public static string Start_Date {
+        public static string StartDate {
             get {
-                return ResourceManager.GetString("Start_Date", resourceCulture);
+                return ResourceManager.GetString("StartDate", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Accepted for processing:.
+        ///   Looks up a localized string similar to State color.
+        /// </summary>
+        public static string StateColor {
+            get {
+                return ResourceManager.GetString("StateColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Take Date.
+        /// </summary>
+        public static string TakeDate {
+            get {
+                return ResourceManager.GetString("TakeDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Participating persons.
+        /// </summary>
+        public static string TakePersons {
+            get {
+                return ResourceManager.GetString("TakePersons", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category.
+        /// </summary>
+        public static string WOCategory {
+            get {
+                return ResourceManager.GetString("WOCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string WODesc {
+            get {
+                return ResourceManager.GetString("WODesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        public static string WOLevel {
+            get {
+                return ResourceManager.GetString("WOLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reason.
+        /// </summary>
+        public static string WOReason {
+            get {
+                return ResourceManager.GetString("WOReason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accepted for processing.
         /// </summary>
         public static string WorkOrder_AcceptedForProcessing {
             get {
@@ -1339,7 +1546,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Assigned Person:.
+        ///   Looks up a localized string similar to Assigned Person.
         /// </summary>
         public static string WorkOrder_AssignedPerson {
             get {
@@ -1371,15 +1578,6 @@ namespace BlazorTool.Client.Resources {
         public static string WorkOrder_Closed {
             get {
                 return ResourceManager.GetString("WorkOrder_Closed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cost.
-        /// </summary>
-        public static string WorkOrder_Cost {
-            get {
-                return ResourceManager.GetString("WorkOrder_Cost", resourceCulture);
             }
         }
         
@@ -1420,15 +1618,6 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Device.
-        /// </summary>
-        public static string WorkOrder_Device {
-            get {
-                return ResourceManager.GetString("WorkOrder_Device", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to End:.
         /// </summary>
         public static string WorkOrder_End {
@@ -1461,15 +1650,6 @@ namespace BlazorTool.Client.Resources {
         public static string WorkOrder_ID {
             get {
                 return ResourceManager.GetString("WorkOrder_ID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Ineffective Count.
-        /// </summary>
-        public static string WorkOrder_IneffectiveCount {
-            get {
-                return ResourceManager.GetString("WorkOrder_IneffectiveCount", resourceCulture);
             }
         }
         
@@ -1542,24 +1722,6 @@ namespace BlazorTool.Client.Resources {
         public static string WorkOrder_Parts {
             get {
                 return ResourceManager.GetString("WorkOrder_Parts", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Person Take Date:.
-        /// </summary>
-        public static string WorkOrder_PersonTakeDate {
-            get {
-                return ResourceManager.GetString("WorkOrder_PersonTakeDate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to PlanActCount.
-        /// </summary>
-        public static string WorkOrder_PlanActCount {
-            get {
-                return ResourceManager.GetString("WorkOrder_PlanActCount", resourceCulture);
             }
         }
         
@@ -1645,11 +1807,20 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Take Persons:.
+        ///   Looks up a localized string similar to Order ID.
         /// </summary>
-        public static string WorkOrder_TakePersons {
+        public static string WorkOrderID {
             get {
-                return ResourceManager.GetString("WorkOrder_TakePersons", resourceCulture);
+                return ResourceManager.GetString("WorkOrderID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State.
+        /// </summary>
+        public static string WOState {
+            get {
+                return ResourceManager.GetString("WOState", resourceCulture);
             }
         }
     }

@@ -15,7 +15,7 @@
 
             <div class="custom-highlight fs-5 p-3 rounded">
                 <div class="@DeviceAlarm">
-                    <strong>@Localizer["WorkOrder_Device"]: </strong>
+                    <strong>@Localizer["Device"]: </strong>
                     @if (isNewWorkOrder && isEditable)
                     {
                         <TelerikComboBox Data="@ListDevices"
@@ -84,7 +84,7 @@
                         </div>
                     </div>
                     <div class="field-group">
-                        <label>@Localizer["WorkOrder_Reason"]</label>
+                        <label>@Localizer["Reason"]</label>
                         <div class="control-wrapper">
                             <TelerikComboBox Data="@ListReasons"
                                              ValueField="@nameof(Dict.Id)"
@@ -156,7 +156,7 @@
                                 </TelerikComboBox>
                     </div>
                     <div class="field-group">
-                        <label>@Localizer["WorkOrder_TakePersons"]</label>
+                        <label>@Localizer["TakePersons"]</label>
                         <div class="field-value">@(string.IsNullOrEmpty(takePersons) ? @Localizer["WorkOrder_NotSpecified"] : takePersons)</div>
                     </div>
                 </CardBody>
@@ -198,19 +198,19 @@
                                 </TelerikDateTimePicker>
                         </div>
                         <div class="date-item">
-                            <label>@Localizer["WorkOrder_Added"]</label>
+                            <label>@Localizer[nameof(WorkOrder.AddDate)]:</label>
                             <div class="date-value">@FormatDateTime(WorkOrder.AddDate)</div>
                         </div>
                         <div class="date-item">
-                            <label>@Localizer["WorkOrder_AcceptedForProcessing"]</label>
+                                <label>@Localizer[nameof(WorkOrder.TakeDate)]:</label>
                             <div class="date-value">@FormatDateTime(WorkOrder.TakeDate)</div>
                         </div>
                         <div class="date-item">
-                            <label>@Localizer["WorkOrder_Closed"]</label>
+                                <label>@Localizer[nameof(WorkOrder.CloseDate)]:</label>
                             <div class="date-value">@FormatDateTime(WorkOrder.CloseDate)</div>
                         </div>
                         <div class="date-item">
-                            <label>@Localizer["WorkOrder_PersonTakeDate"]</label>
+                                <label>@Localizer[nameof(WorkOrder.PersonTakeDate)]:</label>
                             <div class="date-value">@FormatDateTime(WorkOrder.PersonTakeDate)</div>
                         </div>
                     </div>
@@ -229,23 +229,23 @@
             <div class="stats-grid">
                 <div class="stat-item" @onclick="ToggleActivities">
                     <div class="stat-number">@(WorkOrder.ActCount ?? 0)</div>
-                    <div class="stat-label">@Localizer["WorkOrder_Actions"]</div>
+                    <div class="stat-label">@Localizer[nameof(WorkOrder.ActCount)]</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">@(WorkOrder.FileCount ?? 0)</div>
-                    <div class="stat-label">@Localizer["WorkOrder_Files"]</div>
+                        <div class="stat-label">@Localizer[nameof(WorkOrder.FileCount)]</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">@(WorkOrder.PartCount ?? 0)</div>
-                    <div class="stat-label">@Localizer["WorkOrder_Parts"]</div>
+                        <div class="stat-label">@Localizer[nameof(WorkOrder.PartCount)]</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">@(WorkOrder.PlanActCount ?? 0)</div>
-                    <div class="stat-label">@Localizer["WorkOrder_PlanActCount"]</div>
+                        <div class="stat-label">@Localizer[nameof(WorkOrder.PlanActCount)]</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">@(WorkOrder.IneffectiveCount ?? 0)</div>
-                    <div class="stat-label">@Localizer["WorkOrder_IneffectiveCount"]</div>
+                        <div class="stat-label">@Localizer[nameof(WorkOrder.IneffectiveCount)]</div>
                 </div>
                 <div class="stat-item">
                         @if (WorkOrder.Cost.HasValue)
@@ -257,7 +257,7 @@
                         {
                             <span class="cost-amount no-cost">Not specified</span>
                         }
-                        <div class="stat-label-cost">@Localizer["WorkOrder_Cost"]</div>
+                        <div class="stat-label-cost">@Localizer[nameof(WorkOrder.Cost)]</div>
                 </div>
             </div>
             <div class="activity-controls">

@@ -144,9 +144,6 @@
   <data name="WorkOrder_ID" xml:space="preserve">
     <value>ID</value>
   </data>
-  <data name="Department_Name" xml:space="preserve">
-    <value>DepName</value>
-  </data>
   <data name="Device_Name" xml:space="preserve">
     <value>Device</value>
   </data>
@@ -165,9 +162,6 @@
   <data name="OrdersPage_Month" xml:space="preserve">
     <value>Month</value>
   </data>
-  <data name="Start_Date" xml:space="preserve">
-    <value>Start Date</value>
-  </data>
   <data name="OrdersPage_Close" xml:space="preserve">
     <value>Close</value>
   </data>
@@ -183,32 +177,14 @@
   <data name="WorkOrder_Description" xml:space="preserve">
     <value>Description:</value>
   </data>
-  <data name="Device_Category" xml:space="preserve">
-    <value>DeviceCategory</value>
-  </data>
   <data name="WorkOrder_Reason" xml:space="preserve">
     <value>Reason:</value>
-  </data>
-  <data name="Modified_Person" xml:space="preserve">
-    <value>ModPerson</value>
-  </data>
-  <data name="Assigned_Person" xml:space="preserve">
-    <value>Assigned Person</value>
   </data>
   <data name="WorkOrder_State" xml:space="preserve">
     <value>Status</value>
   </data>
   <data name="WorkOrder_Level" xml:space="preserve">
     <value>Level:</value>
-  </data>
-  <data name="Add_Date" xml:space="preserve">
-    <value>AddDate</value>
-  </data>
-  <data name="End_Date" xml:space="preserve">
-    <value>EndDate</value>
-  </data>
-  <data name="Close_Date" xml:space="preserve">
-    <value>Close Date</value>
   </data>
   <data name="NavMenu_NavigationMenu" xml:space="preserve">
     <value>Navigation menu</value>
@@ -413,7 +389,7 @@
     <value>AssetNo:</value>
   </data>
   <data name="AppointmentEditor_Start" xml:space="preserve">
-    <value>Start:</value>
+    <value>Start</value>
   </data>
   <data name="AppointmentEditor_End" xml:space="preserve">
     <value>End:</value>
@@ -442,7 +418,7 @@
   <data name="WorkOrder_OrderNo" xml:space="preserve">
     <value>Order №</value>
   </data>
-  <data name="WorkOrder_Device" xml:space="preserve">
+  <data name="Device" xml:space="preserve">
     <value>Device</value>
   </data>
   <data name="WorkOrder_NoDevice" xml:space="preserve">
@@ -467,13 +443,10 @@
     <value>Executors</value>
   </data>
   <data name="WorkOrder_AssignedPerson" xml:space="preserve">
-    <value>Assigned Person:</value>
+    <value>Assigned Person</value>
   </data>
   <data name="WorkOrder_SelectPerson" xml:space="preserve">
     <value>Select person...</value>
-  </data>
-  <data name="WorkOrder_TakePersons" xml:space="preserve">
-    <value>Take Persons:</value>
   </data>
   <data name="WorkOrder_Department" xml:space="preserve">
     <value>Department:</value>
@@ -485,7 +458,7 @@
     <value>Added:</value>
   </data>
   <data name="WorkOrder_AcceptedForProcessing" xml:space="preserve">
-    <value>Accepted for processing:</value>
+    <value>Accepted for processing</value>
   </data>
   <data name="WorkOrder_Start" xml:space="preserve">
     <value>Start:</value>
@@ -496,8 +469,8 @@
   <data name="WorkOrder_Closed" xml:space="preserve">
     <value>Closed:</value>
   </data>
-  <data name="WorkOrder_PersonTakeDate" xml:space="preserve">
-    <value>Person Take Date:</value>
+  <data name="PersonTakeDate" xml:space="preserve">
+    <value>Person take date</value>
   </data>
   <data name="WorkOrder_Statistics" xml:space="preserve">
     <value>Statistics</value>
@@ -514,14 +487,8 @@
   <data name="WorkOrder_Parts" xml:space="preserve">
     <value>Parts</value>
   </data>
-  <data name="WorkOrder_PlanActCount" xml:space="preserve">
-    <value>PlanActCount</value>
-  </data>
-  <data name="WorkOrder_IneffectiveCount" xml:space="preserve">
-    <value>Ineffective Count</value>
-  </data>
-  <data name="WorkOrder_Cost" xml:space="preserve">
-    <value>Cost</value>
+  <data name="IneffectiveCount" xml:space="preserve">
+    <value>Ineffective actions count</value>
   </data>
   <data name="WorkOrder_RecentChanges" xml:space="preserve">
     <value>Recent Changes</value>
@@ -649,5 +616,95 @@
   </data>
   <data name="All_Fields_Required" xml:space="preserve">
     <value>All fields are required</value>
+  </data>
+  <data name="DeviceCategoryID" xml:space="preserve">
+    <value>Device Category ID</value>
+  </data>
+  <data name="WorkOrderID" xml:space="preserve">
+    <value>Order ID</value>
+  </data>
+  <data name="MachineID" xml:space="preserve">
+    <value>Machine ID</value>
+  </data>
+  <data name="AssetNo" xml:space="preserve">
+    <value>Device</value>
+  </data>
+  <data name="DeviceCategory" xml:space="preserve">
+    <value>Device Category</value>
+  </data>
+  <data name="WODesc" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="WOCategory" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="WOState" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="WOReason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="AddDate" xml:space="preserve">
+    <value>Add date</value>
+  </data>
+  <data name="TakeDate" xml:space="preserve">
+    <value>Take Date</value>
+  </data>
+  <data name="CloseDate" xml:space="preserve">
+    <value>Close date</value>
+  </data>
+  <data name="Cost" xml:space="preserve">
+    <value>Cost</value>
+  </data>
+  <data name="TakePersons" xml:space="preserve">
+    <value>Participating persons</value>
+  </data>
+  <data name="PlanID" xml:space="preserve">
+    <value>Plan ID</value>
+  </data>
+  <data name="StateColor" xml:space="preserve">
+    <value>State color</value>
+  </data>
+  <data name="ModDate" xml:space="preserve">
+    <value>Modification Date</value>
+  </data>
+  <data name="ModPerson" xml:space="preserve">
+    <value>Modified by</value>
+  </data>
+  <data name="WOLevel" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="LevelID" xml:space="preserve">
+    <value>Level ID</value>
+  </data>
+  <data name="ActCount" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="DepName" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="AssignedPerson" xml:space="preserve">
+    <value>Assigned Person</value>
+  </data>
+  <data name="FileCount" xml:space="preserve">
+    <value>File Count</value>
+  </data>
+  <data name="PartCount" xml:space="preserve">
+    <value>Part Count</value>
+  </data>
+  <data name="PlanActCount" xml:space="preserve">
+    <value>Planned actions count</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>End date</value>
+  </data>
+  <data name="IsScheduledPlanned" xml:space="preserve">
+    <value>Is scheduled planned</value>
+  </data>
+  <data name="CategoryID" xml:space="preserve">
+    <value>Category ID</value>
   </data>
 </root>
