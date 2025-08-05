@@ -117,15 +117,14 @@
         margin-bottom: 2px;
     }
 
-.custom-highlight {
-    background-color: floralwhite;
-    padding: 1rem;
+.custom-highlight {   
     text-align: left;
+    box-shadow: 0 4px 14px #b7b7b7;
 }
 
 .field-value {
     background-color: #f8f9fa;
-    padding: 10px 12px;
+    padding: 5px 12px;
     border-radius: 6px;
     border: 1px solid #e9ecef;
     font-size: 0.95rem;
@@ -137,25 +136,33 @@
 .dates-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 16px;
+    column-gap: 8px;
+    row-gap: 6px;
 }
-
+.date-item {
+    
+    background-color: #d8f1ee;
+    border-radius: 6px;
+}
 .date-item label {
     display: block;
     font-weight: 600;
     color: #495057;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
+    margin-left: 6px;
     font-size: 0.8rem;
 }
 
 .date-value {
     background-color: #f8f9fa;
-    padding: 8px 10px;
+    padding: 5px 6px;
     border-radius: 6px;
     border: 1px solid #e9ecef;
-    font-size: 0.85rem;
+    font-size: 1rem;
     text-align: center;
     white-space: nowrap;
+    font-family: monospace;
+    font-weight: 900;
 }
 
 .cost-display {

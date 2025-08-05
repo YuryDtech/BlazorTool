@@ -457,9 +457,6 @@
   <data name="WorkOrder_Added" xml:space="preserve">
     <value>Added:</value>
   </data>
-  <data name="WorkOrder_AcceptedForProcessing" xml:space="preserve">
-    <value>Accepted for processing</value>
-  </data>
   <data name="WorkOrder_Start" xml:space="preserve">
     <value>Start:</value>
   </data>
@@ -706,5 +703,8 @@
   </data>
   <data name="CategoryID" xml:space="preserve">
     <value>Category ID</value>
+  </data>
+  <data name="ClearFilters" xml:space="preserve">
+    <value>Clear filters</value>
   </data>
 </root>

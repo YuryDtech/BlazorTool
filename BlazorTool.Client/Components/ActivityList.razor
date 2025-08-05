@@ -30,7 +30,7 @@
 
                 var personIds = activity.ActPersons.Split('#').Where(x=>!string.IsNullOrWhiteSpace(x));
                 var persons = personIds.Select(id => ApiClient.GetPersonByIDCached(int.Parse(id))).ToList();
-                <ActivityDisplay ActivityItem="activity" Persons="@persons" OnClick="JoinActivityClickAsync" />
+                <ActivityDisplay ActivityItem="activity" Persons="@persons" isEditable="@isEditable" OnClick="JoinActivityClickAsync" />
             }
         </div>
     }
@@ -55,6 +55,8 @@
 
     [Parameter]
     public int WorkOrderId { get; set; }
+    [Parameter]
+    public bool isEditable { get; set; } = false;
 
     private List<Activity>? activities;
 

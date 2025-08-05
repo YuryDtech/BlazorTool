@@ -58,11 +58,16 @@
                              class=@(customEditFormShown ? "" : "popup-target")>
             </TelerikComboBox>
         </div>
+        <div class="ClearFilters-btn">
+            <button class="ClearFilters-btn" @onclick="OnClearFilters" title="@Localizer["ClearFilters"]">
+                @Localizer["ClearFilters"]
+            </button>
+        </div>
  
     </div>
     @* device categories filter *@
-    <div style="flex-basis: 32%; flex-shrink:1; display: flex;  flex-grow:0; align-items: center; gap: 1rem;">
-        <label>@Localizer["Scheduler_DeviceCategory"] </label>
+    @* <div style="flex-basis: 32%; flex-shrink:1; display: flex;  flex-grow:0; align-items: center; gap: 1rem;">
+        <label>@Localizer[nameof(WorkOrder.AssetNo)] </label>
         <div style="min-width:30px">
             <TelerikComboBox Data="@DeviceCategories" TextField="DeviceType"
                              Value="@selectedCategory"
@@ -70,7 +75,7 @@
                              ValueChanged="@((string cat) => OnCategoryChanged(cat))">
             </TelerikComboBox>
         </div>
-    </div>
+    </div> *@
     
     @*end device categories filter *@
 </div>
@@ -243,12 +248,49 @@
                 
                 
                 <GridColumns>
-                    <GridColumn Field="@nameof(WorkOrder.AssetNo)" Title="@Localizer[nameof(WorkOrder.AssetNo)]" />
-                    <GridColumn Field="@nameof(WorkOrder.WOCategory)" Title="@Localizer[nameof(WorkOrder.WOCategory)]" />
-                    <GridColumn Field="@nameof(WorkOrder.AddDate)" Title="@Localizer[nameof(WorkOrder.AddDate)]" />
+                    <GridColumn Field="@nameof(WorkOrder.AssetNo)" Title="@Localizer[nameof(WorkOrder.AssetNo)]" >
+                        <FilterMenuTemplate>
+                            <MultiSelectFilterMenuTemplate Values="@UntakenOrders.Select(x=>x.AssetNo).Distinct()"
+                                                      context="@context"
+                                                           NameOfField="@nameof(WorkOrder.AssetNo)">
+                            </MultiSelectFilterMenuTemplate>
+                        </FilterMenuTemplate>
+                        </GridColumn>
+                    <GridColumn Field="@nameof(WorkOrder.WOCategory)" Title="@Localizer[nameof(WorkOrder.WOCategory)]">
+                        <FilterMenuTemplate>
+                            <CheckBoxFilterMenuTemplate Values="@WOCategories"
+                                                      context="@context"
+                                                      NameOfField="@nameof(WorkOrder.WOCategory)">
+                            </CheckBoxFilterMenuTemplate>
+                        </FilterMenuTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(WorkOrder.AddDate)" Title="@Localizer[nameof(WorkOrder.AddDate)]" >
+                        <FilterMenuButtonsTemplate Context="filterContext">
+                            <div class="vertical-stack-container">
+
+                                <div class="stack-item">
+                                    <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" OnClick="@(async _ => await filterContext.FilterAsync())">@Localizer["OrdersPage_Filter"] </TelerikButton>
+                                    <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Info" OnClick="@(() => filterContext.ClearFilterAsync())">@Localizer["OrdersPage_Clear"]</TelerikButton>
+                                </div>
+                                <div class="stack-item">
+                                    <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, "AddDate", "year"))">@Localizer["OrdersPage_LastYear"]</TelerikButton>
+                                    <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, "AddDate", "quarter"))">@Localizer["OrdersPage_Quarter"]</TelerikButton>
+                                    <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, "AddDate", "month"))">@Localizer["OrdersPage_Month"]</TelerikButton>
+                                </div>
+                            </div>
+
+                        </FilterMenuButtonsTemplate>
+                    </GridColumn>
                     @* <GridColumn Field="@nameof(WorkOrder.StartDate)" />
                     <GridColumn Field="@nameof(WorkOrder.EndDate)" /> *@
-                    <GridColumn Field="@nameof(WorkOrder.WOState)" Title="@Localizer[nameof(WorkOrder.WOState)]" />
+                    <GridColumn Field="@nameof(WorkOrder.WOState)" Title="@Localizer[nameof(WorkOrder.WOState)]" >
+                        <FilterMenuTemplate>
+                            <CheckBoxFilterMenuTemplate Values="@WOStates"
+                                                  context="@context"
+                                                  NameOfField="@nameof(WorkOrder.WOState)">
+                        </CheckBoxFilterMenuTemplate>
+                        </FilterMenuTemplate>
+                    </GridColumn>
                 </GridColumns>
 
             </TelerikGrid>
@@ -299,6 +341,12 @@
 
 @code {
 
+
+
+
+
+
+
     private List<SchedulerAppointment> Appointments { get; set; } = new();    
     private List<SchedulerAppointment> _allAppointments { get; set; } = new();    
     private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }
@@ -321,6 +369,8 @@
     private List<string> selectedAssignedPersons = new();
     private List<string> PersonsNames = new();
     private List<string> Departments = new(); 
+    private List<string> WOCategories = new();
+    private List<string> WOStates = new();
     private string selectedDepartment = "All";
     private bool isCBAllOrdersSelected = false; //show executed orders in grid
     private List<string> DeviceCategories = new();//for Orders grid filter
@@ -381,6 +431,7 @@
         allPersons = await apiService.GetAllPersons();
         Console.WriteLine($"--- HardLoadData: allPersons loaded. Count: {allPersons.Count}");
         PersonsNames = allPersons.Select(c => c.Name).ToList();
+        PersonsNames.Insert(0, Person.NotAssigned.Name); 
         _allOrders = await apiService.GetWorkOrdersAsync(); //from API, not cache
         ApptService.ClearAppointments(); //clear cache
         if (!UserState.IsAuthenticated)
@@ -389,6 +440,8 @@
         }
 
         await apiService.GetWODictionaries(UserState.PersonID, UserState.LangCode);
+        WOCategories = apiService.GetWOCategories().Select(c => c.Name).ToList();
+        WOStates = apiService.GetWOStates().Select(c => c.Name).ToList();
         currentUser.PersonId = UserState.PersonID ?? -1;
         currentUser.Name = UserState.UserName ?? string.Empty;
         await LoadData();
@@ -541,8 +594,10 @@
         }
         if (selectedAssignedPersons.Count > 0)
         {
+            bool isNotAssignedSelected = selectedAssignedPersons.Contains(Person.NotAssigned.Name);
             // Filter appointments based on the selected assigned persons
-            filteredAppointments = filteredAppointments.Where(a => selectedAssignedPersons.Contains(a.AssignedPerson)).ToList();
+            filteredAppointments = filteredAppointments.Where(a => selectedAssignedPersons.Contains(a.AssignedPerson) ||
+            (isNotAssignedSelected && string.IsNullOrEmpty(a.AssignedPerson))).ToList();
         }
 
 
@@ -638,6 +693,14 @@
 
         // CurrView = SchedulerView.Day;
         // SelectedDate = navigateDate;
+    }
+
+    private void OnClearFilters()
+    {
+        selectedDepartment = "All";
+        selectedAssetNo = "All";
+        selectedAssignedPersons = new();
+        DisplayAppointments();
     }
 
     //when order window closed
@@ -785,6 +848,36 @@
         public string Value { get; set; }
         public string Color { get; set; } // must be a valid CSS string
     }
+
+    private async Task FilterByDateRange(Telerik.Blazor.Components.FilterMenuTemplateContext context, string field, string range)
+    {
+        DateTime now = DateTime.Now;
+        DateTime from = now;
+        switch (range)
+        {
+            case "year":
+                from = now.AddYears(-1);
+                break;
+            case "quarter":
+                from = now.AddMonths(-3);
+                break;
+            case "month":
+                from = now.AddMonths(-1);
+                break;
+        }
+        var filterDescriptor = context.FilterDescriptor;
+        filterDescriptor.FilterDescriptors.Clear();
+        filterDescriptor.LogicalOperator = Telerik.DataSource.FilterCompositionLogicalOperator.And;
+        filterDescriptor.FilterDescriptors.Add(new FilterDescriptor()
+        {
+            Member = field,
+            Operator = Telerik.DataSource.FilterOperator.IsGreaterThanOrEqualTo,
+            MemberType = typeof(DateTime),
+            Value = from
+        });
+        await context.FilterAsync();
+    }
+
 
     #region Context Menu 
     private TelerikContextMenu<ContextMenuItem>? ContextMenuRef { get; set; }

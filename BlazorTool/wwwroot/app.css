@@ -137,3 +137,10 @@ h1:focus {
     border-radius: 8px;
 }
 
+.shadow {
+    box-shadow: 0 4px 14px #b7b7b7;
+}
+
+.shadow-light {
+    box-shadow: 0 10px 16px #00000039;
+}

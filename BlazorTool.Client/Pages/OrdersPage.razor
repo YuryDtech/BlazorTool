@@ -43,7 +43,7 @@
                             MaxAllowedTags="@MaxAllowedTags"
                             Placeholder="@Localizer["OrdersPage_SelectDevices"]"
                             AutoClose="false"
-                                OnClose="@OnMultiValueClosed"
+                            OnClose="@OnMultiValueClosed"
                             Width="500px"
                             ShowClearButton="true">
         </TelerikMultiSelect>
@@ -118,10 +118,10 @@ else
             <GridColumn Field="@nameof(WorkOrderView.WODesc)" Editable="false" Visible="false" Title="@Localizer[nameof(WorkOrder.WODesc)]"></GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.DepName)" Title="@Localizer[nameof(WorkOrder.DepName)]" Width="8rem" Resizable="true">
         <FilterMenuTemplate>
-                    <CustomFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Department).Select(d => d.Name).Distinct()"
+                    <CheckBoxFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Department).Select(d => d.Name).Distinct()"
                                               context="@context"
                                               NameOfField="@nameof(WorkOrderView.DepName)">
-                    </CustomFilterMenuTemplate>
+                    </CheckBoxFilterMenuTemplate>
         </FilterMenuTemplate>
     </GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.DeviceName)" Title="@Localizer[nameof(WorkOrder.AssetNo)]" Resizable="true" Filterable="false"></GridColumn>
@@ -138,42 +138,42 @@ else
             </GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.WOReason)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOReason)]">
                 <FilterMenuTemplate>
-                    <CustomFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Reason).Select(d => d.Name).Distinct()"
+                    <CheckBoxFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Reason).Select(d => d.Name).Distinct()"
                                               context="@context"
                                               NameOfField="@nameof(WorkOrderView.WOReason)">
-                    </CustomFilterMenuTemplate>
+                    </CheckBoxFilterMenuTemplate>
                 </FilterMenuTemplate>
             </GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.ModPerson)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.ModPerson)]">
                 <FilterMenuTemplate>
-                    <CustomFilterMenuTemplate Values="@allPersons.Select(x => x.Name).ToList()"
+                    <CheckBoxFilterMenuTemplate Values="@allPersons.Select(x => x.Name).ToList()"
                                               context="@context"
                                               NameOfField="@nameof(WorkOrderView.ModPerson)">
-                    </CustomFilterMenuTemplate>
+                    </CheckBoxFilterMenuTemplate>
                 </FilterMenuTemplate>
             </GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.AssignedPerson)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.AssignedPerson)]">
         <FilterMenuTemplate>
-            <CustomFilterMenuTemplate Values="@allPersons.Select(x=>x.Name).ToList()"
+                    <CheckBoxFilterMenuTemplate Values="@allPersons.Select(x => x.Name).ToList()"
                                       context="@context"
                                       NameOfField="@nameof(WorkOrderView.AssignedPerson)">
-            </CustomFilterMenuTemplate>
+            </CheckBoxFilterMenuTemplate>
         </FilterMenuTemplate>
     </GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.WOState)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOState)]">
         <FilterMenuTemplate>
-                    <CustomFilterMenuTemplate Values="@workOrderStates"
+                    <CheckBoxFilterMenuTemplate Values="@workOrderStates"
                                       context="@context"
                                       NameOfField="@nameof(WorkOrderView.WOState)">
-                    </CustomFilterMenuTemplate>
+                    </CheckBoxFilterMenuTemplate>
         </FilterMenuTemplate>
     </GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.WOLevel)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOLevel)]">
         <FilterMenuTemplate>
-            <CustomFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Level).Select(d => d.Name).Distinct()"
+                    <CheckBoxFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Level).Select(d => d.Name).Distinct()"
                                       context="@context"
                                       NameOfField="@nameof(WorkOrderView.WOLevel)">
-                    </CustomFilterMenuTemplate>
+                    </CheckBoxFilterMenuTemplate>
         </FilterMenuTemplate>
     </GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.AddDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true" Title="@Localizer[nameof(WorkOrderView.AddDate)]">
@@ -218,16 +218,17 @@ else
                    CloseOnOverlayClick="true"
                    Modal="true"
                    Width="1280px"
-                   MaxHeight="95vh">
+                   MaxHeight="95vh"
+                   ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
         <WindowTitle>
             <strong>@Localizer["WorkOrder_OrderNo"] @selectedOrder.WorkOrderID</strong>
         </WindowTitle>
+        <WindowActions>
+            <WindowAction Name="Close" OnClick="@CancelEditing" />
+        </WindowActions>
         <WindowContent>
              <WorkOrderComponent WorkOrder="@selectedOrder" isEditable=false currentUser="@currentUser"/>
         </WindowContent>
-        <WindowActions>
-            <WindowAction Name="@Localizer["OrdersPage_Close"]" />
-        </WindowActions>
         <WindowFooter>
         </WindowFooter>
     </TelerikWindow>
@@ -623,5 +624,10 @@ else
     private async Task ClearFilterAsync(FilterMenuTemplateContext filterContext)
     {
         await filterContext.ClearFilterAsync();
+    }
+
+    void CancelEditing()
+    {
+        isOrderCardOpen = false;
     }
 }

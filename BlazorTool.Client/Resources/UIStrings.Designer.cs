@@ -457,6 +457,15 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear filters.
+        /// </summary>
+        public static string ClearFilters {
+            get {
+                return ResourceManager.GetString("ClearFilters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Close date.
         /// </summary>
         public static string CloseDate {
@@ -1497,15 +1506,6 @@ namespace BlazorTool.Client.Resources {
         public static string WOReason {
             get {
                 return ResourceManager.GetString("WOReason", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Accepted for processing.
-        /// </summary>
-        public static string WorkOrder_AcceptedForProcessing {
-            get {
-                return ResourceManager.GetString("WorkOrder_AcceptedForProcessing", resourceCulture);
             }
         }
         
