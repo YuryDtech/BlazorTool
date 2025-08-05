@@ -117,8 +117,11 @@ h1:focus {
 
 .custom-row td {
     border-bottom: 1px solid #b7b4b4 !important;
-    padding-block: 0.1rem !important; 
+    padding-block: 0.1rem !important;
+    white-space: pre;
+    line-height: 1.1rem;
 }
+
 
 .vertical-stack-container {
     display: flex; 
@@ -133,3 +136,4 @@ h1:focus {
     padding: 0.2rem;
     border-radius: 8px;
 }
+

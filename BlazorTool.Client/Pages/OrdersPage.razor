@@ -112,7 +112,9 @@ else
             <GridSearchBox Width="200px"/>
         </GridToolBarTemplate>
         <GridColumns>
-            <GridColumn Field="@nameof(WorkOrderView.WorkOrderID)" Title="@Localizer[nameof(WorkOrder.WorkOrderID)]" Width="4rem" Filterable="false" Editable="false" Visible="true"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.WorkOrderID)" Title="ID" Width="5rem" Filterable="true" Editable="false" Visible="true">
+               
+            </GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.WODesc)" Editable="false" Visible="false" Title="@Localizer[nameof(WorkOrder.WODesc)]"></GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.DepName)" Title="@Localizer[nameof(WorkOrder.DepName)]" Width="8rem" Resizable="true">
         <FilterMenuTemplate>
@@ -123,7 +125,17 @@ else
         </FilterMenuTemplate>
     </GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.DeviceName)" Title="@Localizer[nameof(WorkOrderView.DeviceName)]" Resizable="true" Filterable="false"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.DeviceCategory)" Resizable="true" Filterable="false" Title="@Localizer[nameof(WorkOrderView.DeviceCategory)]"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.WODesc)" Resizable="true" Filterable="true" Title="@Localizer[nameof(WorkOrderView.WODesc)]">
+                <Template>
+                    @{
+                        var item = context as WorkOrderView;
+                        if (item != null)
+                        {
+                            <div class="description-cell">@item.WODesc</div>
+                        }
+                    }
+                </Template>
+            </GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.WOReason)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOReason)]">
                 <FilterMenuTemplate>
                     <CustomFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Reason).Select(d => d.Name).Distinct()"
@@ -156,7 +168,7 @@ else
                     </CustomFilterMenuTemplate>
         </FilterMenuTemplate>
     </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.WOLevel)" Width="45rm" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOLevel)]">
+            <GridColumn Field="@nameof(WorkOrderView.WOLevel)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOLevel)]">
         <FilterMenuTemplate>
             <CustomFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Level).Select(d => d.Name).Distinct()"
                                       context="@context"
@@ -164,7 +176,7 @@ else
                     </CustomFilterMenuTemplate>
         </FilterMenuTemplate>
     </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.AddDate)" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true" Title="@Localizer[nameof(WorkOrderView.AddDate)]">
+            <GridColumn Field="@nameof(WorkOrderView.AddDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true" Title="@Localizer[nameof(WorkOrderView.AddDate)]">
                 <FilterMenuButtonsTemplate Context="filterContext">
                     <div class="vertical-stack-container">
 
@@ -181,7 +193,7 @@ else
 
                 </FilterMenuButtonsTemplate>
     </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.StartDate)" Title="@Localizer[nameof(WorkOrderView.StartDate)]" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true">
+            <GridColumn Field="@nameof(WorkOrderView.StartDate)" Width="@dateColumnsize" Title="@Localizer[nameof(WorkOrderView.StartDate)]" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true">
        <FilterMenuButtonsTemplate Context="filterContext">
            <div class="vertical-stack-container">
 
@@ -197,8 +209,8 @@ else
                     </div>
         </FilterMenuButtonsTemplate>
     </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.EndDate)" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true" Title="@Localizer[nameof(WorkOrderView.EndDate)]"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.CloseDate)" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Visible="false" Resizable="true" Title="@Localizer[nameof(WorkOrderView.CloseDate)]"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.EndDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true" Title="@Localizer[nameof(WorkOrderView.EndDate)]"></GridColumn>
+            <GridColumn Field="@nameof(WorkOrderView.CloseDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Visible="false" Resizable="true" Title="@Localizer[nameof(WorkOrderView.CloseDate)]"></GridColumn>
         </GridColumns>
     </TelerikGrid>
 
@@ -247,6 +259,7 @@ else
     private int? MaxAllowedTags { get; set; }
     private List<Dict> dicts = new List<Dict>();
     private Person currentUser = new Person();
+    private string dateColumnsize = "9rem";
 
     protected override async Task OnInitializedAsync()
     {
@@ -505,6 +518,7 @@ else
         // args.Class += "state-" + item?.StateColor?.TrimStart('#');
         args.Class += GetStateColorClass(item);
     }
+
 
     void OnRowClick(GridRowClickEventArgs args)
     {
