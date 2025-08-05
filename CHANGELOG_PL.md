@@ -1,8 +1,10 @@
 ## 2025-08-04
 ### Dodano
+- **Dołączanie do Istniejącej Aktywności**: Użytkownicy mogą być teraz dodawani do istniejącej aktywności za pomocą nowego formularza w widoku zlecenia pracy.
 - **Dodawanie Aktywności**: Zaimplementowano funkcję dodawania nowych aktywności bezpośrednio z widoku zlecenia pracy, włączając w to dedykowany formularz i punkt końcowy API.
 
 ### Naprawiono
+- **Błąd TimeSlot w Harmonogramie**: Poprawiono błąd związany z obliczeniami TimeSlot na stronie harmonogramu.
 - **Odświeżanie Listy Aktywności**: Lista aktywności jest teraz automatycznie aktualizowana po dodaniu nowej aktywności.
 - **Trwałość Danych Zlecenia Pracy**: Naprawiono błąd, przez który szczegóły zlecenia (np. liczba aktywności) wracały do poprzedniego stanu po interakcjach w interfejsie użytkownika.
 

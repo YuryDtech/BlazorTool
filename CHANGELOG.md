@@ -1,8 +1,10 @@
 ## 2025-08-04
 ### Added
+- **Join Existing Activity**: Users can now be added to an existing activity via a new form in the work order view.
 - **Add Activity**: Implemented a feature to add new activities directly from the work order view, including a dedicated form and API endpoint.
 
 ### Fixed
+- **Scheduler TimeSlot Bug**: Corrected an issue with TimeSlot calculations on the Scheduler page.
 - **Activity List Refresh**: The activity list now updates automatically after a new activity is added.
 - **Work Order Data Persistence**: Corrected a bug where work order details (like activity count) would revert to a previous state after UI interactions.
 
