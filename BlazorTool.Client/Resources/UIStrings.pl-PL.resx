@@ -506,7 +506,7 @@
     <value>Łączne obciążenie:</value>
   </data>
   <data name="ActivityList_HoursAbbreviation" xml:space="preserve">
-    <value>g</value>
+    <value>h</value>
   </data>
   <data name="ActivityList_LoadingActivities" xml:space="preserve">
     <value>Ładowanie aktywności...</value>
@@ -551,7 +551,7 @@
     <value>Obciążenie</value>
   </data>
   <data name="ActivityDisplay_HoursAbbreviation" xml:space="preserve">
-    <value>g</value>
+    <value>h</value>
   </data>
   <data name="ActivityDisplay_Workers" xml:space="preserve">
     <value>Pracownicy</value>
@@ -705,5 +705,14 @@
   </data>
   <data name="Scheduler_Custom" xml:space="preserve">
     <value>Niestandardowy</value>
+  </data>
+  <data name="Activity_Category" xml:space="preserve">
+    <value>Kategoria</value>
+  </data>
+  <data name="ActivityList_Workload_Placeholder" xml:space="preserve">
+    <value>Wprowadź obciążenie</value>
+  </data>
+  <data name="ActivityList_Description_Placeholder" xml:space="preserve">
+    <value>Wprowadź opis</value>
   </data>
 </root>

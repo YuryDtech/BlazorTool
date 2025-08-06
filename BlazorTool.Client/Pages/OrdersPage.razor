@@ -227,7 +227,12 @@ else
             <WindowAction Name="Close" OnClick="@CancelEditing" />
         </WindowActions>
         <WindowContent>
-             <WorkOrderComponent WorkOrder="@selectedOrder" isEditable=false currentUser="@currentUser"/>
+             <AppointmentEditor Appointment="@(new SchedulerAppointment(selectedOrder))" 
+            isEditable=true 
+            ListPersons="@personNames.Where(c=>c != "All").ToList()"
+            currentUser="@currentUser"
+            OnAppointmentChanged="@RefreshData"
+            isScheduler = "false" />
         </WindowContent>
         <WindowFooter>
         </WindowFooter>
@@ -357,6 +362,29 @@ else
         ).ToList();
         //selectedDeviceIds = result.Select(d => d.MachineID).Distinct().ToList();
         return result;
+    }
+
+        //when order window closed
+    //On create, Update
+    async Task RefreshData(SchedulerAppointment? editedAppointment)
+    {
+        if (editedAppointment == null)//was removed or cancelled NEW
+        {
+            isOrderCardOpen = false;
+            return;
+        }
+        else
+        {
+            var index = OrdersForGrid.FindIndex(a => a.WorkOrderID == editedAppointment.AppointmentId);
+            if (index != -1)
+            {
+                OrdersForGrid[index] = editedAppointment;
+            }
+            else
+                OrdersForGrid.Add(editedAppointment);
+        }
+        isOrderCardOpen = false;
+        await LoadData();
     }
 
     public class WorkOrderView : WorkOrder

@@ -16,46 +16,57 @@
     <FormItems>
         <div class="form-layout">
             <div class="form-left">
-                    <FormItem Field="@nameof(ActivityModel.PersonID)" LabelText="@Localizer["SchedulerSummary_Person"]">
+                    <FormItem Field="@nameof(ActivityModel.PersonID)">
                     <Template>
-                        <TelerikComboBox Data="@People"
-                                         @bind-Value="@ActivityModel.PersonID"
-                                         ValueField="@nameof(Person.PersonId)"
-                                         TextField="@nameof(Person.Name)"
+                        <div style="display: flex; align-items: center;">
+                            <label class="k-label k-form-label" style="min-width: 120px; margin-right: 10px;">@Localizer["SchedulerSummary_Person"]:</label>
+                            <TelerikComboBox Data="@People"
+                                             @bind-Value="@ActivityModel.PersonID"
+                                             ValueField="@nameof(Person.PersonId)"
+                                             TextField="@nameof(Person.Name)"
                                              Placeholder="@Localizer["WorkOrder_SelectPerson"]"
-                                         Filterable="true"
-                                         ShowClearButton="true">
-                        </TelerikComboBox>
+                                             Filterable="true"
+                                             ShowClearButton="true">
+                            </TelerikComboBox>
+                        </div>
                         <ValidationMessage For="@(() => ActivityModel.PersonID)" />
                     </Template>
-                </FormItem>
-
-                <FormItem Field="@nameof(ActivityModel.CategoryID)" LabelText="Category">
+                    </FormItem>
+                <FormItem Field="@nameof(ActivityModel.CategoryID)">
                     <Template>
-                        <TelerikComboBox Data="@Categories"
+                        <div style="display: flex; align-items: center;">
+                            <label class="k-label k-form-label" style="min-width: 120px; margin-right: 10px;">@Localizer["Activity_Category"]:</label>
+                            <TelerikComboBox Data="@Categories"
                                          @bind-Value="@ActivityModel.CategoryID"
                                          ValueField="@nameof(WODict.Id)"
                                          TextField="@nameof(WODict.Name)"
                                          Placeholder="@Localizer["WorkOrder_SelectWOCategory"]"
                                          Filterable="true"
                                          ShowClearButton="true">
-                        </TelerikComboBox>
+                            </TelerikComboBox>
+                        </div>
                         <ValidationMessage For="@(() => ActivityModel.CategoryID)" />
                     </Template>
                 </FormItem>
 
-                <FormItem Field="@nameof(ActivityModel.WorkLoad)" LabelText="@Localizer["ActivityList_Workload"]">
+                <FormItem Field="@nameof(ActivityModel.WorkLoad)">
                     <Template>
-                        <TelerikNumericTextBox @bind-Value="ActivityModel.WorkLoad" Format="n2" />
+                        <div style="display: flex; align-items: center;">
+                            <label class="k-label k-form-label" style="min-width: 120px; margin-right: 10px;">@Localizer["ActivityList_Workload"]:</label>
+                            <TelerikNumericTextBox @bind-Value="ActivityModel.WorkLoad" Format="n2" Step="0.25m" Placeholder="@Localizer["ActivityList_Workload_Placeholder"]"/>
+                        </div>
                         <ValidationMessage For="@(() => ActivityModel.WorkLoad)" />
                     </Template>
                 </FormItem>
             </div>
 
             <div class="form-right">
-                <FormItem Field="@nameof(ActivityModel.Description)" LabelText="@Localizer["ActivityList_Description"]">
+                <FormItem Field="@nameof(ActivityModel.Description)">
                     <Template>
-                        <TelerikTextArea @bind-Value="ActivityModel.Description" Rows="5" />
+                        <div style="display: flex; align-items: center;">
+                            <label class="k-label k-form-label" style="min-width: 120px; margin-right: 10px;">@Localizer["ActivityList_Description"]:</label>
+                            <TelerikTextArea @bind-Value="ActivityModel.Description" Rows="5" Placeholder="@Localizer["ActivityList_Description_Placeholder"]"/>
+                        </div>
                         <ValidationMessage For="@(() => ActivityModel.Description)" />
                     </Template>
                 </FormItem>
@@ -63,8 +74,10 @@
         </div>
     </FormItems>
     <FormButtons>
+            <div style="display: flex; justify-content: center; gap: 50px; width: 100%;">
         <TelerikButton ButtonType="ButtonType.Submit" ThemeColor="primary">@Localizer["Add"]</TelerikButton>
             <TelerikButton ButtonType="ButtonType.Button" OnClick="OnCancelhandler" ThemeColor="secondary">@Localizer["Settings_Cancel"]</TelerikButton>
+        </div>
     </FormButtons>
 </TelerikForm>
     <div class="form-footer">
@@ -75,6 +88,7 @@
 </div>
 
 @code {
+
     [Parameter]
     public int WorkOrderID { get; set; }
 
@@ -90,6 +104,8 @@
     {
         ActivityModel.WorkOrderID = WorkOrderID;
         ActivityModel.PersonID = UserState.PersonID ?? 0;
+
+        ActivityModel.WorkLoad = 0.25m; // Default workload
         People = ApiClient.GetAllPersonsCached(); // From cache
         Categories = ApiClient.GetWOCategories(); // From cache
     }

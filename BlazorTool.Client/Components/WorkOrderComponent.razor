@@ -324,14 +324,12 @@
 
 
 @code {
-
-
-
     [Parameter] public WorkOrder? WorkOrder { get; set; }
     [Parameter] public List<string>? ListPersons { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
     [Parameter] public EventCallback<bool> OnStateChanged { get; set; }
     [Parameter] public Person? currentUser { get; set; }
+    [Parameter] public bool isScheduler { get; set; } = false; // Indicates if this component is used in the scheduler context
     private ActivityList? activityListComponent;
     // private int listTypeForCategory = 1;
     // private int listTypeForLevel = 2;
@@ -349,7 +347,7 @@
     private string DatesAlarm = string.Empty;
     private bool showActivities = false;
     private bool IsAddActivityWindowVisible { get; set; } = false;
-    private bool isNewWorkOrder = false;
+    private bool isNewWorkOrder = false;  
     private List<Device>? ListDevices { get; set; } = new List<Device>();
     private Device? selectedDevice;
     private List<WODict> ListCategories = new List<WODict>();
@@ -596,11 +594,12 @@
 
     private bool isValidDates()
     {
-        var v1 = WorkOrder?.StartDate != null ;
-        var v2 = WorkOrder?.StartDate != DateTime.MinValue;
-        var v3 = WorkOrder?.EndDate != null;
-        var v4 = WorkOrder?.EndDate != DateTime.MinValue;
-        var v5 = WorkOrder?.StartDate <= WorkOrder?.EndDate;
+        var v1 = !isScheduler || WorkOrder?.StartDate != null ;
+        var v2 = !isScheduler || WorkOrder?.StartDate != DateTime.MinValue;
+        var v3 = !isScheduler || WorkOrder?.EndDate != null;
+        var v4 = !isScheduler || WorkOrder?.EndDate != DateTime.MinValue;
+        var v5 = (!isScheduler && (WorkOrder?.StartDate == null || WorkOrder?.EndDate == null)) 
+        || WorkOrder?.StartDate <= WorkOrder?.EndDate;
         return isEditable && v1 && v2 && v3 && v4 && v5;
               
     }

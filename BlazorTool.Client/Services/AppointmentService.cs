@@ -70,6 +70,8 @@ namespace BlazorTool.Client.Services
         public async Task<SingleResponse<WorkOrder>> UpdateAppointment(SchedulerAppointment appointment)
         {
             var existingAppointment = _appointments.FirstOrDefault(x => x.AppointmentId == appointment.AppointmentId);
+            if (appointment.AssignedPerson == Person.NotAssigned.Name)
+                    appointment.AssignedPerson = string.Empty; 
 
             if (existingAppointment != null)
             {
@@ -79,19 +81,16 @@ namespace BlazorTool.Client.Services
                     existingAppointment = appointment.ShallowCopy();
                 }
 
-                var workOrderToUpdate = (WorkOrder)appointment;
-                var updateResult = await _apiServiceClient.UpdateWorkOrderAsync(workOrderToUpdate);
+            } 
 
-                if (!updateResult.IsValid)
-                {
-                    Console.WriteLine($"Error updating appointment: {string.Join(", ", updateResult.Errors)}");
-                }
-                return updateResult;
-            } else
-                {
-                // If appointment does not exist, create a new one
-                return await SaveNewAppointment(appointment);
+            var workOrderToUpdate = (WorkOrder)appointment;
+            var updateResult = await _apiServiceClient.UpdateWorkOrderAsync(workOrderToUpdate);
+
+            if (!updateResult.IsValid)
+            {
+                Console.WriteLine($"Error updating appointment: {string.Join(", ", updateResult.Errors)}");
             }
+            return updateResult;
         }
 
         public async Task<SingleResponse<WorkOrder>> SaveNewAppointment(SchedulerAppointment appointment)

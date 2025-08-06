@@ -708,4 +708,13 @@
     <value>Custom</value>
     <comment>Custom</comment>
   </data>
+  <data name="Activity_Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="ActivityList_Workload_Placeholder" xml:space="preserve">
+    <value>Enter workload</value>
+  </data>
+  <data name="ActivityList_Description_Placeholder" xml:space="preserve">
+    <value>Enter description</value>
+  </data>
 </root>

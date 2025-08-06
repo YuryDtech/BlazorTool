@@ -11,17 +11,22 @@
         <TelerikButton Class="popup-target" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">@Localizer["AppointmentEditor_Save"]</TelerikButton>
 
     <TelerikButton OnClick="@CancelEditing"  ButtonType="ButtonType.Button" >@Localizer["AppointmentEditor_Cancel"]</TelerikButton>
-    <TelerikButton OnClick="@DeleteAppointment" ButtonType="ButtonType.Button">@Localizer["AppointmentEditor_DeleteFromScheduler"]</TelerikButton>
-        @if (!isWOClosed)
-        {
-            <TelerikButton OnClick="@CloseAppointment" ButtonType="ButtonType.Button" ThemeColor="@ThemeConstants.Button.ThemeColor.Warning">@Localizer["AppointmentEditor_FinishOrder"]</TelerikButton>
-        }
+    @if(isScheduler)
+    {
+        <TelerikButton OnClick="@DeleteAppointment" ButtonType="ButtonType.Button">@Localizer["AppointmentEditor_DeleteFromScheduler"]</TelerikButton>
+    }
+
+    @if (!isWOClosed)
+    {
+        <TelerikButton OnClick="@CloseAppointment" ButtonType="ButtonType.Button" ThemeColor="@ThemeConstants.Button.ThemeColor.Warning">@Localizer["AppointmentEditor_FinishOrder"]</TelerikButton>
+    }
     </div>
 </EditForm>
 <WorkOrderComponent WorkOrder="@Appointment" 
     ListPersons="@ListPersons" 
     isEditable=@isEditable
     currentUser="@currentUser"
+    isScheduler = "@isScheduler"
                     OnStateChanged="@((isValid) => {isValidData = isValid; StateHasChanged();})">
 </WorkOrderComponent>
 
@@ -48,6 +53,7 @@
     [Parameter] public List<string>? ListPersons { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
     [Parameter] public Person currentUser { get; set; }
+    [Parameter] public bool isScheduler { get; set; } = false; // Indicates if this component is used in the scheduler context
     // [Parameter] public List<Dict>? ListDicts { get; set; }
     private bool isNewAppointment = false;
     private string titleAlarm = string.Empty;
@@ -151,13 +157,17 @@
 
     private bool IsValidAppointment()
     {
-        //log every check parameter
-        // Console.WriteLine($"AssetNo: {Appointment.AssetNo}");
-        // Console.WriteLine($"Start: {Appointment.Start}");
-        // Console.WriteLine($"End: {Appointment.End}");
-        // Console.WriteLine($"MachineID: {Appointment.MachineID}");
-        // Console.WriteLine($"DepName: {Appointment.DepName}");
-        //TODO make Validation 
+        if(!isScheduler)
+        {
+           return !string.IsNullOrWhiteSpace(Appointment.AssetNo) &&
+                 Appointment.Start < Appointment.End &&
+                 Appointment.MachineID != 0 &&
+                 // !string.IsNullOrEmpty(Appointment.DepName) &&
+                 !string.IsNullOrWhiteSpace(Appointment.WODesc) &&
+                 !string.IsNullOrWhiteSpace(Appointment.WOLevel) &&
+                 !string.IsNullOrWhiteSpace(Appointment.WOCategory) &&
+                 !string.IsNullOrWhiteSpace(Appointment.WOReason);
+        }else
         return !string.IsNullOrWhiteSpace(Appointment.AssetNo) &&
                Appointment.Start != default &&
                Appointment.End != default &&
