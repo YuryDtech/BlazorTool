@@ -1,4 +1,4 @@
-﻿::deep .month-view-slot {
+::deep .month-view-slot {
     height: 150px;
     /* Use flexbox to control alignment */
     display: flex;
@@ -71,3 +71,10 @@
        
         border-radius: 6px;
     }
+
+.timeline-options {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+

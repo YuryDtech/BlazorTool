@@ -24,7 +24,7 @@ namespace BlazorTool.Client.Services
         private Dictionary<int, List<WorkOrder>> _workOrdersCache = new Dictionary<int, List<WorkOrder>>();
         private List<Device> _devicesCache = new List<Device>();
         private readonly UserState _userState;
-        private List<Dict> _dictCache = new List<Dict>();
+        private List<WODict> _dictCache = new List<WODict>();
         private List<Person> _personsCache = new List<Person>();
 
         public ApiServiceClient(HttpClient http, UserState userState)
@@ -867,13 +867,13 @@ namespace BlazorTool.Client.Services
         #endregion
 
         #region Other functions
-        public async Task<List<Dict>> GetWODictionaries(int? personID, string? lang = null)
+        public async Task<List<WODict>> GetWODictionaries(int? personID, string? lang = null)
         {
             if (personID == null || personID <= 0)
             {
                 Console.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
                 Debug.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
-                return new List<Dict>();
+                return new List<WODict>();
             }
             var qp = new List<string>();
             if (string.IsNullOrWhiteSpace(lang))
@@ -886,7 +886,7 @@ namespace BlazorTool.Client.Services
             var url = "wo/getdict?" + string.Join("&", qp);
             try
             {
-                var wrapper = await _http.GetFromJsonAsync<ApiResponse<Dict>>(url);
+                var wrapper = await _http.GetFromJsonAsync<ApiResponse<WODict>>(url);
                 Console.WriteLine("\n");
                 Console.WriteLine($"[{_userState.UserName}] = = = = = = = response Dict.Count: " + wrapper?.Data.Count.ToString());
                 Console.WriteLine("\n");
@@ -903,22 +903,22 @@ namespace BlazorTool.Client.Services
                     }
                 }
 
-                return wrapper?.Data ?? new List<Dict>();
+                return wrapper?.Data ?? new List<WODict>();
             }
             catch (HttpRequestException ex)
             {
                 //await _userState.ClearAsync();
                 Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 Debug.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
-                return new List<Dict>();
+                return new List<WODict>();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
-                return new List<Dict>();
+                return new List<WODict>();
             }
         }
-        public List<Dict> GetWODictionariesCached()
+        public List<WODict> GetWODictionariesCached()
         {
             //if (_dictCache.Count == 0)
             //{//is need cache with personID and lang ?
@@ -956,35 +956,35 @@ namespace BlazorTool.Client.Services
                 _ => "bg-gray-light"
             };
         }
-        public List<Dict> GetWOCategories()
+        public List<WODict> GetWOCategories()
         {            
             return (GetWODictionariesCached()).Where(d => d.ListType == (int)WOListTypeEnum.Category)
                 .Distinct()
                 .ToList();
         }
 
-        public List<Dict> GetWOStates()
+        public List<WODict> GetWOStates()
         {            
             return (GetWODictionariesCached()).Where(d => d.ListType == (int)WOListTypeEnum.State)
                 .Distinct()
                 .ToList();
         }
 
-        public List<Dict> GetWOLevels()
+        public List<WODict> GetWOLevels()
         {
             return (GetWODictionariesCached()).Where(d => d.ListType == (int)WOListTypeEnum.Level)
                 .Distinct()
                 .ToList();
         }
 
-        public List<Dict> GetWOReasons()
+        public List<WODict> GetWOReasons()
         {
             return (GetWODictionariesCached()).Where(d => d.ListType == (int)WOListTypeEnum.Reason)
                 .Distinct()
                 .ToList();
         }
 
-        public List<Dict> GetWODepartments()
+        public List<WODict> GetWODepartments()
         {
             return (GetWODictionariesCached()).Where(d => d.ListType == (int)WOListTypeEnum.Department)
                 .Distinct()
@@ -994,7 +994,7 @@ namespace BlazorTool.Client.Services
         public async Task<bool> AddNewWODict(string name, int listType, bool isDefault = false, int? machineCategoryId = null)
         {//TODO: remove this method, dict is only read from API
             if (string.IsNullOrEmpty(name) || listType < 1 || listType > 5) return false;
-            Dict newDict = new Dict
+            WODict newDict = new WODict
             {
                 Name = name,
                 ListType = listType,

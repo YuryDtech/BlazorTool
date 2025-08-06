@@ -144,3 +144,7 @@ h1:focus {
 .shadow-light {
     box-shadow: 0 10px 16px #00000039;
 }
+
+.telerikButtonGroup{
+    gap:7px;
+}

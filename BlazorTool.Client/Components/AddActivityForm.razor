@@ -34,8 +34,8 @@
                     <Template>
                         <TelerikComboBox Data="@Categories"
                                          @bind-Value="@ActivityModel.CategoryID"
-                                         ValueField="@nameof(Dict.Id)"
-                                         TextField="@nameof(Dict.Name)"
+                                         ValueField="@nameof(WODict.Id)"
+                                         TextField="@nameof(WODict.Name)"
                                          Placeholder="@Localizer["WorkOrder_SelectWOCategory"]"
                                          Filterable="true"
                                          ShowClearButton="true">
@@ -83,7 +83,7 @@
 
     private AddActivity ActivityModel { get; set; } = new AddActivity();
     private List<Person> People { get; set; } = new List<Person>();
-    private List<Dict> Categories { get; set; } = new List<Dict>();
+    private List<WODict> Categories { get; set; } = new List<WODict>();
     private string ErrorMessage { get; set; } = string.Empty;
 
     protected override void OnInitialized()

@@ -577,12 +577,6 @@
   <data name="CustomFilterMenuTemplate_All" xml:space="preserve">
     <value>All</value>
   </data>
-  <data name="SchedulerItem_Arrow" xml:space="preserve">
-    <value>=&gt;</value>
-  </data>
-  <data name="SchedulerItem_Colon" xml:space="preserve">
-    <value>:</value>
-  </data>
   <data name="ChangelogPage_Title" xml:space="preserve">
     <value>Changelog Page</value>
   </data>
@@ -706,5 +700,12 @@
   </data>
   <data name="ClearFilters" xml:space="preserve">
     <value>Clear filters</value>
+  </data>
+  <data name="Scheduler_Days" xml:space="preserve">
+    <value>Days</value>
+  </data>
+  <data name="Scheduler_Custom" xml:space="preserve">
+    <value>Custom</value>
+    <comment>Custom</comment>
   </data>
 </root>

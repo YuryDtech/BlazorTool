@@ -1015,6 +1015,24 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Custom.
+        /// </summary>
+        public static string Scheduler_Custom {
+            get {
+                return ResourceManager.GetString("Scheduler_Custom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Days.
+        /// </summary>
+        public static string Scheduler_Days {
+            get {
+                return ResourceManager.GetString("Scheduler_Days", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Department:.
         /// </summary>
         public static string Scheduler_Department {
@@ -1200,24 +1218,6 @@ namespace BlazorTool.Client.Resources {
         public static string Scheduler_SlotDuration {
             get {
                 return ResourceManager.GetString("Scheduler_SlotDuration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to =&gt;.
-        /// </summary>
-        public static string SchedulerItem_Arrow {
-            get {
-                return ResourceManager.GetString("SchedulerItem_Arrow", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to :.
-        /// </summary>
-        public static string SchedulerItem_Colon {
-            get {
-                return ResourceManager.GetString("SchedulerItem_Colon", resourceCulture);
             }
         }
         

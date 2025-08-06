@@ -1,0 +1,1430 @@
+{
+    "data": [
+        {
+            "key": "add",
+            "value": "Dodaj"
+        },
+        {
+            "key": "api_settings",
+            "value": "Ustawienia API"
+        },
+        {
+            "key": "by",
+            "value": "Przez"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthDay",
+            "value": "Dzień"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthFriday",
+            "value": "Piątek"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthMonday",
+            "value": "Poniedziałek"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthSaturday",
+            "value": "Sobota"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthSunday",
+            "value": "Niedziela"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthThursday",
+            "value": "Czwartk"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthTuesday",
+            "value": "Wtorek"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthWednesday",
+            "value": "Środa"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthWeekday",
+            "value": "Dzień tyg."
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthWeekendDay",
+            "value": "Dzień week."
+        },
+        {
+            "key": "Calendar_AgendaAllDay",
+            "value": "Dzienne"
+        },
+        {
+            "key": "Calendar_AgendaEndTimeText",
+            "value": "Koniec"
+        },
+        {
+            "key": "Calendar_AgendaStartTimeText",
+            "value": "Start"
+        },
+        {
+            "key": "Calendar_AllDayAreaText",
+            "value": "Dzienne"
+        },
+        {
+            "key": "Calendar_AllDayAreaTextUWP",
+            "value": "Dzienne"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationApril",
+            "value": "KWI"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationAugust",
+            "value": "SIE"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationDecember",
+            "value": "GRU"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationFebruary",
+            "value": "STY"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationJanuary",
+            "value": "LUT"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationJuly",
+            "value": "LIP"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationJune",
+            "value": "CZE"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationMarch",
+            "value": "MAR"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationMay",
+            "value": "MAJ"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationNovember",
+            "value": "LIS"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationOctober",
+            "value": "PAZ"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationSeptember",
+            "value": "SIE"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationFriday",
+            "value": "PT"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationMonday",
+            "value": "PN"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationSaturday",
+            "value": "SO"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationSunday",
+            "value": "ND"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationThursday",
+            "value": "CZ"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationTuesday",
+            "value": "WT"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationWednesday",
+            "value": "SR"
+        },
+        {
+            "key": "category",
+            "value": "Kategoria"
+        },
+        {
+            "key": "change",
+            "value": "Zmień"
+        },
+        {
+            "key": "check",
+            "value": "Sprawdź"
+        },
+        {
+            "key": "check_connection",
+            "value": "Sprawdź połączenie"
+        },
+        {
+            "key": "clear",
+            "value": "Wyczyść"
+        },
+        {
+            "key": "close",
+            "value": "Zamknij"
+        },
+        {
+            "key": "cmm_login",
+            "value": "Konto CMM"
+        },
+        {
+            "key": "cmm_login_start",
+            "value": "Zaloguj do aplikacji na starcie"
+        },
+        {
+            "key": "confirm",
+            "value": "Potwierdź"
+        },
+        {
+            "key": "currency",
+            "value": "Waluta"
+        },
+        {
+            "key": "current_location",
+            "value": "Aktualna lokalizacja"
+        },
+        {
+            "key": "cv_agenda",
+            "value": "Agenda"
+        },
+        {
+            "key": "cv_day",
+            "value": "Dzień"
+        },
+        {
+            "key": "cv_month",
+            "value": "Mies."
+        },
+        {
+            "key": "cv_week",
+            "value": "Tydz."
+        },
+        {
+            "key": "data",
+            "value": "Dane"
+        },
+        {
+            "key": "date_add",
+            "value": "Data dodania"
+        },
+        {
+            "key": "date_end",
+            "value": "Data zakończenia"
+        },
+        {
+            "key": "date_mod",
+            "value": "Data mod."
+        },
+        {
+            "key": "date_start",
+            "value": "Plan. rozp."
+        },
+        {
+            "key": "date_stop",
+            "value": "Plan. zakoń."
+        },
+        {
+            "key": "delete",
+            "value": "Usuń"
+        },
+        {
+            "key": "dev_asset_no",
+            "value": "Nazwa"
+        },
+        {
+            "key": "dev_asset_no_short",
+            "value": "Krótka nazwa"
+        },
+        {
+            "key": "dev_bk_no",
+            "value": "Numer księgowy"
+        },
+        {
+            "key": "dev_branch",
+            "value": "Filia"
+        },
+        {
+            "key": "dev_buy_date",
+            "value": "Data zakupu"
+        },
+        {
+            "key": "dev_buy_price",
+            "value": "Cena zakupu"
+        },
+        {
+            "key": "dev_cc",
+            "value": "Centra kosztów"
+        },
+        {
+            "key": "dev_current_cycles",
+            "value": "Aktualne cykle"
+        },
+        {
+            "key": "dev_cycle",
+            "value": "Cykle"
+        },
+        {
+            "key": "dev_days",
+            "value": "Dni"
+        },
+        {
+            "key": "dev_def_location",
+            "value": "Lokalizacja domyślna"
+        },
+        {
+            "key": "dev_deliv_date",
+            "value": "Data dostawy"
+        },
+        {
+            "key": "dev_details",
+            "value": "Szczegóły urządzenia"
+        },
+        {
+            "key": "dev_doc",
+            "value": "Dokumentacja"
+        },
+        {
+            "key": "dev_equipment",
+            "value": "Wyposażona"
+        },
+        {
+            "key": "dev_gus_no",
+            "value": "Numer GUS"
+        },
+        {
+            "key": "dev_info",
+            "value": "Informacje"
+        },
+        {
+            "key": "dev_is_doc",
+            "value": "Jest dokumentacja"
+        },
+        {
+            "key": "dev_is_in_use",
+            "value": "Jest w użyciu"
+        },
+        {
+            "key": "dev_labeled",
+            "value": "Oznakowana"
+        },
+        {
+            "key": "dev_left",
+            "value": "Pozostało"
+        },
+        {
+            "key": "dev_line",
+            "value": "Linia produkcyjna: {0}"
+        },
+        {
+            "key": "dev_list",
+            "value": "Lista urządzeń"
+        },
+        {
+            "key": "dev_load",
+            "value": "Załaduj [{0}] urządzeń"
+        },
+        {
+            "key": "dev_loc_new",
+            "value": "Nowa lokalizacja"
+        },
+        {
+            "key": "dev_location",
+            "value": "Lokalizacja"
+        },
+        {
+            "key": "dev_place",
+            "value": "Miejsce"
+        },
+        {
+            "key": "dev_plan",
+            "value": "Lista przeglądów"
+        },
+        {
+            "key": "dev_producent",
+            "value": "Producent"
+        },
+        {
+            "key": "dev_remarks",
+            "value": "Uwagi"
+        },
+        {
+            "key": "dev_serial_no",
+            "value": "Numer seryjny"
+        },
+        {
+            "key": "dev_state_change",
+            "value": "Przebieg zmiany stanu"
+        },
+        {
+            "key": "dev_state_list",
+            "value": "Lista zmian"
+        },
+        {
+            "key": "dev_state_remarks",
+            "value": "Uwagi do stanu"
+        },
+        {
+            "key": "dev_state_sum",
+            "value": "Podsumowanie"
+        },
+        {
+            "key": "dev_type",
+            "value": "Rodzaj"
+        },
+        {
+            "key": "dev_warranty",
+            "value": "Gwarancje"
+        },
+        {
+            "key": "dev_where",
+            "value": "Gdzie jest: {0}"
+        },
+        {
+            "key": "dev_where_is",
+            "value": "Gdzie jest"
+        },
+        {
+            "key": "dev_wo",
+            "value": "Zlecenie"
+        },
+        {
+            "key": "dev_wo_list",
+            "value": "Lista zleceń"
+        },
+        {
+            "key": "dev_year_of_production",
+            "value": "Data produkcji"
+        },
+        {
+            "key": "device",
+            "value": "Urządzenie"
+        },
+        {
+            "key": "down_info1",
+            "value": "Nowa wersja aplikacji jest dostępna"
+        },
+        {
+            "key": "down_info2",
+            "value": "Czy pobrać?"
+        },
+        {
+            "key": "down_info3",
+            "value": "Pobieram nową wersję aplikacji..."
+        },
+        {
+            "key": "down_info4",
+            "value": "Zakończenie pobierania otworzy folder z aplikacją"
+        },
+        {
+            "key": "download",
+            "value": "Pobierz"
+        },
+        {
+            "key": "edit",
+            "value": "Zmień"
+        },
+        {
+            "key": "finish",
+            "value": "Zakończ"
+        },
+        {
+            "key": "hist_info",
+            "value": "Zapisana na telefonie historia przeglądanych urządzeń, dokumentów i stanów części zapisanych przy inewentaryzacji"
+        },
+        {
+            "key": "history",
+            "value": "Historia"
+        },
+        {
+            "key": "inv_new",
+            "value": "Nowa inwentaryzacja"
+        },
+        {
+            "key": "lib",
+            "value": "Biblioteka"
+        },
+        {
+            "key": "load_n_items",
+            "value": "Załaduj [{0}] elementów"
+        },
+        {
+            "key": "log_no_user",
+            "value": "Brak użytkownika w bazie!"
+        },
+        {
+            "key": "login",
+            "value": "Zaloguj"
+        },
+        {
+            "key": "login_err_pass",
+            "value": "Błędny login lub hasło!"
+        },
+        {
+            "key": "main_info1",
+            "value": "Przeglądane urządzenia"
+        },
+        {
+            "key": "main_info2",
+            "value": "Otwierana dokumentacja"
+        },
+        {
+            "key": "mc_new",
+            "value": "Nowa ważność kalendarza"
+        },
+        {
+            "key": "mc_old",
+            "value": "Nowy rok ważności kalendarza"
+        },
+        {
+            "key": "mc_val",
+            "value": "Ważność"
+        },
+        {
+            "key": "ml_history",
+            "value": "Przebieg zmiany lokalizacji"
+        },
+        {
+            "key": "ml_hold_field",
+            "value": "Pole odstawcze"
+        },
+        {
+            "key": "ml_imm",
+            "value": "Wtryskarka"
+        },
+        {
+            "key": "ml_put_on",
+            "value": "Foma do założenia"
+        },
+        {
+            "key": "ml_to_send",
+            "value": "Formy do wysyłki"
+        },
+        {
+            "key": "ml_tool",
+            "value": "Narzędziownia"
+        },
+        {
+            "key": "ml_war",
+            "value": "Magazyn form"
+        },
+        {
+            "key": "mould",
+            "value": "Forma"
+        },
+        {
+            "key": "name",
+            "value": "Nazwa"
+        },
+        {
+            "key": "new_location",
+            "value": "Nowa lokalizacja"
+        },
+        {
+            "key": "no_result_found",
+            "value": "Brak pasującego elementu"
+        },
+        {
+            "key": "order",
+            "value": "Zamów"
+        },
+        {
+            "key": "other",
+            "value": "Inny"
+        },
+        {
+            "key": "part_add",
+            "value": "Dodaj"
+        },
+        {
+            "key": "part_category",
+            "value": "Kategoria"
+        },
+        {
+            "key": "part_change_quantity",
+            "value": "Zmiana o: {0:0.##}"
+        },
+        {
+            "key": "part_change_type",
+            "value": "Rodzaj: {0}"
+        },
+        {
+            "key": "part_correction",
+            "value": "Korekta ilości"
+        },
+        {
+            "key": "part_currentneeds",
+            "value": "Aktualne zapotrzebowanie"
+        },
+        {
+            "key": "part_defaultsupplier",
+            "value": "Domyślny dostawca"
+        },
+        {
+            "key": "part_description",
+            "value": "Opis"
+        },
+        {
+            "key": "part_find",
+            "value": "Szukaj części"
+        },
+        {
+            "key": "part_generalcategory",
+            "value": "Główna kategoria"
+        },
+        {
+            "key": "part_give",
+            "value": "Wydaj"
+        },
+        {
+            "key": "part_give_back",
+            "value": "Zwróć"
+        },
+        {
+            "key": "part_give2",
+            "value": "Wydaj część"
+        },
+        {
+            "key": "part_inv_org",
+            "value": "Z inwentaryzacji"
+        },
+        {
+            "key": "part_inv_pro",
+            "value": "Z programu"
+        },
+        {
+            "key": "part_list",
+            "value": "Lista części"
+        },
+        {
+            "key": "part_list_conf",
+            "value": "Części do potwierdzenia"
+        },
+        {
+            "key": "part_locations",
+            "value": "Lokalizacje"
+        },
+        {
+            "key": "part_lockedorders",
+            "value": "Zamówienia zablokowane"
+        },
+        {
+            "key": "part_manufacturercode",
+            "value": "Kod producenta"
+        },
+        {
+            "key": "part_new_loc",
+            "value": "Nowa lokalizacja"
+        },
+        {
+            "key": "part_new_location",
+            "value": "Nowa lokalizacja"
+        },
+        {
+            "key": "part_new_quantity",
+            "value": "Nowa ilość"
+        },
+        {
+            "key": "part_no",
+            "value": "Numer części"
+        },
+        {
+            "key": "part_obsolete",
+            "value": "Wyszła z użycia"
+        },
+        {
+            "key": "part_old_loc",
+            "value": "Aktualna lokalizacja"
+        },
+        {
+            "key": "part_orderedquantity",
+            "value": "Zamówiona ilość"
+        },
+        {
+            "key": "part_producent",
+            "value": "Producent"
+        },
+        {
+            "key": "part_put_back",
+            "value": "Odłóż"
+        },
+        {
+            "key": "part_quantity",
+            "value": "Ilość"
+        },
+        {
+            "key": "part_remarks",
+            "value": "Uwagi"
+        },
+        {
+            "key": "part_stock_during",
+            "value": "Podczas inwentaryzacji"
+        },
+        {
+            "key": "part_stock_level",
+            "value": "Aktualna ilość"
+        },
+        {
+            "key": "part_stock_level_target",
+            "value": "Próg graniczny"
+        },
+        {
+            "key": "part_stock_max_target",
+            "value": "Maks. ilość"
+        },
+        {
+            "key": "part_stock_min_target",
+            "value": "Min. ilość"
+        },
+        {
+            "key": "part_stock_update",
+            "value": "Aktualizuj ilość części w bazie"
+        },
+        {
+            "key": "part_taken",
+            "value": "Pobrana ilość"
+        },
+        {
+            "key": "part_taken_by",
+            "value": "Wzięta przez: {0}"
+        },
+        {
+            "key": "part_unit",
+            "value": "J.M."
+        },
+        {
+            "key": "part_warehouse",
+            "value": "Magazyn"
+        },
+        {
+            "key": "part_who",
+            "value": "Kto wziął"
+        },
+        {
+            "key": "password",
+            "value": "Hasło"
+        },
+        {
+            "key": "Picker_AmPmSpinnerHeaderLabelText",
+            "value": "AM/PM"
+        },
+        {
+            "key": "Picker_DaySpinnerHeaderLabelText",
+            "value": "Dzień"
+        },
+        {
+            "key": "Picker_HourSpinnerHeaderLabelText",
+            "value": "Godziny"
+        },
+        {
+            "key": "Picker_MinuteSpinnerHeaderLabelText",
+            "value": "Minuty"
+        },
+        {
+            "key": "Picker_MonthSpinnerHeaderLabelText",
+            "value": "Miesiąc"
+        },
+        {
+            "key": "Picker_Popup_AcceptButtonText",
+            "value": "OK"
+        },
+        {
+            "key": "Picker_Popup_CancelButtonText",
+            "value": "Anuluj"
+        },
+        {
+            "key": "Picker_SecondSpinnerHeaderLabelText",
+            "value": "Sekundy"
+        },
+        {
+            "key": "Picker_YearSpinnerHeaderLabelText",
+            "value": "Rok"
+        },
+        {
+            "key": "picture",
+            "value": "Zdjęcie"
+        },
+        {
+            "key": "plan_load",
+            "value": "Załaduj [{0}] przeglądów"
+        },
+        {
+            "key": "price_unit",
+            "value": "Cena za sztukę"
+        },
+        {
+            "key": "prog_host",
+            "value": "Sprawdzanie połączenia do hosta"
+        },
+        {
+            "key": "prog_login",
+            "value": "Logowanie do aplikacji"
+        },
+        {
+            "key": "prog_update",
+            "value": "Sprawdzanie dostępności nowej wersji"
+        },
+        {
+            "key": "q_sure",
+            "value": "Czy na pewno wykonać?"
+        },
+        {
+            "key": "q_sure_delete",
+            "value": "Czy na pewno usunąć?"
+        },
+        {
+            "key": "q_wo_close",
+            "value": "Czy na pewno zamknąć?"
+        },
+        {
+            "key": "refresh_data",
+            "value": "Odśwież dane"
+        },
+        {
+            "key": "remove_history",
+            "value": "Wyczyść historię"
+        },
+        {
+            "key": "save",
+            "value": "Zapisz"
+        },
+        {
+            "key": "scan_and_save_code",
+            "value": "Zeskanuj i zapisz kod"
+        },
+        {
+            "key": "scan_code",
+            "value": "Zeskanuj kod"
+        },
+        {
+            "key": "scan_user_code",
+            "value": "Zeskanuj kod użytkownika"
+        },
+        {
+            "key": "search",
+            "value": "Szukaj"
+        },
+        {
+            "key": "search_by",
+            "value": "Szukaj po"
+        },
+        {
+            "key": "select",
+            "value": "Wybierz"
+        },
+        {
+            "key": "set_list",
+            "value": "Nazwa linii / urządzenia"
+        },
+        {
+            "key": "sh_api",
+            "value": "Ustawienia API"
+        },
+        {
+            "key": "sh_devices",
+            "value": "Urządzenia"
+        },
+        {
+            "key": "sh_lines",
+            "value": "Linie produkcyjne"
+        },
+        {
+            "key": "sh_mc",
+            "value": "Ważność kalendarza form"
+        },
+        {
+            "key": "sh_ml",
+            "value": "Zmiana lokalizacji form"
+        },
+        {
+            "key": "sh_new_version",
+            "value": "Nowa wersja"
+        },
+        {
+            "key": "sh_part_give",
+            "value": "Wydanie"
+        },
+        {
+            "key": "sh_stocktaking",
+            "value": "Inwentaryzacja"
+        },
+        {
+            "key": "sh_user",
+            "value": "Użytkownik"
+        },
+        {
+            "key": "sh_user_login",
+            "value": "Ustawienia logowania CMM"
+        },
+        {
+            "key": "sh_user_sch",
+            "value": "Kalendarz"
+        },
+        {
+            "key": "sh_user_wo",
+            "value": "Moje zlecenia"
+        },
+        {
+            "key": "sh_wo",
+            "value": "Zlecenia"
+        },
+        {
+            "key": "show",
+            "value": "Pokaż"
+        },
+        {
+            "key": "stocktakings",
+            "value": "Inwentaryzacje"
+        },
+        {
+            "key": "take",
+            "value": "Weź"
+        },
+        {
+            "key": "taken",
+            "value": "Wzięte"
+        },
+        {
+            "key": "user_add",
+            "value": "Dodany przez"
+        },
+        {
+            "key": "user_code",
+            "value": "Kod QR użytkownika"
+        },
+        {
+            "key": "user_mod",
+            "value": "Zmod. przez"
+        },
+        {
+            "key": "value",
+            "value": "Wartość"
+        },
+        {
+            "key": "version",
+            "value": "Wersja"
+        },
+        {
+            "key": "wo_act_add_work",
+            "value": "Dodaj siebie"
+        },
+        {
+            "key": "wo_act_new",
+            "value": "Nowa aktywność"
+        },
+        {
+            "key": "wo_act_plan",
+            "value": "Zaplanowane aktywności"
+        },
+        {
+            "key": "wo_act_work",
+            "value": "Czas pracy [h]"
+        },
+        {
+            "key": "wo_acts",
+            "value": "Aktywności"
+        },
+        {
+            "key": "wo_assigned",
+            "value": "Przypisane do"
+        },
+        {
+            "key": "wo_category",
+            "value": "Kategoria"
+        },
+        {
+            "key": "wo_close",
+            "value": "Zakończ"
+        },
+        {
+            "key": "wo_closing",
+            "value": "Zamykanie zlecenia"
+        },
+        {
+            "key": "wo_default",
+            "value": "Brak"
+        },
+        {
+            "key": "wo_dep",
+            "value": "Dział"
+        },
+        {
+            "key": "wo_desc",
+            "value": "Opis"
+        },
+        {
+            "key": "wo_device",
+            "value": "Urządzenie"
+        },
+        {
+            "key": "wo_err_close",
+            "value": "Nie można zakończyć zadania. Najpierw wykonaj wszystkie czynności"
+        },
+        {
+            "key": "wo_file_added",
+            "value": "Dodane pliki"
+        },
+        {
+            "key": "wo_files",
+            "value": "Pliki"
+        },
+        {
+            "key": "wo_info1",
+            "value": "Szczegóły zlecenia"
+        },
+        {
+            "key": "wo_level",
+            "value": "Poziom"
+        },
+        {
+            "key": "wo_list_change",
+            "value": "Zmiany w zleceniu"
+        },
+        {
+            "key": "wo_list_part",
+            "value": "Wzięte części"
+        },
+        {
+            "key": "wo_load",
+            "value": "Załaduj [{0}] zleceń"
+        },
+        {
+            "key": "wo_location",
+            "value": "Lokalizacja"
+        },
+        {
+            "key": "wo_parts",
+            "value": "Części"
+        },
+        {
+            "key": "wo_reason",
+            "value": "Przyczyna"
+        },
+        {
+            "key": "wo_state",
+            "value": "Stan"
+        },
+        {
+            "key": "wo_take",
+            "value": "Weź"
+        },
+        {
+            "key": "workload",
+            "value": "Czas pracy"
+        },
+        {
+            "key": "yes",
+            "value": "TAK"
+        },
+        {
+            "key": "no",
+            "value": "NIE"
+        },
+        {
+            "key": "isPlan",
+            "value": "Tylko przeglądy"
+        },
+        {
+            "key": "active",
+            "value": "Tylko aktwyne"
+        },
+        {
+            "key": "isDep",
+            "value": "Skierowanie do mojego działu"
+        },
+        {
+            "key": "isObserved",
+            "value": "Obserwowane"
+        },
+        {
+            "key": "isScheduled",
+            "value": "Z haromonogramu"
+        },
+        {
+            "key": "isGroup",
+            "value": "Grupy zainteresowań"
+        },
+        {
+            "key": "deviceName",
+            "value": "Nazwa urządzenia"
+        },
+        {
+            "key": "isWithPerson",
+            "value": "Brałem udział"
+        },
+        {
+            "key": "isAssignedPerson",
+            "value": "Przypisane do mnie"
+        },
+        {
+            "key": "filtering",
+            "value": "Filtrowanie"
+        },
+        {
+            "key": "sorting",
+            "value": "Sortowanie"
+        },
+        {
+            "key": "sorting_by",
+            "value": "Sortuj po"
+        },
+        {
+            "key": "asset_no",
+            "value": "Nazwa urządzenia"
+        },
+        {
+            "key": "add_date",
+            "value": "Data dodania"
+        },
+        {
+            "key": "device_category",
+            "value": "Kategoria urządzenia"
+        },
+        {
+            "key": "take_date",
+            "value": "Data wzięcia"
+        },
+        {
+            "key": "mod_date",
+            "value": "Data modyfikacji"
+        },
+        {
+            "key": "sh_dc",
+            "value": "Wybór auta / przebieg"
+        },
+        {
+            "key": "cycle",
+            "value": "Przebieg"
+        },
+        {
+            "key": "selected_devies",
+            "value": "Wybrane urządzenia"
+        },
+        {
+            "key": "selected_devies_history",
+            "value": "Historia wybieranych urządzeń"
+        },
+        {
+            "key": "current_cycle",
+            "value": "Aktualny przebieg"
+        },
+        {
+            "key": "current",
+            "value": "Aktualny"
+        },
+        {
+            "key": "owner",
+            "value": "Właściciel"
+        },
+        {
+            "key": "skip",
+            "value": "Pomiń"
+        },
+        {
+            "key": "isTakenPerson",
+            "value": "Aktualnie wzięte przeze mnie"
+        },
+        {
+            "key": "taken_by",
+            "value": "Wzięte przeze mnie"
+        },
+        {
+            "key": "ago",
+            "value": "temu"
+        },
+        {
+            "key": "Scheduler_WeekViewDefinition_Title",
+            "value": "Tydzień"
+        },
+        {
+            "key": "Scheduler_MultidayViewDefinition_Title",
+            "value": "Wielodniowy"
+        },
+        {
+            "key": "Scheduler_DayViewDefinition_Title",
+            "value": "Dzień"
+        },
+        {
+            "key": "Scheduler_MonthViewDefinition_Title",
+            "value": "Miesiąc"
+        },
+        {
+            "key": "Scheduler_Today_Header_Text",
+            "value": "Dziś"
+        },
+        {
+            "key": "Scheduler_Empty_ViewDefinition_Text",
+            "value": "Proszę zdefiniować widok"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Subject",
+            "value": "Temat"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_StartTime",
+            "value": "Czas rozpoczęcia"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_EndTime",
+            "value": "Czas zakończenia"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_AllDay",
+            "value": "Cały dzień"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Repeat",
+            "value": "Powtarzaj"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Description",
+            "value": "Opis"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Save",
+            "value": "Zapisz"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Cancel",
+            "value": "Anuluj"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Edit",
+            "value": "Edytuj"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Repeat_Daily",
+            "value": "Powtarzaj codziennie"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Repeat_Weekly",
+            "value": "Powtarzaj co tydzień"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Repeat_Monthly",
+            "value": "Powtarzaj co miesiąc"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Repeat_Yearly",
+            "value": "Powtarzaj co rok"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Repeat_Edit",
+            "value": "Edytuj"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Repeat",
+            "value": "Powtarzaj"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Every",
+            "value": "Co"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On",
+            "value": "Dnia"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_End",
+            "value": "Koniec"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Repeat_Daily",
+            "value": "Codziennie"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Repeat_Weekly",
+            "value": "Co tydzień"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Repeat_Monthly",
+            "value": "Co miesiąc"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Repeat_Yearly",
+            "value": "Co rok"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_End_On_This_Day",
+            "value": "w tym dniu"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_End_After",
+            "value": "po"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_End_After_Occurrences",
+            "value": "wystąpieniach"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_End_No_End_Date",
+            "value": "brak daty końcowej"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Days",
+            "value": "dni"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Day",
+            "value": "dzień"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Weeks",
+            "value": "tygodnie"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Months",
+            "value": "miesiące"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_First",
+            "value": "Pierwszy"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Second",
+            "value": "Drugi"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Third",
+            "value": "Trzeci"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Fourth",
+            "value": "Czwarty"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Last",
+            "value": "Ostatni"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Day",
+            "value": "Dzień"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Weekday",
+            "value": "Dzień roboczy"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Weekend_Day",
+            "value": "Dzień weekendowy"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Daily_Single",
+            "value": "Występuje codziennie, początek {0}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Daily_Multiple",
+            "value": "Występuje co {0} dni, początek {1}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Weekly_Single",
+            "value": "Występuje co {0}, początek {1}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Weekly_Multiple",
+            "value": "Występuje co {0} tygodnie w {1}, początek {1}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Monthly_Single_Day",
+            "value": "Występuje {0} dnia każdego miesiąca, początek {1}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Monthly_Multiple_Day",
+            "value": "Występuje {0} dnia co {1} miesiące, początek {1}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Monthly_Single_Week",
+            "value": "Występuje {0} {1} każdego miesiąca, początek {1}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Monthly_Multiple_Week",
+            "value": "Występuje {0} {1} co {1} miesiące, początek {3}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Yearly_Day",
+            "value": "Występuje {0} {1}, początek {1}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Yearly_Week",
+            "value": "Występuje {0} {1} {1}, początek {3}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceChoiceDialog_Edit_Occurrence",
+            "value": "Edytuj to wystąpienie."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceChoiceDialog_Edit_Series",
+            "value": "Edytuj serię."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceChoiceDialog_Edit",
+            "value": "Edytuj"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceChoiceDialog_Cancel",
+            "value": "Anuluj"
+        },
+        {
+            "key": "Scheduler_ConfirmDeleteDialog_Question_Occurrence",
+            "value": "Czy na pewno chcesz usunąć to wystąpienie?"
+        },
+        {
+            "key": "Scheduler_ConfirmDeleteDialog_Question_Series",
+            "value": "Czy na pewno chcesz usunąć serię?"
+        },
+        {
+            "key": "Scheduler_ConfirmDeleteDialog_Delete",
+            "value": "Usuń"
+        },
+        {
+            "key": "Scheduler_ConfirmDeleteDialog_Cancel",
+            "value": "Anuluj"
+        },
+        {
+            "key": "Scheduler_DeleteRecurrenceChoiceDialog_Delete_Occurrence",
+            "value": "Usuń to wystąpienie."
+        },
+        {
+            "key": "Scheduler_DeleteRecurrenceChoiceDialog_Delete_Series",
+            "value": "Usuń serię."
+        },
+        {
+            "key": "Scheduler_DeleteRecurrenceChoiceDialog_Delete",
+            "value": "Usuń"
+        },
+        {
+            "key": "Scheduler_DeleteRecurrenceChoiceDialog_Cancel",
+            "value": "Anuluj"
+        },
+        {
+            "key": "old_password",
+            "value": "Stare hasło"
+        },
+        {
+            "key": "new_password",
+            "value": "Nowe hasło"
+        },
+        {
+            "key": "new_password_repeat",
+            "value": "Powtórz nowe hasło"
+        },
+        {
+            "key": "password_change",
+            "value": "Zmiana hasła"
+        },
+        {
+            "key": "passwords_not_equal",
+            "value": "Różne hasła"
+        }
+    ],
+    "isValid": true,
+    "errors": []
+}

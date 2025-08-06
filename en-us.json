@@ -1,0 +1,1430 @@
+{
+    "data": [
+        {
+            "key": "add",
+            "value": "Add"
+        },
+        {
+            "key": "api_settings",
+            "value": "API settings"
+        },
+        {
+            "key": "by",
+            "value": "By"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthDay",
+            "value": "Day"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthFriday",
+            "value": "Friday"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthMonday",
+            "value": "Monday"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthSaturday",
+            "value": "Saturday"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthSunday",
+            "value": "Sunday"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthThursday",
+            "value": "Thursday"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthTuesday",
+            "value": "Tuesday"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthWednesday",
+            "value": "Wednesday"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthWeekday",
+            "value": "Weekday"
+        },
+        {
+            "key": "Calendar_AdditionalInfoMonthWeekendDay",
+            "value": "Weekend Day"
+        },
+        {
+            "key": "Calendar_AgendaAllDay",
+            "value": "All-Day"
+        },
+        {
+            "key": "Calendar_AgendaEndTimeText",
+            "value": "Ends"
+        },
+        {
+            "key": "Calendar_AgendaStartTimeText",
+            "value": "Starts"
+        },
+        {
+            "key": "Calendar_AllDayAreaText",
+            "value": "ALL-DAY"
+        },
+        {
+            "key": "Calendar_AllDayAreaTextUWP",
+            "value": "All-day"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationApril",
+            "value": "Apr"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationAugust",
+            "value": "Aug"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationDecember",
+            "value": "Dec"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationFebruary",
+            "value": "Feb"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationJanuary",
+            "value": "Jan"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationJuly",
+            "value": "Jul"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationJune",
+            "value": "Jun"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationMarch",
+            "value": "Mar"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationMay",
+            "value": "May"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationNovember",
+            "value": "Nov"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationOctober",
+            "value": "Oct"
+        },
+        {
+            "key": "Calendar_MonthAbbreviationSeptember",
+            "value": "Sep"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationFriday",
+            "value": "F"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationMonday",
+            "value": "M"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationSaturday",
+            "value": "S"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationSunday",
+            "value": "SU"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationThursday",
+            "value": "T"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationTuesday",
+            "value": "TU"
+        },
+        {
+            "key": "Calendar_WeekDayAbbreviationWednesday",
+            "value": "W"
+        },
+        {
+            "key": "category",
+            "value": "Category"
+        },
+        {
+            "key": "change",
+            "value": "Change"
+        },
+        {
+            "key": "check",
+            "value": "Check"
+        },
+        {
+            "key": "check_connection",
+            "value": "Check connection"
+        },
+        {
+            "key": "clear",
+            "value": "Clear"
+        },
+        {
+            "key": "close",
+            "value": "Close"
+        },
+        {
+            "key": "cmm_login",
+            "value": "CMM User"
+        },
+        {
+            "key": "cmm_login_start",
+            "value": "Login to application start"
+        },
+        {
+            "key": "confirm",
+            "value": "Confirm"
+        },
+        {
+            "key": "currency",
+            "value": "Currency"
+        },
+        {
+            "key": "current_location",
+            "value": "Current location"
+        },
+        {
+            "key": "cv_agenda",
+            "value": "Agenda"
+        },
+        {
+            "key": "cv_day",
+            "value": "Day"
+        },
+        {
+            "key": "cv_month",
+            "value": "Month"
+        },
+        {
+            "key": "cv_week",
+            "value": "Week"
+        },
+        {
+            "key": "data",
+            "value": "Data"
+        },
+        {
+            "key": "date_add",
+            "value": "Add date"
+        },
+        {
+            "key": "date_end",
+            "value": "End date"
+        },
+        {
+            "key": "date_mod",
+            "value": "Mod. date"
+        },
+        {
+            "key": "date_start",
+            "value": "Plan. start date"
+        },
+        {
+            "key": "date_stop",
+            "value": "Plan. end date"
+        },
+        {
+            "key": "delete",
+            "value": "Delete"
+        },
+        {
+            "key": "dev_asset_no",
+            "value": "Asset no"
+        },
+        {
+            "key": "dev_asset_no_short",
+            "value": "Short name"
+        },
+        {
+            "key": "dev_bk_no",
+            "value": "Bookkeeping number"
+        },
+        {
+            "key": "dev_branch",
+            "value": "Branch"
+        },
+        {
+            "key": "dev_buy_date",
+            "value": "Buy date"
+        },
+        {
+            "key": "dev_buy_price",
+            "value": "Buy price"
+        },
+        {
+            "key": "dev_cc",
+            "value": "Cost center"
+        },
+        {
+            "key": "dev_current_cycles",
+            "value": "Current cycles"
+        },
+        {
+            "key": "dev_cycle",
+            "value": "Shots"
+        },
+        {
+            "key": "dev_days",
+            "value": "Days"
+        },
+        {
+            "key": "dev_def_location",
+            "value": "Default location"
+        },
+        {
+            "key": "dev_deliv_date",
+            "value": "Delivery date"
+        },
+        {
+            "key": "dev_details",
+            "value": "Device details"
+        },
+        {
+            "key": "dev_doc",
+            "value": "Documentation"
+        },
+        {
+            "key": "dev_equipment",
+            "value": "Equipment"
+        },
+        {
+            "key": "dev_gus_no",
+            "value": "GUS number"
+        },
+        {
+            "key": "dev_info",
+            "value": "Informations"
+        },
+        {
+            "key": "dev_is_doc",
+            "value": "Is documentation"
+        },
+        {
+            "key": "dev_is_in_use",
+            "value": "Is in use"
+        },
+        {
+            "key": "dev_labeled",
+            "value": "Labeled"
+        },
+        {
+            "key": "dev_left",
+            "value": "Left values"
+        },
+        {
+            "key": "dev_line",
+            "value": "Production line: {0}"
+        },
+        {
+            "key": "dev_list",
+            "value": "List of devices"
+        },
+        {
+            "key": "dev_load",
+            "value": "Load [{0}] devices"
+        },
+        {
+            "key": "dev_loc_new",
+            "value": "New localization"
+        },
+        {
+            "key": "dev_location",
+            "value": "Location"
+        },
+        {
+            "key": "dev_place",
+            "value": "Place"
+        },
+        {
+            "key": "dev_plan",
+            "value": "Plans list"
+        },
+        {
+            "key": "dev_producent",
+            "value": "Producent"
+        },
+        {
+            "key": "dev_remarks",
+            "value": "Remarks"
+        },
+        {
+            "key": "dev_serial_no",
+            "value": "Serial number"
+        },
+        {
+            "key": "dev_state_change",
+            "value": "History of device state"
+        },
+        {
+            "key": "dev_state_list",
+            "value": "Change list"
+        },
+        {
+            "key": "dev_state_remarks",
+            "value": "State remark"
+        },
+        {
+            "key": "dev_state_sum",
+            "value": "Summary"
+        },
+        {
+            "key": "dev_type",
+            "value": "Type"
+        },
+        {
+            "key": "dev_warranty",
+            "value": "Device warranties"
+        },
+        {
+            "key": "dev_where",
+            "value": "Where is: {0}"
+        },
+        {
+            "key": "dev_where_is",
+            "value": "Where is"
+        },
+        {
+            "key": "dev_wo",
+            "value": "Work order"
+        },
+        {
+            "key": "dev_wo_list",
+            "value": "WOs list"
+        },
+        {
+            "key": "dev_year_of_production",
+            "value": "Production date"
+        },
+        {
+            "key": "device",
+            "value": "Device"
+        },
+        {
+            "key": "down_info1",
+            "value": "New application version is available"
+        },
+        {
+            "key": "down_info2",
+            "value": "Should download it?"
+        },
+        {
+            "key": "down_info3",
+            "value": "Downloading new application version..."
+        },
+        {
+            "key": "down_info4",
+            "value": "End downloading will open directory with file"
+        },
+        {
+            "key": "download",
+            "value": "Download"
+        },
+        {
+            "key": "edit",
+            "value": "Edit"
+        },
+        {
+            "key": "finish",
+            "value": "Finish"
+        },
+        {
+            "key": "hist_info",
+            "value": "Saved history of watched devices, documents and states of parts during stocktaking"
+        },
+        {
+            "key": "history",
+            "value": "History"
+        },
+        {
+            "key": "inv_new",
+            "value": "New stocktaking"
+        },
+        {
+            "key": "lib",
+            "value": "Library"
+        },
+        {
+            "key": "load_n_items",
+            "value": "Load [{0}] items"
+        },
+        {
+            "key": "log_no_user",
+            "value": "No user in database!"
+        },
+        {
+            "key": "login",
+            "value": "Login"
+        },
+        {
+            "key": "login_err_pass",
+            "value": "Bad login or password!!"
+        },
+        {
+            "key": "main_info1",
+            "value": "Last shown devices"
+        },
+        {
+            "key": "main_info2",
+            "value": "Last opened documentations"
+        },
+        {
+            "key": "mc_new",
+            "value": "New calendar validity"
+        },
+        {
+            "key": "mc_old",
+            "value": "Current calendar validity"
+        },
+        {
+            "key": "mc_val",
+            "value": "Validity"
+        },
+        {
+            "key": "ml_history",
+            "value": "Location change history"
+        },
+        {
+            "key": "ml_hold_field",
+            "value": "Holding fields"
+        },
+        {
+            "key": "ml_imm",
+            "value": "IMM"
+        },
+        {
+            "key": "ml_put_on",
+            "value": "Mould to put on"
+        },
+        {
+            "key": "ml_to_send",
+            "value": "Mould to send"
+        },
+        {
+            "key": "ml_tool",
+            "value": "Tool shop"
+        },
+        {
+            "key": "ml_war",
+            "value": "Mould warehouse"
+        },
+        {
+            "key": "mould",
+            "value": "Mould"
+        },
+        {
+            "key": "name",
+            "value": "Name"
+        },
+        {
+            "key": "new_location",
+            "value": "New location"
+        },
+        {
+            "key": "no_result_found",
+            "value": "No result found"
+        },
+        {
+            "key": "order",
+            "value": "Order"
+        },
+        {
+            "key": "other",
+            "value": "Other"
+        },
+        {
+            "key": "part_add",
+            "value": "Add quantity"
+        },
+        {
+            "key": "part_category",
+            "value": "Category"
+        },
+        {
+            "key": "part_change_quantity",
+            "value": "Change amount: {0:0.##}"
+        },
+        {
+            "key": "part_change_type",
+            "value": "Type: {0}"
+        },
+        {
+            "key": "part_correction",
+            "value": "Quantity correction"
+        },
+        {
+            "key": "part_currentneeds",
+            "value": "Current needs"
+        },
+        {
+            "key": "part_defaultsupplier",
+            "value": "Default supplier"
+        },
+        {
+            "key": "part_description",
+            "value": "Description"
+        },
+        {
+            "key": "part_find",
+            "value": "Find part"
+        },
+        {
+            "key": "part_generalcategory",
+            "value": "General category"
+        },
+        {
+            "key": "part_give",
+            "value": "Give"
+        },
+        {
+            "key": "part_give_back",
+            "value": "Give back"
+        },
+        {
+            "key": "part_give2",
+            "value": "Give the part"
+        },
+        {
+            "key": "part_inv_org",
+            "value": "From stocktaking"
+        },
+        {
+            "key": "part_inv_pro",
+            "value": "From CMM"
+        },
+        {
+            "key": "part_list",
+            "value": "List of parts"
+        },
+        {
+            "key": "part_list_conf",
+            "value": "Parts to confirm"
+        },
+        {
+            "key": "part_locations",
+            "value": "Locations"
+        },
+        {
+            "key": "part_lockedorders",
+            "value": "Locked orders"
+        },
+        {
+            "key": "part_manufacturercode",
+            "value": "Producent code"
+        },
+        {
+            "key": "part_new_loc",
+            "value": "New location"
+        },
+        {
+            "key": "part_new_location",
+            "value": "New location"
+        },
+        {
+            "key": "part_new_quantity",
+            "value": "Nowa ilość"
+        },
+        {
+            "key": "part_no",
+            "value": "Part number"
+        },
+        {
+            "key": "part_obsolete",
+            "value": "Obsolete"
+        },
+        {
+            "key": "part_old_loc",
+            "value": "Current location"
+        },
+        {
+            "key": "part_orderedquantity",
+            "value": "Ordered quantity"
+        },
+        {
+            "key": "part_producent",
+            "value": "Producent"
+        },
+        {
+            "key": "part_put_back",
+            "value": "Put back"
+        },
+        {
+            "key": "part_quantity",
+            "value": "Quantity"
+        },
+        {
+            "key": "part_remarks",
+            "value": "Remarks"
+        },
+        {
+            "key": "part_stock_during",
+            "value": "During stocktaking"
+        },
+        {
+            "key": "part_stock_level",
+            "value": "Current quantity"
+        },
+        {
+            "key": "part_stock_level_target",
+            "value": "Limit quantity"
+        },
+        {
+            "key": "part_stock_max_target",
+            "value": "Maximum quantity"
+        },
+        {
+            "key": "part_stock_min_target",
+            "value": "Minimal quantity"
+        },
+        {
+            "key": "part_stock_update",
+            "value": "Update part quantity in database"
+        },
+        {
+            "key": "part_taken",
+            "value": "Taken quantity"
+        },
+        {
+            "key": "part_taken_by",
+            "value": "Taken by: {0}"
+        },
+        {
+            "key": "part_unit",
+            "value": "Unit"
+        },
+        {
+            "key": "part_warehouse",
+            "value": "Warehouse"
+        },
+        {
+            "key": "part_who",
+            "value": "Who took"
+        },
+        {
+            "key": "password",
+            "value": "Password"
+        },
+        {
+            "key": "Picker_AmPmSpinnerHeaderLabelText",
+            "value": "AM/PM"
+        },
+        {
+            "key": "Picker_DaySpinnerHeaderLabelText",
+            "value": "Day"
+        },
+        {
+            "key": "Picker_HourSpinnerHeaderLabelText",
+            "value": "Hours"
+        },
+        {
+            "key": "Picker_MinuteSpinnerHeaderLabelText",
+            "value": "Minutes"
+        },
+        {
+            "key": "Picker_MonthSpinnerHeaderLabelText",
+            "value": "Month"
+        },
+        {
+            "key": "Picker_Popup_AcceptButtonText",
+            "value": "OK"
+        },
+        {
+            "key": "Picker_Popup_CancelButtonText",
+            "value": "Cancel"
+        },
+        {
+            "key": "Picker_SecondSpinnerHeaderLabelText",
+            "value": "Seconds"
+        },
+        {
+            "key": "Picker_YearSpinnerHeaderLabelText",
+            "value": "Year"
+        },
+        {
+            "key": "picture",
+            "value": "Picture"
+        },
+        {
+            "key": "plan_load",
+            "value": "Load [{0}] maintenance plans"
+        },
+        {
+            "key": "price_unit",
+            "value": "Price by unit"
+        },
+        {
+            "key": "prog_host",
+            "value": "Checking connection to host"
+        },
+        {
+            "key": "prog_login",
+            "value": "Login to application"
+        },
+        {
+            "key": "prog_update",
+            "value": "Checking is newer version released"
+        },
+        {
+            "key": "q_sure",
+            "value": "Are you sure??"
+        },
+        {
+            "key": "q_sure_delete",
+            "value": "Are you sure you want to delete it?"
+        },
+        {
+            "key": "q_wo_close",
+            "value": "Are you sure you want close work order?"
+        },
+        {
+            "key": "refresh_data",
+            "value": "Refresh data"
+        },
+        {
+            "key": "remove_history",
+            "value": "Remove history"
+        },
+        {
+            "key": "save",
+            "value": "Save"
+        },
+        {
+            "key": "scan_and_save_code",
+            "value": "Scan and save code"
+        },
+        {
+            "key": "scan_code",
+            "value": "Scan code"
+        },
+        {
+            "key": "scan_user_code",
+            "value": "Scan user code"
+        },
+        {
+            "key": "search",
+            "value": "Search"
+        },
+        {
+            "key": "search_by",
+            "value": "Search by"
+        },
+        {
+            "key": "select",
+            "value": "Select"
+        },
+        {
+            "key": "set_list",
+            "value": "Line / device name"
+        },
+        {
+            "key": "sh_api",
+            "value": "API settings"
+        },
+        {
+            "key": "sh_devices",
+            "value": "Devices"
+        },
+        {
+            "key": "sh_lines",
+            "value": "Production lines"
+        },
+        {
+            "key": "sh_mc",
+            "value": "Mould calendar"
+        },
+        {
+            "key": "sh_ml",
+            "value": "Mould location"
+        },
+        {
+            "key": "sh_new_version",
+            "value": "New version"
+        },
+        {
+            "key": "sh_part_give",
+            "value": "Take part"
+        },
+        {
+            "key": "sh_stocktaking",
+            "value": "Stocktaking"
+        },
+        {
+            "key": "sh_user",
+            "value": "User"
+        },
+        {
+            "key": "sh_user_login",
+            "value": "CMM login settings"
+        },
+        {
+            "key": "sh_user_sch",
+            "value": "Scheduler"
+        },
+        {
+            "key": "sh_user_wo",
+            "value": "My work orders"
+        },
+        {
+            "key": "sh_wo",
+            "value": "WOs"
+        },
+        {
+            "key": "show",
+            "value": "Show"
+        },
+        {
+            "key": "stocktakings",
+            "value": "Stocktakings"
+        },
+        {
+            "key": "take",
+            "value": "Take"
+        },
+        {
+            "key": "taken",
+            "value": "Taken"
+        },
+        {
+            "key": "user_add",
+            "value": "Added by"
+        },
+        {
+            "key": "user_code",
+            "value": "User QR code"
+        },
+        {
+            "key": "user_mod",
+            "value": "Mod. by"
+        },
+        {
+            "key": "value",
+            "value": "Value"
+        },
+        {
+            "key": "version",
+            "value": "Version"
+        },
+        {
+            "key": "wo_act_add_work",
+            "value": "Add yourself"
+        },
+        {
+            "key": "wo_act_new",
+            "value": "New activity"
+        },
+        {
+            "key": "wo_act_plan",
+            "value": "Planned activities"
+        },
+        {
+            "key": "wo_act_work",
+            "value": "Workload [h]"
+        },
+        {
+            "key": "wo_acts",
+            "value": "Activities"
+        },
+        {
+            "key": "wo_assigned",
+            "value": "Assigned to"
+        },
+        {
+            "key": "wo_category",
+            "value": "Category"
+        },
+        {
+            "key": "wo_close",
+            "value": "End"
+        },
+        {
+            "key": "wo_closing",
+            "value": "Closing work order"
+        },
+        {
+            "key": "wo_default",
+            "value": "Empty"
+        },
+        {
+            "key": "wo_dep",
+            "value": "Department"
+        },
+        {
+            "key": "wo_desc",
+            "value": "Description"
+        },
+        {
+            "key": "wo_device",
+            "value": "Device"
+        },
+        {
+            "key": "wo_err_close",
+            "value": "You can't close work order. Firstly do all planned activities."
+        },
+        {
+            "key": "wo_file_added",
+            "value": "Added files"
+        },
+        {
+            "key": "wo_files",
+            "value": "Files"
+        },
+        {
+            "key": "wo_info1",
+            "value": "Work order details"
+        },
+        {
+            "key": "wo_level",
+            "value": "Level"
+        },
+        {
+            "key": "wo_list_change",
+            "value": "Changes in work order"
+        },
+        {
+            "key": "wo_list_part",
+            "value": "Taken parts"
+        },
+        {
+            "key": "wo_load",
+            "value": "Load [{0}] work orders"
+        },
+        {
+            "key": "wo_location",
+            "value": "Location"
+        },
+        {
+            "key": "wo_parts",
+            "value": "Parts"
+        },
+        {
+            "key": "wo_reason",
+            "value": "Reason"
+        },
+        {
+            "key": "wo_state",
+            "value": "State"
+        },
+        {
+            "key": "wo_take",
+            "value": "Take"
+        },
+        {
+            "key": "workload",
+            "value": "Workload"
+        },
+        {
+            "key": "yes",
+            "value": "YES"
+        },
+        {
+            "key": "no",
+            "value": "NO"
+        },
+        {
+            "key": "isPlan",
+            "value": "Only from maintenance"
+        },
+        {
+            "key": "active",
+            "value": "Only active"
+        },
+        {
+            "key": "isDep",
+            "value": "Only for my department"
+        },
+        {
+            "key": "isObserved",
+            "value": "Observed"
+        },
+        {
+            "key": "isScheduled",
+            "value": "From scheduled"
+        },
+        {
+            "key": "isGroup",
+            "value": "Interese groups"
+        },
+        {
+            "key": "deviceName",
+            "value": "Device name"
+        },
+        {
+            "key": "isWithPerson",
+            "value": "Taken part"
+        },
+        {
+            "key": "isAssignedPerson",
+            "value": "Assigned to me"
+        },
+        {
+            "key": "filtering",
+            "value": "Filtering"
+        },
+        {
+            "key": "sorting",
+            "value": "Sorting"
+        },
+        {
+            "key": "sorting_by",
+            "value": "Sorting by"
+        },
+        {
+            "key": "asset_no",
+            "value": "Device name"
+        },
+        {
+            "key": "add_date",
+            "value": "Add_date"
+        },
+        {
+            "key": "device_category",
+            "value": "Device category"
+        },
+        {
+            "key": "take_date",
+            "value": "Take date"
+        },
+        {
+            "key": "mod_date",
+            "value": "Modification date"
+        },
+        {
+            "key": "sh_dc",
+            "value": "Car selection / mileage"
+        },
+        {
+            "key": "cycle",
+            "value": "Cycles"
+        },
+        {
+            "key": "selected_devies",
+            "value": "Selected devices"
+        },
+        {
+            "key": "selected_devies_history",
+            "value": "History of device selection"
+        },
+        {
+            "key": "current_cycle",
+            "value": "Current cycles"
+        },
+        {
+            "key": "current",
+            "value": "Current"
+        },
+        {
+            "key": "owner",
+            "value": "Owner"
+        },
+        {
+            "key": "skip",
+            "value": "Skip"
+        },
+        {
+            "key": "isTakenPerson",
+            "value": "Taken by me"
+        },
+        {
+            "key": "taken_by",
+            "value": "Taken by me"
+        },
+        {
+            "key": "ago",
+            "value": "ago"
+        },
+        {
+            "key": "Scheduler_WeekViewDefinition_Title",
+            "value": "Week"
+        },
+        {
+            "key": "Scheduler_MultidayViewDefinition_Title",
+            "value": "Multiday"
+        },
+        {
+            "key": "Scheduler_DayViewDefinition_Title",
+            "value": "Day"
+        },
+        {
+            "key": "Scheduler_MonthViewDefinition_Title",
+            "value": "Month"
+        },
+        {
+            "key": "Scheduler_Today_Header_Text",
+            "value": "Today"
+        },
+        {
+            "key": "Scheduler_Empty_ViewDefinition_Text",
+            "value": "Please declare a View definition"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Subject",
+            "value": "Subject"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_StartTime",
+            "value": "Start Time"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_EndTime",
+            "value": "End Time"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_AllDay",
+            "value": "All Day"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Repeat",
+            "value": "Repeat"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Description",
+            "value": "Description"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Save",
+            "value": "Save"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Cancel",
+            "value": "Cancel"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Edit",
+            "value": "Edit"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Repeat_Daily",
+            "value": "Repeat daily"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Repeat_Weekly",
+            "value": "Repeat weekly"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Repeat_Monthly",
+            "value": "Repeat monthly"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Repeat_Yearly",
+            "value": "Repeat yearly"
+        },
+        {
+            "key": "Scheduler_EditAppointmentDialog_Repeat_Edit",
+            "value": "Edit"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Repeat",
+            "value": "Repeat"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Every",
+            "value": "Every"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On",
+            "value": "On"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_End",
+            "value": "End"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Repeat_Daily",
+            "value": "Daily"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Repeat_Weekly",
+            "value": "Weekly"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Repeat_Monthly",
+            "value": "Monthly"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Repeat_Yearly",
+            "value": "Yearly"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_End_On_This_Day",
+            "value": "on this day"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_End_After",
+            "value": "after"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_End_After_Occurrences",
+            "value": "occurrences"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_End_No_End_Date",
+            "value": "no end date"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Days",
+            "value": "day(s)"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Day",
+            "value": "day"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Weeks",
+            "value": "week(s)"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Months",
+            "value": "month(s)"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_First",
+            "value": "First"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Second",
+            "value": "Second"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Third",
+            "value": "Third"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Fourth",
+            "value": "Fourth"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Last",
+            "value": "Last"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Day",
+            "value": "Day"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Weekday",
+            "value": "Weekday"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_On_Weekend_Day",
+            "value": "Weekend Day"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Daily_Single",
+            "value": "Occurs every day starting {0}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Daily_Multiple",
+            "value": "Occurs every {0} days starting {1}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Weekly_Single",
+            "value": "Occurs every {0} starting {1}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Weekly_Multiple",
+            "value": "Occurs every {0} weeks on {1} starting {2}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Monthly_Single_Day",
+            "value": "Occurs day {0} of every month starting {1}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Monthly_Multiple_Day",
+            "value": "Occurs day {0} of every {1} months starting {2}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Monthly_Single_Week",
+            "value": "Occurs the {0} {1} of every month starting {2}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Monthly_Multiple_Week",
+            "value": "Occurs the {0} {1} of every {2} months starting {3}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Yearly_Day",
+            "value": "Occurs every {0} {1} starting {2}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceDialog_Summary_Yearly_Week",
+            "value": "Occurs the {0} {1} of {2} starting {3}."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceChoiceDialog_Edit_Occurrence",
+            "value": "Edit this occurrence."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceChoiceDialog_Edit_Series",
+            "value": "Edit the series."
+        },
+        {
+            "key": "Scheduler_EditRecurrenceChoiceDialog_Edit",
+            "value": "Edit"
+        },
+        {
+            "key": "Scheduler_EditRecurrenceChoiceDialog_Cancel",
+            "value": "Cancel"
+        },
+        {
+            "key": "Scheduler_ConfirmDeleteDialog_Question_Occurrence",
+            "value": "Are you sure you want to delete this occurrence?"
+        },
+        {
+            "key": "Scheduler_ConfirmDeleteDialog_Question_Series",
+            "value": "Are you sure you want to delete the series?"
+        },
+        {
+            "key": "Scheduler_ConfirmDeleteDialog_Delete",
+            "value": "Delete"
+        },
+        {
+            "key": "Scheduler_ConfirmDeleteDialog_Cancel",
+            "value": "Cancel"
+        },
+        {
+            "key": "Scheduler_DeleteRecurrenceChoiceDialog_Delete_Occurrence",
+            "value": "Delete this occurrence."
+        },
+        {
+            "key": "Scheduler_DeleteRecurrenceChoiceDialog_Delete_Series",
+            "value": "Delete the series."
+        },
+        {
+            "key": "Scheduler_DeleteRecurrenceChoiceDialog_Delete",
+            "value": "Delete"
+        },
+        {
+            "key": "Scheduler_DeleteRecurrenceChoiceDialog_Cancel",
+            "value": "Cancel"
+        },
+        {
+            "key": "old_password",
+            "value": "Old password"
+        },
+        {
+            "key": "new_password",
+            "value": "New password"
+        },
+        {
+            "key": "new_password_repeat",
+            "value": "Repeat new password"
+        },
+        {
+            "key": "password_change",
+            "value": "Password change"
+        },
+        {
+            "key": "passwords_not_equal",
+            "value": "Passwords are not equal"
+        }
+    ],
+    "isValid": true,
+    "errors": []
+}

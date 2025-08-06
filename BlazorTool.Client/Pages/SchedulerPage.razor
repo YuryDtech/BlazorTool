@@ -86,14 +86,27 @@
             <div><TelerikButton OnClick="@HardLoadData" Size="Small" ThemeColor="@ThemeConstants.Button.ThemeColor.Tertiary">@Localizer["Scheduler_ReloadAllData"]</TelerikButton></div>
             @if (CurrentView == SchedulerView.Timeline)
             {
-            <div style="display:flex; flex-direction: row; gap:10px; align-items:center;">
-                <label>@Localizer["Scheduler_ColumnWidth"]</label>
-                <TelerikNumericTextBox @bind-Value="@columnWidth" Width="80px" Min="10" Max="200" Step="10" Size="Small" />
-                <label>@Localizer["Scheduler_SlotDuration"]</label>
-                <TelerikNumericTextBox @bind-Value="@slotDuration" Width="110px" Min="15" Max="1440" Step="15" Size="Small" />
-                <label>@Localizer["Scheduler_NumberOfDays"]</label>
-                <TelerikNumericTextBox @bind-Value="@numberOfDays" Width="80px" Min="1" Max="14" Step="1" Size="Small" />
-            </div>                
+                <div class="timeline-options">
+                    <label>@Localizer["Scheduler_NumberOfDays"]</label>
+                    <TelerikButtonGroup Class="telerikButtonGroup">
+                        <ButtonGroupToggleButton OnClick="@(() => OnTimelineOptionChanged("3"))" Selected="@(selectedTimelineOption == "3")">3 </ButtonGroupToggleButton>
+                        <ButtonGroupToggleButton OnClick="@(() => OnTimelineOptionChanged("5"))" Selected="@(selectedTimelineOption == "5")">5 </ButtonGroupToggleButton>
+                        <ButtonGroupToggleButton OnClick="@(() => OnTimelineOptionChanged("7"))" Selected="@(selectedTimelineOption == "7")">7 </ButtonGroupToggleButton>
+                        <ButtonGroupToggleButton OnClick="@(() => OnTimelineOptionChanged("14"))" Selected="@(selectedTimelineOption == "14")">14 </ButtonGroupToggleButton>
+                        <ButtonGroupToggleButton OnClick="@(() => OnTimelineOptionChanged("Custom"))" Selected="@(selectedTimelineOption == "Custom")">@Localizer["Scheduler_Custom"]</ButtonGroupToggleButton>
+                    </TelerikButtonGroup>
+                </div>
+                @if (showCustomTimelineInputs)
+                {
+                    <div style="display:flex; flex-direction: row; gap:6px; align-items:center; font-stretch: condensed;">
+                        <label>@Localizer["Scheduler_ColumnWidth"]</label>
+                        <TelerikNumericTextBox @bind-Value="@columnWidth" Width="80px" Min="10" Max="200" Step="10" Size="Small" />
+                        <label>@Localizer["Scheduler_SlotDuration"]</label>
+                        <TelerikNumericTextBox @bind-Value="@slotDuration" Width="110px" Min="15" Max="1440" Step="15" Size="Small" />
+                        <label>@Localizer["Scheduler_NumberOfDays"]</label>
+                        <TelerikNumericTextBox @bind-Value="@numberOfDays" Width="80px" Min="1" Max="30" Step="1" Size="Small" />
+                    </div>
+                }
             }
         </div>
         
@@ -383,6 +396,8 @@
     private int? slotDuration = 180; //in minutes for TimelineView
     private int? slotDivisions = 1; //for TimelineView
     private int? numberOfDays = 5; //for TimelineView alt=3
+    private string selectedTimelineOption = "5";
+    private bool showCustomTimelineInputs = false;
     private List<Resource> statuses = new List<Resource>();
 
     private List<Resource> GetStatuses(List<SchedulerAppointment> appointments)
@@ -419,6 +434,11 @@
         Console.WriteLine($"--- Initialized SCHEDULER PAGE. WASM = {isWASM}");
         Console.WriteLine($"--- OnInitializedAsync completed.");
         await UserState.InitializationTask; // Ensure UserState is loaded
+
+        if (int.TryParse(selectedTimelineOption, out int days))
+        {
+            numberOfDays = days;
+        }
 
         await HardLoadData();
     }
@@ -483,11 +503,20 @@
 
         // PersonResources should always contain all possible persons for grouping, including "Not assigned".
         // Filtering by selectedAssignedPersons is handled in FilterAppointments().
-        PersonResources = new List<Person>(allPersons);
+        if (selectedAssignedPersons.Count == 0) //show all persons
+        {
+            PersonResources = new List<Person> (allPersons);
+        }
+        else
+        {
+            PersonResources = allPersons.Where(p => selectedAssignedPersons.Contains(p.Name)).ToList();
+        }
+
         if (!PersonResources.Any(p => p.Name == Person.NotAssigned.Name))
         {
             PersonResources.Insert(0, Person.NotAssigned);
-        }
+        }            
+
     }
 
     /// <summary>
@@ -510,8 +539,6 @@
             object resourceValue = Person.NotAssigned.Name; // Default to "Not assigned"
             if (isTimelineView)
             {
-
-                // slot.Resources is a List<KeyValuePair<string, object>>, not a Dictionary. Use LINQ to find the resource.
                 var resourceKvp = slot.Resources.FirstOrDefault(kvp => kvp.Key == "AssignedPerson");
                 if (resourceKvp.Key != null) // Check if a resource was found
                 {
@@ -876,6 +903,55 @@
             Value = from
         });
         await context.FilterAsync();
+    }
+
+    private async Task OnTimelineOptionChanged(string option)
+    {
+        selectedTimelineOption = option;
+        if (option == "Custom")
+        {
+            showCustomTimelineInputs = true;
+        }
+        else
+        {
+            showCustomTimelineInputs = false;
+            if (int.TryParse(option, out int days))
+            {
+                switch (days)
+                {
+                    case 1:
+                        columnWidth = 70; 
+                        slotDuration = 45; 
+                        slotDivisions = 1; 
+                        break;
+                    case 3:
+                        columnWidth = 70; 
+                        slotDuration = 135;
+                        slotDivisions = 1; 
+                        break;
+                    case 5:
+                        columnWidth = 50; 
+                        slotDuration = 180; 
+                        slotDivisions = 1; 
+                        break;
+                    case 7:
+                        columnWidth = 60; 
+                        slotDuration = 360; 
+                        slotDivisions = 1; 
+                        break;
+                    case 14:
+                        columnWidth = 90; 
+                        slotDuration = 900; 
+                        slotDivisions = 1; 
+                        break;
+                    default:                        
+                        break;
+                }
+                numberOfDays = days;
+            }
+        }
+        await InvokeAsync(StateHasChanged);
+        SchedulerRef?.Rebind();
     }
 
 

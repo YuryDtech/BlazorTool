@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 namespace BlazorTool.Client.Models
 {
-    public class Dict
+    public class WODict
     {
         //"machineCategoryID": null,
         //    "is_Default": false,

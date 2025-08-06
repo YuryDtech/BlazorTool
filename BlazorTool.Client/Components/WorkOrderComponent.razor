@@ -70,8 +70,8 @@
                         <label>@Localizer[nameof(WorkOrder.WOCategory)]:</label>
                         <div class="control-wrapper">
                             <TelerikComboBox Data="@ListCategories"
-                                             ValueField="@nameof(Dict.Id)"
-                                             TextField="@nameof(Dict.Name)"
+                                             ValueField="@nameof(WODict.Id)"
+                                             TextField="@nameof(WODict.Name)"
                                              Value="@(WorkOrder?.CategoryID ?? 0)"
                                              Placeholder="@Localizer["WorkOrder_SelectWOCategory"]"
                                              ValueChanged="@((int id) => OnCategoryChanged(id))"
@@ -88,8 +88,8 @@
                         <label>@Localizer[nameof(WorkOrder.WOReason)]:</label>
                         <div class="control-wrapper">
                             <TelerikComboBox Data="@ListReasons"
-                                             ValueField="@nameof(Dict.Id)"
-                                             TextField="@nameof(Dict.Name)"
+                                             ValueField="@nameof(WODict.Id)"
+                                             TextField="@nameof(WODict.Name)"
                                              Value="@(WorkOrder?.ReasonID ?? 0)"
                                              Placeholder="@Localizer["WorkOrder_SelectWOReason"]"
                                              ValueChanged="@((int reasonId) => OnReasonChanged(reasonId))"
@@ -106,8 +106,8 @@
                         <label>@Localizer[nameof(WorkOrder.WOLevel)]:</label>
                         <div class="control-wrapper">
                             <TelerikComboBox Data="@ListLevels"
-                                             ValueField="@nameof(Dict.Id)"
-                                             TextField="@nameof(Dict.Name)"
+                                             ValueField="@nameof(WODict.Id)"
+                                             TextField="@nameof(WODict.Name)"
                                              Value="@(WorkOrder?.LevelID ?? 0)"
                                              Placeholder="@Localizer["WorkOrder_SelectWOLevel"]"
                                              ValueChanged="@((int levelId) => OnLevelChanged(levelId))"
@@ -352,10 +352,10 @@
     private bool isNewWorkOrder = false;
     private List<Device>? ListDevices { get; set; } = new List<Device>();
     private Device? selectedDevice;
-    private List<Dict> ListCategories = new List<Dict>();
-    private List<Dict> ListDepartments = new List<Dict>();
-    private List<Dict> ListLevels = new List<Dict>();
-    private List<Dict> ListReasons = new List<Dict>();
+    private List<WODict> ListCategories = new List<WODict>();
+    private List<WODict> ListDepartments = new List<WODict>();
+    private List<WODict> ListLevels = new List<WODict>();
+    private List<WODict> ListReasons = new List<WODict>();
     private string takePersons = string.Empty;
     private string StateColor = string.Empty;
     private string cb_size = "sm";

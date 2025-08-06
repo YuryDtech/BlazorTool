@@ -80,9 +80,9 @@ namespace BlazorTool.Controllers
                 var response = await client.GetAsync(url); // Use the named client
                 response.EnsureSuccessStatusCode();
 
-                var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Dict>>();
+                var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<WODict>>();
 
-                var data = wrapper?.Data ?? new List<Dict>();
+                var data = wrapper?.Data ?? new List<WODict>();
                 Console.WriteLine($"WOController --> GetWODicts returned {data.Count} items");
                 return Ok(new
                 {
