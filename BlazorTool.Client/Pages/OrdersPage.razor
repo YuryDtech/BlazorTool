@@ -108,12 +108,12 @@ else
                  OnRowRender="@OnRowRenderHandler"
                  OnRowDoubleClick="@OnRowClick"
                      >
+
         <GridToolBarTemplate>
             <GridSearchBox Width="200px"/>
         </GridToolBarTemplate>
         <GridColumns>
             <GridColumn Field="@nameof(WorkOrderView.WorkOrderID)" Title="ID" Width="5rem" Filterable="true" Editable="false" Visible="true">
-               
             </GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.WODesc)" Editable="false" Visible="false" Title="@Localizer[nameof(WorkOrder.WODesc)]"></GridColumn>
             <GridColumn Field="@nameof(WorkOrderView.DepName)" Title="@Localizer[nameof(WorkOrder.DepName)]" Width="8rem" Resizable="true">
@@ -231,7 +231,7 @@ else
             isEditable=true 
             ListPersons="@personNames.Where(c=>c != "All").ToList()"
             currentUser="@currentUser"
-            OnAppointmentChanged="@RefreshData"
+            OnAppointmentChanged="@OnCloseWorkOrderWindow"
             isScheduler = "false" />
         </WindowContent>
         <WindowFooter>
@@ -241,6 +241,9 @@ else
 
 
 @code {
+
+
+
     private bool isOrdersLoading = false;
     private bool isDevicesLoading = false;
     private List<WorkOrder> OrdersForGrid = new List<WorkOrder>();
@@ -320,6 +323,7 @@ else
         var filteredDevices = GetFilteredDevices();
         OrdersForGrid = await GetFilteredOrders(filteredDevices);
         OrderDevicesForGrid = OrdersForGrid.Select(o => new WorkOrderView(o, GetDeviceNameByOrder(o))).ToList();
+        OrderDevicesForGrid = OrderDevicesForGrid.OrderByDescending(o => o.WorkOrderID).ToList();
         rowStyles = RenderStatesStyle(OrdersForGrid);
         isOrdersLoading = false;
         StateHasChanged();
@@ -364,9 +368,9 @@ else
         return result;
     }
 
-        //when order window closed
+    //when order window closed
     //On create, Update
-    async Task RefreshData(SchedulerAppointment? editedAppointment)
+    async Task OnCloseWorkOrderWindow(SchedulerAppointment? editedAppointment)
     {
         if (editedAppointment == null)//was removed or cancelled NEW
         {
@@ -375,16 +379,21 @@ else
         }
         else
         {
-            var index = OrdersForGrid.FindIndex(a => a.WorkOrderID == editedAppointment.AppointmentId);
+            var index = OrderDevicesForGrid.FindIndex(a => a.WorkOrderID == editedAppointment.AppointmentId);
+            WorkOrderView workOrderView = new WorkOrderView(editedAppointment, GetDeviceNameByOrder(editedAppointment));
             if (index != -1)
             {
-                OrdersForGrid[index] = editedAppointment;
+                OrderDevicesForGrid[index] = workOrderView;
             }
             else
-                OrdersForGrid.Add(editedAppointment);
+                OrderDevicesForGrid.Add(workOrderView);
         }
         isOrderCardOpen = false;
-        await LoadData();
+
+        GridRef.Rebind();
+        StateHasChanged();
+
+        // await LoadData();
     }
 
     public class WorkOrderView : WorkOrder
