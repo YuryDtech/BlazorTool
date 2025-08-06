@@ -1,3 +1,23 @@
+## 2025-08-05
+### Dodano
+- Dodano przycisk "Wyczyść filtry" do list aktywności i zleceń pracy.
+- Zaimplementowano filtrowanie wielokrotnego wyboru dla kolumn siatki (np. AssetNo w Harmonogramie).
+- Dodano filtrowanie zakresu dat (Ostatni rok, Kwartał, Miesiąc) do kolumny "Data dodania" w siatce nieprzypisanych zleceń Harmonogramu.
+- Dodano kolumnę "Opis" do siatki na stronie Zleceń.
+- Dodano model `ListTypeEnum` (wewnętrzna zmiana wspierająca przyszłe skategoryzowane listy).
+
+### Zmieniono
+- Ulepszono UI/UX w komponentach ActivityDisplay, ActivityList, WorkOrderComponent, OrdersPage i SchedulerPage poprzez różne aktualizacje stylów dla lepszej czytelności i atrakcyjności wizualnej.
+- Standaryzowano odwołania do kluczy lokalizacji w komponentach UI dla lepszej utrzymywalności.
+- Usunięto przycisk "Wybierz wszystkie urządzenia" ze strony Zleceń.
+- Ulepszono okno szczegółów zlecenia pracy na stronie Zleceń, dodając ciemny motyw i niestandardową akcję zamknięcia.
+- Poprawiono czytelność ID zlecenia pracy w tytule okna szczegółów.
+- Standaryzowano tytuły kolumn w siatce nieprzypisanych zleceń Harmonogramu, używając zlokalizowanych ciągów znaków.
+- Zaktualizowano style wierszy na stronie Zleceń dla lepszego wizualnego rozdzielenia i kompaktowości.
+
+### Naprawiono
+- Poprawiono logikę filtrowania w Harmonogramie, aby prawidłowo uwzględniać osoby "Nieprzypisane" po ich wybraniu.
+
 ## 2025-08-04
 ### Dodano
 - **Dołączanie do Istniejącej Aktywności**: Użytkownicy mogą być teraz dodawani do istniejącej aktywności za pomocą nowego formularza w widoku zlecenia pracy.

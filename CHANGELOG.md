@@ -1,3 +1,23 @@
+## 2025-08-05
+### Added
+- Added "Clear Filters" button to Activity and Work Order lists.
+- Implemented multi-select filtering for grid columns (e.g., AssetNo in Scheduler).
+- Added date range filtering (Last Year, Quarter, Month) to the "Add Date" column in the Scheduler's untaken orders grid.
+- Added "Description" column to the Orders page grid.
+- Added `ListTypeEnum` model (internal change supporting future categorized lists).
+
+### Changed
+- Improved UI/UX across ActivityDisplay, ActivityList, WorkOrderComponent, OrdersPage, and SchedulerPage with various styling updates for better readability and visual appeal.
+- Standardized localization key references in UI components for better maintainability.
+- Removed "Select All Devices" button from Orders page.
+- Enhanced Work Order details window on Orders page with dark theme and custom close action.
+- Improved clarity of Work Order ID in the details window title.
+- Standardized column titles in Scheduler's untaken orders grid using localized strings.
+- Updated row styles on Orders page for better visual separation and compactness.
+
+### Fixed
+- Corrected filtering logic in Scheduler to properly include "Not Assigned" persons when selected.
+
 ## 2025-08-04
 ### Added
 - **Join Existing Activity**: Users can now be added to an existing activity via a new form in the work order view.
