@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<Resources.UIStrings> Localizer
@@ -8,10 +9,19 @@
 <BlazorTool.Client.Components.CheckSession ApiService="@ApiClient" UserState="@UserState" />
 <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Warning" @onclick="OnOrderClick">@Localizer["Home_Orders"]</TelerikButton>
 <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Success" @onclick="OnSchedulerClick">@Localizer["Home_Scheduler"]</TelerikButton>
-
+<div>
+    @* <OrdersPage /> *@
+</div>
 
 @code {
+    private List<WorkOrder> myOrders = new List<WorkOrder>();
+    private List<WorkOrder> myDepOrders = new List<WorkOrder>();
 
+    protected override async Task OnInitializedAsync()
+    {
+        var allOrders = await ApiClient.GetWorkOrdersAsync();
+        myOrders = allOrders.Where(o => o.AssignedPerson == UserState.UserName).ToList();
+    }
     private void OnOrderClick()
     {
         // Navigate to the Orders page

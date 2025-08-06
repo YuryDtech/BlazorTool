@@ -1,3 +1,19 @@
+## 2025-08-06
+### Dodano
+- **Strona Zleceń**: Utworzono nowy, oddzielny komponent `OrdersGrid` do wyświetlania listy Zleceń, co poprawia modułowość.
+- **Strona Zleceń**: Zlecenia pracy są teraz edytowalne bezpośrednio z listy Zleceń.
+- **Timeline**: Dodano przyciski szybkiego wyboru, aby ustawić widok osi czasu na 3, 5, 7 lub 14 dni.
+- **Strona Główna**: Wprowadzono sprawdzanie sesji użytkownika.
+
+### Zmieniono
+- **Timeline**: Widok osi czasu wyświetla teraz tylko osoby wybrane w filtrze.
+- **Lokalizacja**: Dodano nowe tłumaczenia dla elementów interfejsu użytkownika w języku angielskim i polskim.
+- **Zmiana Nazwy Modelu**: Model danych `Dict` został przemianowany na `WODict` dla większej przejrzystości.
+
+### Naprawiono
+- **Strona Zleceń**: Poprawiono sortowanie Zleceń, aby było malejące według ID.
+- **Strona Zleceń**: Dane w siatce odświeżają się teraz automatycznie po edycji zlecenia pracy.
+
 ## 2025-08-05
 ### Dodano
 - Dodano przycisk "Wyczyść filtry" do list aktywności i zleceń pracy.

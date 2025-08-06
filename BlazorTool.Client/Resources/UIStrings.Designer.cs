@@ -70,6 +70,15 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Category.
+        /// </summary>
+        public static string Activity_Category {
+            get {
+                return ResourceManager.GetString("Activity_Category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Join new person.
         /// </summary>
         public static string ActivityDisplay_AddPerson {
@@ -196,6 +205,15 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter description.
+        /// </summary>
+        public static string ActivityList_Description_Placeholder {
+            get {
+                return ResourceManager.GetString("ActivityList_Description_Placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to h.
         /// </summary>
         public static string ActivityList_HoursAbbreviation {
@@ -246,6 +264,15 @@ namespace BlazorTool.Client.Resources {
         public static string ActivityList_Workload {
             get {
                 return ResourceManager.GetString("ActivityList_Workload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter workload.
+        /// </summary>
+        public static string ActivityList_Workload_Placeholder {
+            get {
+                return ResourceManager.GetString("ActivityList_Workload_Placeholder", resourceCulture);
             }
         }
         

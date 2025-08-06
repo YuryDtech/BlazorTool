@@ -1,3 +1,19 @@
+## 2025-08-06
+### Added
+- **Orders Page**: A new, separate `OrdersGrid` component has been created to display the list of orders, improving modularity.
+- **Orders Page**: Work orders are now editable directly from the orders list.
+- **Scheduler Timeline**: Added quick selection buttons to set the timeline view to 3, 5, 7, or 14 days.
+- **Home Page**: Implemented a session check for users.
+
+### Changed
+- **Scheduler Timeline**: The timeline view now only displays persons who have been selected in the filter.
+- **Localization**: Added new translations for UI elements in both English and Polish.
+- **Model Renaming**: The `Dict` data model has been renamed to `WODict` for better clarity.
+
+### Fixed
+- **Orders Page**: Corrected the sorting of orders to be descending by ID.
+- **Orders Page**: Data in the grid now refreshes automatically after a work order is edited.
+
 ## 2025-08-05
 ### Added
 - Added "Clear Filters" button to Activity and Work Order lists.

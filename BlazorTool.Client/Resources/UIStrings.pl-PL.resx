@@ -527,7 +527,7 @@
     <value>Pracownicy</value>
   </data>
   <data name="ActivityList_Assigned" xml:space="preserve">
-    <value>Przypisano</value>
+    <value>Przypisane</value>
   </data>
   <data name="ActivityList_Date" xml:space="preserve">
     <value>Data</value>
