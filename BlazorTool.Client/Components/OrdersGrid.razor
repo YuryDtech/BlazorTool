@@ -1,0 +1,324 @@
+@using BlazorTool.Client.Models
+@using BlazorTool.Client.Services
+@using BlazorTool.Client.Components
+@using System.Text
+@using System.Linq
+@using System.Diagnostics
+@using Telerik.DataSource.Extensions
+@using Telerik.Blazor
+@inject UserState UserState
+@inject ApiServiceClient apiService
+@inject IStringLocalizer<Resources.UIStrings> Localizer
+
+    @rowStyles
+
+<TelerikGrid Data="@OrderDevicesForGrid"
+             Id="Grid1"
+             RowDraggable="false"
+             @ref="@GridRef"
+             Sortable="true"
+             Resizable="true"
+             Pageable="true"
+             PageSize="@PageSize"
+             FilterMode="@GridFilterMode.FilterMenu"
+             OnRowRender="@OnRowRenderHandler"
+             OnRowDoubleClick="@OnRowClick">
+
+    <GridToolBarTemplate>
+        <GridSearchBox Width="200px"/>
+    </GridToolBarTemplate>
+    <GridColumns>
+        <GridColumn Field="@nameof(WorkOrderView.WorkOrderID)" Title="ID" Width="5rem" Filterable="true" Editable="false" Visible="true">
+        </GridColumn>
+        <GridColumn Field="@nameof(WorkOrderView.WODesc)" Editable="false" Visible="false" Title="@Localizer[nameof(WorkOrder.WODesc)]"></GridColumn>
+        <GridColumn Field="@nameof(WorkOrderView.DepName)" Title="@Localizer[nameof(WorkOrder.DepName)]" Width="8rem" Resizable="true">
+            <FilterMenuTemplate>
+                <CheckBoxFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Department).Select(d => d.Name).Distinct()"
+                                          context="@context"
+                                          NameOfField="@nameof(WorkOrderView.DepName)">
+                </CheckBoxFilterMenuTemplate>
+            </FilterMenuTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(WorkOrderView.DeviceName)" Title="@Localizer[nameof(WorkOrder.AssetNo)]" Resizable="true" Filterable="false"></GridColumn>
+        <GridColumn Field="@nameof(WorkOrderView.WODesc)" Resizable="true" Filterable="true" Title="@Localizer[nameof(WorkOrderView.WODesc)]">
+            <Template>
+                @{
+                    var item = context as WorkOrderView;
+                    if (item != null)
+                    {
+                        <div class="description-cell">@item.WODesc</div>
+                    }
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@nameof(WorkOrderView.WOReason)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOReason)]">
+            <FilterMenuTemplate>
+                <CheckBoxFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Reason).Select(d => d.Name).Distinct()"
+                                          context="@context"
+                                          NameOfField="@nameof(WorkOrderView.WOReason)">
+                </CheckBoxFilterMenuTemplate>
+            </FilterMenuTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(WorkOrderView.ModPerson)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.ModPerson)]">
+            <FilterMenuTemplate>
+                <CheckBoxFilterMenuTemplate Values="@allPersons.Select(x => x.Name).ToList()"
+                                          context="@context"
+                                          NameOfField="@nameof(WorkOrderView.ModPerson)">
+                </CheckBoxFilterMenuTemplate>
+            </FilterMenuTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(WorkOrderView.AssignedPerson)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.AssignedPerson)]">
+            <FilterMenuTemplate>
+                <CheckBoxFilterMenuTemplate Values="@allPersons.Select(x => x.Name).ToList()"
+                                          context="@context"
+                                          NameOfField="@nameof(WorkOrderView.AssignedPerson)">
+                </CheckBoxFilterMenuTemplate>
+            </FilterMenuTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(WorkOrderView.WOState)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOState)]">
+            <FilterMenuTemplate>
+                <CheckBoxFilterMenuTemplate Values="@workOrderStates"
+                                          context="@context"
+                                          NameOfField="@nameof(WorkOrderView.WOState)">
+                </CheckBoxFilterMenuTemplate>
+            </FilterMenuTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(WorkOrderView.WOLevel)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOLevel)]">
+            <FilterMenuTemplate>
+                <CheckBoxFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Level).Select(d => d.Name).Distinct()"
+                                          context="@context"
+                                          NameOfField="@nameof(WorkOrderView.WOLevel)">
+                </CheckBoxFilterMenuTemplate>
+            </FilterMenuTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(WorkOrderView.AddDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true" Title="@Localizer[nameof(WorkOrderView.AddDate)]">
+            <FilterMenuButtonsTemplate Context="filterContext">
+                <div class="vertical-stack-container">
+                    <div class="stack-item">
+                        <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" OnClick="@(async _ => await filterContext.FilterAsync())">@Localizer["OrdersPage_Filter"] </TelerikButton>
+                        <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Info" OnClick="@(() => ClearFilterAsync(filterContext))">@Localizer["OrdersPage_Clear"]</TelerikButton>
+                    </div>
+                    <div class="stack-item">
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.AddDate), "year"))">@Localizer["OrdersPage_LastYear"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.AddDate), "quarter"))">@Localizer["OrdersPage_Quarter"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.AddDate), "month"))">@Localizer["OrdersPage_Month"]</TelerikButton>
+                    </div>
+                </div>
+            </FilterMenuButtonsTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(WorkOrderView.StartDate)" Width="@dateColumnsize" Title="@Localizer[nameof(WorkOrderView.StartDate)]" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true">
+            <FilterMenuButtonsTemplate Context="filterContext">
+                <div class="vertical-stack-container">
+                    <div class="stack-item">
+                        <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" OnClick="@(async _ => await filterContext.FilterAsync())">@Localizer["OrdersPage_Filter"] </TelerikButton>
+                        <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Info" OnClick="@(() => ClearFilterAsync(filterContext))">@Localizer["OrdersPage_Clear"]</TelerikButton>
+                    </div>
+                    <div class="stack-item">
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.StartDate), "year"))">@Localizer["OrdersPage_LastYear"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.StartDate), "quarter"))">@Localizer["OrdersPage_Quarter"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.StartDate), "month"))">@Localizer["OrdersPage_Month"]</TelerikButton>
+                    </div>
+                </div>
+            </FilterMenuButtonsTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(WorkOrderView.EndDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true" Title="@Localizer[nameof(WorkOrderView.EndDate)]">
+            <FilterMenuButtonsTemplate Context="filterContext">
+                <div class="vertical-stack-container">
+                    <div class="stack-item">
+                        <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" OnClick="@(async _ => await filterContext.FilterAsync())">@Localizer["OrdersPage_Filter"] </TelerikButton>
+                        <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Info" OnClick="@(() => ClearFilterAsync(filterContext))">@Localizer["OrdersPage_Clear"]</TelerikButton>
+                    </div>
+                    <div class="stack-item">
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.EndDate), "year"))">@Localizer["OrdersPage_LastYear"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.EndDate), "quarter"))">@Localizer["OrdersPage_Quarter"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.EndDate), "month"))">@Localizer["OrdersPage_Month"]</TelerikButton>
+                    </div>
+                </div>
+            </FilterMenuButtonsTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(WorkOrderView.CloseDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Visible="false" Resizable="true" Title="@Localizer[nameof(WorkOrderView.CloseDate)]"></GridColumn>
+    </GridColumns>
+</TelerikGrid>
+
+<TelerikWindow @bind-Visible="@isOrderCardOpen"
+               CloseOnOverlayClick="true"
+               Modal="true"
+               Width="1280px"
+               MaxHeight="95vh"
+               ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
+    <WindowTitle>
+        <strong>@Localizer["WorkOrder_OrderNo"] @selectedOrder.WorkOrderID</strong>
+    </WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Close" OnClick="@CancelEditing" />
+    </WindowActions>
+    <WindowContent>
+        <AppointmentEditor Appointment="@(new SchedulerAppointment(selectedOrder))" 
+                          isEditable=true 
+                          ListPersons="@personNames.Where(c=>c != "All").ToList()"
+                          currentUser="@currentUser"
+                          OnAppointmentChanged="@OnCloseWorkOrderWindow"
+                          isScheduler="false" />
+    </WindowContent>
+</TelerikWindow>
+
+@code {
+    [Parameter] public List<WorkOrderView> OrderDevicesForGrid { get; set; } = new List<WorkOrderView>();
+    [Parameter] public EventCallback<SchedulerAppointment> OnOrderChanged { get; set; }
+    [Parameter] public List<string> workOrderStates { get; set; } = new List<string>();
+    [Parameter] public int PageSize { get; set; } = 20;
+
+    private Person currentUser { get; set; } = new Person();
+    private List<Person> allPersons { get; set; } = new List<Person>();
+    private List<string> personNames { get; set; } = new List<string>();
+    private List<WODict> dicts { get; set; } = new List<WODict>();
+    private bool isOrderCardOpen = false;
+    private WorkOrder selectedOrder;
+    private string dateColumnsize = "9rem";
+    public TelerikGrid<WorkOrderView> GridRef { get; set; }
+    private MarkupString rowStyles = new MarkupString();
+    private CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor();
+
+    protected override async Task OnInitializedAsync()
+    {
+        allPersons = await apiService.GetAllPersons();
+        await apiService.GetAllDevicesCachedAsync();
+        personNames = allPersons.Select(p => p.Name).ToList();
+        currentUser = new Person { PersonId = UserState.PersonID ?? 0, Name = UserState.UserName ?? string.Empty };
+        dicts = await apiService.GetWODictionaries(UserState.PersonID, UserState.LangCode);
+        rowStyles = RenderStatesStyle(OrderDevicesForGrid.Select(x => x.StateColor).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct());
+    }
+
+    void OnRowRenderHandler(GridRowRenderEventArgs args)
+    {
+        var item = args.Item as WorkOrderView;
+        args.Class = " custom-row ";
+        args.Class += GetStateColorClass(item);
+    }
+
+    void OnRowClick(GridRowClickEventArgs args)
+    {
+        var item = args.Item as WorkOrderView;
+        if (item != null)
+        {
+            selectedOrder = item;
+            isOrderCardOpen = true;
+            StateHasChanged();
+        }
+    }
+
+    async Task OnCloseWorkOrderWindow(SchedulerAppointment? editedAppointment)
+    {
+        if (editedAppointment == null)
+        {
+            isOrderCardOpen = false;
+            return;
+        }
+        await OnOrderChanged.InvokeAsync(editedAppointment);
+        isOrderCardOpen = false;
+
+        var index = OrderDevicesForGrid.FindIndex(a => a.WorkOrderID == editedAppointment.AppointmentId);
+        WorkOrderView workOrderView = new WorkOrderView(editedAppointment, apiService.GetDeviceNameByOrder(editedAppointment));
+        if (index != -1)
+        {
+            OrderDevicesForGrid[index] = workOrderView;
+        }
+        else
+            OrderDevicesForGrid.Add(workOrderView);
+        GridRef?.Rebind();
+        StateHasChanged();
+    }
+
+    //TODO make static or move to a common place
+    private MarkupString RenderStatesStyle(IEnumerable<string?> uniqueColors)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("<style>");
+        foreach (var color in uniqueColors)
+        {
+            var safeName = color?.TrimStart('#');
+
+            if (!UserState.UseOriginalColors)
+                switch (safeName?.ToLowerInvariant())
+                {
+                    case "lime":
+                    case "1bf151":
+                        safeName = "LightGreen";
+                        break;
+                    case "red":
+                        safeName = "LightCoral";
+                        break;
+                    case "yellow":
+                    case "ffff80":
+                        safeName = "LightYellow";
+                        break;
+                    case "silver":
+                        safeName = "LightSteelBlue";
+                        break;
+                    default:
+                        break;
+                }
+            else
+                safeName = color;
+
+            sb.AppendLine($".k-grid .k-master-row.state-{color?.TrimStart('#')} {{");
+            sb.AppendLine($"    background-color: {safeName};");
+            sb.AppendLine("}");
+
+            sb.AppendLine($".k-grid .k-master-row:hover {{");
+            sb.AppendLine($"    filter: brightness(95%);");
+            sb.AppendLine("}");
+        }
+        sb.AppendLine("</style>");
+
+        return new MarkupString(sb.ToString());
+    }
+
+    private string GetStateColorClass(WorkOrder WO)
+    {
+        if (UserState.UseOriginalColors)
+        {
+            return "state-" + WO.StateColor.TrimStart('#');
+        }
+        return apiService.ConvertStateColor(WO.WOState);
+    }
+
+    private async Task FilterByDateRange(FilterMenuTemplateContext context, string field, string range)
+    {
+        DateTime now = DateTime.Now;
+        DateTime from = now;
+        switch (range)
+        {
+            case "year":
+                from = now.AddYears(-1);
+                break;
+            case "quarter":
+                from = now.AddMonths(-3);
+                break;
+            case "month":
+                from = now.AddMonths(-1);
+                break;
+        }
+        var filterDescriptor = context.FilterDescriptor;
+        filterDescriptor.FilterDescriptors.Clear();
+        filterDescriptor.LogicalOperator = FilterCompositionLogicalOperator.And;
+        filterDescriptor.FilterDescriptors.Add(new FilterDescriptor()
+        {
+            Member = field,
+            Operator = FilterOperator.IsGreaterThanOrEqualTo,
+            MemberType = typeof(DateTime),
+            Value = from
+        });
+        await context.FilterAsync();
+    }
+
+    private async Task ClearFilterAsync(FilterMenuTemplateContext filterContext)
+    {
+        await filterContext.ClearFilterAsync();
+    }
+
+    void CancelEditing()
+    {
+        isOrderCardOpen = false;
+    }
+}

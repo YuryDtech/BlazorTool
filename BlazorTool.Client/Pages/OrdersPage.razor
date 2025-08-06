@@ -13,80 +13,49 @@
 @inject UserState UserState
 @inject IStringLocalizer<Resources.UIStrings> Localizer
 
-@rowStyles
 <CheckSession apiService="@apiService" UserState="@UserState" />
 <label>@Localizer["OrdersPage_Devices"]</label>
 
 @if (isDevicesLoading)
 {
     <TelerikLoaderContainer Visible="@isDevicesLoading" Text="@Localizer["OrdersPage_LoadingDevicesList"]"></TelerikLoaderContainer>
-}else
+}
+else
 {    
-<div class="filter-controls-row">
-    <div>
+    <div class="filter-controls-row">
+        <div>
             <TelerikRadioGroup Data="@TagModes"
-                               @bind-Value="@TagMode"
-                               ValueField="@nameof(Tags.Mode)"
-                               TextField="@nameof(Tags.Description)"
-                               Layout="RadioGroupLayout.Horizontal">
+                              @bind-Value="@TagMode"
+                              ValueField="@nameof(Tags.Mode)"
+                              TextField="@nameof(Tags.Description)"
+                              Layout="RadioGroupLayout.Horizontal">
             </TelerikRadioGroup>
-            @* <TelerikButton OnClick="@selectAllDevices"
-                            ThemeColor="@ThemeConstants.Button.ThemeColor.Base">
-                @Localizer["OrdersPage_SelectAll"]
-            </TelerikButton> *@
 
-        <TelerikMultiSelect Data="@devices"
-                            @bind-Value="@selectedDeviceIds"
-                            ValueField="@nameof(Device.MachineID)"
-                            TextField="@nameof(Device.AssetNo)"
-                            TagMode="@TagMode"
-                            MaxAllowedTags="@MaxAllowedTags"
-                            Placeholder="@Localizer["OrdersPage_SelectDevices"]"
-                            AutoClose="false"
-                            OnClose="@OnMultiValueClosed"
-                            Width="500px"
-                            ShowClearButton="true">
-        </TelerikMultiSelect>
+            <TelerikMultiSelect Data="@devices"
+                              @bind-Value="@selectedDeviceIds"
+                              ValueField="@nameof(Device.MachineID)"
+                              TextField="@nameof(Device.AssetNo)"
+                              TagMode="@TagMode"
+                              MaxAllowedTags="@MaxAllowedTags"
+                              Placeholder="@Localizer["OrdersPage_SelectDevices"]"
+                              AutoClose="false"
+                              OnClose="@OnMultiValueClosed"
+                              Width="500px"
+                              ShowClearButton="true">
+            </TelerikMultiSelect>
+        </div>
+        <div>
+            <label>@Localizer["OrdersPage_DeviceCategory"]</label>
+            <TelerikComboBox Data="@deviceCategories" 
+                           TextField="DeviceCategory"
+                           @bind-Value="@selectedDeviceCategory"
+                           Placeholder="@Localizer["OrdersPage_SelectCategory"]" 
+                           ShowClearButton="true" 
+                           Filterable="true"
+                           OnChange="@OnCategoryChanged">
+            </TelerikComboBox>
+        </div>
     </div>
-    <div>
-        <label>@Localizer["OrdersPage_DeviceCategory"]</label>
-        <TelerikComboBox Data="@deviceCategories" TextField="DeviceCategory"
-                            @bind-Value="@selectedDeviceCategory"
-                            Placeholder="@Localizer["OrdersPage_SelectCategory"]" ShowClearButton="true" Filterable="true"
-                            OnChange="@OnCategoryChanged"
-        >
-        </TelerikComboBox>
-    </div>
-        @*<div>
-        <label>Device type</label>
-        <TelerikComboBox Data="@deviceTypes" TextField="DeviceType"
-                            @bind-Value="@selectedDeviceType"   
-                            Placeholder="Select type..." ShowClearButton="true" Filterable="true"
-                            OnChange="@OnTypeChanged">
-        </TelerikComboBox>
-    </div>
-    <div>
-         <label>Order state</label>
-        <TelerikComboBox Data="@workOrderStates"
-                         @bind-Value = "@selectedState"
-                         Placeholder="Select state..."
-                         OnChange="@OnStateChanged"
-                         ShowClearButton="false" Filterable="true">
-        </TelerikComboBox>
-    </div>
-    <div>
-            <label style="display: block;">Assigned persons</label>
-        <TelerikMultiSelect Data="@personNames"
-                            @bind-Value="@selectedPersons"
-                            Placeholder="Select persons..."
-                            AutoClose="false"
-                            OnChange="@OnPersonChanged"
-                            ShowClearButton="true"
-                                Width="300px"
-                                TagMode="@TagMode">
-        </TelerikMultiSelect>
-    </div> *@
-</div>
 }
 
 <h3>@Localizer["OrdersPage_Orders"] (@OrderDevicesForGrid.Count)</h3>
@@ -96,180 +65,34 @@
 }
 else
 {
-    <TelerikGrid Data="@OrderDevicesForGrid"
-                 Id="Grid1"
-                 RowDraggable="false"
-                 @ref="@GridRef"
-                 Sortable="true"
-                 Resizable="true"
-                 Pageable="true"
-                 PageSize="20"
-                 FilterMode="@GridFilterMode.FilterMenu"
-                 OnRowRender="@OnRowRenderHandler"
-                 OnRowDoubleClick="@OnRowClick"
-                     >
-
-        <GridToolBarTemplate>
-            <GridSearchBox Width="200px"/>
-        </GridToolBarTemplate>
-        <GridColumns>
-            <GridColumn Field="@nameof(WorkOrderView.WorkOrderID)" Title="ID" Width="5rem" Filterable="true" Editable="false" Visible="true">
-            </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.WODesc)" Editable="false" Visible="false" Title="@Localizer[nameof(WorkOrder.WODesc)]"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.DepName)" Title="@Localizer[nameof(WorkOrder.DepName)]" Width="8rem" Resizable="true">
-        <FilterMenuTemplate>
-                    <CheckBoxFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Department).Select(d => d.Name).Distinct()"
-                                              context="@context"
-                                              NameOfField="@nameof(WorkOrderView.DepName)">
-                    </CheckBoxFilterMenuTemplate>
-        </FilterMenuTemplate>
-    </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.DeviceName)" Title="@Localizer[nameof(WorkOrder.AssetNo)]" Resizable="true" Filterable="false"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.WODesc)" Resizable="true" Filterable="true" Title="@Localizer[nameof(WorkOrderView.WODesc)]">
-                <Template>
-                    @{
-                        var item = context as WorkOrderView;
-                        if (item != null)
-                        {
-                            <div class="description-cell">@item.WODesc</div>
-                        }
-                    }
-                </Template>
-            </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.WOReason)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOReason)]">
-                <FilterMenuTemplate>
-                    <CheckBoxFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Reason).Select(d => d.Name).Distinct()"
-                                              context="@context"
-                                              NameOfField="@nameof(WorkOrderView.WOReason)">
-                    </CheckBoxFilterMenuTemplate>
-                </FilterMenuTemplate>
-            </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.ModPerson)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.ModPerson)]">
-                <FilterMenuTemplate>
-                    <CheckBoxFilterMenuTemplate Values="@allPersons.Select(x => x.Name).ToList()"
-                                              context="@context"
-                                              NameOfField="@nameof(WorkOrderView.ModPerson)">
-                    </CheckBoxFilterMenuTemplate>
-                </FilterMenuTemplate>
-            </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.AssignedPerson)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.AssignedPerson)]">
-        <FilterMenuTemplate>
-                    <CheckBoxFilterMenuTemplate Values="@allPersons.Select(x => x.Name).ToList()"
-                                      context="@context"
-                                      NameOfField="@nameof(WorkOrderView.AssignedPerson)">
-            </CheckBoxFilterMenuTemplate>
-        </FilterMenuTemplate>
-    </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.WOState)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOState)]">
-        <FilterMenuTemplate>
-                    <CheckBoxFilterMenuTemplate Values="@workOrderStates"
-                                      context="@context"
-                                      NameOfField="@nameof(WorkOrderView.WOState)">
-                    </CheckBoxFilterMenuTemplate>
-        </FilterMenuTemplate>
-    </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.WOLevel)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOLevel)]">
-        <FilterMenuTemplate>
-                    <CheckBoxFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Level).Select(d => d.Name).Distinct()"
-                                      context="@context"
-                                      NameOfField="@nameof(WorkOrderView.WOLevel)">
-                    </CheckBoxFilterMenuTemplate>
-        </FilterMenuTemplate>
-    </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.AddDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true" Title="@Localizer[nameof(WorkOrderView.AddDate)]">
-                <FilterMenuButtonsTemplate Context="filterContext">
-                    <div class="vertical-stack-container">
-
-                        <div class="stack-item">
-                            <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" OnClick="@(async _ => await filterContext.FilterAsync())">@Localizer["OrdersPage_Filter"] </TelerikButton>
-                            <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Info" OnClick="@(() => ClearFilterAsync(filterContext))">@Localizer["OrdersPage_Clear"]</TelerikButton>
-                        </div>
-                        <div class="stack-item">
-                            <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, "AddDate", "year"))">@Localizer["OrdersPage_LastYear"]</TelerikButton>
-                            <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, "AddDate", "quarter"))">@Localizer["OrdersPage_Quarter"]</TelerikButton>
-                            <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, "AddDate", "month"))">@Localizer["OrdersPage_Month"]</TelerikButton>
-                        </div>
-                    </div>
-
-                </FilterMenuButtonsTemplate>
-    </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.StartDate)" Width="@dateColumnsize" Title="@Localizer[nameof(WorkOrderView.StartDate)]" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true">
-       <FilterMenuButtonsTemplate Context="filterContext">
-           <div class="vertical-stack-container">
-
-                        <div class="stack-item">
-                            <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" OnClick="@(async _ => await filterContext.FilterAsync())">@Localizer["OrdersPage_Filter"] </TelerikButton>
-                            <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Info" OnClick="@(() => ClearFilterAsync(filterContext))">@Localizer["OrdersPage_Clear"]</TelerikButton>
-                    </div>
-                        <div class="stack-item">
-                    <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, "StartDate", "year"))">@Localizer["OrdersPage_LastYear"]</TelerikButton>
-                    <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, "StartDate", "quarter"))">@Localizer["OrdersPage_Quarter"]</TelerikButton>
-                    <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, "StartDate", "month"))">@Localizer["OrdersPage_Month"]</TelerikButton>
-                        </div>
-                    </div>
-        </FilterMenuButtonsTemplate>
-    </GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.EndDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true" Title="@Localizer[nameof(WorkOrderView.EndDate)]"></GridColumn>
-            <GridColumn Field="@nameof(WorkOrderView.CloseDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Visible="false" Resizable="true" Title="@Localizer[nameof(WorkOrderView.CloseDate)]"></GridColumn>
-        </GridColumns>
-    </TelerikGrid>
-
-    <TelerikWindow @bind-Visible="@isOrderCardOpen"
-                   CloseOnOverlayClick="true"
-                   Modal="true"
-                   Width="1280px"
-                   MaxHeight="95vh"
-                   ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
-        <WindowTitle>
-            <strong>@Localizer["WorkOrder_OrderNo"] @selectedOrder.WorkOrderID</strong>
-        </WindowTitle>
-        <WindowActions>
-            <WindowAction Name="Close" OnClick="@CancelEditing" />
-        </WindowActions>
-        <WindowContent>
-             <AppointmentEditor Appointment="@(new SchedulerAppointment(selectedOrder))" 
-            isEditable=true 
-            ListPersons="@personNames.Where(c=>c != "All").ToList()"
-            currentUser="@currentUser"
-            OnAppointmentChanged="@OnCloseWorkOrderWindow"
-            isScheduler = "false" />
-        </WindowContent>
-        <WindowFooter>
-        </WindowFooter>
-    </TelerikWindow>
+    <OrdersGrid @ref="ordersGrid"
+               OrderDevicesForGrid="@OrderDevicesForGrid"
+               workOrderStates="@workOrderStates"
+               OnOrderChanged="@OnOrderChanged"
+               PageSize = "20"/>
 }
-
-
 @code {
-
-
-
     private bool isOrdersLoading = false;
     private bool isDevicesLoading = false;
     private List<WorkOrder> OrdersForGrid = new List<WorkOrder>();
     private List<WorkOrderView> OrderDevicesForGrid = new List<WorkOrderView>();
-    private WorkOrder selectedOrder;
     private IEnumerable<Device> selectedDevices = new List<Device>();
     private List<int> selectedDeviceIds = new List<int>();
     private string? selectedState = "All";
     private string? selectedDeviceType = "All";
     private string? selectedDeviceCategory = "All";
-    private MarkupString rowStyles = new MarkupString();
     private List<Device> devices = new List<Device>();
     List<string?> deviceCategories = new List<string?>();
     List<string?> deviceTypes = new List<string?>();
-    List<string>? workOrderStates = new List<string>(){"All"};
+    List<string>? workOrderStates = new List<string>();
     private List<Person> allPersons = new List<Person>();
     private List<string> personNames = new List<string>();
     private List<string> selectedPersons = new List<string>();
-    public TelerikGrid<WorkOrderView> GridRef { get; set; }
-    public CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor();
-    private bool isOrderCardOpen = false;
-    private MultiSelectTagMode TagMode { get; set; } = MultiSelectTagMode.Single;
-    private int? MaxAllowedTags { get; set; }
     private List<WODict> dicts = new List<WODict>();
     private Person currentUser = new Person();
-    private string dateColumnsize = "9rem";
+    private OrdersGrid ordersGrid;
+    private MultiSelectTagMode TagMode { get; set; } = MultiSelectTagMode.Single;
+    private int? MaxAllowedTags { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -287,7 +110,7 @@ else
         currentUser.PersonId = UserState.PersonID ?? -1;
         currentUser.Name = UserState.UserName ?? string.Empty;        
         OrdersForGrid = await apiService.GetWorkOrdersAsync(lang: UserState.LangCode);
-        workOrderStates?.AddRange(OrdersForGrid.Select(o => o.WOState ?? string.Empty).Distinct().ToList());
+        workOrderStates = OrdersForGrid.Select(o => o.WOState ?? string.Empty).Distinct().ToList();
         devices = await apiService.GetAllDevicesCachedAsync();
         deviceCategories = devices.Select(d => d.DeviceCategory).Distinct().ToList();
         deviceCategories?.Insert(0,"All");
@@ -301,7 +124,6 @@ else
     private async Task LoadData()
     {
         isOrdersLoading = true;
-        //Value = GetCompositeFilterDescriptor();
         StateHasChanged();
         if (devices == null || devices.Count == 0)
         {
@@ -310,39 +132,33 @@ else
 
         if (selectedDevices == null || selectedDevices.Count() == 0)
         {
-            // selectedDevices = new List<Device>() { devices.FirstOrDefault() };
             selectedDevices = new List<Device>();
         }
 
         if (selectedDeviceIds == null || selectedDeviceIds.Count == 0)
         {
             selectedDeviceIds = new List<int>();
-            // selectedDeviceIds = selectedDevices.Select(d => d.MachineID).ToList();
         }
         Console.WriteLine($"Selected devices count: {selectedDevices.Count()}");
         var filteredDevices = GetFilteredDevices();
         OrdersForGrid = await GetFilteredOrders(filteredDevices);
-        OrderDevicesForGrid = OrdersForGrid.Select(o => new WorkOrderView(o, GetDeviceNameByOrder(o))).ToList();
+        OrderDevicesForGrid = OrdersForGrid.Select(o => new WorkOrderView(o, apiService.GetDeviceNameByOrder(o))).ToList();
         OrderDevicesForGrid = OrderDevicesForGrid.OrderByDescending(o => o.WorkOrderID).ToList();
-        rowStyles = RenderStatesStyle(OrdersForGrid);
         isOrdersLoading = false;
         StateHasChanged();
     }
 
-    private string GetDeviceNameByOrder(WorkOrder order)
-    {
-        return devices.First(d => d.MachineID == order.MachineID)?.AssetNo ?? string.Empty;
-    }
+    
 
     private IEnumerable<Device> GetFilteredDevices()
     {
-
         return devices.Where(d => 
             (string.IsNullOrWhiteSpace(selectedDeviceCategory) || d.DeviceCategory == selectedDeviceCategory || selectedDeviceCategory == "All") &&
             (string.IsNullOrWhiteSpace(selectedDeviceType) || d.Type == selectedDeviceType || selectedDeviceType == "All") &&
             (selectedDeviceIds.Count == 0 || selectedDeviceIds.Contains(d.MachineID))
         );
     }
+
     private async Task<List<WorkOrder>> GetFilteredOrders(IEnumerable<Device> devices)
     {
         List<WorkOrder> orders = new List<WorkOrder>();
@@ -364,113 +180,26 @@ else
             (o.WOState == selectedState || selectedState == "All" || string.IsNullOrWhiteSpace(selectedState)) &&
             (selectedPersons.Count == 0 || selectedPersons.Contains(o.AssignedPerson))
         ).ToList();
-        //selectedDeviceIds = result.Select(d => d.MachineID).Distinct().ToList();
         return result;
     }
 
-    //when order window closed
-    //On create, Update
-    async Task OnCloseWorkOrderWindow(SchedulerAppointment? editedAppointment)
+    async Task OnOrderChanged(SchedulerAppointment? editedAppointment)
     {
-        if (editedAppointment == null)//was removed or cancelled NEW
-        {
-            isOrderCardOpen = false;
-            return;
-        }
-        else
-        {
-            var index = OrderDevicesForGrid.FindIndex(a => a.WorkOrderID == editedAppointment.AppointmentId);
-            WorkOrderView workOrderView = new WorkOrderView(editedAppointment, GetDeviceNameByOrder(editedAppointment));
-            if (index != -1)
-            {
-                OrderDevicesForGrid[index] = workOrderView;
-            }
-            else
-                OrderDevicesForGrid.Add(workOrderView);
-        }
-        isOrderCardOpen = false;
-
-        GridRef.Rebind();
-        StateHasChanged();
-
-        // await LoadData();
-    }
-
-    public class WorkOrderView : WorkOrder
-    {
-        public string DeviceName { get; set; }
-
-        public WorkOrderView(WorkOrder order, string deviceName)
-        {
-            this.WorkOrderID = order.WorkOrderID;
-            this.MachineID = order.MachineID;
-            this.AssetNo = order.AssetNo;
-            this.DeviceCategory = order.DeviceCategory;
-            this.WODesc = order.WODesc;
-            this.WOCategory = order.WOCategory;
-            this.WOState = order.WOState;
-            this.WOReason = order.WOReason;
-            this.AddDate = order.AddDate;
-            this.TakeDate = order.TakeDate;
-            this.CloseDate = order.CloseDate;
-            this.Cost = order.Cost;
-            this.TakePersons = order.TakePersons;
-            this.PlanID = order.PlanID;
-            this.StateColor = order.StateColor;
-            this.ModDate = order.ModDate;
-            this.ModPerson = order.ModPerson;
-            this.WOLevel = order.WOLevel;
-            this.LevelID = order.LevelID;
-            this.ActCount = order.ActCount;
-            this.DepName = order.DepName;
-            this.AssignedPerson = order.AssignedPerson;
-            this.FileCount = order.FileCount;
-            this.PartCount = order.PartCount;
-            this.PlanActCount = order.PlanActCount;
-            this.StartDate = order.StartDate;
-            this.EndDate = order.EndDate;
-            this.IsScheduledPlanned = order.IsScheduledPlanned;
-            this.CategoryID = order.CategoryID;
-            this.ReasonID = order.ReasonID;
-            this.IneffectiveCount = order.IneffectiveCount;
-            this.PersonTakeDate = order.PersonTakeDate;
-            this.DeviceCategoryID = order.DeviceCategoryID;
-
-            this.DeviceName = deviceName;
-        }
+       
     }
 
     #region Filter events
-    //Select devives from MultiSelect
+    //Select devices from MultiSelect
     private async void OnMultiValueClosed()
     {
         selectedDevices = devices.Where(d => selectedDeviceIds.Contains(d.MachineID)).ToList();
         await LoadData(); 
     }
 
-    async Task OnStateChanged()
-    {
-        if ( string.IsNullOrEmpty(selectedState))
-            selectedState = "All";
-        await LoadData();
-    }
-
-    async Task OnPersonChanged()
-    {
-        await LoadData();
-    }
-
     async Task OnCategoryChanged()
     {
         if (string.IsNullOrWhiteSpace(selectedDeviceCategory))
             selectedDeviceCategory = "All";
-        await LoadData();
-    }
-
-    async Task OnTypeChanged()
-    {
-        if (string.IsNullOrWhiteSpace(selectedDeviceType))
-            selectedDeviceType = "All";
         await LoadData();
     }
 
@@ -483,58 +212,7 @@ else
         selectedState = "All";
         await LoadData();
     }
-
     #endregion
-
-    #region Filter Descriptor
-    private CompositeFilterDescriptor GetCompositeFilterDescriptor()
-    {
-        return new CompositeFilterDescriptor()
-        {
-            FilterDescriptors = new FilterDescriptorCollection
-        {
-            new FilterDescriptor
-            {
-                Member = "WOState",
-                MemberType = typeof(string),
-                Value = "W trakcie realizacji",
-                Operator = FilterOperator.IsEqualTo
-            },
-            new FilterDescriptor
-            {
-                Member = "DepName",
-                MemberType = typeof(string),
-                Value = "UR",
-                Operator = FilterOperator.IsEqualTo
-            }
-
-        }
-        };
-    }
-    private async void OnSelect(IEnumerable<Device> selectedItems)
-    {
-        selectedDevices = selectedItems;
-        await LoadData();
-        foreach (var item in selectedItems)
-            Debug.Print(item.AssetNo);
-    }
-    async void OnValueChanged(CompositeFilterDescriptor filter)
-    {
-        Value = filter;
-        await LoadData();
-        ApplyFilter(Value);
-    }
-
-
-    void ApplyFilter(CompositeFilterDescriptor filter)
-    {
-        var dataSourceRequest = new DataSourceRequest { Filters = new List<IFilterDescriptor> { filter } };
-        var queryable = OrdersForGrid.AsQueryable();
-        var datasourceResult = OrdersForGrid.ToDataSourceResult(dataSourceRequest);
-
-        OrdersForGrid = datasourceResult.Data.Cast<WorkOrder>().ToList();
-
-    }
 
     private List<Tags> TagModes { get; set; } = new List<Tags>()
     {
@@ -546,125 +224,5 @@ else
     {
         public MultiSelectTagMode Mode { get; set; }
         public string Description { get; set; }
-    }
-    #endregion
-
-    #region Grid Row Styles
-    void OnRowRenderHandler(GridRowRenderEventArgs args)
-    {
-        var item = args.Item as WorkOrderView;
-        args.Class = " custom-row ";
-        // args.Class += "state-" + item?.StateColor?.TrimStart('#');
-        args.Class += GetStateColorClass(item);
-    }
-
-
-    void OnRowClick(GridRowClickEventArgs args)
-    {
-        var item = args.Item as WorkOrderView;
-        if (item != null)
-        {
-            selectedOrder = item;
-            isOrderCardOpen = true;
-            StateHasChanged();
-        }
-    }
-
-    void OnPopupClose()
-    {
-        isOrderCardOpen = false;
-    }
-
-    private MarkupString RenderStatesStyle(List<WorkOrder> orders)
-    {
-        var uniqueColors = orders
-           .Select(o => o.StateColor)
-           .Where(c => !string.IsNullOrWhiteSpace(c))
-           .Distinct();
-
-        var sb = new StringBuilder();
-        sb.AppendLine("<style>");
-        foreach (var color in uniqueColors)
-        {
-            var safeName = color.TrimStart('#');
-
-            if (!UserState.UseOriginalColors)
-                switch(safeName.ToLowerInvariant())
-                {
-                    case "lime":
-                    case "1bf151":
-                        safeName = "LightGreen";
-                        break;
-                    case "red":
-                        safeName = "LightCoral";
-                        break;
-                    case "yellow":
-                    case "ffff80":
-                        safeName = "LightYellow";
-                        break;
-                    case "silver":
-                        safeName = "LightSteelBlue";
-                        break;
-                    default:
-                        break;
-                } else
-                safeName = color;
-
-            sb.AppendLine($".k-grid .k-master-row.state-{color.TrimStart('#')} {{");
-            sb.AppendLine($"    background-color: {safeName};");
-            sb.AppendLine("}");
-        }
-        sb.AppendLine("</style>");
-
-        return new MarkupString(sb.ToString());
-    }
-
-    private string GetStateColorClass(WorkOrder WO)
-    {
-        if (UserState.UseOriginalColors)
-        {
-            return "state-" + WO.StateColor.TrimStart('#');
-        }
-        return apiService.ConvertStateColor(WO.WOState);
-    }
-    #endregion
-
-    private async Task FilterByDateRange(Telerik.Blazor.Components.FilterMenuTemplateContext context, string field, string range)
-    {
-        DateTime now = DateTime.Now;
-        DateTime from = now;
-        switch (range)
-        {
-            case "year":
-                from = now.AddYears(-1);
-                break;
-            case "quarter":
-                from = now.AddMonths(-3);
-                break;
-            case "month":
-                from = now.AddMonths(-1);
-                break;
-        }
-        var filterDescriptor = context.FilterDescriptor;
-        filterDescriptor.FilterDescriptors.Clear();
-        filterDescriptor.LogicalOperator = Telerik.DataSource.FilterCompositionLogicalOperator.And;
-        filterDescriptor.FilterDescriptors.Add(new FilterDescriptor()
-        {
-            Member = field,
-            Operator = Telerik.DataSource.FilterOperator.IsGreaterThanOrEqualTo,
-            MemberType = typeof(DateTime),
-            Value = from
-        });
-        await context.FilterAsync();
-    }
-
-    private async Task ClearFilterAsync(FilterMenuTemplateContext filterContext)
-    {
-        await filterContext.ClearFilterAsync();
-    }
-
-    void CancelEditing()
-    {
-        isOrderCardOpen = false;
     }
 }

@@ -864,6 +864,11 @@ namespace BlazorTool.Client.Services
                 return new List<Device>();
             }
         }
+
+        public string GetDeviceNameByOrder(WorkOrder order)
+        {
+            return _devicesCache.FirstOrDefault(d => d.MachineID == order.MachineID)?.AssetNo ?? string.Empty;
+        }
         #endregion
 
         #region Other functions
