@@ -371,7 +371,7 @@
             WorkOrder.EndDate = WorkOrder.StartDate?.AddHours(1);
             DeviceAlarm = string.IsNullOrWhiteSpace(WorkOrder?.AssetNo) ? "bg-warning" : string.Empty;
         }
-
+        
         var takePersonsIDs = WorkOrder?.TakePersons?.Split('#') ?? Array.Empty<string>();
         foreach(var id in takePersonsIDs)
         {

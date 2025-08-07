@@ -110,7 +110,7 @@ namespace BlazorTool.Controllers
         {
             try
             {
-                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient"); // Get named client
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
                 string url = $"wo/get?WorkOrderID={WorkOrderID}";
                 var response = await client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
@@ -132,6 +132,33 @@ namespace BlazorTool.Controllers
             }
         }
 
+        [HttpGet("getwotaken")]
+        public async Task<IActionResult> GetWOTaken([FromQuery] int PersonID)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
+                string url = $"wo/getwotaken?PersonID={PersonID}";
+                var response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<WorkOrderIdentifier>>();
+                if (apiResponse == null || !apiResponse.IsValid)
+                {
+                    var errors = apiResponse?.Errors ?? new List<string> { "Unknown error occurred." };
+                    return NotFound(new ApiResponse<WorkOrderIdentifier>
+                    {
+                        Data = new List<WorkOrderIdentifier>(),
+                        IsValid = false,
+                        Errors = errors
+                    });
+                }
+                return Ok(apiResponse);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         // POST api/<WoController>
         [HttpPost]

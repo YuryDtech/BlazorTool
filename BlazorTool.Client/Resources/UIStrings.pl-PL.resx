@@ -715,4 +715,14 @@
   <data name="ActivityList_Description_Placeholder" xml:space="preserve">
     <value>Wprowadź opis</value>
   </data>
+  <data name="Home_MyAssignedOrders" xml:space="preserve">
+    <value>Moje przypisane zlecenia</value>
+  </data>
+  <data name="Home_MyTakenOrders" xml:space="preserve">
+    <value>Moje podjęte zlecenia</value>
+  </data>
+  <data name="Home_OrdersForDepartment" xml:space="preserve">
+    <value>Zlecenia dla działu</value>
+  </data>
+</root>
 </root>

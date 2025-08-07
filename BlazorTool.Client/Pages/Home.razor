@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using BlazorTool.Client.Components
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
 @inject NavigationManager NavigationManager
@@ -7,29 +8,81 @@
 @inject UserState UserState
 
 <BlazorTool.Client.Components.CheckSession ApiService="@ApiClient" UserState="@UserState" />
-<TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Warning" @onclick="OnOrderClick">@Localizer["Home_Orders"]</TelerikButton>
-<TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Success" @onclick="OnSchedulerClick">@Localizer["Home_Scheduler"]</TelerikButton>
-<div>
-    @* <OrdersPage /> *@
+
+<div class="orders-grid-container">
+
+	<TelerikLoaderContainer  Visible="@isDataLoading" Text="@Localizer["Scheduler_LoadingOrders"]" Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Large">
+				</TelerikLoaderContainer>
+	<span class="order-title">My assigned orders</span>
+	<OrdersGrid OrdeForGrid="@myAssignedOrders"
+			   workOrderStates="@workOrderStates"
+			   PageSize = "8"
+			   ShowSearchBar = "false"
+			   />
+</div>
+
+<div class="orders-grid-container">
+		
+	<span class="order-title">My taken orders</span>
+	<OrdersGrid OrdeForGrid="@myTakenWorkOrders"
+			   workOrderStates="@workOrderStates"
+			   PageSize = "8"
+			   ShowSearchBar = "false"			   />
+
+</div>
+
+<div class="orders-grid-container">
+<div class="order-header">
+	<span class="order-title">@Localizer["Home_OrdersForDepartment"] </span>
+			<TelerikComboBox Data="@allDepartments" TextField="Department"
+							 Placeholder="@Localizer["Scheduler_SelectDepartment"]" Filterable="false"
+							 AllowCustom="false" Value="@selectedDepartment"
+							 ValueChanged="@((string dep) => OnDepartmentChanged(dep))"
+							 Width="250px"
+							 Size="sm">
+			</TelerikComboBox>
+</div>
+	<OrdersGrid OrdeForGrid="@myDepartmentOrders"
+			   workOrderStates="@workOrderStates"
+			   PageSize = "10"
+			   ShowSearchBar = "false"
+			   isLoading="@isDataLoading"
+			   
+			   />
 </div>
 
 @code {
-    private List<WorkOrder> myOrders = new List<WorkOrder>();
-    private List<WorkOrder> myDepOrders = new List<WorkOrder>();
+	private List<WorkOrder> myAssignedOrders = new List<WorkOrder>();
+	private List<WorkOrder> myDepartmentOrders = new List<WorkOrder>();    
+	private List<WorkOrder> myTakenWorkOrders = new List<WorkOrder>();
+	private List<string> workOrderStates = new List<string>();
+	private List<string> allDepartments = new List<string>();
+	private string selectedDepartment = string.Empty;
+	private List<WorkOrder> allOrders = new List<WorkOrder>();
+	private bool isDataLoading = true;
 
-    protected override async Task OnInitializedAsync()
-    {
-        var allOrders = await ApiClient.GetWorkOrdersAsync();
-        myOrders = allOrders.Where(o => o.AssignedPerson == UserState.UserName).ToList();
-    }
-    private void OnOrderClick()
-    {
-        // Navigate to the Orders page
-        NavigationManager.NavigateTo("/orders");
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		isDataLoading = true;
+		if (!UserState.IsAuthenticated) return;
+		allOrders = await ApiClient.GetWorkOrdersAsync();
+		await ApiClient.GetWODictionaries(UserState.PersonID, UserState.LangCode);
+		allDepartments = ApiClient.GetWODepartments().Select(d=>d.Name).ToList();
+		selectedDepartment = allDepartments.FirstOrDefault() ?? "";
+		myDepartmentOrders = allOrders.Where(o => o.DepName == selectedDepartment).ToList();
+		myAssignedOrders = allOrders.Where(o => o.AssignedPerson == UserState.UserName).ToList();
+		var myTakenWorkOrdersID =await ApiClient.GetWOTakenbyPerson(UserState.PersonID ?? -1);
+		myTakenWorkOrders = allOrders.Where(o => myTakenWorkOrdersID.Contains(o.WorkOrderID)).ToList();
+		workOrderStates = allOrders.Select(o => o.WOState ?? string.Empty).Distinct().ToList();
+		isDataLoading = false;
+	}
 
-    private void OnSchedulerClick()
-    {
-        NavigationManager.NavigateTo("/scheduler");
-    }
+	private void OnDepartmentChanged(string department)
+	{
+		selectedDepartment = department;
+		myDepartmentOrders = allOrders.Where(o => o.DepName == selectedDepartment).ToList();
+		StateHasChanged();
+	}
+
+
 }

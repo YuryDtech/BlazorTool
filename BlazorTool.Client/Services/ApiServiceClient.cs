@@ -181,6 +181,37 @@ namespace BlazorTool.Client.Services
             }
         }
 
+        public async Task<IEnumerable<int>> GetWOTakenbyPerson(int personID)
+        {
+            if (personID <= 0)
+            {
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = PersonID {personID} must be greater than 0.");
+                Debug.WriteLine($"[{_userState.UserName}] = = = = = = = PersonID {personID} must be greater than 0.");
+                return Enumerable.Empty<int>();
+            }
+            var url = $"wo/getwotaken?PersonID={personID}";
+            try
+            {
+                var response = await _http.GetFromJsonAsync<ApiResponse<WorkOrderIdentifier>>(url);
+                if (response.IsValid == false)
+                {
+                    Console.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWOTakenbyPerson: API response is not valid: {string.Join(", ", response.Errors)}");
+                    Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWOTakenbyPerson: API response is not valid: {string.Join(", ", response.Errors)}");
+                    return Enumerable.Empty<int>();
+                }
+                else
+                {
+                    return response?.Data?.Select(wo => wo.WorkOrderID) ?? Enumerable.Empty<int>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWOTakenbyPerson: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWOTakenbyPerson: Unexpected error during GET to {url}: {ex.Message}");
+                return Enumerable.Empty<int>();
+            }
+        }
+
         #region Cache Management
         /// <summary>
         /// Adds or updates a work order in the cache. Can also be used to remove an item.

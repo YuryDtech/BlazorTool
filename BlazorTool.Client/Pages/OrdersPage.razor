@@ -58,7 +58,7 @@ else
     </div>
 }
 
-<h3>@Localizer["OrdersPage_Orders"] (@OrderDevicesForGrid.Count)</h3>
+<h3>@Localizer["OrdersPage_Orders"] (@OrdersForGrid.Count)</h3>
 @if (isOrdersLoading)
 {
     <div>@Localizer["OrdersPage_LoadingOrderList"]</div>
@@ -66,16 +66,16 @@ else
 else
 {
     <OrdersGrid @ref="ordersGrid"
-               OrderDevicesForGrid="@OrderDevicesForGrid"
+                OrdeForGrid="@OrdersForGrid"
                workOrderStates="@workOrderStates"
                OnOrderChanged="@OnOrderChanged"
-               PageSize = "20"/>
+               PageSize = "20"
+                isLoading="@isOrdersLoading" />
 }
 @code {
     private bool isOrdersLoading = false;
     private bool isDevicesLoading = false;
     private List<WorkOrder> OrdersForGrid = new List<WorkOrder>();
-    private List<WorkOrderView> OrderDevicesForGrid = new List<WorkOrderView>();
     private IEnumerable<Device> selectedDevices = new List<Device>();
     private List<int> selectedDeviceIds = new List<int>();
     private string? selectedState = "All";
@@ -142,8 +142,7 @@ else
         Console.WriteLine($"Selected devices count: {selectedDevices.Count()}");
         var filteredDevices = GetFilteredDevices();
         OrdersForGrid = await GetFilteredOrders(filteredDevices);
-        OrderDevicesForGrid = OrdersForGrid.Select(o => new WorkOrderView(o, apiService.GetDeviceNameByOrder(o))).ToList();
-        OrderDevicesForGrid = OrderDevicesForGrid.OrderByDescending(o => o.WorkOrderID).ToList();
+        OrdersForGrid = OrdersForGrid.OrderByDescending(o => o.WorkOrderID).ToList();
         isOrdersLoading = false;
         StateHasChanged();
     }

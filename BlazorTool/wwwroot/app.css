@@ -148,3 +148,49 @@ h1:focus {
 .telerikButtonGroup{
     gap:7px;
 }
+
+.no-toolbar .k-grid-toolbar {
+    display: none;
+}
+
+.orders-grid-container {
+    background-color: #f9f9f9; /* Светло-серый фон для легкости */
+    border: 1px solid #e0e0e0; /* Тонкая рамка для разделения */
+    border-radius: 8px; /* Скругленные углы для мягкости */
+    margin-bottom: 8px; /* Внешний отступ для разделения секций */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Легкая тень для глубины */
+    transition: box-shadow 0.3s ease-in-out; /* Плавный переход для тени */
+}
+
+    .orders-grid-container:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Усиленная тень при наведении */
+    }
+
+/*
+ * Стили для заголовка секции заказов
+ * Этот класс применяется к элементам span с названием секции.
+ */
+.order-title {
+    display: block; /* Заголовок занимает всю ширину */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Современный и чистый шрифт */
+    font-size: 22px; /* Увеличенный размер для важности */
+    font-weight: 600; /* Полужирное начертание для акцента */
+    color: #333; /* Темно-серый цвет для читабельности */
+    margin-bottom: 1px;
+    border-top: 2px solid #eee;
+    padding: 8px;
+}
+
+.order-header {
+    display: flex; /* Включаем Flexbox */
+    align-items: flex-end; /* Вертикально выравниваем элементы по центру */
+    gap: 16px; /* Добавляем отступ между элементами */
+    
+}
+
+.order-header .order-title {
+    display: inline; /* Позволяем ему быть в одной строке с другими */
+    border-bottom: none; /* Убираем нижнюю границу, т.к. она здесь не нужна */
+    margin-bottom: 0; /* Убираем нижний отступ, т.к. он задан в .order-header */
+    padding-bottom: 0; /* Убираем внутренний отступ снизу */
+}

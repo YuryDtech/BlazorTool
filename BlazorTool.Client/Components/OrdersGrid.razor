@@ -10,9 +10,9 @@
 @inject ApiServiceClient apiService
 @inject IStringLocalizer<Resources.UIStrings> Localizer
 
-    @rowStyles
+@rowStyles
 
-<TelerikGrid Data="@OrderDevicesForGrid"
+<TelerikGrid Data="@OrdeForGrid"
              Id="Grid1"
              RowDraggable="false"
              @ref="@GridRef"
@@ -22,28 +22,32 @@
              PageSize="@PageSize"
              FilterMode="@GridFilterMode.FilterMenu"
              OnRowRender="@OnRowRenderHandler"
-             OnRowDoubleClick="@OnRowClick">
+             OnRowDoubleClick="@OnRowClick"
+             Class="@(ShowSearchBar ? "" : "no-toolbar")">
 
     <GridToolBarTemplate>
-        <GridSearchBox Width="200px"/>
+        @if (ShowSearchBar)
+        {
+            <GridSearchBox Width="200px" DebounceDelay="500"/>
+        }
     </GridToolBarTemplate>
     <GridColumns>
-        <GridColumn Field="@nameof(WorkOrderView.WorkOrderID)" Title="ID" Width="5rem" Filterable="true" Editable="false" Visible="true">
+        <GridColumn Field="@nameof(WorkOrder.WorkOrderID)" Title="ID" Width="5rem" Filterable="true" Editable="false" Visible="true">
         </GridColumn>
-        <GridColumn Field="@nameof(WorkOrderView.WODesc)" Editable="false" Visible="false" Title="@Localizer[nameof(WorkOrder.WODesc)]"></GridColumn>
-        <GridColumn Field="@nameof(WorkOrderView.DepName)" Title="@Localizer[nameof(WorkOrder.DepName)]" Width="8rem" Resizable="true">
+        <GridColumn Field="@nameof(WorkOrder.WODesc)" Editable="false" Visible="false" Title="@Localizer[nameof(WorkOrder.WODesc)]"></GridColumn>
+        <GridColumn Field="@nameof(WorkOrder.DepName)" Title="@Localizer[nameof(WorkOrder.DepName)]" Width="8rem" Resizable="true">
             <FilterMenuTemplate>
                 <CheckBoxFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Department).Select(d => d.Name).Distinct()"
                                           context="@context"
-                                          NameOfField="@nameof(WorkOrderView.DepName)">
+                                          NameOfField="@nameof(WorkOrder.DepName)">
                 </CheckBoxFilterMenuTemplate>
             </FilterMenuTemplate>
         </GridColumn>
-        <GridColumn Field="@nameof(WorkOrderView.DeviceName)" Title="@Localizer[nameof(WorkOrder.AssetNo)]" Resizable="true" Filterable="false"></GridColumn>
-        <GridColumn Field="@nameof(WorkOrderView.WODesc)" Resizable="true" Filterable="true" Title="@Localizer[nameof(WorkOrderView.WODesc)]">
+        <GridColumn Field="@nameof(WorkOrder.AssetNo)" Title="@Localizer[nameof(WorkOrder.AssetNo)]" Resizable="true" Filterable="false"></GridColumn>
+        <GridColumn Field="@nameof(WorkOrder.WODesc)" Resizable="true" Filterable="true" Title="@Localizer[nameof(WorkOrder.WODesc)]">
             <Template>
                 @{
-                    var item = context as WorkOrderView;
+                    var item = context as WorkOrder;
                     if (item != null)
                     {
                         <div class="description-cell">@item.WODesc</div>
@@ -51,47 +55,47 @@
                 }
             </Template>
         </GridColumn>
-        <GridColumn Field="@nameof(WorkOrderView.WOReason)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOReason)]">
+        <GridColumn Field="@nameof(WorkOrder.WOReason)" Resizable="true" Title="@Localizer[nameof(WorkOrder.WOReason)]">
             <FilterMenuTemplate>
                 <CheckBoxFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Reason).Select(d => d.Name).Distinct()"
                                           context="@context"
-                                          NameOfField="@nameof(WorkOrderView.WOReason)">
+                                          NameOfField="@nameof(WorkOrder.WOReason)">
                 </CheckBoxFilterMenuTemplate>
             </FilterMenuTemplate>
         </GridColumn>
-        <GridColumn Field="@nameof(WorkOrderView.ModPerson)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.ModPerson)]">
+        <GridColumn Field="@nameof(WorkOrder.ModPerson)" Resizable="true" Title="@Localizer[nameof(WorkOrder.ModPerson)]">
             <FilterMenuTemplate>
                 <CheckBoxFilterMenuTemplate Values="@allPersons.Select(x => x.Name).ToList()"
                                           context="@context"
-                                          NameOfField="@nameof(WorkOrderView.ModPerson)">
+                                            NameOfField="@nameof(WorkOrder.ModPerson)">
                 </CheckBoxFilterMenuTemplate>
             </FilterMenuTemplate>
         </GridColumn>
-        <GridColumn Field="@nameof(WorkOrderView.AssignedPerson)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.AssignedPerson)]">
+        <GridColumn Field="@nameof(WorkOrder.AssignedPerson)" Resizable="true" Title="@Localizer[nameof(WorkOrder.AssignedPerson)]">
             <FilterMenuTemplate>
                 <CheckBoxFilterMenuTemplate Values="@allPersons.Select(x => x.Name).ToList()"
                                           context="@context"
-                                          NameOfField="@nameof(WorkOrderView.AssignedPerson)">
+                                            NameOfField="@nameof(WorkOrder.AssignedPerson)">
                 </CheckBoxFilterMenuTemplate>
             </FilterMenuTemplate>
         </GridColumn>
-        <GridColumn Field="@nameof(WorkOrderView.WOState)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOState)]">
+        <GridColumn Field="@nameof(WorkOrder.WOState)" Resizable="true" Title="@Localizer[nameof(WorkOrder.WOState)]">
             <FilterMenuTemplate>
                 <CheckBoxFilterMenuTemplate Values="@workOrderStates"
                                           context="@context"
-                                          NameOfField="@nameof(WorkOrderView.WOState)">
+                                            NameOfField="@nameof(WorkOrder.WOState)">
                 </CheckBoxFilterMenuTemplate>
             </FilterMenuTemplate>
         </GridColumn>
-        <GridColumn Field="@nameof(WorkOrderView.WOLevel)" Resizable="true" Title="@Localizer[nameof(WorkOrderView.WOLevel)]">
+        <GridColumn Field="@nameof(WorkOrder.WOLevel)" Resizable="true" Title="@Localizer[nameof(WorkOrder.WOLevel)]">
             <FilterMenuTemplate>
                 <CheckBoxFilterMenuTemplate Values="@dicts.Where(d => d.ListType == (int)WOListTypeEnum.Level).Select(d => d.Name).Distinct()"
                                           context="@context"
-                                          NameOfField="@nameof(WorkOrderView.WOLevel)">
+                                            NameOfField="@nameof(WorkOrder.WOLevel)">
                 </CheckBoxFilterMenuTemplate>
             </FilterMenuTemplate>
         </GridColumn>
-        <GridColumn Field="@nameof(WorkOrderView.AddDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true" Title="@Localizer[nameof(WorkOrderView.AddDate)]">
+        <GridColumn Field="@nameof(WorkOrder.AddDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true" Title="@Localizer[nameof(WorkOrder.AddDate)]">
             <FilterMenuButtonsTemplate Context="filterContext">
                 <div class="vertical-stack-container">
                     <div class="stack-item">
@@ -99,14 +103,14 @@
                         <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Info" OnClick="@(() => ClearFilterAsync(filterContext))">@Localizer["OrdersPage_Clear"]</TelerikButton>
                     </div>
                     <div class="stack-item">
-                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.AddDate), "year"))">@Localizer["OrdersPage_LastYear"]</TelerikButton>
-                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.AddDate), "quarter"))">@Localizer["OrdersPage_Quarter"]</TelerikButton>
-                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.AddDate), "month"))">@Localizer["OrdersPage_Month"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrder.AddDate), "year"))">@Localizer["OrdersPage_LastYear"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrder.AddDate), "quarter"))">@Localizer["OrdersPage_Quarter"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrder.AddDate), "month"))">@Localizer["OrdersPage_Month"]</TelerikButton>
                     </div>
                 </div>
             </FilterMenuButtonsTemplate>
         </GridColumn>
-        <GridColumn Field="@nameof(WorkOrderView.StartDate)" Width="@dateColumnsize" Title="@Localizer[nameof(WorkOrderView.StartDate)]" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true">
+        <GridColumn Field="@nameof(WorkOrder.StartDate)" Width="@dateColumnsize" Title="@Localizer[nameof(WorkOrder.StartDate)]" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true">
             <FilterMenuButtonsTemplate Context="filterContext">
                 <div class="vertical-stack-container">
                     <div class="stack-item">
@@ -114,14 +118,14 @@
                         <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Info" OnClick="@(() => ClearFilterAsync(filterContext))">@Localizer["OrdersPage_Clear"]</TelerikButton>
                     </div>
                     <div class="stack-item">
-                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.StartDate), "year"))">@Localizer["OrdersPage_LastYear"]</TelerikButton>
-                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.StartDate), "quarter"))">@Localizer["OrdersPage_Quarter"]</TelerikButton>
-                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.StartDate), "month"))">@Localizer["OrdersPage_Month"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrder.StartDate), "year"))">@Localizer["OrdersPage_LastYear"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrder.StartDate), "quarter"))">@Localizer["OrdersPage_Quarter"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrder.StartDate), "month"))">@Localizer["OrdersPage_Month"]</TelerikButton>
                     </div>
                 </div>
             </FilterMenuButtonsTemplate>
         </GridColumn>
-        <GridColumn Field="@nameof(WorkOrderView.EndDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true" Title="@Localizer[nameof(WorkOrderView.EndDate)]">
+        <GridColumn Field="@nameof(WorkOrder.EndDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Resizable="true" Title="@Localizer[nameof(WorkOrder.EndDate)]">
             <FilterMenuButtonsTemplate Context="filterContext">
                 <div class="vertical-stack-container">
                     <div class="stack-item">
@@ -129,14 +133,14 @@
                         <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Info" OnClick="@(() => ClearFilterAsync(filterContext))">@Localizer["OrdersPage_Clear"]</TelerikButton>
                     </div>
                     <div class="stack-item">
-                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.EndDate), "year"))">@Localizer["OrdersPage_LastYear"]</TelerikButton>
-                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.EndDate), "quarter"))">@Localizer["OrdersPage_Quarter"]</TelerikButton>
-                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrderView.EndDate), "month"))">@Localizer["OrdersPage_Month"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrder.EndDate), "year"))">@Localizer["OrdersPage_LastYear"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrder.EndDate), "quarter"))">@Localizer["OrdersPage_Quarter"]</TelerikButton>
+                        <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, nameof(WorkOrder.EndDate), "month"))">@Localizer["OrdersPage_Month"]</TelerikButton>
                     </div>
                 </div>
             </FilterMenuButtonsTemplate>
         </GridColumn>
-        <GridColumn Field="@nameof(WorkOrderView.CloseDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Visible="false" Resizable="true" Title="@Localizer[nameof(WorkOrderView.CloseDate)]"></GridColumn>
+        <GridColumn Field="@nameof(WorkOrder.CloseDate)" Width="@dateColumnsize" DisplayFormat="{0:yyyy.MM.dd HH:mm}" Visible="false" Resizable="true" Title="@Localizer[nameof(WorkOrder.CloseDate)]"></GridColumn>
     </GridColumns>
 </TelerikGrid>
 
@@ -163,10 +167,13 @@
 </TelerikWindow>
 
 @code {
-    [Parameter] public List<WorkOrderView> OrderDevicesForGrid { get; set; } = new List<WorkOrderView>();
+    [Parameter] public List<WorkOrder> OrdeForGrid { get; set; } = new List<WorkOrder>();
+    // [Parameter] public List<WorkOrderView> OrderDevicesForGrid { get; set; } = new List<WorkOrderView>();
     [Parameter] public EventCallback<SchedulerAppointment> OnOrderChanged { get; set; }
     [Parameter] public List<string> workOrderStates { get; set; } = new List<string>();
     [Parameter] public int PageSize { get; set; } = 20;
+    [Parameter] public bool ShowSearchBar { get; set; } = true;
+    [Parameter] public bool isLoading { get; set; } = false;
 
     private Person currentUser { get; set; } = new Person();
     private List<Person> allPersons { get; set; } = new List<Person>();
@@ -175,7 +182,7 @@
     private bool isOrderCardOpen = false;
     private WorkOrder selectedOrder;
     private string dateColumnsize = "9rem";
-    public TelerikGrid<WorkOrderView> GridRef { get; set; }
+    public TelerikGrid<WorkOrder> GridRef { get; set; }
     private MarkupString rowStyles = new MarkupString();
     private CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor();
 
@@ -186,19 +193,24 @@
         personNames = allPersons.Select(p => p.Name).ToList();
         currentUser = new Person { PersonId = UserState.PersonID ?? 0, Name = UserState.UserName ?? string.Empty };
         dicts = await apiService.GetWODictionaries(UserState.PersonID, UserState.LangCode);
-        rowStyles = RenderStatesStyle(OrderDevicesForGrid.Select(x => x.StateColor).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct());
+        rowStyles = RenderStatesStyle(OrdeForGrid.Select(x => x.StateColor).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct());
     }
 
+    protected override void OnParametersSet()
+    {
+        rowStyles = RenderStatesStyle(OrdeForGrid.Select(x => x.StateColor).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct());
+        base.OnParametersSet();
+    }
     void OnRowRenderHandler(GridRowRenderEventArgs args)
     {
-        var item = args.Item as WorkOrderView;
+        var item = args.Item as WorkOrder;
         args.Class = " custom-row ";
         args.Class += GetStateColorClass(item);
     }
 
     void OnRowClick(GridRowClickEventArgs args)
     {
-        var item = args.Item as WorkOrderView;
+        var item = args.Item as WorkOrder;
         if (item != null)
         {
             selectedOrder = item;
@@ -217,14 +229,13 @@
         await OnOrderChanged.InvokeAsync(editedAppointment);
         isOrderCardOpen = false;
 
-        var index = OrderDevicesForGrid.FindIndex(a => a.WorkOrderID == editedAppointment.AppointmentId);
-        WorkOrderView workOrderView = new WorkOrderView(editedAppointment, apiService.GetDeviceNameByOrder(editedAppointment));
+        var index = OrdeForGrid.FindIndex(a => a.WorkOrderID == editedAppointment.AppointmentId);
         if (index != -1)
         {
-            OrderDevicesForGrid[index] = workOrderView;
+            OrdeForGrid[index] = editedAppointment;
         }
         else
-            OrderDevicesForGrid.Add(workOrderView);
+            OrdeForGrid.Add(editedAppointment);
         GridRef?.Rebind();
         StateHasChanged();
     }
