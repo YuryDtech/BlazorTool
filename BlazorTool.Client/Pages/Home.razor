@@ -13,7 +13,7 @@
 
 	<TelerikLoaderContainer  Visible="@isDataLoading" Text="@Localizer["Scheduler_LoadingOrders"]" Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Large">
 				</TelerikLoaderContainer>
-	<span class="order-title">My assigned orders</span>
+	<span class="order-title">@Localizer["Home_MyAssignedOrders"]:</span>
 	<OrdersGrid OrdeForGrid="@myAssignedOrders"
 			   workOrderStates="@workOrderStates"
 			   PageSize = "8"
@@ -23,7 +23,7 @@
 
 <div class="orders-grid-container">
 		
-	<span class="order-title">My taken orders</span>
+	<span class="order-title">@Localizer["Home_MyTakenOrders"]:</span>
 	<OrdersGrid OrdeForGrid="@myTakenWorkOrders"
 			   workOrderStates="@workOrderStates"
 			   PageSize = "8"
@@ -33,7 +33,7 @@
 
 <div class="orders-grid-container">
 <div class="order-header">
-	<span class="order-title">@Localizer["Home_OrdersForDepartment"] </span>
+	<span class="order-title">@Localizer["Home_OrdersForDepartment"]: </span>
 			<TelerikComboBox Data="@allDepartments" TextField="Department"
 							 Placeholder="@Localizer["Scheduler_SelectDepartment"]" Filterable="false"
 							 AllowCustom="false" Value="@selectedDepartment"

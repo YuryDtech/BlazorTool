@@ -503,7 +503,7 @@
     <value>Activities for Work Order:</value>
   </data>
   <data name="ActivityList_TotalWorkload" xml:space="preserve">
-    <value>Total workload:</value>
+    <value>Total work time:</value>
   </data>
   <data name="ActivityList_HoursAbbreviation" xml:space="preserve">
     <value>h</value>
@@ -521,7 +521,7 @@
     <value>Description</value>
   </data>
   <data name="ActivityList_Workload" xml:space="preserve">
-    <value>Workload</value>
+    <value>Time</value>
   </data>
   <data name="ActivityList_Workers" xml:space="preserve">
     <value>Workers</value>
@@ -725,5 +725,8 @@
   </data>
   <data name="Home_OrdersForDepartment" xml:space="preserve">
     <value>Orders for department</value>
+  </data>
+  <data name="Take" xml:space="preserve">
+    <value>Take</value>
   </data>
 </root>

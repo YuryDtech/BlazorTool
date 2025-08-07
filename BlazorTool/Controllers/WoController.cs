@@ -320,5 +320,63 @@ namespace BlazorTool.Controllers
                     Errors = new List<string> { ex.Message }
                 });
             }
-        } }
+        }
+
+        [HttpPut("take")]
+        public async Task<IActionResult> TakeWorkOrder([FromBody] WorkOrderTakeRequest request)
+        {
+            if (request == null || request.WorkOrderID <= 0)
+            {
+                return BadRequest(new SingleResponse<bool>
+                {
+                    IsValid = false,
+                    Errors = new List<string> { "WorkOrderID is required." }
+                });
+            }
+
+            try
+            {
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
+                var url = "wo/take";
+
+                var response = await client.PutAsJsonAsync(url, request);
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    var apiResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<bool>>(responseContent);
+                    Console.WriteLine($"WOController --> TakeWorkOrder returned: {apiResponse?.IsValid}");
+                    return Ok(apiResponse);
+                }
+                else
+                {
+                    try
+                    {
+                        var errorResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<bool>>(responseContent);
+                        if (errorResponse != null)
+                        {
+                            Console.WriteLine($"WOController --> TakeWorkOrder error: {string.Join(", ", errorResponse.Errors)}");
+                            return StatusCode((int)response.StatusCode, errorResponse);
+                        }
+                    }
+                    catch { }
+                    Console.WriteLine($"WOController --> TakeWorkOrder API Error: {response.ReasonPhrase}, Content: {responseContent}");
+                    return StatusCode((int)response.StatusCode, new SingleResponse<bool>
+                    {
+                        IsValid = false,
+                        Errors = new List<string> { $"API Error: {response.ReasonPhrase}", responseContent }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"WOController --> Error in TakeWorkOrder: {ex.Message}");
+                return StatusCode(500, new SingleResponse<bool>
+                {
+                    IsValid = false,
+                    Errors = new List<string> { ex.Message }
+                });
+            }
+        }
+    }
 }

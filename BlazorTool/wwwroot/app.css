@@ -154,7 +154,7 @@ h1:focus {
 }
 
 .orders-grid-container {
-    background-color: #f9f9f9; /* Светло-серый фон для легкости */
+    background-color: #c4e1ff; /* Светло-серый фон для легкости */
     border: 1px solid #e0e0e0; /* Тонкая рамка для разделения */
     border-radius: 8px; /* Скругленные углы для мягкости */
     margin-bottom: 8px; /* Внешний отступ для разделения секций */
@@ -185,7 +185,7 @@ h1:focus {
     display: flex; /* Включаем Flexbox */
     align-items: flex-end; /* Вертикально выравниваем элементы по центру */
     gap: 16px; /* Добавляем отступ между элементами */
-    
+    padding-bottom:5px;
 }
 
 .order-header .order-title {

@@ -37,6 +37,7 @@ namespace BlazorTool.Client.Services
         public bool IsAuthenticated => !string.IsNullOrEmpty(UserName);
         public RightMatrix? RightMatrix { get; set; }
         public bool UseOriginalColors { get; set; } = true;
+        public bool CanHaveManyActiveTake { get; set; } = false;
 
 
 
@@ -49,6 +50,7 @@ namespace BlazorTool.Client.Services
             LangCode = identityData.LangCode;
             RightMatrix = identityData.RigthMatrix;
             UseOriginalColors = identityData.UseOriginalColors;
+            CanHaveManyActiveTake = identityData.CanHaveManyActiveTake;
             var cultureInfo = new CultureInfo(identityData.LangCode);
             bool isForceReload = identityData.LangCode != CultureInfo.CurrentCulture.Name;
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
@@ -100,6 +102,7 @@ namespace BlazorTool.Client.Services
                     LangCode = identityData.LangCode;
                     RightMatrix = identityData.RigthMatrix;
                     UseOriginalColors = identityData.UseOriginalColors;
+                    CanHaveManyActiveTake = identityData.CanHaveManyActiveTake;
                     isForceReload = identityData.LangCode != CultureInfo.CurrentCulture.Name;
                     var cultureInfo = new CultureInfo(identityData.LangCode);
                     CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
@@ -124,6 +127,7 @@ namespace BlazorTool.Client.Services
             LangCode = string.Empty;
             RightMatrix = null;
             UseOriginalColors = true;
+            CanHaveManyActiveTake = false;
             //var cultureInfo = new CultureInfo("en-EN");
             //CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             //CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;

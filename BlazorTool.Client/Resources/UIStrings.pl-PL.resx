@@ -503,7 +503,7 @@
     <value>Aktywności dla zlecenia:</value>
   </data>
   <data name="ActivityList_TotalWorkload" xml:space="preserve">
-    <value>Łączne obciążenie:</value>
+    <value>Całkowity czas pracy:</value>
   </data>
   <data name="ActivityList_HoursAbbreviation" xml:space="preserve">
     <value>h</value>
@@ -521,7 +521,7 @@
     <value>Opis</value>
   </data>
   <data name="ActivityList_Workload" xml:space="preserve">
-    <value>Obciążenie</value>
+    <value>Czas</value>
   </data>
   <data name="ActivityList_Workers" xml:space="preserve">
     <value>Pracownicy</value>
@@ -724,5 +724,7 @@
   <data name="Home_OrdersForDepartment" xml:space="preserve">
     <value>Zlecenia dla działu</value>
   </data>
-</root>
+  <data name="Take" xml:space="preserve">
+    <value>Weź</value>
+  </data>
 </root>

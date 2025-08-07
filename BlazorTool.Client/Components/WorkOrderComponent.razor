@@ -1,7 +1,8 @@
 ﻿@using System.Text.Json.Serialization
 @using BlazorTool.Client.Models
 @using System.Globalization
-@inject BlazorTool.Client.Services.ApiServiceClient apiService
+@using BlazorTool.Client.Services
+@inject ApiServiceClient apiService
 @inject IStringLocalizer<Resources.UIStrings> Localizer
 
 
@@ -13,7 +14,7 @@
     <!-- HEADER -->
         <CardHeader Class="d-flex justify-content-between align-items-center flex-wrap p-2">
 
-            <div class="custom-highlight fs-5 p-2 rounded">
+            <div class="shadow fs-5 p-2 rounded">
                 <div class="@DeviceAlarm">
                     <strong>@Localizer["Device"]: </strong>
                     @if (isNewWorkOrder && isEditable)
@@ -371,7 +372,7 @@
             WorkOrder.EndDate = WorkOrder.StartDate?.AddHours(1);
             DeviceAlarm = string.IsNullOrWhiteSpace(WorkOrder?.AssetNo) ? "bg-warning" : string.Empty;
         }
-        
+
         var takePersonsIDs = WorkOrder?.TakePersons?.Split('#') ?? Array.Empty<string>();
         foreach(var id in takePersonsIDs)
         {
@@ -450,7 +451,7 @@
                     await task;
                 }
             }
-
+            StateHasChanged();
             await OnStateChanged.InvokeAsync(true);
         }
         else
@@ -499,7 +500,7 @@
             WorkOrder.DeviceCategory = device.DeviceCategory;
             WorkOrder.DeviceCategoryID = device.CategoryID;
             WorkOrder.MachineID = device.MachineID;
-            await OnStateChanged.InvokeAsync();
+            // await OnStateChanged.InvokeAsync();
             DeviceAlarm = string.Empty;
         }else
         {
@@ -581,7 +582,7 @@
         }
         isValidWorkOrder();
     }
-
+        
     #endregion Event Handlers
 
     private string FormatDateTime(DateTime? dateTime)

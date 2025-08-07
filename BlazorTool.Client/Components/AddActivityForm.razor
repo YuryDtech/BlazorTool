@@ -100,12 +100,12 @@
     private List<WODict> Categories { get; set; } = new List<WODict>();
     private string ErrorMessage { get; set; } = string.Empty;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         ActivityModel.WorkOrderID = WorkOrderID;
         ActivityModel.PersonID = UserState.PersonID ?? 0;
-
-        ActivityModel.WorkLoad = 0.25m; // Default workload
+        var WO = await ApiClient.GetWorkOrderByIdAsync(WorkOrderID);
+        ActivityModel.WorkLoad = CalculateDecimalHours(WO?.TakeDate);
         People = ApiClient.GetAllPersonsCached(); // From cache
         Categories = ApiClient.GetWOCategories(); // From cache
     }
@@ -131,6 +131,14 @@
             ErrorMessage = $"Error creating activity: {string.Join(", ", response.Errors)}";
             await OnActivityAdded.InvokeAsync(false);
         }
+    }
+
+    private decimal CalculateDecimalHours(DateTime? takeDate)
+    {
+        //if 15 minutes = 0.25 hours
+        if (takeDate == null) return 0;
+        var hours = (DateTime.Now - takeDate.Value).TotalHours;
+        return (decimal)hours;
     }
 
     private void OnCancelhandler()

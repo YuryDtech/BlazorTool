@@ -453,6 +453,21 @@ namespace BlazorTool.Client.Services
             return new SingleResponse<WorkOrder> {Data = workOrder, IsValid = result.IsValid, Errors = result.Errors };
         }
 
+        public async Task<SingleResponse<bool>> TakeWorkOrderAsync(WorkOrder wo, int? personID)
+        {
+            WorkOrderTakeRequest request = new WorkOrderTakeRequest
+            {
+                WorkOrderID = wo.WorkOrderID,
+                LevelID = wo.LevelID ?? 0,
+                ReasonID = wo.ReasonID ?? 0,
+                CategoryID = wo.CategoryID ?? 0,
+                PersonID = personID ?? _userState.PersonID ?? 0,
+            };
+            var result = await PutSingleAsync<WorkOrderTakeRequest, bool>("wo/take", request);
+            return result;
+        }
+
+
         /// <summary>
         /// Save only new workorder.
         /// </summary>

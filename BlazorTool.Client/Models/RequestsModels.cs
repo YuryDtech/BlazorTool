@@ -46,4 +46,12 @@
         public string Lang { get; set; } = "pl-PL";
     }
 
+    public class WorkOrderTakeRequest
+    {
+        public int WorkOrderID { get; set; }
+        public int PersonID { get; set; }
+        public int LevelID { get; set; }
+        public int ReasonID { get; set; }
+        public int CategoryID { get; set; }
+    }
 }

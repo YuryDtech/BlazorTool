@@ -241,7 +241,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Total workload:.
+        ///   Looks up a localized string similar to Total work time:.
         /// </summary>
         public static string ActivityList_TotalWorkload {
             get {
@@ -259,7 +259,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Workload.
+        ///   Looks up a localized string similar to Time.
         /// </summary>
         public static string ActivityList_Workload {
             get {
@@ -592,11 +592,38 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to My assigned orders.
+        /// </summary>
+        public static string Home_MyAssignedOrders {
+            get {
+                return ResourceManager.GetString("Home_MyAssignedOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My taken orders.
+        /// </summary>
+        public static string Home_MyTakenOrders {
+            get {
+                return ResourceManager.GetString("Home_MyTakenOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ORDERS.
         /// </summary>
         public static string Home_Orders {
             get {
                 return ResourceManager.GetString("Home_Orders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Orders for department.
+        /// </summary>
+        public static string Home_OrdersForDepartment {
+            get {
+                return ResourceManager.GetString("Home_OrdersForDepartment", resourceCulture);
             }
         }
         
@@ -1479,6 +1506,15 @@ namespace BlazorTool.Client.Resources {
         public static string StateColor {
             get {
                 return ResourceManager.GetString("StateColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Take.
+        /// </summary>
+        public static string Take {
+            get {
+                return ResourceManager.GetString("Take", resourceCulture);
             }
         }
         
