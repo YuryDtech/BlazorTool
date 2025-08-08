@@ -1,3 +1,19 @@
+## 2025-08-07 && 2025-08-08
+### Naprawiono
+- Poprawiono drobny błąd logiczny w komponencie `WorkOrderComponent`, który wpływał na powiadomienia o zmianie stanu.
+- Rozwiązano problem `AntiforgeryValidationException` przy wdrożeniu na serwerze poprzez skonfigurowanie trwałych kluczy ochrony danych, co zapewnia stabilność sesji po restarcie aplikacji.
+
+### Zmieniono
+- Zrefaktoryzowano formularze (`AddActivityForm`, `AppointmentEditor`) w celu uzyskania lepszego układu, walidacji i ulepszonej logiki interakcji z użytkownikiem.
+- Ulepszono siatkę zleceń (`OrdersGrid`) oraz stronę główną (`Home`), aby zapewnić lepsze aktualizacje danych w czasie rzeczywistym i bardziej responsywne doświadczenie użytkownika.
+- Zaktualizowano elementy interfejsu użytkownika, w tym etykiety przycisków i ikony nawigacyjne, dla większej przejrzystości i nowocześniejszego wyglądu.
+- Zmodyfikowano `WorkOrderComponent`, aby poprawnie wyświetlał przypisanych użytkowników i wydajniej obsługiwał odświeżanie danych.
+
+### Dodano
+- Wprowadzono funkcję "Podejmij zlecenie", umożliwiającą użytkownikom przypisywanie się do zlecenia bezpośrednio z interfejsu.
+- Dodano nowe punkty końcowe API i modele żądań do obsługi funkcjonalności "Podejmij zlecenie".
+- Wprowadzono w `AppointmentService` metodę do odświeżania pojedynczych terminów, co poprawia spójność danych.
+
 ## 2025-08-06
 ### Dodano
 - **Strona Zleceń**: Utworzono nowy, oddzielny komponent `OrdersGrid` do wyświetlania listy Zleceń, co poprawia modułowość.

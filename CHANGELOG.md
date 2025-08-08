@@ -1,3 +1,19 @@
+## 2025-08-07 && 2025-08-08
+### Fixed
+- Corrected a minor logic bug in the `WorkOrderComponent` that affected state change notifications.
+- Resolved an `AntiforgeryValidationException` on server deployment by configuring persistent data protection keys, ensuring stable sessions across application restarts.
+
+### Changed
+- Refactored forms (`AddActivityForm`, `AppointmentEditor`) for better layout, validation, and improved user interaction logic.
+- Enhanced the `OrdersGrid` and `Home` page to provide better real-time data updates and a more responsive user experience.
+- Updated UI elements, including button labels and navigation icons, for improved clarity and a more modern look.
+- Modified `WorkOrderComponent` to correctly display assigned users and handle data refresh more efficiently.
+
+### Added
+- Implemented a "Take Work Order" feature, allowing users to assign themselves to an order directly from the UI.
+- Added new API endpoints and request models to support the "Take Work Order" functionality.
+- Introduced a method in `AppointmentService` to refresh individual appointments, improving data consistency.
+
 ## 2025-08-06
 ### Added
 - **Orders Page**: A new, separate `OrdersGrid` component has been created to display the list of orders, improving modularity.
