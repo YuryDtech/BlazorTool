@@ -157,11 +157,12 @@
         <WindowAction Name="Close" OnClick="@CancelEditing" />
     </WindowActions>
     <WindowContent>
-        <AppointmentEditor Appointment="@(new SchedulerAppointment(selectedOrder))" 
+        <AppointmentEditor Appointment="@selectedAppointment" 
                           isEditable=true 
                           ListPersons="@personNames.Where(c=>c != "All").ToList()"
                           currentUser="@currentUser"
-                          OnAppointmentChanged="@OnCloseWorkOrderWindow"
+                          OnComponentClosing="@OnCloseWorkOrderWindow"
+                          OnRefreshData="@((app) => OnRefreshData(app))"
                           isScheduler="false" />
     </WindowContent>
 </TelerikWindow>
@@ -180,7 +181,17 @@
     private List<string> personNames { get; set; } = new List<string>();
     private List<WODict> dicts { get; set; } = new List<WODict>();
     private bool isOrderCardOpen = false;
-    private WorkOrder selectedOrder;
+    private WorkOrder _selectedOrder;
+    private WorkOrder selectedOrder
+    {
+        get => _selectedOrder;
+        set
+        {
+            _selectedOrder = value;
+            selectedAppointment = value != null ? new SchedulerAppointment(value): null;
+        }
+    }
+    private SchedulerAppointment selectedAppointment;
     private string dateColumnsize = "9rem";
     public TelerikGrid<WorkOrder> GridRef { get; set; }
     private MarkupString rowStyles = new MarkupString();
@@ -214,6 +225,7 @@
         if (item != null)
         {
             selectedOrder = item;
+            selectedAppointment = new SchedulerAppointment(item);
             isOrderCardOpen = true;
             StateHasChanged();
         }
@@ -226,20 +238,31 @@
             isOrderCardOpen = false;
             return;
         }
+        if (editedAppointment.AssignedPerson == Person.NotAssigned.Name)
+            editedAppointment.AssignedPerson = string.Empty;
+        selectedAppointment = editedAppointment;
         await OnOrderChanged.InvokeAsync(editedAppointment);
         isOrderCardOpen = false;
 
-        var index = OrdeForGrid.FindIndex(a => a.WorkOrderID == editedAppointment.AppointmentId);
-        if (index != -1)
-        {
-            OrdeForGrid[index] = editedAppointment;
-        }
-        else
-            OrdeForGrid.Add(editedAppointment);
-        GridRef?.Rebind();
-        StateHasChanged();
+        // var index = OrdeForGrid.FindIndex(a => a.WorkOrderID == editedAppointment.AppointmentId);
+        // if (index != -1)
+        // {
+        //     OrdeForGrid[index] = editedAppointment;
+        // }
+        // else
+        //     OrdeForGrid.Add(editedAppointment);
+        // GridRef?.Rebind();
+        // StateHasChanged();
     }
 
+    public void RefreshGrid()
+    {
+        if (GridRef != null)
+        {
+            GridRef.Rebind();
+            StateHasChanged();
+        }
+    }
     //TODO make static or move to a common place
     private MarkupString RenderStatesStyle(IEnumerable<string?> uniqueColors)
     {
@@ -326,6 +349,25 @@
     private async Task ClearFilterAsync(FilterMenuTemplateContext filterContext)
     {
         await filterContext.ClearFilterAsync();
+    }
+
+    private async Task OnRefreshData(SchedulerAppointment? editedAppointment)
+    {
+        if (editedAppointment == null)
+        {
+            return;
+        }
+        selectedAppointment = editedAppointment;
+        await OnOrderChanged.InvokeAsync(editedAppointment);
+        // var index = OrdeForGrid.FindIndex(a => a.WorkOrderID == editedAppointment.AppointmentId);
+        // if (index != -1)
+        // {
+        //     OrdeForGrid[index] = editedAppointment;
+        // }
+        // else
+        //     OrdeForGrid.Add(editedAppointment);
+        GridRef?.Rebind();
+        StateHasChanged();
     }
 
     void CancelEditing()

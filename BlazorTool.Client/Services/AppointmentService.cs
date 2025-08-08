@@ -67,6 +67,18 @@ namespace BlazorTool.Client.Services
             //await _apiServiceClient.SaveWorkOrderAsync((WorkOrder)appointment);
         }
 
+        public async Task<SchedulerAppointment> RefreshAppointmentById(int appId)
+        {
+            var newWo = await _apiServiceClient.GetWorkOrderByIdCachedAsync(appId);
+            _appointments.RemoveAll(x => x.AppointmentId == appId);
+            if (newWo != null)
+            {
+                _appointments.Add(new SchedulerAppointment(newWo));
+                return new SchedulerAppointment(newWo);
+            }
+            return new SchedulerAppointment();
+        }
+
         public async Task<SingleResponse<WorkOrder>> UpdateAppointment(SchedulerAppointment appointment)
         {
             var existingAppointment = _appointments.FirstOrDefault(x => x.AppointmentId == appointment.AppointmentId);

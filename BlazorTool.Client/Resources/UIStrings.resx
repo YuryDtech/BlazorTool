@@ -726,7 +726,7 @@
   <data name="Home_OrdersForDepartment" xml:space="preserve">
     <value>Orders for department</value>
   </data>
-  <data name="Take" xml:space="preserve">
-    <value>Take</value>
+  <data name="TakeOrder" xml:space="preserve">
+    <value>Take order</value>
   </data>
 </root>

@@ -73,6 +73,9 @@ else
                 isLoading="@isOrdersLoading" />
 }
 @code {
+
+
+
     private bool isOrdersLoading = false;
     private bool isDevicesLoading = false;
     private List<WorkOrder> OrdersForGrid = new List<WorkOrder>();
@@ -142,12 +145,12 @@ else
         Console.WriteLine($"Selected devices count: {selectedDevices.Count()}");
         var filteredDevices = GetFilteredDevices();
         OrdersForGrid = await GetFilteredOrders(filteredDevices);
-        OrdersForGrid = OrdersForGrid.OrderByDescending(o => o.WorkOrderID).ToList();
+        //OrdersForGrid = OrdersForGrid.OrderByDescending(o => o.WorkOrderID).ToList();
         isOrdersLoading = false;
         StateHasChanged();
     }
 
-    
+
 
     private IEnumerable<Device> GetFilteredDevices()
     {
@@ -178,13 +181,19 @@ else
         var result = orders.Where(o => 
             (o.WOState == selectedState || selectedState == "All" || string.IsNullOrWhiteSpace(selectedState)) &&
             (selectedPersons.Count == 0 || selectedPersons.Contains(o.AssignedPerson))
-        ).ToList();
+        ).OrderByDescending(o => o.WorkOrderID).ToList(); ;
         return result;
     }
 
-    async Task OnOrderChanged(SchedulerAppointment? editedAppointment)
+    private async Task OnOrderChanged(SchedulerAppointment? editedAppointment)
     {
-       
+        if (editedAppointment == null) return;
+        
+        var index = OrdersForGrid.FindIndex(x => x.WorkOrderID == editedAppointment.AppointmentId);
+        OrdersForGrid.RemoveAt(index);
+        OrdersForGrid.Insert(index, editedAppointment);
+        ordersGrid.RefreshGrid();
+        StateHasChanged();
     }
 
     #region Filter events

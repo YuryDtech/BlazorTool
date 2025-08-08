@@ -25,16 +25,19 @@
         @if (!isCurrentWOTakenByUser 
         && (UserState.CanHaveManyActiveTake || !userHaveAnyTakenWorkOrders))
         {
-            <TelerikButton OnClick="@OnTakeWorkOrder" ButtonType="ButtonType.Button">@Localizer["Take"]</TelerikButton>
+            <TelerikButton OnClick="@OnTakeWorkOrder" ButtonType="ButtonType.Button">@Localizer["TakeOrder"]</TelerikButton>
         }
     </div>
 </EditForm>
-<WorkOrderComponent WorkOrder="@Appointment" 
-    ListPersons="@ListPersons" 
-    isEditable=@isEditable
-    currentUser="@currentUser"
-    isScheduler = "@isScheduler"
-                    OnStateChanged="@((isValid) => {isValidData = isValid; StateHasChanged();})">
+<WorkOrderComponent WorkOrder="@Appointment"
+                    @ref="WORef"
+                ListPersons="@ListPersons" 
+                isEditable=@isEditable
+                currentUser="@currentUser"
+                isScheduler = "@isScheduler"
+                OnStateChanged="@((isValid) => {isValidData = isValid; StateHasChanged();})"
+                NeedReloadModel="@((wo) => ReloadModel(wo.WorkOrderID))"
+>
 </WorkOrderComponent>
 
 <TelerikPopup @ref="@PopupRef"
@@ -56,7 +59,8 @@
 
     //communcation with the parent component where the scheduler is
     [Parameter] public SchedulerAppointment Appointment { get; set; }
-    [Parameter] public EventCallback<SchedulerAppointment?> OnAppointmentChanged { get; set; }
+    [Parameter] public EventCallback<SchedulerAppointment?> OnComponentClosing { get; set; }
+    [Parameter] public EventCallback<SchedulerAppointment?> OnRefreshData { get; set; }
     [Parameter] public List<string>? ListPersons { get; set; }
     [Parameter] public bool isEditable { get; set; } = false;
     [Parameter] public Person currentUser { get; set; }
@@ -65,6 +69,7 @@
     private bool isNewAppointment = false;
     private string titleAlarm = string.Empty;
     private TelerikPopup? PopupRef { get; set; }
+    private WorkOrderComponent WORef;
     private string popupMessage = string.Empty;
     private SchedulerAppointment? _OriginAppointment; // Used to store the original appointment for cancellation
     private WorkOrderInfo? workOrderInfo = null; //additional information about the work order /wo/get?WorkOrderID=
@@ -115,7 +120,8 @@
             PopupRef?.Show();
             return;
         }
-        await OnAppointmentChanged.InvokeAsync(Appointment);
+       
+        await OnComponentClosing.InvokeAsync(new SchedulerAppointment(result.Data));
     }
 
     async Task DeleteAppointment()
@@ -131,7 +137,7 @@
             return;
         }
 
-        await OnAppointmentChanged.InvokeAsync(null);
+        await OnComponentClosing.InvokeAsync(null);
     }
 
     async Task CloseAppointment()
@@ -152,45 +158,45 @@
         {
             Appointment = new SchedulerAppointment(result.Data);
         }   
-        await OnAppointmentChanged.InvokeAsync(Appointment);
+        await OnComponentClosing.InvokeAsync(Appointment);
     }
 
     async Task CancelEditing()
     {
         if (isNewAppointment)
         {
-            await OnAppointmentChanged.InvokeAsync(null);
+            await OnComponentClosing.InvokeAsync(null);
             return;
         }
 
         // Reset the appointment to the original one
         Appointment = _OriginAppointment.ShallowCopy();
-        await OnAppointmentChanged.InvokeAsync(Appointment);
+        await OnComponentClosing.InvokeAsync(Appointment);
     }
 
     private bool IsValidAppointment()
     {
         if(!isScheduler)
         {
-           return !string.IsNullOrWhiteSpace(Appointment.AssetNo) &&
-                 Appointment.Start < Appointment.End &&
-                 Appointment.MachineID != 0 &&
-                 // !string.IsNullOrEmpty(Appointment.DepName) &&
-                 !string.IsNullOrWhiteSpace(Appointment.WODesc) &&
-                 !string.IsNullOrWhiteSpace(Appointment.WOLevel) &&
-                 !string.IsNullOrWhiteSpace(Appointment.WOCategory) &&
-                 !string.IsNullOrWhiteSpace(Appointment.WOReason);
+            return !string.IsNullOrWhiteSpace(Appointment.AssetNo) &&
+                  Appointment.Start < Appointment.End &&
+                  Appointment.MachineID != 0 &&
+                  // !string.IsNullOrEmpty(Appointment.DepName) &&
+                  !string.IsNullOrWhiteSpace(Appointment.WODesc) &&
+                  !string.IsNullOrWhiteSpace(Appointment.WOLevel) &&
+                  !string.IsNullOrWhiteSpace(Appointment.WOCategory) &&
+                  !string.IsNullOrWhiteSpace(Appointment.WOReason);
         }else
-        return !string.IsNullOrWhiteSpace(Appointment.AssetNo) &&
-               Appointment.Start != default &&
-               Appointment.End != default &&
-               Appointment.Start < Appointment.End &&
-               Appointment.MachineID != 0 &&
-               // !string.IsNullOrEmpty(Appointment.DepName) &&
-               !string.IsNullOrWhiteSpace(Appointment.WODesc) &&
-               !string.IsNullOrWhiteSpace(Appointment.WOLevel) &&
-               !string.IsNullOrWhiteSpace(Appointment.WOCategory) &&
-               !string.IsNullOrWhiteSpace(Appointment.WOReason);
+            return !string.IsNullOrWhiteSpace(Appointment.AssetNo) &&
+                   Appointment.Start != default &&
+                   Appointment.End != default &&
+                   Appointment.Start < Appointment.End &&
+                   Appointment.MachineID != 0 &&
+                   // !string.IsNullOrEmpty(Appointment.DepName) &&
+                   !string.IsNullOrWhiteSpace(Appointment.WODesc) &&
+                   !string.IsNullOrWhiteSpace(Appointment.WOLevel) &&
+                   !string.IsNullOrWhiteSpace(Appointment.WOCategory) &&
+                   !string.IsNullOrWhiteSpace(Appointment.WOReason);
     }
 
     private bool IsWOClosed()
@@ -207,6 +213,19 @@
     {
         if (Appointment == null) return;
         bool success = (await ApiService.TakeWorkOrderAsync(Appointment, UserState.PersonID ?? 0)).IsValid;
+
+        if (success) {
+            isCurrentWOTakenByUser = true;
+            await ReloadModel(Appointment.WorkOrderID);
+        }
     }
 
+    private async Task ReloadModel(int? workOrderId)
+    {
+        if (workOrderId == null) return;
+        Appointment = await ApptService.RefreshAppointmentById(workOrderId.Value);
+        await OnRefreshData.InvokeAsync(Appointment);
+        await WORef.Refresh();
+        StateHasChanged();
+    }
 }

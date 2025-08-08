@@ -322,7 +322,7 @@
             isEditable=true 
             ListPersons="@PersonsNames.Where(c=>c != "All").ToList()"
             currentUser="@currentUser"
-            OnAppointmentChanged="@RefreshData" 
+            OnComponentClosing="@RefreshData" 
             isScheduler = "true"/>
     </WindowContent>
 </TelerikWindow>

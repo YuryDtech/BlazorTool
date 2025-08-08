@@ -1510,20 +1510,20 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Take.
-        /// </summary>
-        public static string Take {
-            get {
-                return ResourceManager.GetString("Take", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Take Date.
         /// </summary>
         public static string TakeDate {
             get {
                 return ResourceManager.GetString("TakeDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Take order.
+        /// </summary>
+        public static string TakeOrder {
+            get {
+                return ResourceManager.GetString("TakeOrder", resourceCulture);
             }
         }
         

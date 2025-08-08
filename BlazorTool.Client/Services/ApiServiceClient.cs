@@ -342,7 +342,7 @@ namespace BlazorTool.Client.Services
             }
             else
             {
-                UpdateWorkOrderInCache(orders.FirstOrDefault());
+                //UpdateWorkOrderInCache(orders.FirstOrDefault()); already updated in GetWorkOrdersAsync()
                 return orders.FirstOrDefault();
             }
         }
@@ -464,6 +464,7 @@ namespace BlazorTool.Client.Services
                 PersonID = personID ?? _userState.PersonID ?? 0,
             };
             var result = await PutSingleAsync<WorkOrderTakeRequest, bool>("wo/take", request);
+            if (result.IsValid) await RefreshWorkOrderInCacheAsync(wo.WorkOrderID);
             return result;
         }
 
