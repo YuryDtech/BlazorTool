@@ -632,7 +632,7 @@
                string.IsNullOrEmpty(LevelAlarm) &&
                string.IsNullOrEmpty(ReasonAlarm) &&
                isValidDates();
-               if (!isValid) OnStateChanged.InvokeAsync(isValid);
+               if (isValid) OnStateChanged.InvokeAsync(isValid);
         return isValid;
     }
 }
