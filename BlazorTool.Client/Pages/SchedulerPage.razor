@@ -455,6 +455,7 @@
         PersonsNames = allPersons.Select(c => c.Name).ToList();
         PersonsNames.Insert(0, Person.NotAssigned.Name); 
         _allOrders = await apiService.GetWorkOrdersAsync(); //from API, not cache
+        cellStyles = RenderStatesStyle(_allOrders);
         ApptService.ClearAppointments(); //clear cache
         if (!UserState.IsAuthenticated)
         {

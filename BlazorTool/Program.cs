@@ -3,10 +3,12 @@ using BlazorTool.Client.Services;
 using BlazorTool.Components;
 using BlazorTool.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -16,6 +18,10 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Store data protection keys in a relative folder named 'keys'
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("keys"))
+    .SetApplicationName("BlazorTool");
 
 builder.Services.AddMemoryCache();
 var ApiAddress = new Uri(builder.Configuration["ExternalApi:BaseUrl"]!);
