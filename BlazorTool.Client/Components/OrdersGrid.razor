@@ -12,17 +12,17 @@
 
 @rowStyles
 
-<TelerikGrid Data="@OrdeForGrid"
+<TelerikGrid Data="@OrdersForGrid"
              Id="Grid1"
              RowDraggable="false"
-             @ref="@GridRef"
+             @ref="GridRef"
              Sortable="true"
              Resizable="true"
              Pageable="true"
-             PageSize="@PageSize"
              FilterMode="@GridFilterMode.FilterMenu"
              OnRowRender="@OnRowRenderHandler"
              OnRowDoubleClick="@OnRowClick"
+             OnStateChanged="@OnStateChanged"
              Class="@(ShowSearchBar ? "" : "no-toolbar")">
 
     <GridToolBarTemplate>
@@ -168,13 +168,13 @@
 </TelerikWindow>
 
 @code {
-    [Parameter] public List<WorkOrder> OrdeForGrid { get; set; } = new List<WorkOrder>();
+    [Parameter] public List<WorkOrder> OrdersForGrid { get; set; } = new List<WorkOrder>();
     // [Parameter] public List<WorkOrderView> OrderDevicesForGrid { get; set; } = new List<WorkOrderView>();
     [Parameter] public EventCallback<SchedulerAppointment> OnOrderChanged { get; set; }
     [Parameter] public List<string> workOrderStates { get; set; } = new List<string>();
-    [Parameter] public int PageSize { get; set; } = 20;
     [Parameter] public bool ShowSearchBar { get; set; } = true;
     [Parameter] public bool isLoading { get; set; } = false;
+    [Parameter] public EventCallback<GridStateEventArgs<WorkOrder>> OnStateChanged { get; set; }
 
     private Person currentUser { get; set; } = new Person();
     private List<Person> allPersons { get; set; } = new List<Person>();
@@ -204,14 +204,15 @@
         personNames = allPersons.Select(p => p.Name).ToList();
         currentUser = new Person { PersonId = UserState.PersonID ?? 0, Name = UserState.UserName ?? string.Empty };
         dicts = await apiService.GetWODictionaries(UserState.PersonID, UserState.LangCode);
-        rowStyles = RenderStatesStyle(OrdeForGrid.Select(x => x.StateColor).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct());
+        rowStyles = RenderStatesStyle(OrdersForGrid.Select(x => x.StateColor).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct());
     }
 
     protected override void OnParametersSet()
     {
-        rowStyles = RenderStatesStyle(OrdeForGrid.Select(x => x.StateColor).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct());
+        rowStyles = RenderStatesStyle(OrdersForGrid.Select(x => x.StateColor).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct());
         base.OnParametersSet();
     }
+
     void OnRowRenderHandler(GridRowRenderEventArgs args)
     {
         var item = args.Item as WorkOrder;
@@ -253,6 +254,14 @@
         //     OrdeForGrid.Add(editedAppointment);
         // GridRef?.Rebind();
         // StateHasChanged();
+    }
+
+    public async Task ApplyStateAsync(GridState<WorkOrder> state)
+    {
+        if (GridRef != null && state != null)
+        {
+            await GridRef.SetStateAsync(state);
+        }
     }
 
     public void RefreshGrid()

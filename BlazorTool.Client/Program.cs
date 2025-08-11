@@ -64,6 +64,7 @@ builder.Services.AddScoped(sp => {
 });
 
 builder.Services.AddScoped<UserState>();
+builder.Services.AddScoped<ViewSettingsService>();
 
 builder.Services.AddSingleton<AppStateService>();
 

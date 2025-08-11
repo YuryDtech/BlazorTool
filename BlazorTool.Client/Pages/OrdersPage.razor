@@ -8,10 +8,12 @@
 @using System.Diagnostics
 @using Telerik.DataSource.Extensions
 @using Telerik.Blazor
+@using Telerik.Blazor.Components
 @inject NavigationManager Navigation
 @inject BlazorTool.Client.Services.ApiServiceClient apiService
 @inject UserState UserState
 @inject IStringLocalizer<Resources.UIStrings> Localizer
+@inject ViewSettingsService ViewSettingsService
 
 <CheckSession apiService="@apiService" UserState="@UserState" />
 <label>@Localizer["OrdersPage_Devices"]</label>
@@ -21,14 +23,14 @@
     <TelerikLoaderContainer Visible="@isDevicesLoading" Text="@Localizer["OrdersPage_LoadingDevicesList"]"></TelerikLoaderContainer>
 }
 else
-{    
+{
     <div class="filter-controls-row">
         <div>
             <TelerikRadioGroup Data="@TagModes"
-                              @bind-Value="@TagMode"
-                              ValueField="@nameof(Tags.Mode)"
-                              TextField="@nameof(Tags.Description)"
-                              Layout="RadioGroupLayout.Horizontal">
+                               @bind-Value="@TagMode"
+                               ValueField="@nameof(Tags.Mode)"
+                               TextField="@nameof(Tags.Description)"
+                               Layout="RadioGroupLayout.Horizontal">
             </TelerikRadioGroup>
 
             <TelerikMultiSelect Data="@devices"
@@ -40,19 +42,20 @@ else
                               Placeholder="@Localizer["OrdersPage_SelectDevices"]"
                               AutoClose="false"
                               OnClose="@OnMultiValueClosed"
+                                OnChange="@(async (arg) => { if (selectedDeviceIds.Count == 0) await LoadData();})"
                               Width="500px"
                               ShowClearButton="true">
             </TelerikMultiSelect>
         </div>
         <div>
             <label>@Localizer["OrdersPage_DeviceCategory"]</label>
-            <TelerikComboBox Data="@deviceCategories" 
-                           TextField="DeviceCategory"
-                           @bind-Value="@selectedDeviceCategory"
-                           Placeholder="@Localizer["OrdersPage_SelectCategory"]" 
-                           ShowClearButton="true" 
-                           Filterable="true"
-                           OnChange="@OnCategoryChanged">
+            <TelerikComboBox Data="@deviceCategories"
+                             TextField="DeviceCategory"
+                             @bind-Value="@selectedDeviceCategory"
+                             Placeholder="@Localizer["OrdersPage_SelectCategory"]"
+                             ShowClearButton="true"
+                             Filterable="true"
+                             OnChange="@OnCategoryChanged">
             </TelerikComboBox>
         </div>
     </div>
@@ -66,16 +69,15 @@ else
 else
 {
     <OrdersGrid @ref="ordersGrid"
-                OrdeForGrid="@OrdersForGrid"
-               workOrderStates="@workOrderStates"
-               OnOrderChanged="@OnOrderChanged"
-               PageSize = "20"
+                OrdersForGrid="@OrdersForGrid"
+                workOrderStates="@workOrderStates"
+                OnOrderChanged="@OnOrderChanged"
+                OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _viewSettings.GridState = args.GridState; await SaveStateAsync(); })"
                 isLoading="@isOrdersLoading" />
 }
 @code {
-
-
-
+    private const string ViewSettingsKey = "orders-grid-settings";
+    private ViewSettings<WorkOrder> _viewSettings;
     private bool isOrdersLoading = false;
     private bool isDevicesLoading = false;
     private List<WorkOrder> OrdersForGrid = new List<WorkOrder>();
@@ -96,33 +98,64 @@ else
     private OrdersGrid ordersGrid;
     private MultiSelectTagMode TagMode { get; set; } = MultiSelectTagMode.Single;
     private int? MaxAllowedTags { get; set; }
+    private bool hasInitialized = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Console.WriteLine("Initialized ORDERS PAGE");
-        await UserState.InitializationTask; // Ensure UserState is loaded
-        if (!UserState.IsAuthenticated)
+        if (firstRender && !hasInitialized)
         {
-            Navigation.NavigateTo("/login");
+            hasInitialized = true;
+
+            Console.WriteLine("______Initialized ORDERS PAGE");
+            _viewSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(ViewSettingsKey);
+            RestoreCustomFilterState();
+
+            await UserState.InitializationTask; // Ensure UserState is loaded
+            if (!UserState.IsAuthenticated)
+            {
+                Navigation.NavigateTo("/login");
+            }
+
+            isDevicesLoading = true;
+            StateHasChanged();
+            dicts = await apiService.GetWODictionaries(UserState.PersonID, UserState.LangCode);
+            allPersons = await apiService.GetAllPersons();
+            personNames = allPersons.Select(p => p.Name).ToList();
+            currentUser.PersonId = UserState.PersonID ?? -1;
+            currentUser.Name = UserState.UserName ?? string.Empty;
+            OrdersForGrid = await apiService.GetWorkOrdersAsync(lang: UserState.LangCode);
+            workOrderStates = OrdersForGrid.Select(o => o.WOState ?? string.Empty).Distinct().ToList();
+            devices = await apiService.GetAllDevicesCachedAsync();
+            deviceCategories = devices.Select(d => d.DeviceCategory).Distinct().ToList();
+            deviceCategories?.Insert(0, "All");
+            deviceTypes = devices.Select(d => d.Type).Distinct().ToList();
+            deviceTypes?.Insert(0, "All");
+            isDevicesLoading = false;
+            StateHasChanged();
+            await LoadData();
+
+            await InvokeAsync(StateHasChanged);
+            // Apply the state after the data is loaded and the grids are rendered
+            if (ordersGrid != null) await ordersGrid.ApplyStateAsync(_viewSettings.GridState);
         }
-        isDevicesLoading = true;
-        StateHasChanged();
-        dicts = await apiService.GetWODictionaries(UserState.PersonID, UserState.LangCode);
-        allPersons = await apiService.GetAllPersons();
-        personNames = allPersons.Select(p => p.Name).ToList();
-        currentUser.PersonId = UserState.PersonID ?? -1;
-        currentUser.Name = UserState.UserName ?? string.Empty;        
-        OrdersForGrid = await apiService.GetWorkOrdersAsync(lang: UserState.LangCode);
-        workOrderStates = OrdersForGrid.Select(o => o.WOState ?? string.Empty).Distinct().ToList();
-        devices = await apiService.GetAllDevicesCachedAsync();
-        deviceCategories = devices.Select(d => d.DeviceCategory).Distinct().ToList();
-        deviceCategories?.Insert(0,"All");
-        deviceTypes = devices.Select(d => d.Type).Distinct().ToList();
-        deviceTypes?.Insert(0, "All");
-        isDevicesLoading = false;
-        StateHasChanged();
-        await LoadData();
     }
+
+    private async Task SaveStateAsync()
+    {
+        _viewSettings.SetCustomFilter("selectedDeviceIds", selectedDeviceIds);
+        _viewSettings.SetCustomFilter("selectedDeviceCategory", selectedDeviceCategory);
+        _viewSettings.SetCustomFilter("TagMode", TagMode);
+        await ViewSettingsService.SaveSettingsAsync(ViewSettingsKey, _viewSettings);
+    }
+
+    private void RestoreCustomFilterState()
+    {
+        selectedDeviceIds = _viewSettings.GetCustomFilter("selectedDeviceIds", new List<int>());
+        selectedDeviceCategory = _viewSettings.GetCustomFilter("selectedDeviceCategory", "All");
+        TagMode = _viewSettings.GetCustomFilter("TagMode", MultiSelectTagMode.Single);
+
+    }
+
 
     private async Task LoadData()
     {
@@ -154,7 +187,7 @@ else
 
     private IEnumerable<Device> GetFilteredDevices()
     {
-        return devices.Where(d => 
+        return devices.Where(d =>
             (string.IsNullOrWhiteSpace(selectedDeviceCategory) || d.DeviceCategory == selectedDeviceCategory || selectedDeviceCategory == "All") &&
             (string.IsNullOrWhiteSpace(selectedDeviceType) || d.Type == selectedDeviceType || selectedDeviceType == "All") &&
             (selectedDeviceIds.Count == 0 || selectedDeviceIds.Contains(d.MachineID))
@@ -164,9 +197,9 @@ else
     private async Task<List<WorkOrder>> GetFilteredOrders(IEnumerable<Device> devices)
     {
         List<WorkOrder> orders = new List<WorkOrder>();
-        if (selectedDeviceIds.Count == 0 && 
-            selectedState == "All" && 
-            selectedPersons.Count == 0 && 
+        if (selectedDeviceIds.Count == 0 &&
+            selectedState == "All" &&
+            selectedPersons.Count == 0 &&
             selectedDeviceCategory == "All" &&
             selectedDeviceType == "All"
         )
@@ -178,7 +211,7 @@ else
             orders = await apiService.GetWorkOrdersCachedAsync(devices);
         }
 
-        var result = orders.Where(o => 
+        var result = orders.Where(o =>
             (o.WOState == selectedState || selectedState == "All" || string.IsNullOrWhiteSpace(selectedState)) &&
             (selectedPersons.Count == 0 || selectedPersons.Contains(o.AssignedPerson))
         ).OrderByDescending(o => o.WorkOrderID).ToList(); ;
@@ -188,7 +221,7 @@ else
     private async Task OnOrderChanged(SchedulerAppointment? editedAppointment)
     {
         if (editedAppointment == null) return;
-        
+
         var index = OrdersForGrid.FindIndex(x => x.WorkOrderID == editedAppointment.AppointmentId);
         OrdersForGrid.RemoveAt(index);
         OrdersForGrid.Insert(index, editedAppointment);
@@ -198,10 +231,11 @@ else
 
     #region Filter events
     //Select devices from MultiSelect
-    private async void OnMultiValueClosed()
+    private async Task OnMultiValueClosed()
     {
         selectedDevices = devices.Where(d => selectedDeviceIds.Contains(d.MachineID)).ToList();
-        await LoadData(); 
+        await LoadData();
+        await SaveStateAsync();
     }
 
     async Task OnCategoryChanged()
@@ -209,6 +243,7 @@ else
         if (string.IsNullOrWhiteSpace(selectedDeviceCategory))
             selectedDeviceCategory = "All";
         await LoadData();
+        await SaveStateAsync();
     }
 
     async Task selectAllDevices()
@@ -219,6 +254,7 @@ else
         selectedDeviceType = "All";
         selectedState = "All";
         await LoadData();
+        await SaveStateAsync();
     }
     #endregion
 

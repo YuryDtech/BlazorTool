@@ -17,6 +17,7 @@
 @inject AppStateService AppState
 @inject ILogger<SchedulerPage> Logger
 @inject IStringLocalizer<Resources.UIStrings> Localizer
+@inject ViewSettingsService ViewSettingsService
 
 @cellStyles
 <CheckSession apiService="@apiService" UserState="@UserState" />
@@ -30,7 +31,6 @@
                                 TagMode="@MultiSelectTagMode.Multiple"
                                 Placeholder="@Localizer["Scheduler_SelectAssignedPersons"]"
                                 AutoClose="false"
-                                OnClose="@OnAssignedPersonsClosed"
                                 OnChange="@OnPersonSelectChanged"
                                 ShowClearButton="true"
                                 Size="sm">
@@ -239,13 +239,15 @@
             </div>
             <TelerikTooltip TargetSelector=".tooltip-target" Width="300px"/>
             <TelerikGrid TItem="WorkOrder"
+                         @ref="ordersGrid"
                          Data="@UntakenOrders"
                          RowDraggable="true"
                          OnRowDrop="@GridRowDrop"
                          Sortable="true"
                          Height="80vh"
                          FilterMode="@GridFilterMode.FilterMenu"
-                         OnRowDoubleClick="@OnRowClick">
+                         OnRowDoubleClick="@OnRowClick"
+                         OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _viewSettings.GridState = args.GridState; await SaveFilterStateAsync(); })">
 
                 <RowTemplate Context="order">
                     <td class="tooltip-target" title="@order.WODesc">@order?.AssetNo</td>
@@ -356,16 +358,12 @@
 
 @code {
 
-
-
-
-
-
-
+    private const string SchedulerSettingsKey = "scheduler-filter-settings";
     private List<SchedulerAppointment> Appointments { get; set; } = new();    
     private List<SchedulerAppointment> _allAppointments { get; set; } = new();    
     private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }
     private TelerikPopup? PopupRef { get; set; }
+    private TelerikGrid<WorkOrder> ordersGrid { get; set; } 
     private DateTime SchedulerDate { get; set; } = DateTime.Today;
     private SchedulerView CurrentView { get; set; } = SchedulerView.Month;
     private DateTime DayStart => DateTime.Today.AddHours(7);
@@ -401,6 +399,7 @@
     private string selectedTimelineOption = "5";
     private bool showCustomTimelineInputs = false;
     private List<Resource> statuses = new List<Resource>();
+    private ViewSettings<WorkOrder> _viewSettings = new ViewSettings<WorkOrder>();
 
     private List<Resource> GetStatuses(List<SchedulerAppointment> appointments)
     {
@@ -432,6 +431,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _viewSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(SchedulerSettingsKey);
+        if (_viewSettings != null)
+        {
+            RestoreCustomFilterState();
+        }
+
         var isWASM = JSRuntime is IJSInProcessRuntime;
         Console.WriteLine($"--- Initialized SCHEDULER PAGE. WASM = {isWASM}");
         Console.WriteLine($"--- OnInitializedAsync completed.");
@@ -443,6 +448,8 @@
         }
 
         await HardLoadData();
+        await InvokeAsync(StateHasChanged);
+        if (_viewSettings != null) await ordersGrid.SetStateAsync(_viewSettings.GridState);
     }
 
     private async Task HardLoadData()
@@ -519,7 +526,7 @@
         {
             PersonResources.Insert(0, Person.NotAssigned);
         }            
-
+        
     }
 
     /// <summary>
@@ -581,32 +588,25 @@
     }
 
     #region filters 
-    private void OnAssignedPersonsClosed()
-    {
-        DisplayAppointments();
-    }
 
-    private void OnDepartmentChanged(string dep)
+    private async Task OnDepartmentChanged(string dep)
     {
         selectedDepartment = dep ?? "All";
         DisplayAppointments();
+        await SaveFilterStateAsync();
     }
 
-    private void OnAssetNoChanged(string assetNo)
+    private async Task OnAssetNoChanged(string assetNo)
     {
         selectedAssetNo = assetNo ?? "All";
         DisplayAppointments();
+        await SaveFilterStateAsync();
     }
 
-    private void OnCategoryChanged(string cat)
-    {
-        selectedCategory = cat ?? "All"; 
-        DisplayOrders();
-    }
-
-    private void OnPersonSelectChanged(object args)
+    private async Task OnPersonSelectChanged(object args)
     {
         DisplayAppointments();
+        await SaveFilterStateAsync();
     }
 
     private List<SchedulerAppointment> FilterAppointments()
@@ -632,6 +632,24 @@
 
 
         return filteredAppointments; 
+    }
+
+    private async Task SaveFilterStateAsync()
+    {
+        _viewSettings.SetCustomFilter("selectedAssignedPersons", selectedAssignedPersons);
+        _viewSettings.SetCustomFilter("selectedDeviceCategory", selectedAssetNo);
+        _viewSettings.SetCustomFilter("selectedDepartment", selectedDepartment);
+        _viewSettings.SetCustomFilter("CurrentView", CurrentView);
+        await ViewSettingsService.SaveSettingsAsync(SchedulerSettingsKey, _viewSettings);
+    }
+
+    private void RestoreCustomFilterState()
+    {
+        selectedAssignedPersons = _viewSettings.GetCustomFilter("selectedAssignedPersons", new List<string>());
+        selectedAssetNo = _viewSettings.GetCustomFilter("selectedAssetNo", "All");
+        selectedDepartment = _viewSettings.GetCustomFilter("selectedDepartment", "All");
+        CurrentView = _viewSettings.GetCustomFilter("CurrentView", SchedulerView.Month);
+
     }
 
     private List<WorkOrder> FilterOrders()
