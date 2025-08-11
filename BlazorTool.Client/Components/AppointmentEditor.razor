@@ -27,6 +27,9 @@
         {
             <TelerikButton OnClick="@OnTakeWorkOrder" ButtonType="ButtonType.Button">@Localizer["TakeOrder"]</TelerikButton>
         }
+    
+        <TelerikButton OnClick="@(() => WORef?.AddActivity())" ButtonType="ButtonType.Button" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">@Localizer["WorkOrder_AddActivity"]</TelerikButton>
+        
     </div>
 </EditForm>
 <WorkOrderComponent WorkOrder="@Appointment"

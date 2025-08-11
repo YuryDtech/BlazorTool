@@ -26,7 +26,9 @@
 
 <div class="orders-grid-container">
 		
-	<span class="order-title">@Localizer["Home_MyTakenOrders"]: @myTakenWorkOrders.Count()</span>
+	<div style="display:flex; align-items:center;">
+		<span class="order-title">@Localizer["Home_MyTakenOrders"]: @myTakenWorkOrders.Count()</span><span class=@(UserState.CanHaveManyActiveTake ? "can-have-many" : "cannot-have-many")>(@(UserState.CanHaveManyActiveTake ? @Localizer["CanHaveManyTakenOrders"] : @Localizer["CannotHaveManyTakenOrders"]))</span>
+	</div>
 	<OrdersGrid @key="@takenGridKey"
 			   OrdeForGrid="@myTakenWorkOrders"
 			   workOrderStates="@workOrderStates"

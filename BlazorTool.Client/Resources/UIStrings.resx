@@ -729,4 +729,10 @@
   <data name="TakeOrder" xml:space="preserve">
     <value>Take order</value>
   </data>
+  <data name="CanHaveManyTakenOrders" xml:space="preserve">
+    <value>You can  take multiple orders at the same time</value>
+  </data>
+  <data name="CannotHaveManyTakenOrders" xml:space="preserve">
+    <value>You cannot  take multiple orders at the same time</value>
+  </data>
 </root>

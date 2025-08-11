@@ -19,7 +19,7 @@
                     <FormItem Field="@nameof(ActivityModel.PersonID)">
                     <Template>
                         <div style="display: flex; align-items: center;">
-                            <label class="k-label k-form-label" style="min-width: 120px; margin-right: 10px;">@Localizer["SchedulerSummary_Person"]:</label>
+                                <label class="k-label k-form-label" style="min-width: @minWidthLabel; margin-right: 10px;">@Localizer["SchedulerSummary_Person"]:</label>
                             <TelerikComboBox Data="@People"
                                              @bind-Value="@ActivityModel.PersonID"
                                              ValueField="@nameof(Person.PersonId)"
@@ -37,7 +37,7 @@
                 <FormItem Field="@nameof(ActivityModel.CategoryID)">
                     <Template>
                         <div style="display: flex; align-items: center;">
-                            <label class="k-label k-form-label" style="min-width: 120px; margin-right: 10px;">@Localizer["Activity_Category"]:</label>
+                                <label class="k-label k-form-label" style="min-width: @minWidthLabel; margin-right: 10px;">@Localizer["Activity_Category"]:</label>
                             <TelerikComboBox Data="@Categories"
                                          @bind-Value="@ActivityModel.CategoryID"
                                          ValueField="@nameof(WODict.Id)"
@@ -56,7 +56,7 @@
                 <FormItem Field="@nameof(ActivityModel.WorkLoad)">
                     <Template>
                         <div style="display: flex; align-items: center;">
-                            <label class="k-label k-form-label" style="min-width: 120px; margin-right: 10px;">@Localizer["ActivityList_Workload"]:</label>
+                                <label class="k-label k-form-label" style="min-width: @minWidthLabel; margin-right: 10px;">@Localizer["ActivityList_Workload"]:</label>
                                 <TelerikNumericTextBox @bind-Value="ActivityModel.WorkLoad" Format="n2" Step="0.25m" Placeholder="@Localizer["ActivityList_Workload_Placeholder"]" />
                         </div>
                         <ValidationMessage For="@(() => ActivityModel.WorkLoad)" />
@@ -68,7 +68,7 @@
                 <FormItem Field="@nameof(ActivityModel.Description)">
                     <Template>
                         <div style="display: flex; align-items: center;">
-                            <label class="k-label k-form-label" style="min-width: 120px; margin-right: 10px;">@Localizer["ActivityList_Description"]:</label>
+                            <label class="k-label k-form-label" style="min-width: @minWidthLabel; margin-right: 10px;">@Localizer["ActivityList_Description"]:</label>
                                 <TelerikTextArea @bind-Value="ActivityModel.Description" Rows="5" Placeholder="@Localizer["ActivityList_Description_Placeholder"]" />
                         </div>
                         <ValidationMessage For="@(() => ActivityModel.Description)" />
@@ -103,13 +103,17 @@
     private List<Person> People { get; set; } = new List<Person>();
     private List<WODict> Categories { get; set; } = new List<WODict>();
     private string ErrorMessage { get; set; } = string.Empty;
+    private string minWidthLabel = "110px";
 
     protected override async Task OnInitializedAsync()
     {
         ActivityModel.WorkOrderID = WorkOrderID;
         ActivityModel.PersonID = UserState.PersonID ?? 0;
         var WO = await ApiClient.GetWorkOrderByIdAsync(WorkOrderID);
-        ActivityModel.WorkLoad = CalculateDecimalHours(WO?.TakeDate);
+        var takePersonsIDs = WO.TakePersons?.Split('#');
+
+        bool isMyOrder = takePersonsIDs?.Any(x => x == UserState.PersonID.ToString()) ?? false;
+        ActivityModel.WorkLoad = isMyOrder ? CalculateDecimalHours(WO?.TakeDate) : 0.25m;
         People = ApiClient.GetAllPersonsCached(); // From cache
         Categories = ApiClient.GetWOCategories(); // From cache
     }

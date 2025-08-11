@@ -194,3 +194,15 @@ h1:focus {
     margin-bottom: 0; /* Убираем нижний отступ, т.к. он задан в .order-header */
     padding-bottom: 0; /* Убираем внутренний отступ снизу */
 }
+
+.orders-grid-container .can-have-many {
+    display: inline;
+    padding-left: 100px;
+    color: forestgreen;
+}
+
+.orders-grid-container .cannot-have-many {
+    display: inline;
+    padding-left: 100px;
+    color: red;
+}

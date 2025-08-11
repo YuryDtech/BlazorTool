@@ -1,4 +1,4 @@
-## 2025-08-07 && 2025-08-08
+## 2025-08-07 - 2025-08-08
 ### Fixed
 - Corrected a minor logic bug in the `WorkOrderComponent` that affected state change notifications.
 - Resolved an `AntiforgeryValidationException` on server deployment by configuring persistent data protection keys, ensuring stable sessions across application restarts.

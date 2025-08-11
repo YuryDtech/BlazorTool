@@ -1,4 +1,4 @@
-## 2025-08-07 && 2025-08-08
+## 2025-08-07 - 2025-08-08
 ### Naprawiono
 - Poprawiono drobny błąd logiczny w komponencie `WorkOrderComponent`, który wpływał na powiadomienia o zmianie stanu.
 - Rozwiązano problem `AntiforgeryValidationException` przy wdrożeniu na serwerze poprzez skonfigurowanie trwałych kluczy ochrony danych, co zapewnia stabilność sesji po restarcie aplikacji.

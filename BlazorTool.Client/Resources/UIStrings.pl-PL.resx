@@ -727,4 +727,10 @@
   <data name="TakeOrder" xml:space="preserve">
     <value>Weź zlecenie</value>
   </data>
+  <data name="CanHaveManyTakenOrders" xml:space="preserve">
+    <value>Można brać kilka zamówień jednocześnie</value>
+  </data>
+  <data name="CannotHaveManyTakenOrders" xml:space="preserve">
+    <value>Nie można brać kilka zamówień jednocześnie</value>
+  </data>
 </root>

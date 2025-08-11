@@ -421,6 +421,24 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You can  take multiple orders at the same time.
+        /// </summary>
+        public static string CanHaveManyTakenOrders {
+            get {
+                return ResourceManager.GetString("CanHaveManyTakenOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot  take multiple orders at the same time.
+        /// </summary>
+        public static string CannotHaveManyTakenOrders {
+            get {
+                return ResourceManager.GetString("CannotHaveManyTakenOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Category ID.
         /// </summary>
         public static string CategoryID {

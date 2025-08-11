@@ -62,9 +62,11 @@
                             <TelerikTextArea @bind-Value="@WorkOrder.WODesc"
                                              ReadOnly="@(isEditable == false)"
                                              Size="sm"
-                                             ResizeMode="@TextAreaResizeMode.Auto"
+                                             Rows="6"
+                                             ResizeMode="@TextAreaResizeMode.Vertical"
                                              Class="@DescriptionAlarm"
-                                             OnChange="@OnDescriptionChanged" />
+                                             OnChange="@OnDescriptionChanged" 
+                                             />
                         </div>
                     </div>
                     <div class="field-group">
@@ -422,7 +424,10 @@
         }
         isValidWorkOrder();
     }
-
+    public void AddActivity()
+    {
+        IsAddActivityWindowVisible = true;    
+    }
     private string ParseTakePersons(string? TakePersons)
     {
         var takePersonsIDs = TakePersons?.Split('#') ?? Array.Empty<string>();
