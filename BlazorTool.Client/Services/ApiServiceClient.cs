@@ -1246,6 +1246,79 @@ namespace BlazorTool.Client.Services
         }
         #endregion
 
+        #region Settings
+        public async Task<ViewSettings<WorkOrder>> GetViewSettingsAsync(string user, string settingsName)
+        {
+            var url = $"settings/get-view-settings?user={Uri.EscapeDataString(user)}&settingsName={Uri.EscapeDataString(settingsName)}";
+            try
+            {
+                var response = await _http.GetFromJsonAsync<ViewSettings<WorkOrder>>(url);
+                return response ?? new ViewSettings<WorkOrder>();
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new ViewSettings<WorkOrder>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new ViewSettings<WorkOrder>();
+            }
+        }
+
+        public async Task<SingleResponse<bool>> SaveViewSettingsAsync(string user, string settingsName, ViewSettings<WorkOrder> viewSettings)
+        {
+            var url = $"settings/save-view-settings?user={Uri.EscapeDataString(user)}&settingsName={Uri.EscapeDataString(settingsName)}";
+            try
+            {
+                var response = await _http.PostAsJsonAsync(url, viewSettings);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return new SingleResponse<bool> { IsValid = true, Data = true };
+                }
+                else
+                {
+                    // Attempt to deserialize error response if available
+                    try
+                    {
+                        var errorResponse = System.Text.Json.JsonSerializer.Deserialize<SingleResponse<bool>>(responseContent);
+                        if (errorResponse != null && (errorResponse.Errors?.Any() ?? false))
+                        {
+                            return new SingleResponse<bool>
+                            {
+                                Data = false,
+                                IsValid = false,
+                                Errors = errorResponse.Errors
+                            };
+                        }
+                    }
+                    catch { /* Ignore deserialization errors, fall through to generic error */ }
+
+                    Console.WriteLine($"ApiServiceClient: Failed to save view settings. Status: {response.StatusCode}, Details: {responseContent}");
+                    Debug.WriteLine($"ApiServiceClient: Failed to save view settings. Status: {response.StatusCode}, Details: {responseContent}");
+                    return new SingleResponse<bool> { IsValid = false, Errors = new List<string> { $"Server error: {response.StatusCode} - {responseContent}" } };
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during POST to {url}: {ex.Message}");
+                Debug.WriteLine($"ApiServiceClient: HTTP Request error during POST to {url}: {ex.Message}");
+                return new SingleResponse<bool> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during POST to {url}: {ex.Message}");
+                Debug.WriteLine($"ApiServiceClient: Unexpected error during POST to {url}: {ex.Message}");
+                return new SingleResponse<bool> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+            }
+        }
+        #endregion
+
         #region Session
         public async Task<HttpResponseMessage> CheckSessionAsync()
         {

@@ -64,9 +64,9 @@
 </div>
 
 @code {
-    private const string AssignedGridSettingsKey = "home-assigned-orders-grid";
-    private const string TakenGridSettingsKey = "home-taken-orders-grid";
-    private const string DepartmentGridSettingsKey = "home-department-orders-grid";
+	private string AssignedGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Assigned"];
+	private string TakenGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Taken"];
+	private string DepartmentGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Department"];
 
     private ViewSettings<WorkOrder> _assignedGridSettings = new();
     private ViewSettings<WorkOrder> _takenGridSettings = new();

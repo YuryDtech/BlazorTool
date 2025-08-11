@@ -1,4 +1,5 @@
 ﻿@using BlazorTool.Client.Components
+@using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
 @using System.Globalization
 @inherits LayoutComponentBase
@@ -9,6 +10,7 @@
 @inject IHttpClientFactory HttpClientFactory
 @inject ILogger<MainLayout> Logger
 @inject IStringLocalizer<Resources.UIStrings> Localizer
+@inject ViewSettingsService viewSettingsService
 
 <TelerikRootComponent>
 
@@ -120,8 +122,13 @@
     private async Task Logout()
     {
         Logger.LogInformation($"<==== [{UserState.UserName}] is logging out");
+        foreach(var key in ViewSettingsService.SettingsKeys.Values)
+        {
+            var viewSettings = await viewSettingsService.LoadSettingsAsync<WorkOrder>(key);
+            await ApiClient.SaveViewSettingsAsync(UserState.UserName, key, viewSettings);
+        }
         await UserState.ClearAsync();
+        await viewSettingsService.ClearAsync();
         Navigation.NavigateTo("/login");
-
     }
 }

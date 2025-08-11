@@ -6,6 +6,7 @@
 @inject AppStateService AppState
 @inject ApiServiceClient ApiServiceClient
 @inject IStringLocalizer<Resources.UIStrings> Localizer
+@inject ViewSettingsService viewSettingsService
 
 <div class="login-container">
     <form @onsubmit="HandleLogin">
@@ -87,6 +88,15 @@
                 UserState.UseOriginalColors = bool.TryParse(await ApiServiceClient.LoadSettingAsync("useOriginalColors", identityData.Name), out var useColors) && useColors;
                 identityData.UseOriginalColors = UserState.UseOriginalColors;
                 bool isForceReload = await UserState.SaveIdentityDataAsync(identityData); // Save identityData to local storage
+                foreach (var val in ViewSettingsService.SettingsKeys.Values)
+                {
+                    //read all view settings for the user
+                    var settings = await ApiServiceClient.GetViewSettingsAsync(UserState.UserName, val);
+                    if (settings != null)
+                    {
+                        await viewSettingsService.SaveSettingsAsync<WorkOrder>(val, settings);
+                    }
+                }
                 Navigation.NavigateTo("/", isForceReload);
             }
             else

@@ -38,7 +38,25 @@ namespace BlazorTool.Client.Services
                 return new ViewSettings<T>();
             }
         }
+
+        public static Dictionary<string, string> SettingsKeys = new Dictionary<string, string>()
+        {
+            { "OrdersPage", "orders-grid-settings" },
+            { "SchedulerPage", "scheduler-filter-settings" },
+            {"Home-Assigned", "home-assigned-orders-grid" },
+            {"Home-Taken", "home-taken-orders-grid" },
+            {"Home-Department", "home-department-orders-grid" }
+        };
+
+        public async Task ClearAsync()
+        {
+            foreach (var key in SettingsKeys.Values)
+            {
+                await _localStorage.RemoveItemAsync(key);
+            }
+        }
     }
+
 
     public static class ViewSettingsExtensions
     {

@@ -91,6 +91,66 @@ namespace BlazorTool.Controllers
             return false;
         }
 
+        [HttpGet("get-view-settings")]
+        public ViewSettings<WorkOrder> GetViewSettings(string user, string settingsName)
+        {
+            if (string.IsNullOrEmpty(user))
+            {
+                return null;
+            }
+            if (string.IsNullOrEmpty(settingsName))
+            {
+                return null;
+            }
+
+            try
+            {
+                string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SettingsDirectory, user + ".json");
+                var settings = new UserSettings(file);
+                var viewSettings = settings.GetUserSettings<ViewSettings<WorkOrder>>(user, settingsName);
+                return viewSettings;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error getting view settings: {ex.Message}");
+                //return StatusCode(500, "An error occurred while retrieving view settings.");
+                return null;
+            }
+        }
+
+        [HttpPost("save-view-settings")]
+        public IActionResult SaveViewSettings([FromQuery] string user, [FromQuery] string settingsName, [FromBody] ViewSettings<WorkOrder> viewSettings)
+        {
+            if (string.IsNullOrEmpty(user))
+            {
+                return BadRequest("User cannot be empty.");
+            }
+            if (string.IsNullOrEmpty(settingsName))
+            {
+                return BadRequest("SettingsName cannot be empty.");
+            }
+
+            if (viewSettings == null)
+            {
+                return BadRequest("ViewSettings object cannot be null.");
+            }
+
+            try
+            {
+                string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SettingsDirectory, user + ".json");
+                var settings = new UserSettings(file);
+                settings.SaveUserSettings(user, settingsName, viewSettings);
+                Console.WriteLine($"View settings saved for user: {user}");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving view settings: {ex.Message}");
+                Debug.WriteLine($"Error saving view settings: {ex.Message}");
+                return StatusCode(500, "An error occurred while saving view settings.");
+            }
+        }
+
         [HttpPost("check")]
         public async Task<IActionResult> CheckAsync([FromForm] string address)
         {

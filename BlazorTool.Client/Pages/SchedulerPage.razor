@@ -358,7 +358,7 @@
 
 @code {
 
-    private const string SchedulerSettingsKey = "scheduler-filter-settings";
+    private string SchedulerSettingsKey = ViewSettingsService.SettingsKeys["SchedulerPage"];
     private List<SchedulerAppointment> Appointments { get; set; } = new();    
     private List<SchedulerAppointment> _allAppointments { get; set; } = new();    
     private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }

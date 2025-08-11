@@ -144,5 +144,92 @@ namespace BlazorTool.Services
                 throw ex; // Re-throw for now so the caller is aware of the failure.
             }
         }
+
+        public T GetUserSettings<T>(string login, string settingsName) where T : new()
+        {
+            if (string.IsNullOrWhiteSpace(login)) throw new ArgumentNullException(nameof(login));
+            if (string.IsNullOrWhiteSpace(settingsName)) throw new ArgumentNullException(nameof(settingsName));
+
+            try
+            {
+                if (!File.Exists(_filePath))
+                {
+                    return new T();
+                }
+
+                var json = File.ReadAllText(_filePath);
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    return new T();
+                }
+
+                var allSettings = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, JsonElement>>>(json, _jsonOptions);
+
+                if (allSettings != null && allSettings.TryGetValue(login, out var userSettingsDict) && userSettingsDict.TryGetValue(settingsName, out var settingsElement))
+                {
+                    var userSettingsJson = settingsElement.GetRawText();
+                    return JsonSerializer.Deserialize<T>(userSettingsJson, _jsonOptions) ?? new T();
+                }
+            }
+            catch (Exception)
+            {
+                // It's better to return a default object than to crash
+                return new T();
+            }
+
+            return new T();
+        }
+
+        public void SaveUserSettings<T>(string login, string settingsName, T settingsObject)
+        {
+            if (string.IsNullOrWhiteSpace(login)) throw new ArgumentNullException(nameof(login));
+            if (string.IsNullOrWhiteSpace(settingsName)) throw new ArgumentNullException(nameof(settingsName));
+            if (settingsObject == null) throw new ArgumentNullException(nameof(settingsObject));
+
+            Dictionary<string, Dictionary<string, JsonElement>> allSettings;
+
+            try
+            {
+                if (File.Exists(_filePath))
+                {
+                    var json = File.ReadAllText(_filePath);
+                    allSettings = string.IsNullOrWhiteSpace(json)
+                        ? new Dictionary<string, Dictionary<string, JsonElement>>(StringComparer.OrdinalIgnoreCase)
+                        : JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, JsonElement>>>(json, _jsonOptions)
+                          ?? new Dictionary<string, Dictionary<string, JsonElement>>(StringComparer.OrdinalIgnoreCase);
+                }
+                else
+                {
+                    allSettings = new Dictionary<string, Dictionary<string, JsonElement>>(StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            catch (JsonException)
+            {
+                allSettings = new Dictionary<string, Dictionary<string, JsonElement>>(StringComparer.OrdinalIgnoreCase);
+            }
+
+            // Get existing settings for the user, or create a new dictionary if none exist.
+            if (!allSettings.TryGetValue(login, out var userSettings))
+            {
+                userSettings = new Dictionary<string, JsonElement>(StringComparer.OrdinalIgnoreCase);
+                allSettings[login] = userSettings;
+            }
+
+            // Convert the new settings object to a JsonElement
+            var settingsElement = JsonSerializer.SerializeToElement(settingsObject, _jsonOptions);
+
+            // Add or update the nested setting
+            userSettings[settingsName] = settingsElement;
+
+            try
+            {
+                var updatedJson = JsonSerializer.Serialize(allSettings, _jsonOptions);
+                File.WriteAllText(_filePath, updatedJson);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
