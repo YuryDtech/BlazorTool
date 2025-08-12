@@ -1,1 +1,31 @@
-﻿
+.main-page-root-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    height: calc(100vh - 80px); /* 80px - это примерная высота для хедера, можно будет скорректировать */
+    overflow: hidden;
+}
+
+.orders-grid-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Скрываем все, что не помещается */
+}
+
+.orders-grid-container:nth-child(1) {
+    height: 30%;
+}
+
+.orders-grid-container:nth-child(2) {
+    height: 20%;
+}
+
+.orders-grid-container:nth-child(3) {
+    height: 50%;
+}
+
+/* Растягиваем компонент OrdersGrid на всю доступную высоту */
+.orders-grid-container > .k-grid {
+    height: 100%;
+}

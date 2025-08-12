@@ -374,7 +374,7 @@
     <value>Failed to close appointment.</value>
   </data>
   <data name="Scheduler_AddNew" xml:space="preserve">
-    <value>Add new...</value>
+    <value>Add new</value>
   </data>
   <data name="Scheduler_Open" xml:space="preserve">
     <value>Open</value>
@@ -734,5 +734,8 @@
   </data>
   <data name="CannotHaveManyTakenOrders" xml:space="preserve">
     <value>You cannot  take multiple orders at the same time</value>
+  </data>
+  <data name="NewOrder" xml:space="preserve">
+    <value>New order</value>
   </data>
 </root>

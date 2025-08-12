@@ -16,9 +16,13 @@
              Id="Grid1"
              RowDraggable="false"
              @ref="GridRef"
+             ScrollMode="@GridScrollMode.Virtual"
+             Height="100%"
+             PageSize="50"
+             RowHeight="40"
              Sortable="true"
              Resizable="true"
-             Pageable="true"
+             Pageable="false"
              FilterMode="@GridFilterMode.FilterMenu"
              OnRowRender="@OnRowRenderHandler"
              OnRowDoubleClick="@OnRowClick"
@@ -29,6 +33,7 @@
         @if (ShowSearchBar)
         {
             <GridSearchBox Width="200px" DebounceDelay="500"/>
+            <TelerikButton Icon="@SvgIcon.Plus" Rounded="lg" Size="lg" ThemeColor="primary" OnClick="@AddNewOrderWindow">@Localizer["Scheduler_AddNew"]</TelerikButton>
         }
     </GridToolBarTemplate>
     <GridColumns>
@@ -151,7 +156,14 @@
                MaxHeight="95vh"
                ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
     <WindowTitle>
-        <strong>@Localizer["WorkOrder_OrderNo"] @selectedOrder.WorkOrderID</strong>
+        <strong>
+            @if(selectedOrder.WorkOrderID == 0) {
+                @Localizer["NewOrder"]  
+            }else{
+                @Localizer["WorkOrder_OrderNo"] @selectedOrder.WorkOrderID 
+            }
+       </strong >
+
     </WindowTitle>
     <WindowActions>
         <WindowAction Name="Close" OnClick="@CancelEditing" />
@@ -195,7 +207,6 @@
     private string dateColumnsize = "9rem";
     public TelerikGrid<WorkOrder> GridRef { get; set; }
     private MarkupString rowStyles = new MarkupString();
-    private CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor();
 
     protected override async Task OnInitializedAsync()
     {

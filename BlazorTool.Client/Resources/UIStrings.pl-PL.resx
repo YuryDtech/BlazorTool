@@ -374,7 +374,7 @@
     <value>Nie udało się zamknąć terminu.</value>
   </data>
   <data name="Scheduler_AddNew" xml:space="preserve">
-    <value>Dodaj nowe...</value>
+    <value>Dodaj nowe</value>
   </data>
   <data name="Scheduler_Open" xml:space="preserve">
     <value>Otwórz</value>
@@ -732,5 +732,8 @@
   </data>
   <data name="CannotHaveManyTakenOrders" xml:space="preserve">
     <value>Nie można brać kilka zamówień jednocześnie</value>
+  </data>
+  <data name="NewOrder" xml:space="preserve">
+    <value>Nowe zlecenie</value>
   </data>
 </root>

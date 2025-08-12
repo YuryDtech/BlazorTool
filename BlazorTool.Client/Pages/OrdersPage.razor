@@ -62,6 +62,7 @@ else
 }
 
 <h3>@Localizer["OrdersPage_Orders"] (@OrdersForGrid.Count)</h3>
+<div style="height:80vh">
 @if (isOrdersLoading)
 {
     <div>@Localizer["OrdersPage_LoadingOrderList"]</div>
@@ -75,6 +76,9 @@ else
                 OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _viewSettings.GridState = args.GridState; await SaveStateAsync(); })"
                 isLoading="@isOrdersLoading" />
 }
+
+
+</div>
 @code {
     private string ViewSettingsKey = ViewSettingsService.SettingsKeys["OrdersPage"];
     private ViewSettings<WorkOrder> _viewSettings;

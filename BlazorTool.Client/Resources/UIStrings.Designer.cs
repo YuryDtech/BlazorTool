@@ -871,6 +871,15 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New order.
+        /// </summary>
+        public static string NewOrder {
+            get {
+                return ResourceManager.GetString("NewOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clear.
         /// </summary>
         public static string OrdersPage_Clear {
@@ -1051,7 +1060,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add new....
+        ///   Looks up a localized string similar to Add new.
         /// </summary>
         public static string Scheduler_AddNew {
             get {

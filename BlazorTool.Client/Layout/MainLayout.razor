@@ -31,7 +31,7 @@
             </div>
 
             <main>
-                <div class="top-row px-4">
+                <div class="top-row ">
                     @if (UserState.IsAuthenticated)
                     {
                         <span class="user-name">@Localizer["MainLayout_Hello"] @UserState.UserName!</span>
@@ -41,7 +41,7 @@
                 </div>
 
 
-                <article class="content px-4">
+                <article class="content ">
                     @Body
                 </article>
             </main>

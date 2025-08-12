@@ -10,61 +10,65 @@
 
 <BlazorTool.Client.Components.CheckSession ApiService="@ApiClient" UserState="@UserState" />
 
-<div class="orders-grid-container">
+<div class="main-page-root-container">
 
-	<TelerikLoaderContainer  Visible="@isDataLoading" Text="@Localizer["Scheduler_LoadingOrders"]" Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Large">
-				</TelerikLoaderContainer>
-			<div class="grid-header">
-				<span class="order-title">@Localizer["Home_MyAssignedOrders"]: @myAssignedOrders.Count()</span>
-				<TelerikButton Icon="@SvgIcon.Plus" Rounded="lg" Size="lg" ThemeColor="primary" OnClick="@AddNewOrder"/>
-			</div>
-	<OrdersGrid @key="@assignedGridKey"
-			   OrdersForGrid="@myAssignedOrders"
-			   workOrderStates="@workOrderStates"
-			   @ref="@AssignedGrid"
-			   ShowSearchBar = "false"
-			   OnOrderChanged="@((app) => OnOrderChanged(app))"
-               OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _assignedGridSettings.GridState = args.GridState; await SaveStateAsync(AssignedGridSettingsKey, _assignedGridSettings); })"
-			   />
+			<div class="orders-grid-container">
 
-</div>
+				<TelerikLoaderContainer  Visible="@isDataLoading" Text="@Localizer["Scheduler_LoadingOrders"]" Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Large">
+							</TelerikLoaderContainer>
+						<div class="grid-header">
+							<span class="order-title">@Localizer["Home_MyAssignedOrders"]: @myAssignedOrders.Count()</span>
+							<TelerikButton Icon="@SvgIcon.Plus" Rounded="lg" Size="lg" ThemeColor="primary" OnClick="@AddNewOrder"/>
+						</div>
+				<OrdersGrid @key="@assignedGridKey"
+						   OrdersForGrid="@myAssignedOrders"
+						   workOrderStates="@workOrderStates"
+						   @ref="@AssignedGrid"
+						   ShowSearchBar = "false"
+						   OnOrderChanged="@((app) => OnOrderChanged(app))"
+						   OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _assignedGridSettings.GridState = args.GridState; await SaveStateAsync(AssignedGridSettingsKey, _assignedGridSettings); })"
+						   />
 
-<div class="orders-grid-container">
+			</div>			
+
+			<div class="orders-grid-container">
 		
-	<div style="display:flex; align-items:center;">
-		<span class="order-title">@Localizer["Home_MyTakenOrders"]: @myTakenWorkOrders.Count()</span><span class=@(UserState.CanHaveManyActiveTake ? "can-have-many" : "cannot-have-many")>(@(UserState.CanHaveManyActiveTake ? @Localizer["CanHaveManyTakenOrders"] : @Localizer["CannotHaveManyTakenOrders"]))</span>
-	</div>
-	<OrdersGrid @key="@takenGridKey"
-			   OrdersForGrid="@myTakenWorkOrders"
-			   workOrderStates="@workOrderStates"
-			   @ref="@TakenGrid"
-			   ShowSearchBar = "false"	
-			   OnOrderChanged="@((app) => OnOrderChanged(app))"
-               OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _takenGridSettings.GridState = args.GridState; await SaveStateAsync(TakenGridSettingsKey, _takenGridSettings); })"
-			   />
+				<div style="display:flex; align-items:center;">
+					<span class="order-title">@Localizer["Home_MyTakenOrders"]: @myTakenWorkOrders.Count()</span><span class=@(UserState.CanHaveManyActiveTake ? "can-have-many" : "cannot-have-many")>(@(UserState.CanHaveManyActiveTake ? @Localizer["CanHaveManyTakenOrders"] : @Localizer["CannotHaveManyTakenOrders"]))</span>
+				</div>
+				<OrdersGrid @key="@takenGridKey"
+						   OrdersForGrid="@myTakenWorkOrders"
+						   workOrderStates="@workOrderStates"
+						   @ref="@TakenGrid"
+						   ShowSearchBar = "false"	
+						   OnOrderChanged="@((app) => OnOrderChanged(app))"
+						   OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _takenGridSettings.GridState = args.GridState; await SaveStateAsync(TakenGridSettingsKey, _takenGridSettings); })"
+						   />
 
-</div>
-
-<div class="orders-grid-container">
-<div class="order-header">
-	<span class="order-title">@Localizer["Home_OrdersForDepartment"]: @myDepartmentOrders.Count() </span>
-			<TelerikComboBox Data="@allDepartments" TextField="Department"
-							 Placeholder="@Localizer["Scheduler_SelectDepartment"]" Filterable="false"
-							 AllowCustom="false" Value="@selectedDepartment"
-							 ValueChanged="@((string dep) => OnDepartmentChanged(dep))"
-							 Width="250px"
-							 Size="sm">
-			</TelerikComboBox>
-</div>
-	<OrdersGrid @key="@depsGridKey"
-			   OrdersForGrid="@myDepartmentOrders"
-			   workOrderStates="@workOrderStates"
-			   @ref="@DepsGrid"
-			   ShowSearchBar = "false"
-			   isLoading="@isDataLoading"
-			   OnOrderChanged="@((app) => OnOrderChanged(app))"
-               OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _departmentGridSettings.GridState = args.GridState; await SaveStateAsync(DepartmentGridSettingsKey, _departmentGridSettings); })"
-			   />
+			</div>
+			
+			<div class="orders-grid-container">
+			<div class="order-header">
+				<span class="order-title">@Localizer["Home_OrdersForDepartment"]: @myDepartmentOrders.Count() </span>
+						<TelerikComboBox Data="@allDepartments" TextField="Department"
+										 Placeholder="@Localizer["Scheduler_SelectDepartment"]" Filterable="false"
+										 AllowCustom="false" Value="@selectedDepartment"
+										 ValueChanged="@((string dep) => OnDepartmentChanged(dep))"
+										 Width="250px"
+										 Size="sm">
+						</TelerikComboBox>
+			</div>
+				<OrdersGrid @key="@depsGridKey"
+						   OrdersForGrid="@myDepartmentOrders"
+						   workOrderStates="@workOrderStates"
+						   @ref="@DepsGrid"
+						   ShowSearchBar = "false"
+						   isLoading="@isDataLoading"
+						   OnOrderChanged="@((app) => OnOrderChanged(app))"
+						   OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _departmentGridSettings.GridState = args.GridState; await SaveStateAsync(DepartmentGridSettingsKey, _departmentGridSettings); })"
+						   />
+			</div>
+			
 </div>
 
 @code {
@@ -103,7 +107,6 @@
 			_assignedGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(AssignedGridSettingsKey);
 			_takenGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(TakenGridSettingsKey);
 			_departmentGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(DepartmentGridSettingsKey);
-
 			if (UserState.IsAuthenticated)
 			{
 				allOrders = await ApiClient.GetWorkOrdersAsync();
