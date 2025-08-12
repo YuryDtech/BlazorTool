@@ -206,3 +206,14 @@ h1:focus {
     padding-left: 100px;
     color: red;
 }
+
+.grid-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+}
+    .grid-header button:hover {
+        box-shadow: 0 4px 13px #c76161;
+        filter: brightness(121%);
+    }

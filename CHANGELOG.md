@@ -1,3 +1,16 @@
+## 2025-08-11
+### UI/UX Improvements
+*   **View State Persistence:** The application now remembers the state of grids and filters on the "Home", "Orders", and "Scheduler" pages. After a page reload or new login, all sorting, filtering, and pagination settings will be restored.
+*   **Home Page:** An indicator has been added to show whether a user can take multiple work orders simultaneously.
+*   **Scheduler:** An "Add Activity" button has been added directly to the appointment editor window, simplifying the process of adding new activities to a work order.
+*   **Add Activity Form:** Improved logic for calculating the suggested work time.
+
+### Code and Performance Changes
+*   **Implemented `ViewSettingsService`:** A new service has been created to manage user-specific view settings. It handles saving and loading component states (grids, filters) from the browser's local storage and synchronizing them with the server.
+*   **Extended API:** New endpoints have been added to `SettingsController` to save and retrieve view settings for a specific user.
+*   **Component Refactoring:** The `OrdersGrid` component has been refactored for better state management. Data loading and filter application logic on the `HomePage`, `OrdersPage`, and `SchedulerPage` have been improved for a smoother experience.
+*   **State Management Optimization:** Centralized view state management via `ViewSettingsService`, reducing code duplication and simplifying maintenance.
+
 ## 2025-08-07 - 2025-08-08
 ### Fixed
 - Corrected a minor logic bug in the `WorkOrderComponent` that affected state change notifications.

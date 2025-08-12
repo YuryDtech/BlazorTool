@@ -383,4 +383,18 @@
     {
         isOrderCardOpen = false;
     }
+
+    public void AddNewOrderWindow()
+    {
+        selectedOrder = new WorkOrder
+        {
+            WorkOrderID = 0,
+            AddDate = DateTime.Now,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddDays(1),
+            AssignedPerson = Person.NotAssigned.Name,
+        };
+        selectedAppointment = new SchedulerAppointment(selectedOrder);
+        isOrderCardOpen = true;
+    }
 }

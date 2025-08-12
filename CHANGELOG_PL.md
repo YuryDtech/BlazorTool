@@ -1,3 +1,16 @@
+## 2025-08-11
+### Ulepszenia UI/UX
+*   **Utrwalanie stanu widoku:** Aplikacja zapamiętuje teraz stan siatek i filtrów na stronach "Główna", "Zlecenia" i "Harmonogram". Po ponownym załadowaniu strony lub nowym zalogowaniu, wszystkie ustawienia sortowania, filtrowania i paginacji zostaną przywrócone.
+*   **Strona główna:** Dodano wskaźnik informujący, czy użytkownik może przyjmować wiele zleceń jednocześnie.
+*   **Harmonogram:** Dodano przycisk "Dodaj aktywność" bezpośrednio w oknie edycji spotkania, co upraszcza dodawanie nowych aktywności do zlecenia.
+*   **Formularz dodawania aktywności:** Ulepszono logikę obliczania czasu pracy.
+
+### Zmiany w kodzie i wydajności
+*   **Wdrożono `ViewSettingsService`:** Utworzono nową usługę do zarządzania ustawieniami widoku specyficznymi dla użytkownika. Odpowiada za zapisywanie i ładowanie stanów komponentów (siatek, filtrów) z lokalnej pamięci przeglądarki oraz synchronizację ich z serwerem.
+*   **Rozszerzono API:** Dodano nowe punkty końcowe w `SettingsController` do zapisywania i pobierania ustawień widoku dla konkretnego użytkownika.
+*   **Refaktoryzacja komponentów:** Komponent `OrdersGrid` został zrefaktoryzowany w celu lepszego zarządzania stanem. Poprawiono logikę ładowania danych i stosowania filtrów na stronach `HomePage`, `OrdersPage` i `SchedulerPage`, aby zapewnić płynniejsze działanie.
+*   **Optymalizacja zarządzania stanem:** Scentralizowano zarządzanie stanem widoków za pomocą `ViewSettingsService`, co zmniejsza duplikację kodu i upraszcza konserwację.
+
 ## 2025-08-07 - 2025-08-08
 ### Naprawiono
 - Poprawiono drobny błąd logiczny w komponencie `WorkOrderComponent`, który wpływał na powiadomienia o zmianie stanu.
