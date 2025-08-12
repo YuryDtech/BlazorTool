@@ -78,3 +78,30 @@
     gap: 10px;
 }
 
+.scheduler-page-container {
+    display: flex;
+    width: 100%;
+    /* Using calc to subtract the height of the top bars, assuming around 150px total */
+    height: calc(95vh - 120px);
+    gap: 1rem;
+}
+
+.scheduler-container {
+    flex: 2; /* Takes ~66% of the space */
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* Important fix for flexbox overflow */
+}
+
+.orders-grid-container {
+    margin-top:37px;
+    padding-top: 5px;
+    flex: 1; /* Takes ~33% of the space */
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* Important fix for flexbox overflow */
+}
+
+/*::deep .k-scheduler-head {
+    position: static !important;
+}*/

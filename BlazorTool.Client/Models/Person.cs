@@ -17,6 +17,6 @@ namespace BlazorTool.Client.Models
             Name = name;
         }
 
-        public static Person NotAssigned => new Person(0, "Not assigned");
+       public static Person NotAssigned => new Person(0, "Not assigned");
     }
 }

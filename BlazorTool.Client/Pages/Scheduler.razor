@@ -1,4 +1,4 @@
-﻿@page "/scheduler"
+﻿@page "/sch"
 
 @using System.Linq
 @using BlazorTool.Client.Models
@@ -19,98 +19,7 @@
 @inject IStringLocalizer<Resources.UIStrings> Localizer
 @inject ViewSettingsService ViewSettingsService
 
-@cellStyles
-<CheckSession apiService="@apiService" UserState="@UserState" />
-
-<div class="filter-controls-row">
-    <div style="flex-basis: 66%; flex-shrink:1; flex-grow:0; border-right: outset; display: flex; align-items: top; gap: 1rem;">
-        <div style="max-width: 400px;">
-            <label>@Localizer["Scheduler_AssignedPersons"] </label>
-            <TelerikMultiSelect Data="@PersonsNames"
-                                @bind-Value="@selectedAssignedPersons"
-                                TagMode="@MultiSelectTagMode.Multiple"
-                                Placeholder="@Localizer["Scheduler_SelectAssignedPersons"]"
-                                AutoClose="false"
-                                OnChange="@OnPersonSelectChanged"
-                                ShowClearButton="true"
-                                Size="sm">
-
-            </TelerikMultiSelect>
-        </div>
-        <div>
-            <label>@Localizer["Scheduler_Department"] </label>
-            <TelerikComboBox Data="@Departments" TextField="Department"
-                             Placeholder="@Localizer["Scheduler_SelectDepartment"]" Filterable="false"
-                             AllowCustom="false" Value="@selectedDepartment"
-                             ValueChanged="@((string dep) => OnDepartmentChanged(dep))"
-                             Size="sm">
-            </TelerikComboBox>
-        </div>
-        <div>
-            <label>@Localizer["Scheduler_Device"] </label>
-            <TelerikComboBox Data="@WO_AssetNo"
-                             Placeholder="@Localizer["Scheduler_SelectAsset"]"
-                             Filterable="true"
-                             AllowCustom="true"
-                             Value="@selectedAssetNo"
-                             ValueChanged="@((string assetNo) => OnAssetNoChanged(assetNo))"
-                             Size="sm"
-                             class=@(customEditFormShown ? "" : "popup-target")>
-            </TelerikComboBox>
-        </div>
-        <div class="ClearFilters-btn">
-            <button class="ClearFilters-btn" @onclick="OnClearFilters" title="@Localizer["ClearFilters"]">
-                @Localizer["ClearFilters"]
-            </button>
-        </div>
-
-    </div>
-    @* device categories filter *@
-    @* <div style="flex-basis: 32%; flex-shrink:1; display: flex;  flex-grow:0; align-items: center; gap: 1rem;">
-        <label>@Localizer[nameof(WorkOrder.AssetNo)] </label>
-        <div style="min-width:30px">
-            <TelerikComboBox Data="@DeviceCategories" TextField="DeviceType"
-                             Value="@selectedCategory"
-                             Placeholder="@Localizer["Scheduler_SelectDeviceCategory"]" Filterable="true"
-                             ValueChanged="@((string cat) => OnCategoryChanged(cat))">
-            </TelerikComboBox>
-        </div>
-    </div> *@
-
-    @*end device categories filter *@
-</div>
-<div class="scheduler-page-container">
-    <div class="scheduler-container">
-        <div style="display:flex; flex-direction: row; gap:10px">
-            <div><p>@Localizer["Scheduler_ScheduledOrders"] @Appointments.Count()</p></div>
-            <div><TelerikButton OnClick="@HardLoadData" Size="Small" ThemeColor="@ThemeConstants.Button.ThemeColor.Tertiary">@Localizer["Scheduler_ReloadAllData"]</TelerikButton></div>
-            @if (CurrentView == SchedulerView.Timeline)
-            {
-                <div class="timeline-options">
-                    <label>@Localizer["Scheduler_NumberOfDays"]</label>
-                    <TelerikButtonGroup Class="telerikButtonGroup">
-                        <ButtonGroupToggleButton OnClick="@(() => OnTimelineOptionChanged("3"))" Selected="@(selectedTimelineOption == "3")">3 </ButtonGroupToggleButton>
-                        <ButtonGroupToggleButton OnClick="@(() => OnTimelineOptionChanged("5"))" Selected="@(selectedTimelineOption == "5")">5 </ButtonGroupToggleButton>
-                        <ButtonGroupToggleButton OnClick="@(() => OnTimelineOptionChanged("7"))" Selected="@(selectedTimelineOption == "7")">7 </ButtonGroupToggleButton>
-                        <ButtonGroupToggleButton OnClick="@(() => OnTimelineOptionChanged("14"))" Selected="@(selectedTimelineOption == "14")">14 </ButtonGroupToggleButton>
-                        <ButtonGroupToggleButton OnClick="@(() => OnTimelineOptionChanged("Custom"))" Selected="@(selectedTimelineOption == "Custom")">@Localizer["Scheduler_Custom"]</ButtonGroupToggleButton>
-                    </TelerikButtonGroup>
-                </div>
-                @if (showCustomTimelineInputs)
-                {
-                    <div style="display:flex; flex-direction: row; gap:6px; align-items:center; font-stretch: condensed;">
-                        <label>@Localizer["Scheduler_ColumnWidth"]</label>
-                        <TelerikNumericTextBox @bind-Value="@columnWidth" Width="80px" Min="10" Max="200" Step="10" Size="Small" />
-                        <label>@Localizer["Scheduler_SlotDuration"]</label>
-                        <TelerikNumericTextBox @bind-Value="@slotDuration" Width="110px" Min="15" Max="1440" Step="15" Size="Small" />
-                        <label>@Localizer["Scheduler_NumberOfDays"]</label>
-                        <TelerikNumericTextBox @bind-Value="@numberOfDays" Width="80px" Min="1" Max="30" Step="1" Size="Small" />
-                    </div>
-                }
-            }
-        </div>
-
-        <TelerikScheduler TItem="SchedulerAppointment"
+<TelerikScheduler TItem="SchedulerAppointment"
                           Id="Scheduler1"
                           Data="@Appointments"
                           @ref="SchedulerRef"
@@ -125,236 +34,31 @@
                           OnEdit="@EditHandler"
                           OnCellRender="@OnSchedulerCellRender"
                           ConfirmDelete="true"
-                          IdField="@nameof(SchedulerAppointment.WorkOrderID)"
-                          StartField="@nameof(SchedulerAppointment.Start)"
-                          EndField="@nameof(SchedulerAppointment.End)"
-                          TitleField="@nameof(SchedulerAppointment.Title)"
-                          DescriptionField="@nameof(SchedulerAppointment.WODesc)"
-                          IsAllDayField="@nameof(SchedulerAppointment.IsAllDay)"
-                          Height="100%">
+                          
+                          >
             @* Height="@(CurrentView == SchedulerView.Timeline ? "60hv" : "80hv")"  *@
             <SchedulerSettings>
                 <SchedulerGroupSettings Orientation="SchedulerGroupOrientation.Vertical" Resources="@(CurrentView == SchedulerView.Timeline ? new List<string> { "AssignedPerson" } : null)" />
             </SchedulerSettings>
             <SchedulerResources>
-                <SchedulerResource Field="WOState" Title="WOState" Data="@statuses" />
-                <SchedulerResource Field="AssignedPerson" Data="@PersonResources" ValueField="@nameof(Person.Name)" TextField="Name" />
+
+                <SchedulerResource Field="AssignedPerson" Title="Person" Data="@PersonResources" ValueField="@nameof(Person.Name)" TextField="Name" />
             </SchedulerResources>
 
-
             <SchedulerViews>
-                <SchedulerDayView StartTime="@DayStart" EndTime="@DayEnd">
-                    <ItemTemplate>
-                        <div @oncontextmenu:preventDefault @oncontextmenu="@((MouseEventArgs e) => ShowContextMenuFromAppointment(e, context as SchedulerAppointment))">
-                            <SchedulerItem Item="@(context as SchedulerAppointment)" View="@SchedulerView.Day" />
-                        </div>
-                    </ItemTemplate>
-                    <SlotTemplate>
-                        @{
-                            SchedulerSlotTemplateContext slot = context as SchedulerSlotTemplateContext;
-                            <div class="context-menu-area" @oncontextmenu:preventDefault @oncontextmenu="@((MouseEventArgs e) => ShowContextMenuFromEmptySlot(e, slot))">
-                            </div>
-                        }
-                    </SlotTemplate>
-                </SchedulerDayView>
-                <SchedulerWeekView StartTime="@DayStart" EndTime="@DayEnd">
-                    <ItemTemplate>
-                        <div @oncontextmenu:preventDefault @oncontextmenu="@((MouseEventArgs e) => ShowContextMenuFromAppointment(e, context as SchedulerAppointment))">
-                            <SchedulerItem Item="@(context as SchedulerAppointment)" View="@SchedulerView.Week" />
-                        </div>
-                    </ItemTemplate>
-                    <SlotTemplate>
-                        @{
-                            SchedulerSlotTemplateContext slot = context as SchedulerSlotTemplateContext;
-
-                            <div class="context-menu-area" @oncontextmenu:preventDefault @oncontextmenu="@((MouseEventArgs e) => ShowContextMenuFromEmptySlot(e, slot))">
-                            </div>
-                        }
-                    </SlotTemplate>
-                </SchedulerWeekView>
-                <SchedulerMonthView ItemsPerSlot="4">
-                    <ItemTemplate>
-                        <div @oncontextmenu:preventDefault @oncontextmenu="@((MouseEventArgs e) => ShowContextMenuFromAppointment(e, context as SchedulerAppointment))">
-                            <SchedulerItem Item="@(context as SchedulerAppointment)" View="@SchedulerView.Month" />
-                        </div>
-                    </ItemTemplate>
-                    <SlotTemplate>
-                        @{
-                            SchedulerSlotTemplateContext slot = context as SchedulerSlotTemplateContext;
-                            <span class="k-link k-nav-day">@slot.Start.Day</span>
-                            <div class="context-menu-area" @oncontextmenu:preventDefault @oncontextmenu="@((MouseEventArgs e) => ShowContextMenuFromEmptySlot(e, slot))">
-                            </div>
-                        }
-                    </SlotTemplate>
-                </SchedulerMonthView>
-                <SchedulerTimelineView NumberOfDays="@(numberOfDays ?? 3)" StartTime="@DayStart" EndTime="@DayEnd" 
+                   <SchedulerTimelineView NumberOfDays="@(numberOfDays ?? 3)" StartTime="@DayStart" EndTime="@DayEnd" 
                                        ColumnWidth="@(columnWidth ?? 15)" SlotDivisions="@(slotDivisions ?? 1)" SlotDuration="@(slotDuration ?? 15)">
-                    <ItemTemplate>
-                        <div @oncontextmenu:preventDefault @oncontextmenu="@((MouseEventArgs e) => ShowContextMenuFromAppointment(e, context as SchedulerAppointment))">
-                            <SchedulerItem Item="@(context as SchedulerAppointment)" View="@SchedulerView.Timeline" />
-                        </div>
-                    </ItemTemplate>
-                    <SlotTemplate>
-                        @{
-                            SchedulerSlotTemplateContext slot = context as SchedulerSlotTemplateContext;
-                            <div class="context-menu-area" @oncontextmenu:preventDefault @oncontextmenu="@((MouseEventArgs e) => ShowContextMenuFromEmptySlot(e, slot))">
-                            </div>
-                        }
-                    </SlotTemplate>
+                    
+                   
 
                 </SchedulerTimelineView>
             </SchedulerViews>
         </TelerikScheduler>
 
-        <TelerikLoaderContainer Visible="@isLoading" Text="@Localizer["Scheduler_LoadingAppointments"]" Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Large">
-        </TelerikLoaderContainer>
-
-
-        @if (CurrentView == SchedulerView.Timeline)
-        {
-            <SchedulerSummary Appointments="@Appointments" />
-        }
-    </div>
-
-    <TelerikContextMenu TItem="ContextMenuItem" @ref="@ContextMenuRef" Data="@MenuItems" OnClick="@OnMenuItemClick" Class="custom-context-menu" />
-
-    <div class="orders-grid-container">
-        @if (isLoading)
-        {
-            <div style="display:flex; justify-content:space-between; align-items: center; align-content: center">
-                <p>@Localizer["Scheduler_LoadingOrders"]</p>
-            </div>
-        }
-        else
-        {
-            <div class="p-2" style="display:flex; justify-content:space-between; align-items: center;">
-                <p>@Localizer["Scheduler_OrdersWithoutStartDate"] @UntakenOrders.Count()</p>
-                <div style="display:flex; align-items:center; gap: 5px;">
-                    <TelerikCheckBox Size="lg" OnChange="@DisplayOrders" Id="OrdersCheckBox" @bind-Value="@isCBAllOrdersSelected" />
-                    <label for="OrdersCheckBox">@Localizer["Scheduler_ShowCompletedOrders"] </label>
-                </div>
-            </div>
-            <TelerikTooltip TargetSelector=".tooltip-target"  />
-            <TelerikGrid TItem="WorkOrder"
-                         @ref="ordersGrid"
-                         Data="@UntakenOrders"
-                         RowDraggable="true"
-                         OnRowDrop="@GridRowDrop"
-                         Sortable="true"
-                         Height="100%"
-                         FilterMode="@GridFilterMode.FilterMenu"
-                         OnRowDoubleClick="@OnRowClick"
-                         OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _viewSettings.GridState = args.GridState; await SaveFilterStateAsync(); })">
-
-                <RowTemplate Context="order">
-                    <td class="tooltip-target" title="@order.WODesc">@order?.AssetNo</td>
-                    <td class="tooltip-target" title="@order.WODesc">@order?.WOCategory</td>
-                    <td class="tooltip-target" title="@order.AddDate">@order?.AddDate?.ToString("dd/MM/yyyy HH:mm")</td>
-                    @* <td class="tooltip-target" title="@order.WODesc">@order?.StartDate</td>
-                    <td class="tooltip-target" title="@order.WODesc">@order?.EndDate</td> *@
-                    <td class="state-@order?.StateColor?.TrimStart('#') tooltip-target" title="@order?.WOState">@order?.WOState</td>
-                </RowTemplate>
-
-                <GridSettings>
-                    <GridRowDraggableSettings DragClueField="@nameof(WorkOrder.WorkOrderID)" />
-                </GridSettings>
-
-
-                <GridColumns>
-                    <GridColumn Field="@nameof(WorkOrder.AssetNo)" Title="@Localizer[nameof(WorkOrder.AssetNo)]">
-                        <FilterMenuTemplate>
-                            <MultiSelectFilterMenuTemplate Values="@UntakenOrders.Select(x => x.AssetNo).Distinct()"
-                                                           context="@context"
-                                                           NameOfField="@nameof(WorkOrder.AssetNo)">
-                            </MultiSelectFilterMenuTemplate>
-                        </FilterMenuTemplate>
-                    </GridColumn>
-                    <GridColumn Field="@nameof(WorkOrder.WOCategory)" Title="@Localizer[nameof(WorkOrder.WOCategory)]">
-                        <FilterMenuTemplate>
-                            <CheckBoxFilterMenuTemplate Values="@WOCategories"
-                                                        context="@context"
-                                                        NameOfField="@nameof(WorkOrder.WOCategory)">
-                            </CheckBoxFilterMenuTemplate>
-                        </FilterMenuTemplate>
-                    </GridColumn>
-                    <GridColumn Field="@nameof(WorkOrder.AddDate)" Title="@Localizer[nameof(WorkOrder.AddDate)]">
-                        <FilterMenuButtonsTemplate Context="filterContext">
-                            <div class="vertical-stack-container">
-
-                                <div class="stack-item">
-                                    <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" OnClick="@(async _ => await filterContext.FilterAsync())">@Localizer["OrdersPage_Filter"] </TelerikButton>
-                                    <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Info" OnClick="@(() => filterContext.ClearFilterAsync())">@Localizer["OrdersPage_Clear"]</TelerikButton>
-                                </div>
-                                <div class="stack-item">
-                                    <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, "AddDate", "year"))">@Localizer["OrdersPage_LastYear"]</TelerikButton>
-                                    <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, "AddDate", "quarter"))">@Localizer["OrdersPage_Quarter"]</TelerikButton>
-                                    <TelerikButton OnClick="@(() => FilterByDateRange(filterContext, "AddDate", "month"))">@Localizer["OrdersPage_Month"]</TelerikButton>
-                                </div>
-                            </div>
-
-                        </FilterMenuButtonsTemplate>
-                    </GridColumn>
-                    @* <GridColumn Field="@nameof(WorkOrder.StartDate)" />
-                    <GridColumn Field="@nameof(WorkOrder.EndDate)" /> *@
-                    <GridColumn Field="@nameof(WorkOrder.WOState)" Title="@Localizer[nameof(WorkOrder.WOState)]">
-                        <FilterMenuTemplate>
-                            <CheckBoxFilterMenuTemplate Values="@WOStates"
-                                                        context="@context"
-                                                        NameOfField="@nameof(WorkOrder.WOState)">
-                            </CheckBoxFilterMenuTemplate>
-                        </FilterMenuTemplate>
-                    </GridColumn>
-                </GridColumns>
-
-            </TelerikGrid>
-        }
-    </div>
-</div>
-
-<TelerikWindow Modal="false" MinWidth="1200px" MaxHeight="95vh" Visible="@customEditFormShown" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
-    <WindowTitle>@Localizer["WorkOrder_OrderNo"]@CurrentAppointment.WorkOrderID</WindowTitle>
-    <WindowActions>
-        <WindowAction Name="Close" OnClick="@CancelEditing" />
-    </WindowActions>
-    <WindowContent>
-        <AppointmentEditor Appointment="@CurrentAppointment"
-                           isEditable=true
-                           ListPersons="@PersonsNames.Where(c=>c != "All").ToList()"
-                           currentUser="@currentUser"
-                           OnComponentClosing="@RefreshData"
-                           isScheduler="true" />
-    </WindowContent>
-</TelerikWindow>
-
-<TelerikWindow Modal="false" MinWidth="1200px" MaxHeight="95vh" Visible="@isOrderCardOpen" ThemeColor="@ThemeConstants.Window.ThemeColor.Dark">
-    <WindowTitle>WorkOrder #@CurrentOrder.WorkOrderID</WindowTitle>
-    <WindowActions>
-        <WindowAction Name="Close" OnClick="@CancelEditing" />
-    </WindowActions>
-    <WindowContent>
-        <WorkOrderComponent WorkOrder="@CurrentOrder" />
-    </WindowContent>
-</TelerikWindow>
-
-<TelerikPopup @ref="@PopupRef"
-              AnchorSelector=".popup-target"
-              AnchorHorizontalAlign="@PopupAnchorHorizontalAlign.Center"
-              AnchorVerticalAlign="@PopupAnchorVerticalAlign.Center"
-              AnimationType="@AnimationType.SlideDown"
-              AnimationDuration="200"
-              Width="300px"
-              Height="300px">
-    <div Class="warning-popup">
-        <p>@popupMessage</p>
-        <TelerikButton OnClick="@(() => PopupRef?.Hide())"
-                       Icon="@SvgIcon.XCircle">Close</TelerikButton>
-    </div>
-
-</TelerikPopup>
 
 @code {
 
-    private string SchedulerSettingsKey = ViewSettingsService.SettingsKeys["SchedulerPage"];
+    private string SchedulerSettingsKey = "sch2";
     private List<SchedulerAppointment> Appointments { get; set; } = new();
     private List<SchedulerAppointment> _allAppointments { get; set; } = new();
     private TelerikScheduler<SchedulerAppointment>? SchedulerRef { get; set; }
@@ -487,6 +191,10 @@
         _allAppointments = await ApptService.GetTakenAppointments(_allOrders);
         statuses = GetStatuses(_allAppointments);
         Console.WriteLine($"--- LoadData: _allAppointments loaded. Count: {_allAppointments.Count}");
+        PersonResources = new List<Person>(allPersons);
+        var index = PersonResources.FindIndex(r => r.Name == Person.NotAssigned.Name);
+        if (index >0)
+        PersonResources.RemoveAt(index);
         Departments = apiService.GetWODepartments().Select(c => c.Name).Distinct().ToList();
         Departments.Insert(0, "All");
         DeviceCategories = apiService.GetWOCategories().Select(c => c.Name).Distinct().ToList();
@@ -496,6 +204,7 @@
         DisplayAppointments();
         DisplayOrders();
         isLoading = false;
+
         StateHasChanged();
         Console.WriteLine($"--- LoadData completed. UntakenOrders count: {UntakenOrders.Count}, Appointments count: {Appointments.Count}");
     }
@@ -510,19 +219,7 @@
 
         // PersonResources should always contain all possible persons for grouping, including "Not assigned".
         // Filtering by selectedAssignedPersons is handled in FilterAppointments().
-        if (selectedAssignedPersons.Count == 0) //show all persons
-        {
-            PersonResources = new List<Person>(allPersons);
-        }
-        else
-        {
-            PersonResources = allPersons.Where(p => selectedAssignedPersons.Contains(p.Name)).ToList();
-        }
-
-        if (!PersonResources.Any(p => p.Name == Person.NotAssigned.Name))
-        {
-            PersonResources.Insert(0, Person.NotAssigned);
-        }
+        
     }
 
     /// <summary>
@@ -585,26 +282,7 @@
 
     #region filters
 
-    private async Task OnDepartmentChanged(string dep)
-    {
-        selectedDepartment = dep ?? "All";
-        DisplayAppointments();
-        await SaveFilterStateAsync();
-    }
-
-    private async Task OnAssetNoChanged(string assetNo)
-    {
-        selectedAssetNo = assetNo ?? "All";
-        DisplayAppointments();
-        await SaveFilterStateAsync();
-    }
-
-    private async Task OnPersonSelectChanged(object args)
-    {
-        DisplayAppointments();
-        await SaveFilterStateAsync();
-    }
-
+    
     private List<SchedulerAppointment> FilterAppointments()
     {
         var filteredAppointments = new List<SchedulerAppointment>(_allAppointments);
@@ -630,14 +308,7 @@
         return filteredAppointments;
     }
 
-    private async Task SaveFilterStateAsync()
-    {
-        _viewSettings.SetCustomFilter("selectedAssignedPersons", selectedAssignedPersons);
-        _viewSettings.SetCustomFilter("selectedDeviceCategory", selectedAssetNo);
-        _viewSettings.SetCustomFilter("selectedDepartment", selectedDepartment);
-        _viewSettings.SetCustomFilter("CurrentView", CurrentView);
-        await ViewSettingsService.SaveSettingsAsync(SchedulerSettingsKey, _viewSettings);
-    }
+    
 
     private void RestoreCustomFilterState()
     {
