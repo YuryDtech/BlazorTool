@@ -78,3 +78,42 @@
     gap: 10px;
 }
 
+.scheduler-page-container {
+    display: flex;
+    width: 100%;
+    /* Using calc to subtract the height of the top bars, assuming around 150px total */
+    height: calc(95vh - 120px);
+    gap: 1rem;
+}
+
+.scheduler-container {
+    flex: 2; /* Takes ~66% of the space */
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* Important fix for flexbox overflow */
+}
+
+/*
+  This is a targeted fix for the Timeline view misalignment with many resources.
+  Instead of styling the row, we are now styling the cells directly to ensure
+  both height and borders are applied correctly without breaking other styles.
+*/
+::deep .k-scheduler-timeline-view .k-resource-cell {
+    height: 50px !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    box-sizing: border-box !important;
+}
+
+::deep .k-scheduler-timeline-view .k-slot-cell {
+    height: 50px !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    border-right: 1px solid #e0e0e0 !important;
+    box-sizing: border-box !important;
+}
+
+.orders-grid-container {
+    flex: 1; /* Takes ~33% of the space */
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* Important fix for flexbox overflow */
+}

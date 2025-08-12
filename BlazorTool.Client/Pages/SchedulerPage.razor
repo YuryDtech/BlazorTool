@@ -79,8 +79,8 @@
     
     @*end device categories filter *@
 </div>
-<div style="display:flex; gap:1rem;">
-    <div style="flex-basis: 66%; flex-shrink:1; flex-grow:0;">
+<div class="scheduler-page-container">
+    <div class="scheduler-container">
         <div style="display:flex; flex-direction: row; gap:10px">
             <div><p>@Localizer["Scheduler_ScheduledOrders"] @Appointments.Count()</p></div>
             <div><TelerikButton OnClick="@HardLoadData" Size="Small" ThemeColor="@ThemeConstants.Button.ThemeColor.Tertiary">@Localizer["Scheduler_ReloadAllData"]</TelerikButton></div>
@@ -131,7 +131,7 @@
                           TitleField="@nameof(SchedulerAppointment.Title)"
                           DescriptionField="@nameof(SchedulerAppointment.WODesc)"
                           IsAllDayField="@nameof(SchedulerAppointment.IsAllDay)"
-                          Height="80hv"
+                          Height="100%"
                           >
                           @* Height="@(CurrentView == SchedulerView.Timeline ? "60hv" : "80hv")"  *@
             <SchedulerSettings>
@@ -221,7 +221,7 @@
 
 <TelerikContextMenu TItem="ContextMenuItem" @ref="@ContextMenuRef" Data="@MenuItems" OnClick="@OnMenuItemClick" Class="custom-context-menu" />
 
-    <div style="flex-basis: 33%; flex-shrink:1; flex-grow:0; min-width:600px">
+    <div class="orders-grid-container">
         @if (isLoading)
         {
         <div style="display:flex; justify-content:space-between; align-items: center; align-content: center">
@@ -244,7 +244,7 @@
                          RowDraggable="true"
                          OnRowDrop="@GridRowDrop"
                          Sortable="true"
-                         Height="80vh"
+                         Height="100%"
                          FilterMode="@GridFilterMode.FilterMenu"
                          OnRowDoubleClick="@OnRowClick"
                          OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _viewSettings.GridState = args.GridState; await SaveFilterStateAsync(); })">
