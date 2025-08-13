@@ -1,3 +1,4 @@
+@using Microsoft.AspNetCore.Components.Web
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
 @using BlazorTool.Client.Components
@@ -18,15 +19,16 @@
              @ref="GridRef"
              ScrollMode="@GridScrollMode.Virtual"
              Height="100%"
-             PageSize="50"
+             PageSize="30"
              RowHeight="40"
              Sortable="true"
              Resizable="true"
              Pageable="false"
              FilterMode="@GridFilterMode.FilterMenu"
              OnRowRender="@OnRowRenderHandler"
-             OnRowDoubleClick="@OnRowClick"
-             OnStateChanged="@OnStateChanged"
+             OnRowDoubleClick="@(args => OnRowClick(args))"
+             OnRowContextMenu="@OnRowContextMenuHandler"
+             OnStateChanged="@((GridStateEventArgs<WorkOrder> args) => OnStateChanged.InvokeAsync(args))"
              Class="@(ShowSearchBar ? "" : "no-toolbar")">
 
     <GridToolBarTemplate>
@@ -149,6 +151,9 @@
     </GridColumns>
 </TelerikGrid>
 
+<TelerikContextMenu @ref="@ContextMenuRef" Data="@MenuItems" OnClick="@(async (ContextMenuItem item) => await OnContextMenuItemClick(item))" TextField="@nameof(ContextMenuItem.Text)">
+</TelerikContextMenu>
+
 <TelerikWindow @bind-Visible="@isOrderCardOpen"
                CloseOnOverlayClick="true"
                Modal="true"
@@ -181,13 +186,17 @@
 
 @code {
     [Parameter] public List<WorkOrder> OrdersForGrid { get; set; } = new List<WorkOrder>();
-    // [Parameter] public List<WorkOrderView> OrderDevicesForGrid { get; set; } = new List<WorkOrderView>();
     [Parameter] public EventCallback<SchedulerAppointment> OnOrderChanged { get; set; }
     [Parameter] public List<string> workOrderStates { get; set; } = new List<string>();
     [Parameter] public bool ShowSearchBar { get; set; } = true;
     [Parameter] public bool isLoading { get; set; } = false;
     [Parameter] public EventCallback<GridStateEventArgs<WorkOrder>> OnStateChanged { get; set; }
+    [Parameter] public List<ContextMenuItem> MenuItems { get; set; }
+    [Parameter] public EventCallback<ContextMenuItemClickEventArgs<WorkOrder>> OnMenuItemClick { get; set; }
+    [Parameter] public EventCallback<ContextMenuItemClickEventArgs<WorkOrder>> OnRowContextMenu { get; set; }
 
+    private TelerikContextMenu<ContextMenuItem> ContextMenuRef { get; set; }
+    private WorkOrder SelectedRecord { get; set; }
     private Person currentUser { get; set; } = new Person();
     private List<Person> allPersons { get; set; } = new List<Person>();
     private List<string> personNames { get; set; } = new List<string>();
@@ -207,6 +216,9 @@
     private string dateColumnsize = "9rem";
     public TelerikGrid<WorkOrder> GridRef { get; set; }
     private MarkupString rowStyles = new MarkupString();
+
+    private double? lastCursorX;
+    private double? lastCursorY;
 
     protected override async Task OnInitializedAsync()
     {
@@ -243,6 +255,11 @@
         }
     }
 
+    void OnRowDoubleClickHandler(GridRowClickEventArgs args)
+    {
+        OnRowClick(args);
+    }
+
     async Task OnCloseWorkOrderWindow(SchedulerAppointment? editedAppointment)
     {
         if (editedAppointment == null)
@@ -255,16 +272,6 @@
         selectedAppointment = editedAppointment;
         await OnOrderChanged.InvokeAsync(editedAppointment);
         isOrderCardOpen = false;
-
-        // var index = OrdeForGrid.FindIndex(a => a.WorkOrderID == editedAppointment.AppointmentId);
-        // if (index != -1)
-        // {
-        //     OrdeForGrid[index] = editedAppointment;
-        // }
-        // else
-        //     OrdeForGrid.Add(editedAppointment);
-        // GridRef?.Rebind();
-        // StateHasChanged();
     }
 
     public async Task ApplyStateAsync(GridState<WorkOrder> state)
@@ -283,7 +290,7 @@
             StateHasChanged();
         }
     }
-    //TODO make static or move to a common place
+
     private MarkupString RenderStatesStyle(IEnumerable<string?> uniqueColors)
     {
         var sb = new StringBuilder();
@@ -330,6 +337,7 @@
 
     private string GetStateColorClass(WorkOrder WO)
     {
+        if (WO == null) return "";
         if (UserState.UseOriginalColors)
         {
             return "state-" + WO.StateColor.TrimStart('#');
@@ -379,18 +387,11 @@
         }
         selectedAppointment = editedAppointment;
         await OnOrderChanged.InvokeAsync(editedAppointment);
-        // var index = OrdeForGrid.FindIndex(a => a.WorkOrderID == editedAppointment.AppointmentId);
-        // if (index != -1)
-        // {
-        //     OrdeForGrid[index] = editedAppointment;
-        // }
-        // else
-        //     OrdeForGrid.Add(editedAppointment);
         GridRef?.Rebind();
         StateHasChanged();
     }
 
-    void CancelEditing()
+void CancelEditing()
     {
         isOrderCardOpen = false;
     }
@@ -407,5 +408,38 @@
         };
         selectedAppointment = new SchedulerAppointment(selectedOrder);
         isOrderCardOpen = true;
+    }
+
+    async Task OnRowContextMenuHandler(GridRowClickEventArgs args)
+    {
+        SelectedRecord = args.Item as WorkOrder;
+        var mouseEventArgs = args.EventArgs as MouseEventArgs;
+        if (mouseEventArgs != null)
+        {
+            lastCursorX = mouseEventArgs.ClientX;
+            lastCursorY = mouseEventArgs.ClientY;
+            await ContextMenuRef.ShowAsync(mouseEventArgs.ClientX, mouseEventArgs.ClientY);
+            var newMenuItemEventarg = new ContextMenuItemClickEventArgs<WorkOrder>()
+            {
+                Item = SelectedRecord,
+                MenuItem = null
+            };
+            await OnRowContextMenu.InvokeAsync(newMenuItemEventarg);
+        }
+    }
+
+    async Task OnContextMenuItemClick(ContextMenuItem item)
+    {
+        if (OnMenuItemClick.HasDelegate)
+        {
+            var menu = new ContextMenuItemClickEventArgs<WorkOrder>()
+            {
+                MenuItem = item,
+                Item = SelectedRecord
+            };
+            menu.MenuItem.CursorX = lastCursorX ?? 200;
+            menu.MenuItem.CursorY = lastCursorY ?? 200;
+            await OnMenuItemClick.InvokeAsync(menu);
+        }
     }
 }

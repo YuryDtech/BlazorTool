@@ -736,4 +736,10 @@
   <data name="NewOrder" xml:space="preserve">
     <value>Nowe zlecenie</value>
   </data>
+  <data name="Wait_a_moment" xml:space="preserve">
+    <value>Poczekaj chwilę</value>
+  </data>
+  <data name="AssignToMyself" xml:space="preserve">
+    <value>Przypisz do mnie</value>
+  </data>
 </root>

@@ -421,6 +421,15 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Assign to myself.
+        /// </summary>
+        public static string AssignToMyself {
+            get {
+                return ResourceManager.GetString("AssignToMyself", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You can  take multiple orders at the same time.
         /// </summary>
         public static string CanHaveManyTakenOrders {
@@ -1560,6 +1569,15 @@ namespace BlazorTool.Client.Resources {
         public static string TakePersons {
             get {
                 return ResourceManager.GetString("TakePersons", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wait a moment.
+        /// </summary>
+        public static string Wait_a_moment {
+            get {
+                return ResourceManager.GetString("Wait_a_moment", resourceCulture);
             }
         }
         

@@ -27,6 +27,9 @@
 						   ShowSearchBar = "false"
 						   OnOrderChanged="@((app) => OnOrderChanged(app))"
 						   OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _assignedGridSettings.GridState = args.GridState; await SaveStateAsync(AssignedGridSettingsKey, _assignedGridSettings); })"
+						   MenuItems="@myAssignedOrdersMenuItems"
+						   OnMenuItemClick="@HandleMenuItemClick"
+						   OnRowContextMenu="@OnRowContextMenuClick"
 						   />
 
 			</div>			
@@ -43,6 +46,9 @@
 						   ShowSearchBar = "false"	
 						   OnOrderChanged="@((app) => OnOrderChanged(app))"
 						   OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _takenGridSettings.GridState = args.GridState; await SaveStateAsync(TakenGridSettingsKey, _takenGridSettings); })"
+						   MenuItems="@myTakenWorkOrdersMenuItems"
+						   OnMenuItemClick="@HandleMenuItemClick"
+						   OnRowContextMenu="@OnRowContextMenuClick"
 						   />
 
 			</div>
@@ -66,10 +72,37 @@
 						   isLoading="@isDataLoading"
 						   OnOrderChanged="@((app) => OnOrderChanged(app))"
 						   OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _departmentGridSettings.GridState = args.GridState; await SaveStateAsync(DepartmentGridSettingsKey, _departmentGridSettings); })"
+						   MenuItems="@myDepartmentOrdersMenuItems"
+						   OnMenuItemClick="@HandleMenuItemClick"
+						   OnRowContextMenu="@OnRowContextMenuClick"
 						   />
 			</div>
 			
 </div>
+
+<div style="position:fixed; left:@MenuPositionX; top:@MenuPositionY; z-index: 9999; background-color: #f3f1f1c9; border-radius: 10px;">
+
+<TelerikLoader Visible="@LoaderVisible"
+			   Size="@ThemeConstants.Loader.Size.Large"
+			   ThemeColor="@ThemeConstants.Loader.ThemeColor.Tertiary"
+			   Type="@LoaderType.InfiniteSpinner" />
+
+@if(false){<p>@loaderText</p>}
+</div>
+
+
+
+<TelerikWindow @bind-Visible="IsAddActivityWindowVisible" Modal="true" Width="500px">
+	<WindowTitle>
+		<strong>@Localizer["WorkOrder_AddActivity"]</strong>
+	</WindowTitle>
+	<WindowActions>
+		<WindowAction Name="Close" />
+	</WindowActions>
+	<WindowContent>
+		<AddActivityForm WorkOrderID="@selectedWorkOrder.WorkOrderID" OnActivityAdded="HandleActivityAdded" />
+	</WindowContent>
+</TelerikWindow>
 
 @code {
 	private string AssignedGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Assigned"];
@@ -92,9 +125,19 @@
 	private List<string> workOrderStates = new List<string>();
 	private List<string> allDepartments = new List<string>();
 	private string selectedDepartment = string.Empty;
+	private string loaderText = string.Empty;
 	private List<WorkOrder> allOrders = new List<WorkOrder>();
+	private WorkOrder selectedWorkOrder = new WorkOrder();
 	private bool isDataLoading = true;
 	private bool hasInitialized = false;
+	private bool IsAddActivityWindowVisible = false;
+	private bool LoaderVisible = false;
+	private bool HaveAnyTakenOrders = false;
+	private List<ContextMenuItem> myAssignedOrdersMenuItems;
+	private List<ContextMenuItem> myTakenWorkOrdersMenuItems;
+	private List<ContextMenuItem> myDepartmentOrdersMenuItems;
+	private string MenuPositionX = "50%";
+	private string MenuPositionY = "50%";
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
@@ -115,7 +158,9 @@
 				allDepartments = ApiClient.GetWODepartments().Select(d => d.Name).ToList();
 				selectedDepartment = _departmentGridSettings.GetCustomFilter("selectedDepartment", allDepartments.FirstOrDefault() ?? "");
 				workOrderStates = allOrders.Select(o => o.WOState ?? string.Empty).Distinct().ToList();
+				InitializeMenuItems();
 				TakeListsOrders();
+				HaveAnyTakenOrders = (await ApiClient.GetWOTakenbyPerson(UserState.PersonID ?? 0)).Any();
 			}
 
 			isDataLoading = false;
@@ -126,6 +171,45 @@
 			if (TakenGrid != null) await TakenGrid.ApplyStateAsync(_takenGridSettings.GridState);
 			if (DepsGrid != null) await DepsGrid.ApplyStateAsync(_departmentGridSettings.GridState);
 		}
+	}
+
+	private void InitializeMenuItems()
+	{
+	}
+
+	private async Task HandleMenuItemClick(ContextMenuItemClickEventArgs<WorkOrder> args)
+	{
+		var workOrder = args.Item;
+		var command = args.MenuItem.CommandName;
+		MenuPositionX = (args.MenuItem.CursorX).ToString() + "px";
+		MenuPositionY = (args.MenuItem.CursorY - 70).ToString() + "px";
+		loaderText = Localizer["Wait_a_moment"];
+		switch (command)
+		{
+			case "AddActivity":
+				if (workOrder == null)
+				{
+					LoaderVisible = false;
+					return;
+				}
+				selectedWorkOrder = workOrder;
+				IsAddActivityWindowVisible = true;
+				break;
+			case "TakeOrder":
+				if (HaveAnyTakenOrders) return;
+				LoaderVisible = true;
+				var result = await ApiClient.TakeWorkOrderAsync(workOrder, UserState.PersonID);
+				break;
+			case "AssignToMyself":
+				if (workOrder == null || workOrder.AssignedPerson == UserState.UserName) return;
+				LoaderVisible = true;
+				workOrder.AssignedPerson = UserState.UserName;
+				await ApiClient.UpdateWorkOrderAsync(workOrder);
+				break;
+		}
+
+		await RefreshDataAsync();
+		LoaderVisible = false;
 	}
 
 	private async Task SaveStateAsync(string key, ViewSettings<WorkOrder> settings)
@@ -148,10 +232,7 @@
 	private async Task OnOrderChanged(SchedulerAppointment app)
 	{
 		if (app == null) return;
-		allOrders = await ApiClient.GetWorkOrdersCachedAsync();
-		allOrders = FilterWorkOrders(allOrders);
-		TakeListsOrders();
-		StateHasChanged();
+		await RefreshDataAsync();
 	}
 
 	private void TakeListsOrders()
@@ -160,6 +241,40 @@
 		myAssignedOrders = allOrders.Where(o => o.AssignedPerson == UserState.UserName).ToList();
 		myTakenWorkOrders = allOrders.Where(o => o.CloseDate == null).Where(o => o.TakePersons?.Split('#').Contains(UserState.PersonID.ToString()) ?? false).ToList();
 		StateHasChanged();
+	}
+
+	private void OnRowContextMenuClick(ContextMenuItemClickEventArgs<WorkOrder> args)
+	{
+		MakeContextMenu();
+	}
+
+	private void MakeContextMenu()
+	{
+		string addActivityText = Localizer["WorkOrder_AddActivity"];
+		string takeOrderText = Localizer["TakeOrder"];
+		string assignToMyselfText = Localizer["AssignToMyself"];
+
+		myAssignedOrdersMenuItems = new List<ContextMenuItem>
+		{
+			new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity" }			
+		};
+		
+		myTakenWorkOrdersMenuItems = new List<ContextMenuItem>
+		{
+			new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity" }
+		};
+
+		myDepartmentOrdersMenuItems = new List<ContextMenuItem>
+		{
+			new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity" },
+			new ContextMenuItem { Text = assignToMyselfText, CommandName = "AssignToMyself" }
+		};
+
+		if(UserState.CanHaveManyActiveTake || !HaveAnyTakenOrders)
+		{
+			myAssignedOrdersMenuItems.Add(new ContextMenuItem { Text = takeOrderText, CommandName = "TakeOrder" });
+			myDepartmentOrdersMenuItems.Add(new ContextMenuItem { Text = takeOrderText, CommandName = "TakeOrder" });
+		}		
 	}
 
 	private void ConsoleLogOrder(string listName, List<WorkOrder> orders)
@@ -184,5 +299,33 @@
 	{
 		AssignedGrid?.AddNewOrderWindow();
 		TakeListsOrders();
+	}
+
+	public async Task RefreshDataAsync()
+	{
+		allOrders = await ApiClient.GetWorkOrdersCachedAsync();
+		allOrders = FilterWorkOrders(allOrders);
+		TakeListsOrders();
+		HaveAnyTakenOrders = (await ApiClient.GetWOTakenbyPerson(UserState.PersonID ?? 0)).Any();
+		await InvokeAsync(StateHasChanged);
+    }
+
+	private async Task HandleActivityAdded(bool success)
+	{
+		if (success) //------------------- NOWA AKTYWNOŚĆ
+		{
+			IsAddActivityWindowVisible = false;
+			if (selectedWorkOrder != null)
+			{
+				await ApiClient.RefreshWorkOrderInCacheAsync(selectedWorkOrder.WorkOrderID);
+				await RefreshDataAsync();
+			}
+		}
+		else
+		{
+			// Handle the case where adding the activity failed
+			Console.WriteLine("Failed to add activity.");
+			IsAddActivityWindowVisible = false;
+		}
 	}
 }

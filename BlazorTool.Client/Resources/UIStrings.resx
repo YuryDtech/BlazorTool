@@ -738,4 +738,11 @@
   <data name="NewOrder" xml:space="preserve">
     <value>New order</value>
   </data>
+  <data name="Wait_a_moment" xml:space="preserve">
+    <value>Wait a moment</value>
+    <comment>Wait a moment</comment>
+  </data>
+  <data name="AssignToMyself" xml:space="preserve">
+    <value>Assign to myself</value>
+  </data>
 </root>
