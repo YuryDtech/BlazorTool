@@ -519,10 +519,11 @@
             PersonResources = allPersons.Where(p => selectedAssignedPersons.Contains(p.Name)).ToList();
         }
 
-        if (!PersonResources.Any(p => p.Name == Person.NotAssigned.Name))
+        if ((selectedAssignedPersons.Contains(Person.NotAssigned.Name) || selectedAssignedPersons.Count ==0) && !PersonResources.Any(p => p.Name == Person.NotAssigned.Name))
         {
             PersonResources.Insert(0, Person.NotAssigned);
         }
+
     }
 
     /// <summary>

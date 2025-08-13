@@ -102,6 +102,3 @@
     min-width: 0; /* Important fix for flexbox overflow */
 }
 
-/*::deep .k-scheduler-head {
-    position: static !important;
-}*/
