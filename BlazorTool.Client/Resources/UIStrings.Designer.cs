@@ -79,6 +79,24 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Activity must be selected..
+        /// </summary>
+        public static string Activity_MustBeSelected {
+            get {
+                return ResourceManager.GetString("Activity_MustBeSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activity is required.
+        /// </summary>
+        public static string Activity_Required {
+            get {
+                return ResourceManager.GetString("Activity_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Join new person.
         /// </summary>
         public static string ActivityDisplay_AddPerson {
@@ -448,6 +466,24 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Category must be selected..
+        /// </summary>
+        public static string Category_MustBeSelected {
+            get {
+                return ResourceManager.GetString("Category_MustBeSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category is required.
+        /// </summary>
+        public static string Category_Required {
+            get {
+                return ResourceManager.GetString("Category_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Category ID.
         /// </summary>
         public static string CategoryID {
@@ -552,6 +588,15 @@ namespace BlazorTool.Client.Resources {
         public static string DepName {
             get {
                 return ResourceManager.GetString("DepName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description is required.
+        /// </summary>
+        public static string Description_Required {
+            get {
+                return ResourceManager.GetString("Description_Required", resourceCulture);
             }
         }
         
@@ -772,7 +817,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Machine ID.
+        ///   Looks up a localized string similar to Device ID.
         /// </summary>
         public static string MachineID {
             get {
@@ -1056,6 +1101,24 @@ namespace BlazorTool.Client.Resources {
         public static string PartCount {
             get {
                 return ResourceManager.GetString("PartCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Person must be selected..
+        /// </summary>
+        public static string Person_MustBeSelected {
+            get {
+                return ResourceManager.GetString("Person_MustBeSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Person is required.
+        /// </summary>
+        public static string Person_Required {
+            get {
+                return ResourceManager.GetString("Person_Required", resourceCulture);
             }
         }
         
@@ -1632,6 +1695,15 @@ namespace BlazorTool.Client.Resources {
         public static string WOReason {
             get {
                 return ResourceManager.GetString("WOReason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Workload must be a positive number..
+        /// </summary>
+        public static string Workload_Positive {
+            get {
+                return ResourceManager.GetString("Workload_Positive", resourceCulture);
             }
         }
         

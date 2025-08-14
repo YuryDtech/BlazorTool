@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using BlazorTool.Client.Resources;
 
 namespace BlazorTool.Client.Models
 {
@@ -8,21 +9,21 @@ namespace BlazorTool.Client.Models
             [JsonProperty("workOrderID")]
             public int WorkOrderID { get; set; }
 
-            [Required(ErrorMessage = "Person is required")]
-            [Range(1, int.MaxValue, ErrorMessage = "Person must be selected.")]
+            [Required(ErrorMessageResourceType = typeof(UIStrings), ErrorMessageResourceName = "Person_Required")]
+            [Range(1, int.MaxValue, ErrorMessageResourceType = typeof(UIStrings), ErrorMessageResourceName = "Person_MustBeSelected")]
             [JsonProperty("personID")]
             public int PersonID { get; set; }
 
-            [Required(ErrorMessage = "Category is required")]
-            [Range(1,int.MaxValue, ErrorMessage = "Category must be selected.")]
+            [Required(ErrorMessageResourceType = typeof(UIStrings), ErrorMessageResourceName = "Category_Required")]
+            [Range(1,int.MaxValue, ErrorMessageResourceType = typeof(UIStrings), ErrorMessageResourceName = "Category_MustBeSelected")]
             [JsonProperty("categoryID")]
             public int CategoryID { get; set; }
 
-            [Range(0, double.MaxValue, ErrorMessage = "Workload must be a positive number.")]
+            [Range(0, double.MaxValue, ErrorMessageResourceType = typeof(UIStrings), ErrorMessageResourceName = "Workload_Positive")]
             [JsonProperty("workLoad")]
             public decimal WorkLoad { get; set; } = 0;
 
-            [Required(ErrorMessage = "Description is required")]
+            [Required(ErrorMessageResourceType = typeof(UIStrings), ErrorMessageResourceName = "Description_Required")]
             [JsonProperty("description")]
             public string Description { get; set; }
 
@@ -30,17 +31,17 @@ namespace BlazorTool.Client.Models
 
     public class JoinToActivity
     {
-        [Required(ErrorMessage = "Person is required")]
-        [Range(1, int.MaxValue, ErrorMessage = "Person must be selected.")]
+        [Required(ErrorMessageResourceType = typeof(UIStrings), ErrorMessageResourceName = "Person_Required")]
+        [Range(1, int.MaxValue, ErrorMessageResourceType = typeof(UIStrings), ErrorMessageResourceName = "Person_MustBeSelected")]
         [JsonProperty("personID")]
         public int PersonID { get; set; }
 
-        [Required(ErrorMessage = "Activity is required")]
-        [Range(1, int.MaxValue, ErrorMessage = "Activity must be selected.")]
+        [Required(ErrorMessageResourceType = typeof(UIStrings), ErrorMessageResourceName = "Activity_Required")]
+        [Range(1, int.MaxValue, ErrorMessageResourceType = typeof(UIStrings), ErrorMessageResourceName = "Activity_MustBeSelected")]
         [JsonProperty("activityID")]
         public int ActivityID { get; set; }
 
-        [Range(0, double.MaxValue, ErrorMessage = "Workload must be a positive number.")]
+        [Range(0, double.MaxValue, ErrorMessageResourceType = typeof(UIStrings), ErrorMessageResourceName = "Workload_Positive")]
         [JsonProperty("work_Load")]
         public decimal WorkLoad { get; set; } = 0;
     }

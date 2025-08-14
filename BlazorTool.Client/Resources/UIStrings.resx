@@ -603,7 +603,6 @@
   </data>
   <data name="Add" xml:space="preserve">
     <value>Add</value>
-    <comment>Add</comment>
   </data>
   <data name="All_Fields_Required" xml:space="preserve">
     <value>All fields are required</value>
@@ -615,7 +614,7 @@
     <value>Order ID</value>
   </data>
   <data name="MachineID" xml:space="preserve">
-    <value>Machine ID</value>
+    <value>Device ID</value>
   </data>
   <data name="AssetNo" xml:space="preserve">
     <value>Device</value>
@@ -752,5 +751,29 @@
   <data name="Move" xml:space="preserve">
     <value>Move</value>
     <comment>Przenieś</comment>
+  </data>
+  <data name="Person_Required" xml:space="preserve">
+    <value>Person is required</value>
+  </data>
+  <data name="Person_MustBeSelected" xml:space="preserve">
+    <value>Person must be selected.</value>
+  </data>
+  <data name="Category_Required" xml:space="preserve">
+    <value>Category is required</value>
+  </data>
+  <data name="Category_MustBeSelected" xml:space="preserve">
+    <value>Category must be selected.</value>
+  </data>
+  <data name="Workload_Positive" xml:space="preserve">
+    <value>Workload must be a positive number.</value>
+  </data>
+  <data name="Description_Required" xml:space="preserve">
+    <value>Description is required</value>
+  </data>
+  <data name="Activity_Required" xml:space="preserve">
+    <value>Activity is required</value>
+  </data>
+  <data name="Activity_MustBeSelected" xml:space="preserve">
+    <value>Activity must be selected.</value>
   </data>
 </root>
