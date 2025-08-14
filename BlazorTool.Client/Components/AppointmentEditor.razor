@@ -2,6 +2,7 @@
 @using BlazorTool.Client.Services
 @using Microsoft.AspNetCore.Components.Forms
 @using Telerik.Blazor.Components.Scheduler.Models
+@using BlazorTool.Client.Helpers;
 @inject AppointmentService ApptService
 @inject ApiServiceClient ApiService
 @inject UserState UserState
@@ -10,26 +11,26 @@
 <EditForm Model="@Appointment" OnValidSubmit="@SaveAppointment">
    
       <div class="button-row">
-        <TelerikButton Class="popup-target" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">@Localizer["AppointmentEditor_Save"]</TelerikButton>
+        <TelerikButton Class="popup-target" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">@SaveIcon @Localizer["AppointmentEditor_Save"]</TelerikButton>
 
-    <TelerikButton OnClick="@CancelEditing"  ButtonType="ButtonType.Button" >@Localizer["AppointmentEditor_Cancel"]</TelerikButton>
+        <TelerikButton OnClick="@CancelEditing" ButtonType="ButtonType.Button">@CancelIcon @Localizer["AppointmentEditor_Cancel"]</TelerikButton>
     @if(isScheduler)
     {
-        <TelerikButton OnClick="@DeleteAppointment" ButtonType="ButtonType.Button">@Localizer["AppointmentEditor_DeleteFromScheduler"]</TelerikButton>
+            <TelerikButton OnClick="@DeleteAppointment" ButtonType="ButtonType.Button">@DeleteIcon @Localizer["AppointmentEditor_DeleteFromScheduler"]</TelerikButton>
     }
 
     @if (!isWOClosed)
     {
-        <TelerikButton OnClick="@CloseAppointment" ButtonType="ButtonType.Button" ThemeColor="@ThemeConstants.Button.ThemeColor.Warning">@Localizer["AppointmentEditor_FinishOrder"]</TelerikButton>
+        <TelerikButton OnClick="@CloseAppointment" ButtonType="ButtonType.Button" ThemeColor="@ThemeConstants.Button.ThemeColor.Warning">@CloseOrderIcon @Localizer["AppointmentEditor_FinishOrder"]</TelerikButton>
     }
         @if (!isCurrentWOTakenByUser 
         && (UserState.CanHaveManyActiveTake || !userHaveAnyTakenWorkOrders))
         {
-            <TelerikButton OnClick="@OnTakeWorkOrder" ButtonType="ButtonType.Button">@Localizer["TakeOrder"]</TelerikButton>
+            <TelerikButton OnClick="@OnTakeWorkOrder" ButtonType="ButtonType.Button">@TakeOrderIcon @Localizer["TakeOrder"]</TelerikButton>
         }
-    
-        <TelerikButton OnClick="@(() => WORef?.AddActivity())" ButtonType="ButtonType.Button" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">@Localizer["WorkOrder_AddActivity"]</TelerikButton>
-        
+
+        <TelerikButton OnClick="@(() => WORef?.AddActivity())" ButtonType="ButtonType.Button" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">@AddAction @Localizer["WorkOrder_AddActivity"]</TelerikButton>
+
     </div>
 </EditForm>
 <WorkOrderComponent WorkOrder="@Appointment"
@@ -81,6 +82,12 @@
     private List<int> userTakenWorkOrdersID = new List<int>();
     private bool userHaveAnyTakenWorkOrders = true;
     private bool isCurrentWOTakenByUser = true;
+    private MarkupString SaveIcon = IconHtmlHelper.Save(20);
+    private MarkupString CancelIcon = IconHtmlHelper.Cancel(20);
+    private MarkupString CloseOrderIcon = IconHtmlHelper.CloseOrder(20);
+    private MarkupString DeleteIcon = IconHtmlHelper.Delete(20);
+    private MarkupString TakeOrderIcon = IconHtmlHelper.TakeOrder(25);
+    private MarkupString AddAction = IconHtmlHelper.AddAction(20);
 
     protected override async Task OnInitializedAsync()
     {
@@ -123,7 +130,7 @@
             PopupRef?.Show();
             return;
         }
-       
+
         await OnComponentClosing.InvokeAsync(new SchedulerAppointment(result.Data));
     }
 

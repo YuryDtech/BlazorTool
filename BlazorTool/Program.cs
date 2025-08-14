@@ -88,8 +88,8 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
@@ -98,6 +98,7 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(BlazorTool.Client._Imports).Assembly);
 
 app.MapControllers();
+Console.WriteLine("======= APPLICATION (Server) app.Run();");
 app.Run();
 
 static string getLocalServerAddress(WebApplicationBuilder builder)

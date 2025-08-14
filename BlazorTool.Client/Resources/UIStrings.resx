@@ -374,7 +374,7 @@
     <value>Failed to close appointment.</value>
   </data>
   <data name="Scheduler_AddNew" xml:space="preserve">
-    <value>Add new</value>
+    <value>New order</value>
   </data>
   <data name="Scheduler_Open" xml:space="preserve">
     <value>Open</value>
@@ -404,7 +404,7 @@
     <value>Delete from scheduler</value>
   </data>
   <data name="AppointmentEditor_FinishOrder" xml:space="preserve">
-    <value>Finish order</value>
+    <value>Close order</value>
   </data>
   <data name="AppointmentEditor_FillRequiredFields" xml:space="preserve">
     <value>Please fill in all required fields.</value>
@@ -744,5 +744,13 @@
   </data>
   <data name="AssignToMyself" xml:space="preserve">
     <value>Assign to myself</value>
+  </data>
+  <data name="MoveToDepartment" xml:space="preserve">
+    <value>Move to another department</value>
+    <comment>Move to another department</comment>
+  </data>
+  <data name="Move" xml:space="preserve">
+    <value>Move</value>
+    <comment>Przenieś</comment>
   </data>
 </root>

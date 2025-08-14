@@ -74,14 +74,56 @@ else
                 workOrderStates="@workOrderStates"
                 OnOrderChanged="@OnOrderChanged"
                 OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _viewSettings.GridState = args.GridState; await SaveStateAsync(); })"
-                isLoading="@isOrdersLoading" />
+                isLoading="@isOrdersLoading" 
+                MenuItems="@MenuItems"
+                OnMenuItemClick="@HandleMenuItemClick"
+                    OnRowContextMenu="@(()=>MakeContextMenu())" />
 }
 
 
 </div>
+
+<TelerikWindow @bind-Visible="IsAddActivityWindowVisible" Modal="true" Width="500px">
+	<WindowTitle>
+		<strong>@Localizer["WorkOrder_AddActivity"]</strong>
+	</WindowTitle>
+	<WindowActions>
+		<WindowAction Name="Close" />
+	</WindowActions>
+	<WindowContent>
+		<AddActivityForm WorkOrderID="@(selectedWorkOrder?.WorkOrderID ?? 0)" OnActivityAdded="HandleActivityAdded" />
+	</WindowContent>
+</TelerikWindow>
+
+<TelerikPopup @ref="@PopupRef"
+              AnchorSelector=".popup-dep-target"
+              AnimationType="@AnimationType.ZoomOut"
+              AnimationDuration="200"
+              Width="260px"
+              Class="popup-dep"
+              >
+    <div class="popup-dep" style="text-align: center; padding:20px; ">
+        <EditForm Model="@selectedWorkOrder" OnValidSubmit="@(async () => {await apiService.UpdateWorkOrderAsync(selectedWorkOrder); PopupRef?.Hide();})">
+        <span><p>@Localizer["WorkOrder_OrderNo"] @selectedWorkOrder?.WorkOrderID</p></span>
+            <TelerikComboBox Data="@allDepartments"
+                             @bind-Value="@selectedWorkOrder.DepName"
+                             Placeholder=@Localizer["Scheduler_SelectDepartment"]
+                             Width="180px"
+                             Filterable="true" />
+            <div style="margin-top: 12px; display: flex; gap: 10px; justify-content: center;">
+                <TelerikButton ButtonType="ButtonType.Submit">@Localizer["Move"]</TelerikButton>
+                @* <TelerikButton ButtonType="ButtonType.Reset"  OnClick="@(() => PopupRef?.Hide())">Cancel</TelerikButton> *@
+            </div>
+        </EditForm>
+    </div>
+</TelerikPopup>
+
+<div class="popup-dep-target" style="position:fixed; left:@MenuPositionX; top:@MenuPositionY; z-index: 9999; "></div>
+
 @code {
     private string ViewSettingsKey = ViewSettingsService.SettingsKeys["OrdersPage"];
     private ViewSettings<WorkOrder> _viewSettings;
+    private TelerikPopup? PopupRef { get; set; }
     private bool isOrdersLoading = false;
     private bool isDevicesLoading = false;
     private List<WorkOrder> OrdersForGrid = new List<WorkOrder>();
@@ -97,12 +139,19 @@ else
     private List<Person> allPersons = new List<Person>();
     private List<string> personNames = new List<string>();
     private List<string> selectedPersons = new List<string>();
+    private List<string> allDepartments = new List<string>();
     private List<WODict> dicts = new List<WODict>();
     private Person currentUser = new Person();
     private OrdersGrid ordersGrid;
     private MultiSelectTagMode TagMode { get; set; } = MultiSelectTagMode.Single;
     private int? MaxAllowedTags { get; set; }
     private bool hasInitialized = false;
+    private List<ContextMenuItem> MenuItems = new List<ContextMenuItem>();
+    private bool HaveAnyTakenOrders = false;
+    private string MenuPositionX { get; set; } = "50%";
+    private string MenuPositionY { get; set; } = "50%";
+    private WorkOrder? selectedWorkOrder = new WorkOrder();
+    private bool IsAddActivityWindowVisible { get; set; } = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -124,6 +173,7 @@ else
             StateHasChanged();
             dicts = await apiService.GetWODictionaries(UserState.PersonID, UserState.LangCode);
             allPersons = await apiService.GetAllPersons();
+            allDepartments = apiService.GetWODepartments().Select(x=>x.Name).ToList();
             personNames = allPersons.Select(p => p.Name).ToList();
             currentUser.PersonId = UserState.PersonID ?? -1;
             currentUser.Name = UserState.UserName ?? string.Empty;
@@ -137,7 +187,7 @@ else
             isDevicesLoading = false;
             StateHasChanged();
             await LoadData();
-
+            MakeContextMenu();
             await InvokeAsync(StateHasChanged);
             // Apply the state after the data is loaded and the grids are rendered
             if (ordersGrid != null) await ordersGrid.ApplyStateAsync(_viewSettings.GridState);
@@ -182,6 +232,7 @@ else
         Console.WriteLine($"Selected devices count: {selectedDevices.Count()}");
         var filteredDevices = GetFilteredDevices();
         OrdersForGrid = await GetFilteredOrders(filteredDevices);
+        HaveAnyTakenOrders = (await apiService.GetWOTakenbyPerson(UserState.PersonID ?? 0)).Any();
         //OrdersForGrid = OrdersForGrid.OrderByDescending(o => o.WorkOrderID).ToList();
         isOrdersLoading = false;
         StateHasChanged();
@@ -273,4 +324,81 @@ else
         public MultiSelectTagMode Mode { get; set; }
         public string Description { get; set; }
     }
+
+    private void MakeContextMenu()
+    {
+        string addActivityText = Localizer["WorkOrder_AddActivity"];
+        string takeOrderText = Localizer["TakeOrder"];
+        string assignToMyselfText = Localizer["AssignToMyself"];
+        string moveToDepartment = Localizer["MoveToDepartment"];
+
+        MenuItems = new List<ContextMenuItem>
+		{
+			new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate },
+			new ContextMenuItem { Text = assignToMyselfText, CommandName = "AssignToMyself", Icon = SvgIcon.Eye },
+			new ContextMenuItem { Text = moveToDepartment, CommandName = "MoveToDepartment", Icon = SvgIcon.ChevronDoubleRight },
+		};
+
+        if(UserState.CanHaveManyActiveTake || !HaveAnyTakenOrders)
+        {
+            MenuItems.Add(new ContextMenuItem { Text = takeOrderText, CommandName = "TakeOrder", Icon = SvgIcon.Hand });
+        }		
+    }
+
+    private async Task HandleMenuItemClick(ContextMenuItemClickEventArgs<WorkOrder> args)
+    {
+        var workOrder = args.Item;
+        var command = args.MenuItem.CommandName;
+        MenuPositionX = (args.MenuItem.CursorX).ToString() + "px";
+        MenuPositionY = (args.MenuItem.CursorY - 70).ToString() + "px";
+        if (workOrder == null || string.IsNullOrWhiteSpace(command))
+        {
+            return;
+        }
+        
+        switch (command)
+        {
+            case "AddActivity":
+                if (workOrder == null)
+                {
+                    return;
+                }
+                selectedWorkOrder = workOrder;
+                IsAddActivityWindowVisible = true;
+                break;
+            case "TakeOrder":
+                if (HaveAnyTakenOrders) return;
+                var result = await apiService.TakeWorkOrderAsync(workOrder, UserState.PersonID);
+                break;
+            case "AssignToMyself":
+                if (workOrder.AssignedPerson == UserState.UserName) return;
+                workOrder.AssignedPerson = UserState.UserName;
+                await apiService.UpdateWorkOrderAsync(workOrder);
+                break;
+            case "MoveToDepartment":
+                selectedWorkOrder = workOrder;
+                PopupRef?.Show();
+                break;
+        }
+
+		// await LoadData();
+	}
+
+    private async Task HandleActivityAdded(bool success)
+	{
+		if (success) //------------------- NOWA AKTYWNOŚĆ
+		{
+			if (selectedWorkOrder != null)
+			{
+				await apiService.RefreshWorkOrderInCacheAsync(selectedWorkOrder.WorkOrderID);
+				await LoadData();
+			}
+		}
+		else
+		{
+			// Handle the case where adding the activity failed
+			Console.WriteLine("Failed to add activity.");
+		}
+			IsAddActivityWindowVisible = false;
+	}
 }

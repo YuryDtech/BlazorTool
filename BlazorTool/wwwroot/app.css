@@ -216,3 +216,19 @@ h1:focus {
         box-shadow: 0 4px 13px #c76161;
         filter: brightness(121%);
     }
+
+.k-button-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em; /* Adjust the gap between icon and text as needed */
+    line-height: 1; /* Ensures vertical alignment */
+}
+
+.k-button-text img {
+    vertical-align: middle; /* Fallback for older browsers */
+}
+
+.popup-dep {
+    background-color: #e8efff;
+    border-radius: 13px;
+}

@@ -1,4 +1,4 @@
-## 2025-08-13
+## 2025-08-12 - 2025-08-13
 ### Ulepszenia UI/UX
 *   **Menu Kontekstowe dla Siatek:** Zaimplementowano menu kontekstowe (prawy przycisk myszy) dla siatek na stronie głównej, co poprawia interakcję użytkownika.
 *   **Przycisk Nowego Zlecenia:** Dodano przycisk do tworzenia nowych zleceń na stronie głównej.

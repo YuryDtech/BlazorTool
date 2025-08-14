@@ -83,7 +83,7 @@
     <div class="scheduler-container">
         <div style="display:flex; flex-direction: row; gap:10px">
             <div><p>@Localizer["Scheduler_ScheduledOrders"] @Appointments.Count()</p></div>
-            <div><TelerikButton OnClick="@HardLoadData" Size="Small" ThemeColor="@ThemeConstants.Button.ThemeColor.Tertiary">@Localizer["Scheduler_ReloadAllData"]</TelerikButton></div>
+            <div><TelerikButton OnClick="@HardLoadData" Size="Small" ThemeColor="@ThemeConstants.Button.ThemeColor.Tertiary">@IconHtmlHelper.Refresh(20) @Localizer["Scheduler_ReloadAllData"]</TelerikButton></div>
             @if (CurrentView == SchedulerView.Timeline)
             {
                 <div class="timeline-options">

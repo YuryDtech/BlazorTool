@@ -374,7 +374,7 @@
     <value>Nie udało się zamknąć terminu.</value>
   </data>
   <data name="Scheduler_AddNew" xml:space="preserve">
-    <value>Dodaj nowe</value>
+    <value>Nowe zlecenie</value>
   </data>
   <data name="Scheduler_Open" xml:space="preserve">
     <value>Otwórz</value>
@@ -404,7 +404,7 @@
     <value>Usuń z harmonogramu</value>
   </data>
   <data name="AppointmentEditor_FinishOrder" xml:space="preserve">
-    <value>Zakończ zlecenie</value>
+    <value>Zamknij zlecenie</value>
   </data>
   <data name="AppointmentEditor_FillRequiredFields" xml:space="preserve">
     <value>Proszę wypełnić wszystkie wymagane pola.</value>
@@ -741,5 +741,11 @@
   </data>
   <data name="AssignToMyself" xml:space="preserve">
     <value>Przypisz do mnie</value>
+  </data>
+  <data name="MoveToDepartment" xml:space="preserve">
+    <value>Przenieś do innego działu</value>
+  </data>
+  <data name="Move" xml:space="preserve">
+    <value>Przenieś</value>
   </data>
 </root>

@@ -158,7 +158,7 @@
 				allDepartments = ApiClient.GetWODepartments().Select(d => d.Name).ToList();
 				selectedDepartment = _departmentGridSettings.GetCustomFilter("selectedDepartment", allDepartments.FirstOrDefault() ?? "");
 				workOrderStates = allOrders.Select(o => o.WOState ?? string.Empty).Distinct().ToList();
-				InitializeMenuItems();
+				MakeContextMenu();
 				TakeListsOrders();
 				HaveAnyTakenOrders = (await ApiClient.GetWOTakenbyPerson(UserState.PersonID ?? 0)).Any();
 			}
@@ -171,10 +171,6 @@
 			if (TakenGrid != null) await TakenGrid.ApplyStateAsync(_takenGridSettings.GridState);
 			if (DepsGrid != null) await DepsGrid.ApplyStateAsync(_departmentGridSettings.GridState);
 		}
-	}
-
-	private void InitializeMenuItems()
-	{
 	}
 
 	private async Task HandleMenuItemClick(ContextMenuItemClickEventArgs<WorkOrder> args)
@@ -256,24 +252,24 @@
 
 		myAssignedOrdersMenuItems = new List<ContextMenuItem>
 		{
-			new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity" }			
+			new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate }
 		};
 		
 		myTakenWorkOrdersMenuItems = new List<ContextMenuItem>
 		{
-			new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity" }
+			new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate }
 		};
 
 		myDepartmentOrdersMenuItems = new List<ContextMenuItem>
 		{
-			new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity" },
-			new ContextMenuItem { Text = assignToMyselfText, CommandName = "AssignToMyself" }
+			new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate },
+			new ContextMenuItem { Text = assignToMyselfText, CommandName = "AssignToMyself", Icon = SvgIcon.Eye }
 		};
 
 		if(UserState.CanHaveManyActiveTake || !HaveAnyTakenOrders)
 		{
-			myAssignedOrdersMenuItems.Add(new ContextMenuItem { Text = takeOrderText, CommandName = "TakeOrder" });
-			myDepartmentOrdersMenuItems.Add(new ContextMenuItem { Text = takeOrderText, CommandName = "TakeOrder" });
+			myAssignedOrdersMenuItems.Add(new ContextMenuItem { Text = takeOrderText, CommandName = "TakeOrder", Icon = SvgIcon.Hand });
+			myDepartmentOrdersMenuItems.Add(new ContextMenuItem { Text = takeOrderText, CommandName = "TakeOrder", Icon = SvgIcon.Hand });
 		}		
 	}
 

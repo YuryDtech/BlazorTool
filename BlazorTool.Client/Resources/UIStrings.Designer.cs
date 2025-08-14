@@ -376,7 +376,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Finish order.
+        ///   Looks up a localized string similar to Close order.
         /// </summary>
         public static string AppointmentEditor_FinishOrder {
             get {
@@ -835,6 +835,24 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Move.
+        /// </summary>
+        public static string Move {
+            get {
+                return ResourceManager.GetString("Move", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move to another department.
+        /// </summary>
+        public static string MoveToDepartment {
+            get {
+                return ResourceManager.GetString("MoveToDepartment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Main.
         /// </summary>
         public static string NavMenu_Main {
@@ -1069,7 +1087,7 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add new.
+        ///   Looks up a localized string similar to New order.
         /// </summary>
         public static string Scheduler_AddNew {
             get {
