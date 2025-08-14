@@ -1,3 +1,12 @@
+## 2025-08-12 - 2025-08-13
+### UI/UX Improvements
+*   **Context Menu for Grids:** Implemented a right-click context menu for grids on the Home page, enhancing user interaction.
+*   **New Order Button:** Added a button for creating new orders on the Home page.
+*   **Localization:** Added translations for the newly introduced context menu.
+
+### Code and Performance Changes
+*   **Event Handling:** Implemented the `OnRowContextMenu` event for relevant components to support the new context menu functionality.
+
 ## 2025-08-11
 ### UI/UX Improvements
 *   **View State Persistence:** The application now remembers the state of grids and filters on the "Home", "Orders", and "Scheduler" pages. After a page reload or new login, all sorting, filtering, and pagination settings will be restored.

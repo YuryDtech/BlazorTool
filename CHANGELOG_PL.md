@@ -1,3 +1,12 @@
+## 2025-08-13
+### Ulepszenia UI/UX
+*   **Menu Kontekstowe dla Siatek:** Zaimplementowano menu kontekstowe (prawy przycisk myszy) dla siatek na stronie głównej, co poprawia interakcję użytkownika.
+*   **Przycisk Nowego Zlecenia:** Dodano przycisk do tworzenia nowych zleceń na stronie głównej.
+*   **Lokalizacja:** Dodano tłumaczenia dla nowo wprowadzonego menu kontekstowego.
+
+### Zmiany w kodzie i wydajności
+*   **Obsługa Zdarzeń:** Zaimplementowano zdarzenie `OnRowContextMenu` dla odpowiednich komponentów w celu obsługi nowej funkcjonalności menu kontekstowego.
+
 ## 2025-08-11
 ### Ulepszenia UI/UX
 *   **Utrwalanie stanu widoku:** Aplikacja zapamiętuje teraz stan siatek i filtrów na stronach "Główna", "Zlecenia" i "Harmonogram". Po ponownym załadowaniu strony lub nowym zalogowaniu, wszystkie ustawienia sortowania, filtrowania i paginacji zostaną przywrócone.
