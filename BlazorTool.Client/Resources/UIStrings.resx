@@ -776,4 +776,10 @@
   <data name="Activity_MustBeSelected" xml:space="preserve">
     <value>Activity must be selected.</value>
   </data>
+  <data name="Spoiler_Show" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="Spoiler_Hide" xml:space="preserve">
+    <value>Hide</value>
+  </data>
 </root>

@@ -12,14 +12,25 @@
 
 <div class="main-page-root-container">
 
-			<div class="orders-grid-container">
+        <div class="orders-grid-container @(assignedCollapsed ? "collapsed" : "")">
 
 				<TelerikLoaderContainer  Visible="@isDataLoading" Text="@Localizer["Scheduler_LoadingOrders"]" Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Large">
 							</TelerikLoaderContainer>
-						<div class="grid-header">
+		<div class="order-header d-flex align-items-center">
+			<span class="collapse-toggle" @onclick="ToggleAssigned">
+				@if (assignedCollapsed)
+				{
+					<TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
+				}
+				else
+				{
+					<TelerikButton Icon="@SvgIcon.Minus" Rounded="sm" Size="sm"></TelerikButton>
+				}
+			</span>
 							<span class="order-title">@Localizer["Home_MyAssignedOrders"]: @myAssignedOrders.Count()</span>
 							<TelerikButton Icon="@SvgIcon.Plus" Rounded="lg" Size="lg" ThemeColor="primary" OnClick="@AddNewOrder"/>
 						</div>
+		<div class="grid-content @(assignedCollapsed ? "collapsed-content" : "")">
 				<OrdersGrid @key="@assignedGridKey"
 						   OrdersForGrid="@myAssignedOrders"
 						   workOrderStates="@workOrderStates"
@@ -31,30 +42,51 @@
 						   OnMenuItemClick="@HandleMenuItemClick"
 						   OnRowContextMenu="@OnRowContextMenuClick"
 						   />
-
+		</div>
 			</div>			
 
-			<div class="orders-grid-container">
-		
+        <div class="orders-grid-container @(takenCollapsed ? "collapsed" : "")">
+			<div class="order-header d-flex align-items-center">
 				<div style="display:flex; align-items:center;">
-					<span class="order-title">@Localizer["Home_MyTakenOrders"]: @myTakenWorkOrders.Count()</span><span class=@(UserState.CanHaveManyActiveTake ? "can-have-many" : "cannot-have-many")>(@(UserState.CanHaveManyActiveTake ? @Localizer["CanHaveManyTakenOrders"] : @Localizer["CannotHaveManyTakenOrders"]))</span>
+				<span class="collapse-toggle" @onclick="ToggleTaken">
+					@if(takenCollapsed)
+					{
+						<TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
+					}
+					else
+					{
+						<TelerikButton Icon="@SvgIcon.Minus" Rounded="sm" Size="sm"></TelerikButton>
+					}
+				</span>
+							<span class="order-title">@Localizer["Home_MyTakenOrders"]: @myTakenWorkOrders.Count()</span><span class=@(UserState.CanHaveManyActiveTake ? "can-have-many" : "cannot-have-many")>(@(UserState.CanHaveManyActiveTake ? @Localizer["CanHaveManyTakenOrders"] : @Localizer["CannotHaveManyTakenOrders"]))</span>
 				</div>
-				<OrdersGrid @key="@takenGridKey"
-						   OrdersForGrid="@myTakenWorkOrders"
-						   workOrderStates="@workOrderStates"
-						   @ref="@TakenGrid"
-						   ShowSearchBar = "false"	
-						   OnOrderChanged="@((app) => OnOrderChanged(app))"
-						   OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _takenGridSettings.GridState = args.GridState; await SaveStateAsync(TakenGridSettingsKey, _takenGridSettings); })"
-						   MenuItems="@myTakenWorkOrdersMenuItems"
-						   OnMenuItemClick="@HandleMenuItemClick"
-						   OnRowContextMenu="@OnRowContextMenuClick"
-						   />
-
 			</div>
-			
-			<div class="orders-grid-container">
-			<div class="order-header">
+		<div class="grid-content @(takenCollapsed ? "collapsed-content" : "")">
+					<OrdersGrid @key="@takenGridKey"
+							   OrdersForGrid="@myTakenWorkOrders"
+							   workOrderStates="@workOrderStates"
+							   @ref="@TakenGrid"
+							   ShowSearchBar = "false"	
+							   OnOrderChanged="@((app) => OnOrderChanged(app))"
+							   OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _takenGridSettings.GridState = args.GridState; await SaveStateAsync(TakenGridSettingsKey, _takenGridSettings); })"
+							   MenuItems="@myTakenWorkOrdersMenuItems"
+							   OnMenuItemClick="@HandleMenuItemClick"
+							   OnRowContextMenu="@OnRowContextMenuClick"
+							   />
+		</div>
+			</div>
+        <div class="orders-grid-container @(deptCollapsed ? "collapsed" : "")">
+		<div class="order-header d-flex align-items-center">
+			<span class="collapse-toggle" @onclick="ToggleDept">
+				@if(deptCollapsed)
+				{
+					<TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
+				}
+				else
+				{
+					<TelerikButton Icon="@SvgIcon.Minus" Rounded="sm" Size="sm"></TelerikButton>
+				}
+			</span>
 				<span class="order-title">@Localizer["Home_OrdersForDepartment"]: @myDepartmentOrders.Count() </span>
 						<TelerikComboBox Data="@allDepartments" TextField="Department"
 										 Placeholder="@Localizer["Scheduler_SelectDepartment"]" Filterable="false"
@@ -64,6 +96,7 @@
 										 Size="sm">
 						</TelerikComboBox>
 			</div>
+		<div class="grid-content @(deptCollapsed ? "collapsed-content" : "")">
 				<OrdersGrid @key="@depsGridKey"
 						   OrdersForGrid="@myDepartmentOrders"
 						   workOrderStates="@workOrderStates"
@@ -76,8 +109,9 @@
 						   OnMenuItemClick="@HandleMenuItemClick"
 						   OnRowContextMenu="@OnRowContextMenuClick"
 						   />
+					   </div>
 			</div>
-			
+	
 </div>
 
 <div style="position:fixed; left:@MenuPositionX; top:@MenuPositionY; z-index: 9999; background-color: #f3f1f1c9; border-radius: 10px;">
@@ -138,6 +172,14 @@
 	private List<ContextMenuItem> myDepartmentOrdersMenuItems;
 	private string MenuPositionX = "50%";
 	private string MenuPositionY = "50%";
+
+	private bool assignedCollapsed = false;
+	private bool takenCollapsed = false;
+	private bool deptCollapsed = false;
+
+	private void ToggleAssigned() => assignedCollapsed = !assignedCollapsed;
+	private void ToggleTaken() => takenCollapsed = !takenCollapsed;
+	private void ToggleDept() => deptCollapsed = !deptCollapsed;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{

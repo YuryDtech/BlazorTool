@@ -772,4 +772,10 @@
   <data name="Workload_Positive" xml:space="preserve">
     <value>Obciążenie musi być liczbą dodatnią.</value>
   </data>
+  <data name="Spoiler_Show" xml:space="preserve">
+    <value>Pokaż</value>
+  </data>
+  <data name="Spoiler_Hide" xml:space="preserve">
+    <value>Ukryj</value>
+  </data>
 </root>

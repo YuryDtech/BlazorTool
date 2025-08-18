@@ -25,7 +25,23 @@
     height: 50%;
 }
 
+/* Сбрасываем высоту, когда контейнер свернут */
+.orders-grid-container.collapsed {
+    height: auto !important;
+}
+
 /* Растягиваем компонент OrdersGrid на всю доступную высоту */
 .orders-grid-container > .k-grid {
     height: 100%;
+}
+
+.collapse-toggle {
+    cursor: pointer;
+    margin-right: .5rem;
+    font-weight: bold;
+    padding-left: 1rem;
+}
+
+.collapsed-content {
+    display: none;
 }
