@@ -332,6 +332,28 @@ namespace BlazorTool.Client.Services
             return apiOrder;
         }
 
+        public async Task<List<WorkOrder>> GetWorkOrdersWithPerson()
+        {
+            var url = $"wo/getlist?IsWithPerson=true&PersonID={_userState.PersonID}&Lang={Uri.EscapeDataString(_userState.LangCode)}";
+            try
+            {
+                var wrapper = await _http.GetFromJsonAsync<ApiResponse<WorkOrder>>(url);
+                if (wrapper == null || !wrapper.IsValid)
+                {
+                    Console.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrdersWithPerson: API response is not valid.");
+                    Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrdersWithPerson: API response is not valid.");
+                    return new List<WorkOrder>();
+                }
+                return wrapper.Data;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrdersWithPerson: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrdersWithPerson: Unexpected error during GET to {url}: {ex.Message}");
+                return new List<WorkOrder>();
+            }
+        }
+
         public async Task<WorkOrder?> GetWorkOrderByIdAsync(int workOrderID)
         {
             var orders = await GetWorkOrdersAsync(workOrderID: workOrderID); // FROM API

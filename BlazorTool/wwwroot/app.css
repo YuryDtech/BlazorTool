@@ -49,7 +49,7 @@ h1:focus {
 .filter-controls-row {
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 2rem;
     flex-wrap: wrap;
     flex-direction: row;
     align-content: center;

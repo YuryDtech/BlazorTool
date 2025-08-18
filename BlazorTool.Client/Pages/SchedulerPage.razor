@@ -39,12 +39,18 @@
         </div>
         <div>
             <label>@Localizer["Scheduler_Department"] </label>
-            <TelerikComboBox Data="@Departments" TextField="Department"
-                             Placeholder="@Localizer["Scheduler_SelectDepartment"]" Filterable="false"
-                             AllowCustom="false" Value="@selectedDepartment"
-                             ValueChanged="@((string dep) => OnDepartmentChanged(dep))"
+            <TelerikMultiSelect
+                            Data="@Departments" TextField="Department"
+                             Placeholder="@Localizer["Scheduler_SelectDepartment"]"
+                             @bind-Value="@selectedDepartments"
+                             AutoClose="false"
+                             OnClose="@OnMultiDepartmentsClosed"
+                             OnChange="@(async (arg) => { if (selectedDepartments.Count == 0) await LoadData(); })"
+                             Filterable="true"
+                             FilterOperator="@Telerik.Blazor.StringFilterOperator.Contains"
+                             ShowClearButton="true"
                              Size="sm">
-            </TelerikComboBox>
+            </TelerikMultiSelect>
         </div>
         <div>
             <label>@Localizer["Scheduler_Device"] </label>
@@ -132,16 +138,13 @@
                           DescriptionField="@nameof(SchedulerAppointment.WODesc)"
                           IsAllDayField="@nameof(SchedulerAppointment.IsAllDay)"
                           Height="100%">
-            @* Height="@(CurrentView == SchedulerView.Timeline ? "60hv" : "80hv")"  *@
-            <SchedulerSettings>
+            <SchedulerSettings>        
                 <SchedulerGroupSettings Orientation="SchedulerGroupOrientation.Vertical" Resources="@(CurrentView == SchedulerView.Timeline ? new List<string> { "AssignedPerson" } : null)" />
             </SchedulerSettings>
             <SchedulerResources>
                 <SchedulerResource Field="WOState" Title="WOState" Data="@statuses" />
                 <SchedulerResource Field="AssignedPerson" Data="@PersonResources" ValueField="@nameof(Person.Name)" TextField="Name" />
             </SchedulerResources>
-
-
             <SchedulerViews>
                 <SchedulerDayView StartTime="@DayStart" EndTime="@DayEnd">
                     <ItemTemplate>
@@ -380,7 +383,7 @@
     private List<string> Departments = new();
     private List<string> WOCategories = new();
     private List<string> WOStates = new();
-    private string selectedDepartment = "All";
+    private List<string> selectedDepartments = new List<string>();
     private bool isCBAllOrdersSelected = false; //show executed orders in grid
     private List<string> DeviceCategories = new();//for Orders grid filter
     private string selectedCategory = "All";
@@ -488,7 +491,6 @@
         statuses = GetStatuses(_allAppointments);
         Console.WriteLine($"--- LoadData: _allAppointments loaded. Count: {_allAppointments.Count}");
         Departments = apiService.GetWODepartments().Select(c => c.Name).Distinct().ToList();
-        Departments.Insert(0, "All");
         DeviceCategories = apiService.GetWOCategories().Select(c => c.Name).Distinct().ToList();
         DeviceCategories.Insert(0, "All");
         WO_AssetNo = new List<string> { "All" };
@@ -586,9 +588,8 @@
 
     #region filters
 
-    private async Task OnDepartmentChanged(string dep)
+    private async Task OnMultiDepartmentsClosed()
     {
-        selectedDepartment = dep ?? "All";
         DisplayAppointments();
         await SaveFilterStateAsync();
     }
@@ -609,10 +610,10 @@
     private List<SchedulerAppointment> FilterAppointments()
     {
         var filteredAppointments = new List<SchedulerAppointment>(_allAppointments);
-        if (!string.IsNullOrEmpty(selectedDepartment) && selectedDepartment != "All")
+        if (selectedDepartments.Any())
         {
             // Filter appointments based on the selected department
-            filteredAppointments = filteredAppointments.Where(a => a.DepName == selectedDepartment).ToList();
+            filteredAppointments = filteredAppointments.Where(a => selectedDepartments.Contains(a.DepName)).ToList();
         }
         if (!string.IsNullOrEmpty(selectedAssetNo) && selectedAssetNo != "All")
         {
@@ -635,7 +636,7 @@
     {
         _viewSettings.SetCustomFilter("selectedAssignedPersons", selectedAssignedPersons);
         _viewSettings.SetCustomFilter("selectedDeviceCategory", selectedAssetNo);
-        _viewSettings.SetCustomFilter("selectedDepartment", selectedDepartment);
+        _viewSettings.SetCustomFilter("selectedDepartments", selectedDepartments);
         _viewSettings.SetCustomFilter("CurrentView", CurrentView);
         await ViewSettingsService.SaveSettingsAsync(SchedulerSettingsKey, _viewSettings);
     }
@@ -644,7 +645,7 @@
     {
         selectedAssignedPersons = _viewSettings.GetCustomFilter("selectedAssignedPersons", new List<string>());
         selectedAssetNo = _viewSettings.GetCustomFilter("selectedAssetNo", "All");
-        selectedDepartment = _viewSettings.GetCustomFilter("selectedDepartment", "All");
+        selectedDepartments = _viewSettings.GetCustomFilter("selectedDepartments", new List<string>());
         CurrentView = _viewSettings.GetCustomFilter("CurrentView", SchedulerView.Month);
 
     }
@@ -742,7 +743,7 @@
 
     private void OnClearFilters()
     {
-        selectedDepartment = "All";
+        selectedDepartments = new List<string> ();
         selectedAssetNo = "All";
         selectedAssignedPersons = new();
         DisplayAppointments();
