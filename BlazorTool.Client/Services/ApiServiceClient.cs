@@ -25,6 +25,7 @@ namespace BlazorTool.Client.Services
         private List<Device> _devicesCache = new List<Device>();
         private readonly UserState _userState;
         private List<WODict> _dictCache = new List<WODict>();
+        private List<WODict> _actDictCache = new List<WODict>();
         private List<Person> _personsCache = new List<Person>();
 
         public ApiServiceClient(HttpClient http, UserState userState)
@@ -1324,6 +1325,73 @@ namespace BlazorTool.Client.Services
         {
             return await _http.GetAsync("identity/check-session");
         }
+        #endregion
+
+        #region Activity Dictionaries
+        public async Task<List<WODict>> GetActDictionaries(int? personID, string? lang = null)
+        {
+            if (personID == null || personID <= 0)
+            {
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
+                Debug.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
+                return new List<WODict>();
+            }
+            var qp = new List<string>();
+            if (string.IsNullOrWhiteSpace(lang))
+            {
+                lang = _userState.LangCode;
+            }
+
+            qp.Add($"PersonID={personID}");
+            qp.Add($"Lang={lang}");
+            var url = "activity/getdict?" + string.Join("&", qp);
+            try
+            {
+                var wrapper = await _http.GetFromJsonAsync<ApiResponse<WODict>>(url);
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = response Activity Dict.Count: " + wrapper?.Data.Count.ToString());
+                Debug.WriteLine($"[{_userState.UserName}] = = = = = = = response Activity Dict.Count: " + wrapper?.Data.Count.ToString());
+                if (wrapper != null && wrapper.Data != null && wrapper.IsValid)
+                {
+                    if (wrapper.Errors.Count == 0)
+                        _actDictCache = wrapper.Data;
+                    else
+                    {
+                        Console.WriteLine($"[{_userState.UserName}] = = = = = = Errors in GetActDictionaries: " + string.Join(", ", wrapper.Errors));
+                        Debug.WriteLine($"[{_userState.UserName}] = = = = = = Errors in GetActDictionaries: " + string.Join(", ", wrapper.Errors));
+                    }
+                }
+
+                return wrapper?.Data ?? new List<WODict>();
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new List<WODict>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new List<WODict>();
+            }
+        }
+
+        public List<WODict> GetActDictionariesCached()
+        {
+            return _actDictCache;
+        }
+
+        public async Task<List<WODict>> GetActCategories()
+        {
+            if (_actDictCache == null || _actDictCache.Count == 0)
+            {
+                _actDictCache = await GetActDictionaries(_userState.PersonID, _userState.LangCode);
+            }
+            return (GetActDictionariesCached()).Where(d => d.ListType == (int)WOListTypeEnum.Category)
+                .Distinct()
+                .ToList();
+        }
+        
         #endregion
     }
 }

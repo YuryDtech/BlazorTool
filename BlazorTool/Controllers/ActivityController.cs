@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using BlazorTool.Client.Models;
 using System.Text;
 using Newtonsoft.Json;
-
+using System.Collections.Generic;
+using System.Net.Http.Json;
 
 namespace BlazorTool.Controllers
 {
@@ -104,6 +105,43 @@ namespace BlazorTool.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { errors = new[] { ex.Message } });
+            }
+        }
+
+        [HttpGet("getdict")]
+        public async Task<IActionResult> GetDict([FromQuery] WOCategoriesParameters q)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient"); 
+
+                var qp = new List<string>();
+                qp.Add($"PersonID={q.PersonID}");
+                qp.Add($"Lang={q.Lang}");
+                var url = "act/getdict?" + string.Join("&", qp);
+
+                var response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<WODict>>();
+
+                var data = wrapper?.Data ?? new List<WODict>();
+                Console.WriteLine($"ActivityController --> GetDict returned {data.Count} items");
+                return Ok(new
+                {
+                    data,
+                    isValid = true,
+                    errors = Array.Empty<string>()
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = Array.Empty<object>(),
+                    isValid = false,
+                    errors = new[] { ex.Message }
+                });
             }
         }
     }

@@ -115,7 +115,7 @@
         bool isMyOrder = takePersonsIDs?.Any(x => x == UserState.PersonID.ToString()) ?? false;
         ActivityModel.WorkLoad = isMyOrder ? CalculateDecimalHours(WO?.TakeDate) : 0.25m;
         People = ApiClient.GetAllPersonsCached(); // From cache
-        Categories = ApiClient.GetWOCategories(); // From cache
+        Categories = await ApiClient.GetActCategories(); // From cache
     }
 
     private async Task HandleValidSubmit()
