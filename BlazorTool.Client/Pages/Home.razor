@@ -2,6 +2,8 @@
 @using BlazorTool.Client.Components
 @using BlazorTool.Client.Models
 @using BlazorTool.Client.Services
+@using Telerik.Blazor.Components
+@using Telerik.Blazor
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<Resources.UIStrings> Localizer
 @inject ApiServiceClient ApiClient
@@ -12,12 +14,17 @@
 
 <div class="main-page-root-container">
 
-        <div class="orders-grid-container @(assignedCollapsed ? "collapsed" : "")">
+<TelerikSplitter Class="home-splitter" Width="100%" Height="100%" Orientation="SplitterOrientation.Vertical">
+    <SplitterPanes>
+            
+        <TelerikLoaderContainer  Visible="@isDataLoading" Text="@Localizer["Scheduler_LoadingOrders"]" Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Large">
+        </TelerikLoaderContainer>
 
-                                <TelerikLoaderContainer  Visible="@isDataLoading" Text="@Localizer["Scheduler_LoadingOrders"]" Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Large">
-                                                        </TelerikLoaderContainer>
+        <SplitterPane Min="@minPanelSize" @bind-Size="@assignedPaneSize" Collapsible="false">
+        <div class="orders-grid-container">
+
                 <div class="order-header d-flex align-items-center">
-                        <span class="collapse-toggle" @onclick="async () => await ToggleAssigned()">
+                        <span class="collapse-toggle" @onclick="@(async () => await ToggleSpoiler(nameof(assignedPaneSize)))">
                                 @if (assignedCollapsed)
                                 {
                                         <TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
@@ -35,7 +42,7 @@
                                                    OrdersForGrid="@myAssignedOrders"
                                                    workOrderStates="@workOrderStates"
                                                    PageSize="20"
-                                                   Height="20rem"
+                                                   
                                                    @ref="@AssignedGrid"
                                                    UseVirtualScrollMode="true"
                                                    ShowSearchBar = "false"
@@ -46,12 +53,13 @@
                                                    OnRowContextMenu="@OnRowContextMenuClick"
                                                    />
                 </div>
-                        </div>                  
+                        </div>
+        </SplitterPane>
 
-        <div class="orders-grid-container @(takenCollapsed ? "collapsed" : "")">
+            <SplitterPane Min="@minPanelSize" @bind-Size="@takenPaneSize" Collapsible="false">
+        <div class="orders-grid-container">
                         <div class="order-header d-flex align-items-center">
-                                <div style="display:flex; align-items:center;">
-                                <span class="collapse-toggle" @onclick="async () => await ToggleTaken()">
+                            <span class="collapse-toggle" @onclick="@(async () => await ToggleSpoiler(nameof(takenPaneSize)))">
                                         @if(takenCollapsed)
                                         {
                                                 <TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
@@ -62,7 +70,6 @@
                                         }
                                 </span>
                                                         <span class="order-title">@Localizer["Home_MyTakenOrders"]: @myTakenWorkOrders.Count()</span><span class=@(UserState.CanHaveManyActiveTake ? "can-have-many" : "cannot-have-many")>(@(UserState.CanHaveManyActiveTake ? @Localizer["CanHaveManyTakenOrders"] : @Localizer["CannotHaveManyTakenOrders"]))</span>
-                                </div>
                         </div>
                 <div class="grid-content @(takenCollapsed ? "collapsed-content" : "")">
                                         <OrdersGrid @key="@takenGridKey"
@@ -80,9 +87,12 @@
                                                            />
                 </div>
                         </div>
-        <div class="orders-grid-container @(deptCollapsed ? "collapsed" : "")">
+        </SplitterPane>
+
+            <SplitterPane Min="@minPanelSize" @bind-Size="@deptPaneSize" Collapsible="false">
+        <div class="orders-grid-container">
                 <div class="order-header d-flex align-items-center">
-                        <span class="collapse-toggle" @onclick="async () => await ToggleDept()">
+                        <span class="collapse-toggle" @onclick="@(async () => await ToggleSpoiler(nameof(deptPaneSize)))">
                                 @if(deptCollapsed)
                                 {
                                         <TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
@@ -118,9 +128,12 @@
                                                    />
                                            </div>
                         </div>
-        <div class="orders-grid-container @(workOrdersWithPersonCollapsed ? "collapsed" : "")">
+        </SplitterPane>
+
+            <SplitterPane Min="@minPanelSize" @bind-Size="@workOrdersWithPersonPaneSize" Collapsible="false">
+        <div class="orders-grid-container">
                 <div class="order-header d-flex align-items-center">
-                        <span class="collapse-toggle" @onclick="async () => await ToggleWorkOrdersWithPerson()">
+                        <span class="collapse-toggle" @onclick="@(async () => await ToggleSpoiler(nameof(workOrdersWithPersonPaneSize)))">
                                 @if(workOrdersWithPersonCollapsed)
                                 {
                                         <TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
@@ -147,6 +160,10 @@
                                                    />
                 </div>
                         </div>
+        </SplitterPane>
+            <SplitterPane Collapsible="false" Collapsed="false"></SplitterPane>
+    </SplitterPanes>
+</TelerikSplitter>
         
 </div>
 
@@ -175,123 +192,235 @@
 </TelerikWindow>
 
 @code {
-        private string AssignedGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Assigned"];
-        private string TakenGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Taken"];
-        private string DepartmentGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Department"];
-        private string SectionStatesKey = ViewSettingsService.SettingsKeys["Home-SectionStates"];
+    private string AssignedGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Assigned"];
+    private string TakenGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Taken"];
+    private string DepartmentGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Department"];
+    private string SectionStatesKey = ViewSettingsService.SettingsKeys["Home-SectionStates"];
 
-        private ViewSettings<WorkOrder> _assignedGridSettings = new();
-        private ViewSettings<WorkOrder> _takenGridSettings = new();
-        private ViewSettings<WorkOrder> _departmentGridSettings = new();
-        private SectionCollapseStates _sectionStates = new();
+    private ViewSettings<WorkOrder> _assignedGridSettings = new();
+    private ViewSettings<WorkOrder> _takenGridSettings = new();
+    private ViewSettings<WorkOrder> _departmentGridSettings = new();
+    private SectionCollapseStates _sectionStates = new();
+    private SectionCollapseStates _tempSectionStates = new();
 
-        private List<WorkOrder> myAssignedOrders = new List<WorkOrder>();
-        private List<WorkOrder> myDepartmentOrders = new List<WorkOrder>();    
-        private List<WorkOrder> myTakenWorkOrders = new List<WorkOrder>();
-        private List<WorkOrder> myWorkOrdersWithPerson = new List<WorkOrder>();
-        private OrdersGrid TakenGrid;
-        private OrdersGrid AssignedGrid;
-        private OrdersGrid DepsGrid;
-        private Guid takenGridKey = Guid.NewGuid();
-        private Guid assignedGridKey = Guid.NewGuid();
-        private Guid depsGridKey = Guid.NewGuid();
-        private Guid workOrdersWithPersonGridKey = Guid.NewGuid();
-        private List<string> workOrderStates = new List<string>();
-        private List<string> allDepartments = new List<string>();
-        private string selectedDepartment = string.Empty;
-        private string loaderText = string.Empty;
-        private List<WorkOrder> allOrders = new List<WorkOrder>();
-        private WorkOrder selectedWorkOrder = new WorkOrder();
-        private bool isDataLoading = true;
-        private bool hasInitialized = false;
-        private bool IsAddActivityWindowVisible = false;
-        private bool LoaderVisible = false;
-        private bool HaveAnyTakenOrders = false;
-        private List<ContextMenuItem> myAssignedOrdersMenuItems;
-        private List<ContextMenuItem> myTakenWorkOrdersMenuItems;
-        private List<ContextMenuItem> myDepartmentOrdersMenuItems;
-        private string MenuPositionX = "50%";
-        private string MenuPositionY = "50%";
+    // Размеры панелей для TelerikSplitter
+    private string assignedPaneSize;
+    private string takenPaneSize;
+    private string deptPaneSize;
+    private string workOrdersWithPersonPaneSize;
+    private string minPanelSize = "40px";
 
-        private bool assignedCollapsed = false;
-        private bool takenCollapsed = false;
-        private bool deptCollapsed = false;
-        private bool workOrdersWithPersonCollapsed = false;
+    private List<WorkOrder> myAssignedOrders = new List<WorkOrder>();
+    private List<WorkOrder> myDepartmentOrders = new List<WorkOrder>();    
+    private List<WorkOrder> myTakenWorkOrders = new List<WorkOrder>();
+    private List<WorkOrder> myWorkOrdersWithPerson = new List<WorkOrder>();
+    private OrdersGrid TakenGrid;
+    private OrdersGrid AssignedGrid;
+    private OrdersGrid DepsGrid;
+    private Guid takenGridKey = Guid.NewGuid();
+    private Guid assignedGridKey = Guid.NewGuid();
+    private Guid depsGridKey = Guid.NewGuid();
+    private Guid workOrdersWithPersonGridKey = Guid.NewGuid();
+    private List<string> workOrderStates = new List<string>();
+    private List<string> allDepartments = new List<string>();
+    private string selectedDepartment = string.Empty;
+    private string loaderText = string.Empty;
+    private List<WorkOrder> allOrders = new List<WorkOrder>();
+    private WorkOrder selectedWorkOrder = new WorkOrder();
+    private bool isDataLoading = true;
+    private bool hasInitialized = false;
+    private bool IsAddActivityWindowVisible = false;
+    private bool LoaderVisible = false;
+    private bool HaveAnyTakenOrders = false;
+    private List<ContextMenuItem> myAssignedOrdersMenuItems;
+    private List<ContextMenuItem> myTakenWorkOrdersMenuItems;
+    private List<ContextMenuItem> myDepartmentOrdersMenuItems;
+    private string MenuPositionX = "50%";
+    private string MenuPositionY = "50%";
 
-        private async Task ToggleAssigned() 
-        { 
-            assignedCollapsed = !assignedCollapsed;
-            _sectionStates.AssignedCollapsed = assignedCollapsed;
-            await SaveSectionStatesAsync();
-        }
-        
-        private async Task ToggleTaken() 
-        { 
-            takenCollapsed = !takenCollapsed;
-            _sectionStates.TakenCollapsed = takenCollapsed;
-            await SaveSectionStatesAsync();
-        }
-        
-        private async Task ToggleDept() 
-        { 
-            deptCollapsed = !deptCollapsed;
-            _sectionStates.DeptCollapsed = deptCollapsed;
-            await SaveSectionStatesAsync();
-        }
-        
-        private async Task ToggleWorkOrdersWithPerson() 
-        { 
-            workOrdersWithPersonCollapsed = !workOrdersWithPersonCollapsed;
-            _sectionStates.WorkOrdersWithPersonCollapsed = workOrdersWithPersonCollapsed;
-            await SaveSectionStatesAsync();
-        }
-        
-        private async Task SaveSectionStatesAsync()
+    private bool assignedCollapsed = false;
+    private bool takenCollapsed = false;
+    private bool deptCollapsed = false;
+    private bool workOrdersWithPersonCollapsed = false;
+
+    #region Spoilers
+    private async Task ToggleSpoiler(string pane)
+    {
+        const string assignedPane = nameof(assignedPaneSize);
+        const string takenPane = nameof(takenPaneSize);
+        const string deptPane = nameof(deptPaneSize);
+        const string workOrdersWithPersonPane = nameof(workOrdersWithPersonPaneSize);
+        if (string.IsNullOrEmpty(pane)) return;
+        switch(pane)
         {
-            var viewSettings = new ViewSettings<object>();
-            viewSettings.SetCustomFilter("sectionStates", _sectionStates);
-            await ViewSettingsService.SaveSettingsAsync(SectionStatesKey, viewSettings);
+            case assignedPane:
+                ToggleAssigned();
+                break;
+            case takenPane:
+                ToggleTaken();
+                break;
+            case deptPane:
+                ToggleDept();
+                break;
+            case workOrdersWithPersonPane:
+                ToggleWorkOrdersWithPerson();
+                break;
+        }
+        AddSizesToCache();
+        await SaveSectionStatesAsync();
+    }
+
+    private void AddSizesToCache()
+    {
+        if (!assignedCollapsed) _sectionStates.AssignedPaneSize = assignedPaneSize;
+        if (!takenCollapsed) _sectionStates.TakenPaneSize = takenPaneSize;
+        if (!deptCollapsed) _sectionStates.DeptPaneSize = deptPaneSize;
+        if (!workOrdersWithPersonCollapsed) _sectionStates.WorkOrdersWithPersonPaneSize = workOrdersWithPersonPaneSize;
+    }
+
+    private void ToggleAssigned() 
+    { 
+        // Сохраняем текущий размер перед сворачиванием
+        if (!assignedCollapsed) {
+            _tempSectionStates.AssignedPaneSize = assignedPaneSize;
+            _sectionStates.AssignedPaneSize = assignedPaneSize;
+            assignedPaneSize = minPanelSize;
         }
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+        assignedCollapsed = !assignedCollapsed;
+        _sectionStates.AssignedCollapsed = assignedCollapsed;
+
+        // Восстанавливаем размер при разворачивании
+        if (!assignedCollapsed) {
+            if (!string.IsNullOrEmpty(_tempSectionStates.AssignedPaneSize))
+                assignedPaneSize = _tempSectionStates.AssignedPaneSize;
+        }
+        else{
+            assignedPaneSize = _sectionStates.AssignedPaneSize;
+        }
+    }
+
+    private void ToggleTaken() 
+    { 
+        // Сохраняем текущий размер перед сворачиванием
+        if (!takenCollapsed) {
+            _tempSectionStates.TakenPaneSize = takenPaneSize;
+            takenPaneSize = minPanelSize;
+        }
+
+        takenCollapsed = !takenCollapsed;
+        _sectionStates.TakenCollapsed = takenCollapsed;
+        _sectionStates.TakenPaneSize = takenPaneSize;
+
+        // Восстанавливаем размер при разворачивании
+        if (!takenCollapsed && !string.IsNullOrEmpty(_tempSectionStates.TakenPaneSize)) 
+        {        
+            takenPaneSize = _tempSectionStates.TakenPaneSize;
+        }
+    }
+
+    private void ToggleDept() 
+    { 
+        // Сохраняем текущий размер перед сворачиванием
+        if (!deptCollapsed) {
+            _tempSectionStates.DeptPaneSize = deptPaneSize;
+            deptPaneSize = minPanelSize;
+        }
+
+        deptCollapsed = !deptCollapsed;
+        _sectionStates.DeptCollapsed = deptCollapsed;
+        _sectionStates.DeptPaneSize = deptPaneSize;
+        // Восстанавливаем размер при разворачивании
+        if (!deptCollapsed && !string.IsNullOrEmpty(_tempSectionStates.DeptPaneSize)) {
+            deptPaneSize = _tempSectionStates.DeptPaneSize;
+        }
+    }
+
+    private void ToggleWorkOrdersWithPerson() 
+    { 
+        // Сохраняем текущий размер перед сворачиванием
+        if (!workOrdersWithPersonCollapsed) {
+            _tempSectionStates.WorkOrdersWithPersonPaneSize = workOrdersWithPersonPaneSize;
+            workOrdersWithPersonPaneSize = minPanelSize;
+        }
+
+        workOrdersWithPersonCollapsed = !workOrdersWithPersonCollapsed;
+        _sectionStates.WorkOrdersWithPersonCollapsed = workOrdersWithPersonCollapsed;
+        _sectionStates.WorkOrdersWithPersonPaneSize = workOrdersWithPersonPaneSize;
+        // Восстанавливаем размер при разворачивании
+        if (!workOrdersWithPersonCollapsed && !string.IsNullOrEmpty(_tempSectionStates.WorkOrdersWithPersonPaneSize)) {
+            workOrdersWithPersonPaneSize = _tempSectionStates.WorkOrdersWithPersonPaneSize;
+        }
+    }
+
+    private async Task SaveSectionStatesAsync()
+    {
+        var viewSettings = new ViewSettings<object>();
+        viewSettings.SetCustomFilter("sectionStates", _sectionStates);
+        await ViewSettingsService.SaveSettingsAsync(SectionStatesKey, viewSettings);
+    }
+
+    private void RestoreSectionStates()
+    {
+        // Применяем загруженные состояния секций
+        assignedCollapsed = _sectionStates.AssignedCollapsed;
+        takenCollapsed = _sectionStates.TakenCollapsed;
+        deptCollapsed = _sectionStates.DeptCollapsed;
+        workOrdersWithPersonCollapsed = _sectionStates.WorkOrdersWithPersonCollapsed;
+
+        // Применяем сохраненные размеры панелей при инициализации
+        if (!string.IsNullOrEmpty(_sectionStates.AssignedPaneSize))
+            assignedPaneSize = _sectionStates.AssignedPaneSize;
+        if (!string.IsNullOrEmpty(_sectionStates.TakenPaneSize))
+            takenPaneSize = _sectionStates.TakenPaneSize;
+        if (!string.IsNullOrEmpty(_sectionStates.DeptPaneSize))
+            deptPaneSize = _sectionStates.DeptPaneSize;
+        if (!string.IsNullOrEmpty(_sectionStates.WorkOrdersWithPersonPaneSize))
+            workOrdersWithPersonPaneSize = _sectionStates.WorkOrdersWithPersonPaneSize;
+
+        if (assignedCollapsed) assignedPaneSize = minPanelSize;
+        if (takenCollapsed) takenPaneSize = minPanelSize;
+        if (deptCollapsed) deptPaneSize = minPanelSize;
+        if (workOrdersWithPersonCollapsed) workOrdersWithPersonPaneSize = minPanelSize;
+    }
+    #endregion spoilers
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !hasInitialized)
         {
-                if (firstRender && !hasInitialized)
-                {
-                        hasInitialized = true;
-                        isDataLoading = true;
-                        await InvokeAsync(StateHasChanged);
+            hasInitialized = true;
+            isDataLoading = true;
+            await InvokeAsync(StateHasChanged);
 
-                        _assignedGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(AssignedGridSettingsKey);
-                        _takenGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(TakenGridSettingsKey);
-                        _departmentGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(DepartmentGridSettingsKey);
-                        var sectionStateSettings = await ViewSettingsService.LoadSettingsAsync<object>(SectionStatesKey);
-                        _sectionStates = sectionStateSettings.GetCustomFilter<object, SectionCollapseStates>("sectionStates") ?? new SectionCollapseStates();
-                        
-                        // Применяем загруженные состояния секций
-                        assignedCollapsed = _sectionStates.AssignedCollapsed;
-                        takenCollapsed = _sectionStates.TakenCollapsed;
-                        deptCollapsed = _sectionStates.DeptCollapsed;
-                        workOrdersWithPersonCollapsed = _sectionStates.WorkOrdersWithPersonCollapsed;
-                        if (UserState.IsAuthenticated)
-                        {
-                                allOrders = await ApiClient.GetWorkOrdersAsync();
-                                allOrders = FilterWorkOrders(allOrders);                                
-                                await ApiClient.GetWODictionaries(UserState.PersonID, UserState.LangCode);
-                                allDepartments = ApiClient.GetWODepartments().Select(d => d.Name).ToList();
-                                selectedDepartment = _departmentGridSettings.GetCustomFilter("selectedDepartment", allDepartments.FirstOrDefault() ?? "");
-                                workOrderStates = allOrders.Select(o => o.WOState ?? string.Empty).Distinct().ToList();
-                                MakeContextMenu();
-                                TakeListsOrders();
-                                HaveAnyTakenOrders = (await ApiClient.GetWOTakenbyPerson(UserState.PersonID ?? 0)).Any();
-                        }
+            _assignedGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(AssignedGridSettingsKey);
+            _takenGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(TakenGridSettingsKey);
+            _departmentGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(DepartmentGridSettingsKey);
+            var sectionStateSettings = await ViewSettingsService.LoadSettingsAsync<object>(SectionStatesKey);
+            _sectionStates = sectionStateSettings.GetCustomFilter<object, SectionCollapseStates>("sectionStates") ?? new SectionCollapseStates();
 
-                        isDataLoading = false;
-                        await InvokeAsync(StateHasChanged);
+            RestoreSectionStates();
 
-                        // Apply the state after the data is loaded and the grids are rendered
-                        if (AssignedGrid != null) await AssignedGrid.ApplyStateAsync(_assignedGridSettings.GridState);
-                        if (TakenGrid != null) await TakenGrid.ApplyStateAsync(_takenGridSettings.GridState);
-                        if (DepsGrid != null) await DepsGrid.ApplyStateAsync(_departmentGridSettings.GridState);
+            if (UserState.IsAuthenticated)
+            {
+                    allOrders = await ApiClient.GetWorkOrdersAsync();
+                    allOrders = FilterWorkOrders(allOrders);                                
+                    await ApiClient.GetWODictionaries(UserState.PersonID, UserState.LangCode);
+                    allDepartments = ApiClient.GetWODepartments().Select(d => d.Name).ToList();
+                    selectedDepartment = _departmentGridSettings.GetCustomFilter("selectedDepartment", allDepartments.FirstOrDefault() ?? "");
+                    workOrderStates = allOrders.Select(o => o.WOState ?? string.Empty).Distinct().ToList();
+                    MakeContextMenu();
+                    TakeListsOrders();
+                    HaveAnyTakenOrders = (await ApiClient.GetWOTakenbyPerson(UserState.PersonID ?? 0)).Any();
+            }
+
+            isDataLoading = false;
+            await InvokeAsync(StateHasChanged);
+
+            // Apply the state after the data is loaded and the grids are rendered
+            if (AssignedGrid != null) await AssignedGrid.ApplyStateAsync(_assignedGridSettings.GridState);
+            if (TakenGrid != null) await TakenGrid.ApplyStateAsync(_takenGridSettings.GridState);
+            if (DepsGrid != null) await DepsGrid.ApplyStateAsync(_departmentGridSettings.GridState);
                 }
         }
 

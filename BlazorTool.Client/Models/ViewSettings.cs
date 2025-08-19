@@ -37,5 +37,11 @@ namespace BlazorTool.Client.Models
         public bool TakenCollapsed { get; set; } = false;
         public bool DeptCollapsed { get; set; } = false;
         public bool WorkOrdersWithPersonCollapsed { get; set; } = false;
+        
+        // Размеры панелей для TelerikSplitter
+        public string AssignedPaneSize { get; set; } = "450px";
+        public string TakenPaneSize { get; set; } = "250px";
+        public string DeptPaneSize { get; set; } = "550px";
+        public string WorkOrdersWithPersonPaneSize { get; set; } = "500px";
     }
 }
