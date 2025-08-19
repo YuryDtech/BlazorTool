@@ -1,3 +1,23 @@
+## 2025-08-18
+
+### UI/UX Improvements
+* Added collapsible sections on Home page grids (Assigned, Taken, Department)
+ * Added expand/collapse toggles ("+" / "-") in grid headers
+ * Added multi-select filters on Orders and Scheduler pages
+
+### Added
+* New `Spoiler` component in `BlazorTool.Client/Components` for generic content toggling
+* Styles for `.collapse-toggle` and `.collapsed-content` in `Home.razor.css`
+
+### Localization
+* Added `Spoiler_Show` / `Spoiler_Hide` keys in `UIStrings.resx` and `UIStrings.pl-PL.resx`
+* Fixed translation for AddActivity error messages
+
+### Code Changes
+* Updated `Home.razor` to wrap grid content in collapsible containers with dynamic CSS classes
+* Updated `Home.razor.css` to reset container height when collapsed
+* Extended `ActivityController` with ActDict-based methods for adding new activities
+
 ## 2025-08-12 - 2025-08-13
 ### UI/UX Improvements
 *   **Context Menu for Grids:** Implemented a right-click context menu for grids on the Home page, enhancing user interaction.

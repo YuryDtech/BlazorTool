@@ -1,3 +1,18 @@
+## 2025-08-18
+
+### Ulepszenia UI/UX
+* Dodano możliwość zwijania sekcji siatek na stronie głównej (Assigned, Taken, Department)
+* Dodano przyciski "+"/"-" w nagłówkach siatek
+* Dodano filtrowanie wielokrotnego wyboru na stronach Orders i Scheduler
+
+### Lokalizacja
+* Poprawiono tłumaczenie komunikatów błędów w formularzu dodawania aktywności
+
+### Zmiany w kodzie
+* Zaktualizowano `Home.razor`, aby owinąć zawartość siatek w zwijalne kontenery z dynamicznymi klasami
+* Zaktualizowano `Home.razor.css` do resetowania wysokości kontenera po zwinięciu
+* Rozszerzono `ActivityController` o metody ActDict do dodawania nowych aktywności
+
 ## 2025-08-12 - 2025-08-13
 ### Ulepszenia UI/UX
 *   **Menu Kontekstowe dla Siatek:** Zaimplementowano menu kontekstowe (prawy przycisk myszy) dla siatek na stronie głównej, co poprawia interakcję użytkownika.

@@ -374,3 +374,5 @@ commit_message.txt
 /BlazorTool/wwwroot/CHANGELOG_PL.md
 .mcp.json
 /AGENTS.md
+/trae_config.yaml
+/trajectories/trajectory_20250819_085027.json
