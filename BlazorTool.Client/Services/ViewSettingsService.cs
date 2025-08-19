@@ -45,7 +45,8 @@ namespace BlazorTool.Client.Services
             { "SchedulerPage", "scheduler-filter-settings" },
             {"Home-Assigned", "home-assigned-orders-grid" },
             {"Home-Taken", "home-taken-orders-grid" },
-            {"Home-Department", "home-department-orders-grid" }
+            {"Home-Department", "home-department-orders-grid" },
+            {"Home-SectionStates", "home-section-collapse-states" }
         };
 
         public async Task ClearAsync()

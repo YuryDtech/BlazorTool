@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Telerik.Blazor.Components;
 
 namespace BlazorTool.Client.Models
@@ -28,5 +29,13 @@ namespace BlazorTool.Client.Models
         {
             GridState = new GridState<T>();
         }
+    }
+    
+    public class SectionCollapseStates
+    {
+        public bool AssignedCollapsed { get; set; } = false;
+        public bool TakenCollapsed { get; set; } = false;
+        public bool DeptCollapsed { get; set; } = false;
+        public bool WorkOrdersWithPersonCollapsed { get; set; } = false;
     }
 }

@@ -17,7 +17,7 @@
                                 <TelerikLoaderContainer  Visible="@isDataLoading" Text="@Localizer["Scheduler_LoadingOrders"]" Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Large">
                                                         </TelerikLoaderContainer>
                 <div class="order-header d-flex align-items-center">
-                        <span class="collapse-toggle" @onclick="ToggleAssigned">
+                        <span class="collapse-toggle" @onclick="async () => await ToggleAssigned()">
                                 @if (assignedCollapsed)
                                 {
                                         <TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
@@ -51,7 +51,7 @@
         <div class="orders-grid-container @(takenCollapsed ? "collapsed" : "")">
                         <div class="order-header d-flex align-items-center">
                                 <div style="display:flex; align-items:center;">
-                                <span class="collapse-toggle" @onclick="ToggleTaken">
+                                <span class="collapse-toggle" @onclick="async () => await ToggleTaken()">
                                         @if(takenCollapsed)
                                         {
                                                 <TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
@@ -82,7 +82,7 @@
                         </div>
         <div class="orders-grid-container @(deptCollapsed ? "collapsed" : "")">
                 <div class="order-header d-flex align-items-center">
-                        <span class="collapse-toggle" @onclick="ToggleDept">
+                        <span class="collapse-toggle" @onclick="async () => await ToggleDept()">
                                 @if(deptCollapsed)
                                 {
                                         <TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
@@ -120,7 +120,7 @@
                         </div>
         <div class="orders-grid-container @(workOrdersWithPersonCollapsed ? "collapsed" : "")">
                 <div class="order-header d-flex align-items-center">
-                        <span class="collapse-toggle" @onclick="ToggleWorkOrdersWithPerson">
+                        <span class="collapse-toggle" @onclick="async () => await ToggleWorkOrdersWithPerson()">
                                 @if(workOrdersWithPersonCollapsed)
                                 {
                                         <TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
@@ -178,10 +178,12 @@
         private string AssignedGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Assigned"];
         private string TakenGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Taken"];
         private string DepartmentGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Department"];
+        private string SectionStatesKey = ViewSettingsService.SettingsKeys["Home-SectionStates"];
 
         private ViewSettings<WorkOrder> _assignedGridSettings = new();
         private ViewSettings<WorkOrder> _takenGridSettings = new();
         private ViewSettings<WorkOrder> _departmentGridSettings = new();
+        private SectionCollapseStates _sectionStates = new();
 
         private List<WorkOrder> myAssignedOrders = new List<WorkOrder>();
         private List<WorkOrder> myDepartmentOrders = new List<WorkOrder>();    
@@ -216,10 +218,40 @@
         private bool deptCollapsed = false;
         private bool workOrdersWithPersonCollapsed = false;
 
-        private void ToggleAssigned() => assignedCollapsed = !assignedCollapsed;
-        private void ToggleTaken() => takenCollapsed = !takenCollapsed;
-        private void ToggleDept() => deptCollapsed = !deptCollapsed;
-        private void ToggleWorkOrdersWithPerson() => workOrdersWithPersonCollapsed = !workOrdersWithPersonCollapsed;
+        private async Task ToggleAssigned() 
+        { 
+            assignedCollapsed = !assignedCollapsed;
+            _sectionStates.AssignedCollapsed = assignedCollapsed;
+            await SaveSectionStatesAsync();
+        }
+        
+        private async Task ToggleTaken() 
+        { 
+            takenCollapsed = !takenCollapsed;
+            _sectionStates.TakenCollapsed = takenCollapsed;
+            await SaveSectionStatesAsync();
+        }
+        
+        private async Task ToggleDept() 
+        { 
+            deptCollapsed = !deptCollapsed;
+            _sectionStates.DeptCollapsed = deptCollapsed;
+            await SaveSectionStatesAsync();
+        }
+        
+        private async Task ToggleWorkOrdersWithPerson() 
+        { 
+            workOrdersWithPersonCollapsed = !workOrdersWithPersonCollapsed;
+            _sectionStates.WorkOrdersWithPersonCollapsed = workOrdersWithPersonCollapsed;
+            await SaveSectionStatesAsync();
+        }
+        
+        private async Task SaveSectionStatesAsync()
+        {
+            var viewSettings = new ViewSettings<object>();
+            viewSettings.SetCustomFilter("sectionStates", _sectionStates);
+            await ViewSettingsService.SaveSettingsAsync(SectionStatesKey, viewSettings);
+        }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -232,6 +264,14 @@
                         _assignedGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(AssignedGridSettingsKey);
                         _takenGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(TakenGridSettingsKey);
                         _departmentGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(DepartmentGridSettingsKey);
+                        var sectionStateSettings = await ViewSettingsService.LoadSettingsAsync<object>(SectionStatesKey);
+                        _sectionStates = sectionStateSettings.GetCustomFilter<object, SectionCollapseStates>("sectionStates") ?? new SectionCollapseStates();
+                        
+                        // Применяем загруженные состояния секций
+                        assignedCollapsed = _sectionStates.AssignedCollapsed;
+                        takenCollapsed = _sectionStates.TakenCollapsed;
+                        deptCollapsed = _sectionStates.DeptCollapsed;
+                        workOrdersWithPersonCollapsed = _sectionStates.WorkOrdersWithPersonCollapsed;
                         if (UserState.IsAuthenticated)
                         {
                                 allOrders = await ApiClient.GetWorkOrdersAsync();

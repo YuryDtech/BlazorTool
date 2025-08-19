@@ -5,12 +5,7 @@
  * Added expand/collapse toggles ("+" / "-") in grid headers
  * Added multi-select filters on Orders and Scheduler pages
 
-### Added
-* New `Spoiler` component in `BlazorTool.Client/Components` for generic content toggling
-* Styles for `.collapse-toggle` and `.collapsed-content` in `Home.razor.css`
-
 ### Localization
-* Added `Spoiler_Show` / `Spoiler_Hide` keys in `UIStrings.resx` and `UIStrings.pl-PL.resx`
 * Fixed translation for AddActivity error messages
 
 ### Code Changes
