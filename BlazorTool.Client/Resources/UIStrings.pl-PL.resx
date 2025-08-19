@@ -748,34 +748,37 @@
   <data name="Move" xml:space="preserve">
     <value>Przenieś</value>
   </data>
-  <data name="Activity_MustBeSelected" xml:space="preserve">
-    <value>Należy wybrać aktywność.</value>
-  </data>
-  <data name="Activity_Required" xml:space="preserve">
-    <value>Aktywność jest wymagana.</value>
-  </data>
-  <data name="Category_MustBeSelected" xml:space="preserve">
-    <value>Należy wybrać kategorię.</value>
-  </data>
-  <data name="Category_Required" xml:space="preserve">
-    <value>Kategoria jest wymagana.</value>
-  </data>
-  <data name="Description_Required" xml:space="preserve">
-    <value>Opis jest wymagany.</value>
+  <data name="Person_Required" xml:space="preserve">
+    <value>Osoba jest wymagana.</value>
   </data>
   <data name="Person_MustBeSelected" xml:space="preserve">
     <value>Należy wybrać osobę.</value>
   </data>
-  <data name="Person_Required" xml:space="preserve">
-    <value>Osoba jest wymagana.</value>
+  <data name="Category_Required" xml:space="preserve">
+    <value>Kategoria jest wymagana.</value>
+  </data>
+  <data name="Category_MustBeSelected" xml:space="preserve">
+    <value>Należy wybrać kategorię.</value>
   </data>
   <data name="Workload_Positive" xml:space="preserve">
     <value>Obciążenie musi być liczbą dodatnią.</value>
+  </data>
+  <data name="Description_Required" xml:space="preserve">
+    <value>Opis jest wymagany.</value>
+  </data>
+  <data name="Activity_Required" xml:space="preserve">
+    <value>Aktywność jest wymagana.</value>
+  </data>
+  <data name="Activity_MustBeSelected" xml:space="preserve">
+    <value>Należy wybrać aktywność.</value>
   </data>
   <data name="Spoiler_Show" xml:space="preserve">
     <value>Pokaż</value>
   </data>
   <data name="Spoiler_Hide" xml:space="preserve">
     <value>Ukryj</value>
+  </data>
+  <data name="Home_WorkOrdersWithPerson" xml:space="preserve">
+    <value>Zlecenia z moimi aktywnościami</value>
   </data>
 </root>

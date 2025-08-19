@@ -81,6 +81,7 @@ else
                 OnOrderChanged="@OnOrderChanged"
                 OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _viewSettings.GridState = args.GridState; await SaveStateAsync(); })"
                 isLoading="@isOrdersLoading" 
+                PageSize="50"
                 MenuItems="@MenuItems"
                 OnMenuItemClick="@HandleMenuItemClick"
                     OnRowContextMenu="@(()=>MakeContextMenu())" />

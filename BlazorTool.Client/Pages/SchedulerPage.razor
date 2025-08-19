@@ -31,6 +31,8 @@
                                 TagMode="@MultiSelectTagMode.Multiple"
                                 Placeholder="@Localizer["Scheduler_SelectAssignedPersons"]"
                                 AutoClose="false"
+                                Filterable="true"
+                                FilterOperator="@Telerik.Blazor.StringFilterOperator.Contains"
                                 OnChange="@OnPersonSelectChanged"
                                 ShowClearButton="true"
                                 Size="sm">

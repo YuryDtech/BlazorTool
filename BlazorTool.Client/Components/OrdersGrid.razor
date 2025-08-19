@@ -17,19 +17,20 @@
              Id="Grid1"
              RowDraggable="false"
              @ref="GridRef"
-             ScrollMode="@GridScrollMode.Virtual"
-             Height="100%"
-             PageSize="30"
+             ScrollMode="@(UseVirtualScrollMode? GridScrollMode.Virtual: GridScrollMode.Scrollable)"
+             Height="@Height"
+             PageSize="@PageSize"
              RowHeight="40"
              Sortable="true"
              Resizable="true"
-             Pageable="false"
+             Pageable="@(!UseVirtualScrollMode)"
              FilterMode="@GridFilterMode.FilterMenu"
              OnRowRender="@OnRowRenderHandler"
              OnRowDoubleClick="@(args => OnRowClick(args))"
              OnRowContextMenu="@OnRowContextMenuHandler"
              OnStateChanged="@((GridStateEventArgs<WorkOrder> args) => OnStateChanged.InvokeAsync(args))"
-             Class="@(ShowSearchBar ? "" : "no-toolbar")">
+             Class="@(ShowSearchBar ? "" : "no-toolbar")"
+             >
 
     <GridToolBarTemplate>
         @if (ShowSearchBar)
@@ -190,6 +191,9 @@
     [Parameter] public List<string> workOrderStates { get; set; } = new List<string>();
     [Parameter] public bool ShowSearchBar { get; set; } = true;
     [Parameter] public bool isLoading { get; set; } = false;
+    [Parameter] public bool UseVirtualScrollMode { get; set; } = true;
+    [Parameter] public int PageSize { get; set; } = 30;
+    [Parameter] public string Height { get; set; } = "100%";
     [Parameter] public EventCallback<GridStateEventArgs<WorkOrder>> OnStateChanged { get; set; }
     [Parameter] public List<ContextMenuItem> MenuItems { get; set; }
     [Parameter] public EventCallback<ContextMenuItemClickEventArgs<WorkOrder>> OnMenuItemClick { get; set; }

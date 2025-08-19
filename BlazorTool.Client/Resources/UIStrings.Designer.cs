@@ -709,6 +709,15 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Orders with my activities.
+        /// </summary>
+        public static string Home_WorkOrdersWithPerson {
+            get {
+                return ResourceManager.GetString("Home_WorkOrdersWithPerson", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ineffective actions count.
         /// </summary>
         public static string IneffectiveCount {
@@ -1605,6 +1614,24 @@ namespace BlazorTool.Client.Resources {
         public static string Settings_WrongApiAddress {
             get {
                 return ResourceManager.GetString("Settings_WrongApiAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hide.
+        /// </summary>
+        public static string Spoiler_Hide {
+            get {
+                return ResourceManager.GetString("Spoiler_Hide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show.
+        /// </summary>
+        public static string Spoiler_Show {
+            get {
+                return ResourceManager.GetString("Spoiler_Show", resourceCulture);
             }
         }
         
