@@ -60,6 +60,7 @@
             <TelerikComboBox Data="@WO_AssetNo"
                              Placeholder="@Localizer["Scheduler_SelectAsset"]"
                              Filterable="true"
+                             FilterOperator="@Telerik.Blazor.StringFilterOperator.Contains"
                              AllowCustom="true"
                              Value="@selectedAssetNo"
                              ValueChanged="@((string assetNo) => OnAssetNoChanged(assetNo))"

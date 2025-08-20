@@ -27,6 +27,8 @@
                                          Width="250px"
                                          ShowClearButton="false"
                                          AllowCustom="false"
+                                         Filterable="true"
+                                         FilterOperator="@Telerik.Blazor.StringFilterOperator.Contains"
                                          Class="@DeviceAlarm"
                                          Size="sm">
                         </TelerikComboBox>
@@ -83,6 +85,8 @@
                                              ShowClearButton="false"
                                              AllowCustom="false"
                                              Size="@cb_size"
+                                             Filterable="true"
+                                             FilterOperator="@Telerik.Blazor.StringFilterOperator.Contains"
                                              Class="@CategoryAlarm">
                             </TelerikComboBox>
                         </div>
@@ -101,6 +105,8 @@
                                              ShowClearButton="false"
                                              AllowCustom="false"
                                                  Size="@cb_size"
+                                                 Filterable="true"
+                                                 FilterOperator="@Telerik.Blazor.StringFilterOperator.Contains"
                                              Class="@ReasonAlarm">
                             </TelerikComboBox>
                         </div>
@@ -143,6 +149,8 @@
                                              Width="100%"
                                              ReadOnly=@(isEditable == false)
                                              ShowClearButton=true
+                                             Filterable="true"
+                                             FilterOperator="@Telerik.Blazor.StringFilterOperator.Contains"
                                              Size="@cb_size">
                             </TelerikComboBox>
                     </div>
@@ -156,6 +164,8 @@
                                                  ValueChanged="@((string name) => OnDepartmentChanged(name))"
                                                  Width="100%"
                                                  ReadOnly=@(isEditable == false)
+                                                 Filterable="true"
+                                                 FilterOperator="@Telerik.Blazor.StringFilterOperator.Contains"
                                                  ShowClearButton=true
                                              Size="@cb_size">
                                                  

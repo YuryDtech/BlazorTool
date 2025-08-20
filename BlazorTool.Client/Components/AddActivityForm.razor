@@ -26,6 +26,7 @@
                                              TextField="@nameof(Person.Name)"
                                              Placeholder="@Localizer["WorkOrder_SelectPerson"]"
                                              Filterable="true"
+                                                 FilterOperator="@Telerik.Blazor.StringFilterOperator.Contains"
                                              ShowClearButton="true"
                                              
                                              >
@@ -44,6 +45,7 @@
                                          TextField="@nameof(WODict.Name)"
                                          Placeholder="@Localizer["WorkOrder_SelectWOCategory"]"
                                          Filterable="true"
+                                                 FilterOperator="@Telerik.Blazor.StringFilterOperator.Contains"
                                          ShowClearButton="true"
                                          
                                                  >
