@@ -1,5 +1,14 @@
-## 2025-08-18
+## 2025-08-19
+### UI/UX Improvements
+* Added virtual scrolling support to `OrdersGrid` for smoother data browsing.
+* Restructured the Home page with new grid containers and responsive CSS adjustments.
+* Enabled search/filter in `TelerikMultiSelect` on the Scheduler page.
+* Persisted splitter pane positions and collapsible panel states across sessions.
 
+### Localization
+* Added new localized strings for UI enhancements.
+
+## 2025-08-18
 ### UI/UX Improvements
 * Added collapsible sections on Home page grids (Assigned, Taken, Department)
  * Added expand/collapse toggles ("+" / "-") in grid headers

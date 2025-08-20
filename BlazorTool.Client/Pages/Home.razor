@@ -4,6 +4,7 @@
 @using BlazorTool.Client.Services
 @using Telerik.Blazor.Components
 @using Telerik.Blazor
+@using System.Diagnostics;
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<Resources.UIStrings> Localizer
 @inject ApiServiceClient ApiClient
@@ -201,7 +202,6 @@
     private ViewSettings<WorkOrder> _takenGridSettings = new();
     private ViewSettings<WorkOrder> _departmentGridSettings = new();
     private SectionCollapseStates _sectionStates = new();
-    private SectionCollapseStates _tempSectionStates = new();
 
     // Размеры панелей для TelerikSplitter
     private string assignedPaneSize;
@@ -246,10 +246,12 @@
     #region Spoilers
     private async Task ToggleSpoiler(string pane)
     {
+        
         const string assignedPane = nameof(assignedPaneSize);
         const string takenPane = nameof(takenPaneSize);
         const string deptPane = nameof(deptPaneSize);
         const string workOrdersWithPersonPane = nameof(workOrdersWithPersonPaneSize);
+       
         if (string.IsNullOrEmpty(pane)) return;
         switch(pane)
         {
@@ -266,7 +268,8 @@
                 ToggleWorkOrdersWithPerson();
                 break;
         }
-        AddSizesToCache();
+
+        AddSizesToCache();       
         await SaveSectionStatesAsync();
     }
 
@@ -282,7 +285,6 @@
     { 
         // Сохраняем текущий размер перед сворачиванием
         if (!assignedCollapsed) {
-            _tempSectionStates.AssignedPaneSize = assignedPaneSize;
             _sectionStates.AssignedPaneSize = assignedPaneSize;
             assignedPaneSize = minPanelSize;
         }
@@ -291,31 +293,26 @@
         _sectionStates.AssignedCollapsed = assignedCollapsed;
 
         // Восстанавливаем размер при разворачивании
-        if (!assignedCollapsed) {
-            if (!string.IsNullOrEmpty(_tempSectionStates.AssignedPaneSize))
-                assignedPaneSize = _tempSectionStates.AssignedPaneSize;
-        }
-        else{
-            assignedPaneSize = _sectionStates.AssignedPaneSize;
-        }
+        if (!assignedCollapsed && !string.IsNullOrEmpty(_sectionStates.AssignedPaneSize))
+                assignedPaneSize = _sectionStates.AssignedPaneSize;
     }
 
     private void ToggleTaken() 
     { 
         // Сохраняем текущий размер перед сворачиванием
         if (!takenCollapsed) {
-            _tempSectionStates.TakenPaneSize = takenPaneSize;
+
+            _sectionStates.TakenPaneSize = takenPaneSize;
             takenPaneSize = minPanelSize;
         }
 
         takenCollapsed = !takenCollapsed;
         _sectionStates.TakenCollapsed = takenCollapsed;
-        _sectionStates.TakenPaneSize = takenPaneSize;
 
         // Восстанавливаем размер при разворачивании
-        if (!takenCollapsed && !string.IsNullOrEmpty(_tempSectionStates.TakenPaneSize)) 
+        if (!takenCollapsed && !string.IsNullOrEmpty(_sectionStates.TakenPaneSize)) 
         {        
-            takenPaneSize = _tempSectionStates.TakenPaneSize;
+            takenPaneSize = _sectionStates.TakenPaneSize;
         }
     }
 
@@ -323,16 +320,16 @@
     { 
         // Сохраняем текущий размер перед сворачиванием
         if (!deptCollapsed) {
-            _tempSectionStates.DeptPaneSize = deptPaneSize;
+            _sectionStates.DeptPaneSize = deptPaneSize;
             deptPaneSize = minPanelSize;
         }
 
         deptCollapsed = !deptCollapsed;
         _sectionStates.DeptCollapsed = deptCollapsed;
-        _sectionStates.DeptPaneSize = deptPaneSize;
+        
         // Восстанавливаем размер при разворачивании
-        if (!deptCollapsed && !string.IsNullOrEmpty(_tempSectionStates.DeptPaneSize)) {
-            deptPaneSize = _tempSectionStates.DeptPaneSize;
+        if (!deptCollapsed && !string.IsNullOrEmpty(_sectionStates.DeptPaneSize)) {
+            deptPaneSize = _sectionStates.DeptPaneSize;
         }
     }
 
@@ -340,16 +337,16 @@
     { 
         // Сохраняем текущий размер перед сворачиванием
         if (!workOrdersWithPersonCollapsed) {
-            _tempSectionStates.WorkOrdersWithPersonPaneSize = workOrdersWithPersonPaneSize;
+            _sectionStates.WorkOrdersWithPersonPaneSize = workOrdersWithPersonPaneSize;
             workOrdersWithPersonPaneSize = minPanelSize;
         }
 
         workOrdersWithPersonCollapsed = !workOrdersWithPersonCollapsed;
         _sectionStates.WorkOrdersWithPersonCollapsed = workOrdersWithPersonCollapsed;
-        _sectionStates.WorkOrdersWithPersonPaneSize = workOrdersWithPersonPaneSize;
+        
         // Восстанавливаем размер при разворачивании
-        if (!workOrdersWithPersonCollapsed && !string.IsNullOrEmpty(_tempSectionStates.WorkOrdersWithPersonPaneSize)) {
-            workOrdersWithPersonPaneSize = _tempSectionStates.WorkOrdersWithPersonPaneSize;
+        if (!workOrdersWithPersonCollapsed && !string.IsNullOrEmpty(_sectionStates.WorkOrdersWithPersonPaneSize)) {
+            workOrdersWithPersonPaneSize = _sectionStates.WorkOrdersWithPersonPaneSize;
         }
     }
 

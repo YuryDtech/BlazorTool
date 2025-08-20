@@ -1,5 +1,14 @@
-## 2025-08-18
+## 2025-08-19
+### Ulepszenia UI/UX
+* Dodano przewijanie wirtualne w `OrdersGrid` dla płynniejszej nawigacji.
+* Przebudowano stronę główną z nowymi kontenerami siatek i responsywnymi styliami CSS.
+* Umożliwiono wyszukiwanie/filtrowanie w `TelerikMultiSelect` na stronie Harmonogramu.
+* Zapisano pozycje splitterów i stan zwijalnych paneli między sesjami.
 
+### Lokalizacja
+* Dodano nowe ciągi lokalizacyjne dla ulepszeń interfejsu.
+
+## 2025-08-18
 ### Ulepszenia UI/UX
 * Dodano możliwość zwijania sekcji siatek na stronie głównej (Assigned, Taken, Department)
 * Dodano przyciski "+"/"-" w nagłówkach siatek
