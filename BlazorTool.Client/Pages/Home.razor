@@ -5,6 +5,7 @@
 @using Telerik.Blazor.Components
 @using Telerik.Blazor
 @using System.Diagnostics;
+@implements IAsyncDisposable
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<Resources.UIStrings> Localizer
 @inject ApiServiceClient ApiClient
@@ -25,7 +26,7 @@
         <div class="orders-grid-container">
 
                 <div class="order-header d-flex align-items-center">
-                        <span class="collapse-toggle" @onclick="@(async () => await ToggleSpoiler(nameof(assignedPaneSize)))">
+                        <span class="collapse-toggle" @onclick="@(() => ToggleSpoiler(nameof(assignedPaneSize)))">
                                 @if (assignedCollapsed)
                                 {
                                         <TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
@@ -60,7 +61,7 @@
             <SplitterPane Min="@minPanelSize" @bind-Size="@takenPaneSize" Collapsible="false">
         <div class="orders-grid-container">
                         <div class="order-header d-flex align-items-center">
-                            <span class="collapse-toggle" @onclick="@(async () => await ToggleSpoiler(nameof(takenPaneSize)))">
+                            <span class="collapse-toggle" @onclick="@(() => ToggleSpoiler(nameof(takenPaneSize)))">
                                         @if(takenCollapsed)
                                         {
                                                 <TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
@@ -93,7 +94,7 @@
             <SplitterPane Min="@minPanelSize" @bind-Size="@deptPaneSize" Collapsible="false">
         <div class="orders-grid-container">
                 <div class="order-header d-flex align-items-center">
-                        <span class="collapse-toggle" @onclick="@(async () => await ToggleSpoiler(nameof(deptPaneSize)))">
+                        <span class="collapse-toggle" @onclick="@(() => ToggleSpoiler(nameof(deptPaneSize)))">
                                 @if(deptCollapsed)
                                 {
                                         <TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
@@ -134,7 +135,7 @@
             <SplitterPane Min="@minPanelSize" @bind-Size="@workOrdersWithPersonPaneSize" Collapsible="false">
         <div class="orders-grid-container">
                 <div class="order-header d-flex align-items-center">
-                        <span class="collapse-toggle" @onclick="@(async () => await ToggleSpoiler(nameof(workOrdersWithPersonPaneSize)))">
+                        <span class="collapse-toggle" @onclick="@(() => ToggleSpoiler(nameof(workOrdersWithPersonPaneSize)))">
                                 @if(workOrdersWithPersonCollapsed)
                                 {
                                         <TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
@@ -211,7 +212,7 @@
     private string minPanelSize = "40px";
 
     private List<WorkOrder> myAssignedOrders = new List<WorkOrder>();
-    private List<WorkOrder> myDepartmentOrders = new List<WorkOrder>();    
+    private List<WorkOrder> myDepartmentOrders = new List<WorkOrder>();
     private List<WorkOrder> myTakenWorkOrders = new List<WorkOrder>();
     private List<WorkOrder> myWorkOrdersWithPerson = new List<WorkOrder>();
     private OrdersGrid TakenGrid;
@@ -242,18 +243,19 @@
     private bool takenCollapsed = false;
     private bool deptCollapsed = false;
     private bool workOrdersWithPersonCollapsed = false;
+    private System.Threading.Timer _saveStateTimer;
+    private const int SaveStateDelay = 500; // ms
 
     #region Spoilers
-    private async Task ToggleSpoiler(string pane)
+    private void ToggleSpoiler(string pane)
     {
-        
         const string assignedPane = nameof(assignedPaneSize);
         const string takenPane = nameof(takenPaneSize);
         const string deptPane = nameof(deptPaneSize);
         const string workOrdersWithPersonPane = nameof(workOrdersWithPersonPaneSize);
-       
+
         if (string.IsNullOrEmpty(pane)) return;
-        switch(pane)
+        switch (pane)
         {
             case assignedPane:
                 ToggleAssigned();
@@ -269,8 +271,8 @@
                 break;
         }
 
-        AddSizesToCache();       
-        await SaveSectionStatesAsync();
+        AddSizesToCache();
+        _saveStateTimer?.Change(SaveStateDelay, Timeout.Infinite);
     }
 
     private void AddSizesToCache()
@@ -281,10 +283,11 @@
         if (!workOrdersWithPersonCollapsed) _sectionStates.WorkOrdersWithPersonPaneSize = workOrdersWithPersonPaneSize;
     }
 
-    private void ToggleAssigned() 
-    { 
+    private void ToggleAssigned()
+    {
         // Сохраняем текущий размер перед сворачиванием
-        if (!assignedCollapsed) {
+        if (!assignedCollapsed)
+        {
             _sectionStates.AssignedPaneSize = assignedPaneSize;
             assignedPaneSize = minPanelSize;
         }
@@ -294,13 +297,14 @@
 
         // Восстанавливаем размер при разворачивании
         if (!assignedCollapsed && !string.IsNullOrEmpty(_sectionStates.AssignedPaneSize))
-                assignedPaneSize = _sectionStates.AssignedPaneSize;
+            assignedPaneSize = _sectionStates.AssignedPaneSize;
     }
 
-    private void ToggleTaken() 
-    { 
+    private void ToggleTaken()
+    {
         // Сохраняем текущий размер перед сворачиванием
-        if (!takenCollapsed) {
+        if (!takenCollapsed)
+        {
 
             _sectionStates.TakenPaneSize = takenPaneSize;
             takenPaneSize = minPanelSize;
@@ -310,42 +314,46 @@
         _sectionStates.TakenCollapsed = takenCollapsed;
 
         // Восстанавливаем размер при разворачивании
-        if (!takenCollapsed && !string.IsNullOrEmpty(_sectionStates.TakenPaneSize)) 
-        {        
+        if (!takenCollapsed && !string.IsNullOrEmpty(_sectionStates.TakenPaneSize))
+        {
             takenPaneSize = _sectionStates.TakenPaneSize;
         }
     }
 
-    private void ToggleDept() 
-    { 
+    private void ToggleDept()
+    {
         // Сохраняем текущий размер перед сворачиванием
-        if (!deptCollapsed) {
+        if (!deptCollapsed)
+        {
             _sectionStates.DeptPaneSize = deptPaneSize;
             deptPaneSize = minPanelSize;
         }
 
         deptCollapsed = !deptCollapsed;
         _sectionStates.DeptCollapsed = deptCollapsed;
-        
+
         // Восстанавливаем размер при разворачивании
-        if (!deptCollapsed && !string.IsNullOrEmpty(_sectionStates.DeptPaneSize)) {
+        if (!deptCollapsed && !string.IsNullOrEmpty(_sectionStates.DeptPaneSize))
+        {
             deptPaneSize = _sectionStates.DeptPaneSize;
         }
     }
 
-    private void ToggleWorkOrdersWithPerson() 
-    { 
+    private void ToggleWorkOrdersWithPerson()
+    {
         // Сохраняем текущий размер перед сворачиванием
-        if (!workOrdersWithPersonCollapsed) {
+        if (!workOrdersWithPersonCollapsed)
+        {
             _sectionStates.WorkOrdersWithPersonPaneSize = workOrdersWithPersonPaneSize;
             workOrdersWithPersonPaneSize = minPanelSize;
         }
 
         workOrdersWithPersonCollapsed = !workOrdersWithPersonCollapsed;
         _sectionStates.WorkOrdersWithPersonCollapsed = workOrdersWithPersonCollapsed;
-        
+
         // Восстанавливаем размер при разворачивании
-        if (!workOrdersWithPersonCollapsed && !string.IsNullOrEmpty(_sectionStates.WorkOrdersWithPersonPaneSize)) {
+        if (!workOrdersWithPersonCollapsed && !string.IsNullOrEmpty(_sectionStates.WorkOrdersWithPersonPaneSize))
+        {
             workOrdersWithPersonPaneSize = _sectionStates.WorkOrdersWithPersonPaneSize;
         }
     }
@@ -390,6 +398,8 @@
             isDataLoading = true;
             await InvokeAsync(StateHasChanged);
 
+            InitializeSaveStateTimer();
+
             _assignedGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(AssignedGridSettingsKey);
             _takenGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(TakenGridSettingsKey);
             _departmentGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(DepartmentGridSettingsKey);
@@ -400,15 +410,15 @@
 
             if (UserState.IsAuthenticated)
             {
-                    allOrders = await ApiClient.GetWorkOrdersAsync();
-                    allOrders = FilterWorkOrders(allOrders);                                
-                    await ApiClient.GetWODictionaries(UserState.PersonID, UserState.LangCode);
-                    allDepartments = ApiClient.GetWODepartments().Select(d => d.Name).ToList();
-                    selectedDepartment = _departmentGridSettings.GetCustomFilter("selectedDepartment", allDepartments.FirstOrDefault() ?? "");
-                    workOrderStates = allOrders.Select(o => o.WOState ?? string.Empty).Distinct().ToList();
-                    MakeContextMenu();
-                    TakeListsOrders();
-                    HaveAnyTakenOrders = (await ApiClient.GetWOTakenbyPerson(UserState.PersonID ?? 0)).Any();
+                allOrders = await ApiClient.GetWorkOrdersAsync();
+                allOrders = FilterWorkOrders(allOrders);
+                await ApiClient.GetWODictionaries(UserState.PersonID, UserState.LangCode);
+                allDepartments = ApiClient.GetWODepartments().Select(d => d.Name).ToList();
+                selectedDepartment = _departmentGridSettings.GetCustomFilter("selectedDepartment", allDepartments.FirstOrDefault() ?? "");
+                workOrderStates = allOrders.Select(o => o.WOState ?? string.Empty).Distinct().ToList();
+                MakeContextMenu();
+                TakeListsOrders();
+                HaveAnyTakenOrders = (await ApiClient.GetWOTakenbyPerson(UserState.PersonID ?? 0)).Any();
             }
 
             isDataLoading = false;
@@ -418,159 +428,175 @@
             if (AssignedGrid != null) await AssignedGrid.ApplyStateAsync(_assignedGridSettings.GridState);
             if (TakenGrid != null) await TakenGrid.ApplyStateAsync(_takenGridSettings.GridState);
             if (DepsGrid != null) await DepsGrid.ApplyStateAsync(_departmentGridSettings.GridState);
-                }
         }
+    }
 
-        private async Task HandleMenuItemClick(ContextMenuItemClickEventArgs<WorkOrder> args)
+    private async Task HandleMenuItemClick(ContextMenuItemClickEventArgs<WorkOrder> args)
+    {
+        var workOrder = args.Item;
+        var command = args.MenuItem.CommandName;
+        MenuPositionX = (args.MenuItem.CursorX).ToString() + "px";
+        MenuPositionY = (args.MenuItem.CursorY - 70).ToString() + "px";
+        loaderText = Localizer["Wait_a_moment"];
+        switch (command)
         {
-                var workOrder = args.Item;
-                var command = args.MenuItem.CommandName;
-                MenuPositionX = (args.MenuItem.CursorX).ToString() + "px";
-                MenuPositionY = (args.MenuItem.CursorY - 70).ToString() + "px";
-                loaderText = Localizer["Wait_a_moment"];
-                switch (command)
+            case "AddActivity":
+                if (workOrder == null)
                 {
-                        case "AddActivity":
-                                if (workOrder == null)
-                                {
-                                        LoaderVisible = false;
-                                        return;
-                                }
-                                selectedWorkOrder = workOrder;
-                                IsAddActivityWindowVisible = true;
-                                break;
-                        case "TakeOrder":
-                                if (HaveAnyTakenOrders) return;
-                                LoaderVisible = true;
-                                var result = await ApiClient.TakeWorkOrderAsync(workOrder, UserState.PersonID);
-                                break;
-                        case "AssignToMyself":
-                                if (workOrder == null || workOrder.AssignedPerson == UserState.UserName) return;
-                                LoaderVisible = true;
-                                workOrder.AssignedPerson = UserState.UserName;
-                                await ApiClient.UpdateWorkOrderAsync(workOrder);
-                                break;
+                    LoaderVisible = false;
+                    return;
                 }
-
-                await RefreshDataAsync();
-                LoaderVisible = false;
+                selectedWorkOrder = workOrder;
+                IsAddActivityWindowVisible = true;
+                break;
+            case "TakeOrder":
+                if (HaveAnyTakenOrders) return;
+                LoaderVisible = true;
+                var result = await ApiClient.TakeWorkOrderAsync(workOrder, UserState.PersonID);
+                break;
+            case "AssignToMyself":
+                if (workOrder == null || workOrder.AssignedPerson == UserState.UserName) return;
+                LoaderVisible = true;
+                workOrder.AssignedPerson = UserState.UserName;
+                await ApiClient.UpdateWorkOrderAsync(workOrder);
+                break;
         }
 
-        private async Task SaveStateAsync(string key, ViewSettings<WorkOrder> settings)
+        await RefreshDataAsync();
+        LoaderVisible = false;
+    }
+
+    private async Task SaveStateAsync(string key, ViewSettings<WorkOrder> settings)
+    {
+        if (key == DepartmentGridSettingsKey)
         {
-                if (key == DepartmentGridSettingsKey)
-                {
-                        settings.SetCustomFilter("selectedDepartment", selectedDepartment);
-                }
-                await ViewSettingsService.SaveSettingsAsync(key, settings);
+            settings.SetCustomFilter("selectedDepartment", selectedDepartment);
         }
+        await ViewSettingsService.SaveSettingsAsync(key, settings);
+    }
 
-        private async Task OnDepartmentChanged(string department)
-        {
-                selectedDepartment = department;
-                myDepartmentOrders = allOrders.Where(o => o.DepName == selectedDepartment).ToList();
-                await SaveStateAsync(DepartmentGridSettingsKey, _departmentGridSettings);
-                StateHasChanged();
-        }
+    private async Task OnDepartmentChanged(string department)
+    {
+        selectedDepartment = department;
+        myDepartmentOrders = allOrders.Where(o => o.DepName == selectedDepartment).ToList();
+        await SaveStateAsync(DepartmentGridSettingsKey, _departmentGridSettings);
+        StateHasChanged();
+    }
 
-        private async Task OnOrderChanged(SchedulerAppointment app)
-        {
-                if (app == null) return;
-                await RefreshDataAsync();
-        }
+    private async Task OnOrderChanged(SchedulerAppointment app)
+    {
+        if (app == null) return;
+        await RefreshDataAsync();
+    }
 
-        private async Task TakeListsOrders()
-        {
-                myDepartmentOrders = allOrders.Where(o => o.DepName == selectedDepartment).ToList();
-                myAssignedOrders = allOrders.Where(o => o.AssignedPerson == UserState.UserName).ToList();
-                myTakenWorkOrders = allOrders.Where(o => o.CloseDate == null).Where(o => o.TakePersons?.Split('#').Contains(UserState.PersonID.ToString()) ?? false).ToList();
-                myWorkOrdersWithPerson = await ApiClient.GetWorkOrdersWithPerson();
-                StateHasChanged();
-        }
+    private async Task TakeListsOrders()
+    {
+        myDepartmentOrders = allOrders.Where(o => o.DepName == selectedDepartment).ToList();
+        myAssignedOrders = allOrders.Where(o => o.AssignedPerson == UserState.UserName).ToList();
+        myTakenWorkOrders = allOrders.Where(o => o.CloseDate == null).Where(o => o.TakePersons?.Split('#').Contains(UserState.PersonID.ToString()) ?? false).ToList();
+        myWorkOrdersWithPerson = await ApiClient.GetWorkOrdersWithPerson();
+        StateHasChanged();
+    }
 
-        private void OnRowContextMenuClick(ContextMenuItemClickEventArgs<WorkOrder> args)
-        {
-                MakeContextMenu();
-        }
+    private void OnRowContextMenuClick(ContextMenuItemClickEventArgs<WorkOrder> args)
+    {
+        MakeContextMenu();
+    }
 
-        private void MakeContextMenu()
-        {
-                string addActivityText = Localizer["WorkOrder_AddActivity"];
-                string takeOrderText = Localizer["TakeOrder"];
-                string assignToMyselfText = Localizer["AssignToMyself"];
+    private void MakeContextMenu()
+    {
+        string addActivityText = Localizer["WorkOrder_AddActivity"];
+        string takeOrderText = Localizer["TakeOrder"];
+        string assignToMyselfText = Localizer["AssignToMyself"];
 
-                myAssignedOrdersMenuItems = new List<ContextMenuItem>
-                {
-                        new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate }
-                };
-                
-                myTakenWorkOrdersMenuItems = new List<ContextMenuItem>
+        myAssignedOrdersMenuItems = new List<ContextMenuItem>
                 {
                         new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate }
                 };
 
-                myDepartmentOrdersMenuItems = new List<ContextMenuItem>
+        myTakenWorkOrdersMenuItems = new List<ContextMenuItem>
+                {
+                        new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate }
+                };
+
+        myDepartmentOrdersMenuItems = new List<ContextMenuItem>
                 {
                         new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate },
                         new ContextMenuItem { Text = assignToMyselfText, CommandName = "AssignToMyself", Icon = SvgIcon.Eye }
                 };
 
-                if(UserState.CanHaveManyActiveTake || !HaveAnyTakenOrders)
-                {
-                        myAssignedOrdersMenuItems.Add(new ContextMenuItem { Text = takeOrderText, CommandName = "TakeOrder", Icon = SvgIcon.Hand });
-                        myDepartmentOrdersMenuItems.Add(new ContextMenuItem { Text = takeOrderText, CommandName = "TakeOrder", Icon = SvgIcon.Hand });
-                }               
-        }
-
-        private void ConsoleLogOrder(string listName, List<WorkOrder> orders)
+        if (UserState.CanHaveManyActiveTake || !HaveAnyTakenOrders)
         {
-                Console.WriteLine($"========== Logging orders for: {listName} ================");
-                foreach (var order in orders)
-                {
-                        Console.WriteLine($"Order ID: {order.WorkOrderID}, Title: {order.TakePersons}, State: {order.WOState}");
-                }
-                Console.WriteLine($"========== End of orders for: {listName} ================");
+            myAssignedOrdersMenuItems.Add(new ContextMenuItem { Text = takeOrderText, CommandName = "TakeOrder", Icon = SvgIcon.Hand });
+            myDepartmentOrdersMenuItems.Add(new ContextMenuItem { Text = takeOrderText, CommandName = "TakeOrder", Icon = SvgIcon.Hand });
         }
-
-        private List<WorkOrder> FilterWorkOrders(List<WorkOrder> orders)
-        {
-                return orders
-                        .Where(o => o.CloseDate == null)
-                        .OrderByDescending(o => o.ModDate)
-                        .ToList();
-        }
-
-        private void AddNewOrder()
-        {
-                AssignedGrid?.AddNewOrderWindow();
-                TakeListsOrders();
-        }
-
-        public async Task RefreshDataAsync()
-        {
-                allOrders = await ApiClient.GetWorkOrdersCachedAsync();
-                allOrders = FilterWorkOrders(allOrders);
-                TakeListsOrders();
-                HaveAnyTakenOrders = (await ApiClient.GetWOTakenbyPerson(UserState.PersonID ?? 0)).Any();
-                await InvokeAsync(StateHasChanged);
     }
 
-        private async Task HandleActivityAdded(bool success)
+    private void ConsoleLogOrder(string listName, List<WorkOrder> orders)
+    {
+        Console.WriteLine($"========== Logging orders for: {listName} ================");
+        foreach (var order in orders)
         {
-                if (success) //------------------- NOWA AKTYWNOŚĆ
-                {
-                        IsAddActivityWindowVisible = false;
-                        if (selectedWorkOrder != null)
-                        {
-                                await ApiClient.RefreshWorkOrderInCacheAsync(selectedWorkOrder.WorkOrderID);
-                                await RefreshDataAsync();
-                        }
-                }
-                else
-                {
-                        // Handle the case where adding the activity failed
-                        Console.WriteLine("Failed to add activity.");
-                        IsAddActivityWindowVisible = false;
-                }
+            Console.WriteLine($"Order ID: {order.WorkOrderID}, Title: {order.TakePersons}, State: {order.WOState}");
         }
+        Console.WriteLine($"========== End of orders for: {listName} ================");
+    }
+
+    private List<WorkOrder> FilterWorkOrders(List<WorkOrder> orders)
+    {
+        return orders
+            .Where(o => o.CloseDate == null)
+            .OrderByDescending(o => o.ModDate)
+            .ToList();
+    }
+
+    private void AddNewOrder()
+    {
+        AssignedGrid?.AddNewOrderWindow();
+        TakeListsOrders();
+    }
+
+    public async Task RefreshDataAsync()
+    {
+        allOrders = await ApiClient.GetWorkOrdersCachedAsync();
+        allOrders = FilterWorkOrders(allOrders);
+        TakeListsOrders();
+        HaveAnyTakenOrders = (await ApiClient.GetWOTakenbyPerson(UserState.PersonID ?? 0)).Any();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleActivityAdded(bool success)
+    {
+        if (success) //------------------- NOWA AKTYWNOŚĆ
+        {
+            IsAddActivityWindowVisible = false;
+            if (selectedWorkOrder != null)
+            {
+                await ApiClient.RefreshWorkOrderInCacheAsync(selectedWorkOrder.WorkOrderID);
+                await RefreshDataAsync();
+            }
+        }
+        else
+        {
+            // Handle the case where adding the activity failed
+            Console.WriteLine("Failed to add activity.");
+            IsAddActivityWindowVisible = false;
+        }
+    }
+
+    private void InitializeSaveStateTimer()
+    {
+        _saveStateTimer = new(async _ =>
+        {
+            await SaveSectionStatesAsync();
+        }, null, Timeout.Infinite, Timeout.Infinite);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_saveStateTimer is not null)
+        {
+            await _saveStateTimer.DisposeAsync();
+        }
+    }
 }
