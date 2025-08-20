@@ -1,7 +1,9 @@
 using Blazored.LocalStorage;
 using BlazorTool.Client.Models;
+using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
 using System.Text.Json;
+
 
 namespace BlazorTool.Client.Services
 {
@@ -47,7 +49,8 @@ namespace BlazorTool.Client.Services
             {"Home-Assigned", "home-assigned-orders-grid" },
             {"Home-Taken", "home-taken-orders-grid" },
             {"Home-Department", "home-department-orders-grid" },
-            {"Home-SectionStates", "home-section-collapse-states" }
+            {"Home-SectionStates", "home-section-collapse-states" },
+            {"Home-WorkOrdersWithPerson", "home-work-orders-with-person-grid" }
         };
 
         public async Task ClearAsync()

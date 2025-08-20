@@ -1,3 +1,7 @@
+## 2025-08-20
+### Performance Improvements
+*   Improved responsiveness on the Home page when collapsing/expanding sections. The application now feels smoother as saving settings to your browser's local storage is optimized to happen less frequently.
+
 ## 2025-08-19
 ### UI/UX Improvements
 * Added virtual scrolling support to `OrdersGrid` for smoother data browsing.

@@ -1,3 +1,7 @@
+## 2025-08-20
+### Ulepszenia Wydajności
+*   Poprawiono responsywność na stronie głównej podczas zwijania/rozwijania sekcji. Aplikacja działa teraz płynniej, ponieważ zapisywanie ustawień do lokalnej pamięci przeglądarki jest zoptymalizowane i odbywa się rzadziej.
+
 ## 2025-08-19
 ### Ulepszenia UI/UX
 * Dodano przewijanie wirtualne w `OrdersGrid` dla płynniejszej nawigacji.

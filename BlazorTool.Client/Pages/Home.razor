@@ -149,6 +149,7 @@
                         </div>
                 <div class="grid-content @(workOrdersWithPersonCollapsed ? "collapsed-content" : "")">
                                 <OrdersGrid @key="@workOrdersWithPersonGridKey"
+                                                   @ref="@WithPersonGrid"
                                                    OrdersForGrid="@myWorkOrdersWithPerson"
                                                    workOrderStates="@workOrderStates"
                                                    ShowSearchBar = "false"
@@ -159,7 +160,7 @@
                                                    MenuItems="@myDepartmentOrdersMenuItems"
                                                    OnMenuItemClick="@HandleMenuItemClick"
                                                    OnRowContextMenu="@OnRowContextMenuClick"
-                                                   />
+                                                   OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _workOrdersWithPersonGridSettings.GridState = args.GridState; await SaveStateAsync(WithPersonGridSettingsKey, _workOrdersWithPersonGridSettings); })" />
                 </div>
                         </div>
         </SplitterPane>
@@ -198,10 +199,11 @@
     private string TakenGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Taken"];
     private string DepartmentGridSettingsKey = ViewSettingsService.SettingsKeys["Home-Department"];
     private string SectionStatesKey = ViewSettingsService.SettingsKeys["Home-SectionStates"];
-
+    private string WithPersonGridSettingsKey = ViewSettingsService.SettingsKeys["Home-WorkOrdersWithPerson"];
     private ViewSettings<WorkOrder> _assignedGridSettings = new();
     private ViewSettings<WorkOrder> _takenGridSettings = new();
     private ViewSettings<WorkOrder> _departmentGridSettings = new();
+    private ViewSettings<WorkOrder> _workOrdersWithPersonGridSettings = new();
     private SectionCollapseStates _sectionStates = new();
 
     // Размеры панелей для TelerikSplitter
@@ -218,6 +220,7 @@
     private OrdersGrid TakenGrid;
     private OrdersGrid AssignedGrid;
     private OrdersGrid DepsGrid;
+    private OrdersGrid WithPersonGrid;
     private Guid takenGridKey = Guid.NewGuid();
     private Guid assignedGridKey = Guid.NewGuid();
     private Guid depsGridKey = Guid.NewGuid();
@@ -358,7 +361,7 @@
         }
     }
 
-    private async Task SaveSectionStatesAsync()
+    private async Task SaveSectionStatesToChacheAsync()
     {
         var viewSettings = new ViewSettings<object>();
         viewSettings.SetCustomFilter("sectionStates", _sectionStates);
@@ -397,16 +400,11 @@
             hasInitialized = true;
             isDataLoading = true;
             await InvokeAsync(StateHasChanged);
+            InitializeSaveStateTimer(); //for sync saving page settings OnToggle() to LocalStorage
 
-            InitializeSaveStateTimer();
-
-            _assignedGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(AssignedGridSettingsKey);
-            _takenGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(TakenGridSettingsKey);
-            _departmentGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(DepartmentGridSettingsKey);
             var sectionStateSettings = await ViewSettingsService.LoadSettingsAsync<object>(SectionStatesKey);
             _sectionStates = sectionStateSettings.GetCustomFilter<object, SectionCollapseStates>("sectionStates") ?? new SectionCollapseStates();
-
-            RestoreSectionStates();
+            RestoreSectionStates(); // Restore section states (collapsed or not) and sizes
 
             if (UserState.IsAuthenticated)
             {
@@ -420,15 +418,29 @@
                 TakeListsOrders();
                 HaveAnyTakenOrders = (await ApiClient.GetWOTakenbyPerson(UserState.PersonID ?? 0)).Any();
             }
-
+            await LoadGridSettings(); //Grid Settings and States
             isDataLoading = false;
             await InvokeAsync(StateHasChanged);
 
             // Apply the state after the data is loaded and the grids are rendered
-            if (AssignedGrid != null) await AssignedGrid.ApplyStateAsync(_assignedGridSettings.GridState);
-            if (TakenGrid != null) await TakenGrid.ApplyStateAsync(_takenGridSettings.GridState);
-            if (DepsGrid != null) await DepsGrid.ApplyStateAsync(_departmentGridSettings.GridState);
+            await ApplyDataGridSettings();
         }
+    }
+
+    private async Task LoadGridSettings()
+    {
+        _assignedGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(AssignedGridSettingsKey);
+        _takenGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(TakenGridSettingsKey);
+        _departmentGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(DepartmentGridSettingsKey);
+        _workOrdersWithPersonGridSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(WithPersonGridSettingsKey); ;
+    }
+
+    private async Task ApplyDataGridSettings()
+    {
+        if (AssignedGrid != null) await AssignedGrid.ApplyStateAsync(_assignedGridSettings.GridState);
+        if (TakenGrid != null) await TakenGrid.ApplyStateAsync(_takenGridSettings.GridState);
+        if (DepsGrid != null) await DepsGrid.ApplyStateAsync(_departmentGridSettings.GridState);
+        if (WithPersonGrid != null) await WithPersonGrid.ApplyStateAsync(_workOrdersWithPersonGridSettings.GridState);
     }
 
     private async Task HandleMenuItemClick(ContextMenuItemClickEventArgs<WorkOrder> args)
@@ -473,6 +485,8 @@
             settings.SetCustomFilter("selectedDepartment", selectedDepartment);
         }
         await ViewSettingsService.SaveSettingsAsync(key, settings);
+        //save Pane states
+        _saveStateTimer?.Change(SaveStateDelay, Timeout.Infinite);
     }
 
     private async Task OnDepartmentChanged(string department)
@@ -584,12 +598,25 @@
         }
     }
 
+    //for sync saving page settings to LocalStorage
     private void InitializeSaveStateTimer()
     {
         _saveStateTimer = new(async _ =>
         {
-            await SaveSectionStatesAsync();
+            await SaveSectionStatesToChacheAsync();
+            await SaveAllSettingsToServer();
+
         }, null, Timeout.Infinite, Timeout.Infinite);
+    }
+
+    private async Task SaveAllSettingsToServer()
+    {
+        if (UserState == null || string.IsNullOrEmpty(UserState.UserName)) return;
+        foreach (var key in ViewSettingsService.SettingsKeys.Values)
+        {
+            var viewSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(key);
+            await ApiClient.SaveViewSettingsAsync(UserState.UserName, key, viewSettings);
+        }
     }
 
     public async ValueTask DisposeAsync()

@@ -9,6 +9,7 @@
 @using Telerik.Blazor.Components
 @using Telerik.Blazor.Components.Scheduler
 @using Telerik.DataSource.Extensions
+@implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 @inject ApiServiceClient apiService
 @inject AppointmentService ApptService
@@ -249,7 +250,7 @@
                          Height="100%"
                          FilterMode="@GridFilterMode.FilterMenu"
                          OnRowDoubleClick="@OnRowClick"
-                         OnStateChanged="@(async (GridStateEventArgs<WorkOrder> args) => { _viewSettings.GridState = args.GridState; await SaveFilterStateAsync(); })">
+                         OnStateChanged="@( (GridStateEventArgs<WorkOrder> args) => { _viewSettings.GridState = args.GridState;  SaveFilterStateToCacheAsync(); })">
 
                 <RowTemplate Context="order">
                     <td class="tooltip-target" title="@order.WODesc">@order?.AssetNo</td>
@@ -401,6 +402,8 @@
     private bool showCustomTimelineInputs = false;
     private List<Resource> statuses = new List<Resource>();
     private ViewSettings<WorkOrder> _viewSettings = new ViewSettings<WorkOrder>();
+    private System.Threading.Timer _saveStateTimer;
+    private const int SaveStateDelay = 500; // ms
 
     private List<Resource> GetStatuses(List<SchedulerAppointment> appointments)
     {
@@ -448,6 +451,8 @@
         {
             numberOfDays = days;
         }
+
+        InitializeSaveStateTimer(); // Добавлен вызов инициализации таймера
 
         await HardLoadData();
         await InvokeAsync(StateHasChanged);
@@ -526,8 +531,8 @@
         if ((selectedAssignedPersons.Contains(Person.NotAssigned.Name) || selectedAssignedPersons.Count ==0) && !PersonResources.Any(p => p.Name == Person.NotAssigned.Name))
         {
             PersonResources.Insert(0, Person.NotAssigned);
-        }
-
+        }       
+        _saveStateTimer?.Change(SaveStateDelay, Timeout.Infinite);
     }
 
     /// <summary>
@@ -593,20 +598,20 @@
     private async Task OnMultiDepartmentsClosed()
     {
         DisplayAppointments();
-        await SaveFilterStateAsync();
+        SaveFilterStateToCacheAsync();
     }
 
     private async Task OnAssetNoChanged(string assetNo)
     {
         selectedAssetNo = assetNo ?? "All";
         DisplayAppointments();
-        await SaveFilterStateAsync();
+        SaveFilterStateToCacheAsync();
     }
 
     private async Task OnPersonSelectChanged(object args)
     {
         DisplayAppointments();
-        await SaveFilterStateAsync();
+        SaveFilterStateToCacheAsync();
     }
 
     private List<SchedulerAppointment> FilterAppointments()
@@ -634,13 +639,13 @@
         return filteredAppointments;
     }
 
-    private async Task SaveFilterStateAsync()
+    private void SaveFilterStateToCacheAsync()
     {
         _viewSettings.SetCustomFilter("selectedAssignedPersons", selectedAssignedPersons);
         _viewSettings.SetCustomFilter("selectedDeviceCategory", selectedAssetNo);
         _viewSettings.SetCustomFilter("selectedDepartments", selectedDepartments);
         _viewSettings.SetCustomFilter("CurrentView", CurrentView);
-        await ViewSettingsService.SaveSettingsAsync(SchedulerSettingsKey, _viewSettings);
+        _saveStateTimer?.Change(SaveStateDelay, Timeout.Infinite);       
     }
 
     private void RestoreCustomFilterState()
@@ -823,7 +828,6 @@
         }
     }
 
-
     #endregion
 
     #region Grid Row Styles
@@ -974,9 +978,35 @@
         }
         await InvokeAsync(StateHasChanged);
         SchedulerRef?.Rebind();
+        _saveStateTimer?.Change(SaveStateDelay, Timeout.Infinite);
     }
 
+    private void InitializeSaveStateTimer()
+    {
+        _saveStateTimer = new(async _ =>
+        {
+            await ViewSettingsService.SaveSettingsAsync(SchedulerSettingsKey, _viewSettings);
+            await SaveAllSettingsToServer();
+        }, null, Timeout.Infinite, Timeout.Infinite);
+    }
 
+    public async ValueTask DisposeAsync()
+    {
+        if (_saveStateTimer is not null)
+        {
+            await _saveStateTimer.DisposeAsync();
+        }
+    }
+
+    private async Task SaveAllSettingsToServer()
+    {
+        if (UserState == null || string.IsNullOrEmpty(UserState.UserName)) return;
+        foreach (var key in ViewSettingsService.SettingsKeys.Values)
+        {
+            var viewSettings = await ViewSettingsService.LoadSettingsAsync<WorkOrder>(key);
+            await apiService.SaveViewSettingsAsync(UserState.UserName, key, viewSettings);
+        }
+    }
     #region Context Menu
     private TelerikContextMenu<ContextMenuItem>? ContextMenuRef { get; set; }
     private List<ContextMenuItem> MenuItems { get; set; } = new();
