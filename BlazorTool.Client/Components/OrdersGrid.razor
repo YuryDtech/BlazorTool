@@ -36,7 +36,10 @@
         @if (ShowSearchBar)
         {
             <GridSearchBox Width="200px" DebounceDelay="500"/>
-            <TelerikButton Icon="@SvgIcon.Plus" Rounded="lg" Size="lg" ThemeColor="primary" OnClick="@AddNewOrderWindow">@Localizer["Scheduler_AddNew"]</TelerikButton>
+            @if(UserState.HasPermission(PermissionType.WO_Add))
+            {
+                <TelerikButton Icon="@SvgIcon.Plus" Rounded="lg" Size="lg" ThemeColor="primary" OnClick="@AddNewOrderWindow">@Localizer["Scheduler_AddNew"]</TelerikButton>
+            }
         }
     </GridToolBarTemplate>
     <GridColumns>
@@ -176,7 +179,7 @@
     </WindowActions>
     <WindowContent>
         <AppointmentEditor Appointment="@selectedAppointment" 
-                          isEditable=true 
+                          isEditable=@UserState.HasPermission(PermissionType.WO_Edit) 
                           ListPersons="@personNames.Where(c=>c != "All").ToList()"
                           currentUser="@currentUser"
                           OnComponentClosing="@OnCloseWorkOrderWindow"
@@ -395,7 +398,7 @@
         StateHasChanged();
     }
 
-void CancelEditing()
+    void CancelEditing()
     {
         isOrderCardOpen = false;
     }
@@ -411,6 +414,13 @@ void CancelEditing()
             AssignedPerson = Person.NotAssigned.Name,
         };
         selectedAppointment = new SchedulerAppointment(selectedOrder);
+        isOrderCardOpen = true;
+    }
+
+    public void OpenWorkOrderWindow(WorkOrder WO)
+    {
+        selectedOrder = WO;
+        selectedAppointment = new SchedulerAppointment(WO);
         isOrderCardOpen = true;
     }
 

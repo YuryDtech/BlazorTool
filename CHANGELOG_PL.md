@@ -1,3 +1,9 @@
+## 2025-08-21
+### Naprawiono / Ulepszenia
+* Naprawiono błąd, w którym pole `person_Take_Date` było zawsze puste podczas przyjmowania zlecenia.
+* Dodano funkcję pobierania listy kategorii i przyczyn WorkOrder na podstawie ID urządzenia oraz użyto jej przy tworzeniu/edycji zleceń i kategorii aktywności.
+* Ulepszono komponenty `TelerikComboBox`/wybory z listą o możliwość filtrowania wpisem (lepsze wyszukiwanie elementów).
+
 ## 2025-08-20
 ### Ulepszenia Wydajności
 *   Poprawiono responsywność na stronie głównej podczas zwijania/rozwijania sekcji. Aplikacja działa teraz płynniej, ponieważ zapisywanie ustawień do lokalnej pamięci przeglądarki jest zoptymalizowane i odbywa się rzadziej.

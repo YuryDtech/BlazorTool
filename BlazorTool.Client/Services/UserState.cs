@@ -39,7 +39,36 @@ namespace BlazorTool.Client.Services
         public bool UseOriginalColors { get; set; } = true;
         public bool CanHaveManyActiveTake { get; set; } = false;
 
+        public bool HasPermission(PermissionType permission)
+        {
+            if (RightMatrix == null)
+            {
+                return false;
+            }
 
+            return permission switch
+            {
+                PermissionType.WO_Add => RightMatrix.WO_Add,
+                PermissionType.WO_Edit => RightMatrix.WO_Edit,
+                PermissionType.WO_Edit_Description => RightMatrix.WO_Edit_Description,
+                PermissionType.WO_Del => RightMatrix.WO_Del,
+                PermissionType.WO_Close => RightMatrix.WO_Close,
+                PermissionType.AcT_Add => RightMatrix.AcT_Add,
+                PermissionType.AcT_Del => RightMatrix.AcT_Del,
+                PermissionType.AcT_Edit_Description => RightMatrix.AcT_Edit_Description,
+                PermissionType.ParT_WO_take => RightMatrix.ParT_WO_take,
+                PermissionType.ParT_WO_Order => RightMatrix.ParT_WO_Order,
+                PermissionType.ParT_Edit_State => RightMatrix.ParT_Edit_State,
+                PermissionType.WO_SET_AssignedPerson => RightMatrix.WO_SET_AssignedPerson,
+                PermissionType.ParT_Give => RightMatrix.ParT_Give,
+                PermissionType.MD_Add => RightMatrix.MD_Add,
+                PermissionType.MD_Edit => RightMatrix.MD_Edit,
+                PermissionType.MD_Edit_Warranty => RightMatrix.MD_Edit_Warranty,
+                PermissionType.ParT_Add => RightMatrix.ParT_Add,
+                PermissionType.MD_Add_ForceCycle => RightMatrix.MD_Add_ForceCycle,
+                _ => false,
+            };
+        }
 
         public async Task<bool> SaveIdentityDataAsync(IdentityData identityData)
         {

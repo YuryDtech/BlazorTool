@@ -84,7 +84,7 @@ else
                 PageSize="50"
                 MenuItems="@MenuItems"
                 OnMenuItemClick="@HandleMenuItemClick"
-                    OnRowContextMenu="@(()=>MakeContextMenu())" />
+                OnRowContextMenu="@(()=>MakeContextMenu())" />
 }
 
 
@@ -220,7 +220,7 @@ else
 
     private async Task LoadData()
     {
-     isOrdersLoading = true;
+        isOrdersLoading = true;
         StateHasChanged();
         if (devices == null || devices.Count == 0)
         {
@@ -338,13 +338,19 @@ else
         string takeOrderText = Localizer["TakeOrder"];
         string assignToMyselfText = Localizer["AssignToMyself"];
         string moveToDepartment = Localizer["MoveToDepartment"];
+        string openOrderText = Localizer["Scheduler_Open"];
 
-        MenuItems = new List<ContextMenuItem>
-		{
-			new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate },
-			new ContextMenuItem { Text = assignToMyselfText, CommandName = "AssignToMyself", Icon = SvgIcon.Eye },
-			new ContextMenuItem { Text = moveToDepartment, CommandName = "MoveToDepartment", Icon = SvgIcon.ChevronDoubleRight },
-		};
+        MenuItems = new List<ContextMenuItem>();
+        MenuItems.Add(new ContextMenuItem { Text = openOrderText, CommandName = "OpenOrder", Icon = SvgIcon.FileAscx });
+
+        if (UserState.HasPermission(PermissionType.AcT_Add))
+            new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate };
+
+        if (UserState.HasPermission(PermissionType.WO_SET_AssignedPerson))
+            new ContextMenuItem { Text = assignToMyselfText, CommandName = "AssignToMyself", Icon = SvgIcon.Eye };
+
+        if (UserState.HasPermission(PermissionType.WO_Edit))
+            new ContextMenuItem { Text = moveToDepartment, CommandName = "MoveToDepartment", Icon = SvgIcon.ChevronDoubleRight };
 
         if(UserState.CanHaveManyActiveTake || !HaveAnyTakenOrders)
         {
@@ -362,7 +368,7 @@ else
         {
             return;
         }
-        
+
         switch (command)
         {
             case "AddActivity":
@@ -385,6 +391,10 @@ else
             case "MoveToDepartment":
                 selectedWorkOrder = workOrder;
                 PopupRef?.Show();
+                break;
+            case "OpenOrder":
+                selectedWorkOrder = workOrder;
+                ordersGrid?.OpenWorkOrderWindow(workOrder);
                 break;
         }
 

@@ -4,7 +4,7 @@
 @using BlazorTool.Client.Services
 @inject ApiServiceClient apiService
 @inject IStringLocalizer<Resources.UIStrings> Localizer
-
+@inject UserState UserState
 
 <PageTitle>@Localizer["WorkOrder_OrderNo"]@(WorkOrder?.WorkOrderID)</PageTitle>
 
@@ -62,7 +62,7 @@
                         <label>@Localizer[nameof(WorkOrder.WODesc)]:</label>
                         <div class="control-wrapper">
                             <TelerikTextArea @bind-Value="@WorkOrder.WODesc"
-                                             ReadOnly="@(isEditable == false)"
+                                             ReadOnly="@(isEditable == false || UserState.HasPermission(PermissionType.WO_Edit_Description))"
                                              Size="sm"
                                              Rows="6"
                                              ResizeMode="@TextAreaResizeMode.Vertical"
@@ -147,7 +147,7 @@
                                              Placeholder="@Localizer["WorkOrder_SelectPerson"]"
                                              ValueChanged="@((string name) => OnAssignedPersonChanged(name))"
                                              Width="100%"
-                                             ReadOnly=@(isEditable == false)
+                                             ReadOnly=@(isEditable == false || !UserState.HasPermission(PermissionType.WO_SET_AssignedPerson))
                                              ShowClearButton=true
                                              Filterable="true"
                                              FilterOperator="@Telerik.Blazor.StringFilterOperator.Contains"
@@ -276,7 +276,7 @@
                         <div class="stat-label-cost">@Localizer[nameof(WorkOrder.Cost)]</div>
                 </div>
             </div>
-                @if (isEditable)
+                @if (isEditable && UserState.HasPermission(PermissionType.AcT_Add))
                 {
                     <div class="activity-controls">
                         <TelerikButton OnClick="@(() => IsAddActivityWindowVisible = true)" Icon="@SvgIcon.Plus" ThemeColor="primary">@Localizer["WorkOrder_AddActivity"]</TelerikButton>

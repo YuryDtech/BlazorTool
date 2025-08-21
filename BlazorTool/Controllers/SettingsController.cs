@@ -140,7 +140,7 @@ namespace BlazorTool.Controllers
                 string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SettingsDirectory, user + ".json");
                 var settings = new UserSettings(file);
                 settings.SaveUserSettings(user, settingsName, viewSettings);
-                Console.WriteLine($"View settings saved for user: {user}");
+                //Console.WriteLine($"View settings saved for user: {user}");
                 return Ok();
             }
             catch (Exception ex)

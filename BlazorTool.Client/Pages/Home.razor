@@ -37,7 +37,10 @@
                                 }
                         </span>
                                                         <span class="order-title">@Localizer["Home_MyAssignedOrders"]: @myAssignedOrders.Count()</span>
-            <TelerikButton Icon="@SvgIcon.Plus" Rounded="lg" Size="lg" ThemeColor="primary" OnClick="@AddNewOrder">@Localizer["Scheduler_AddNew"]</TelerikButton>
+                        
+                @if (UserState.HasPermission(PermissionType.WO_Add)) {
+                        <TelerikButton Icon="@SvgIcon.Plus" Rounded="lg" Size="lg" ThemeColor="primary" OnClick="@AddNewOrder">@Localizer["Scheduler_AddNew"]</TelerikButton>
+                        }
                                                 </div>
                 <div class="grid-content @(assignedCollapsed ? "collapsed-content" : "")">
                                 <OrdersGrid @key="@assignedGridKey"
@@ -472,6 +475,10 @@
                 workOrder.AssignedPerson = UserState.UserName;
                 await ApiClient.UpdateWorkOrderAsync(workOrder);
                 break;
+            case "OpenOrder":
+                selectedWorkOrder = workOrder;
+                TakenGrid?.OpenWorkOrderWindow(workOrder);
+                break;
         }
 
         await RefreshDataAsync();
@@ -522,27 +529,37 @@
         string addActivityText = Localizer["WorkOrder_AddActivity"];
         string takeOrderText = Localizer["TakeOrder"];
         string assignToMyselfText = Localizer["AssignToMyself"];
+        myAssignedOrdersMenuItems = new List<ContextMenuItem>();
+        myTakenWorkOrdersMenuItems = new List<ContextMenuItem>();
+        myDepartmentOrdersMenuItems = new List<ContextMenuItem>();
 
-        myAssignedOrdersMenuItems = new List<ContextMenuItem>
-                {
-                        new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate }
-                };
+        if (UserState.HasPermission(PermissionType.AcT_Add))
+        {
+            myAssignedOrdersMenuItems.Add(new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate });
+            myTakenWorkOrdersMenuItems.Add(new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate });
+            myDepartmentOrdersMenuItems.Add(new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate });
+        }
 
-        myTakenWorkOrdersMenuItems = new List<ContextMenuItem>
-                {
-                        new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate }
-                };
-
-        myDepartmentOrdersMenuItems = new List<ContextMenuItem>
-                {
-                        new ContextMenuItem { Text = addActivityText, CommandName = "AddActivity", Icon = SvgIcon.ClockArrowRotate },
-                        new ContextMenuItem { Text = assignToMyselfText, CommandName = "AssignToMyself", Icon = SvgIcon.Eye }
-                };
+        if(UserState.HasPermission(PermissionType.WO_SET_AssignedPerson))
+        myDepartmentOrdersMenuItems.Add(new ContextMenuItem { Text = assignToMyselfText, CommandName = "AssignToMyself", Icon = SvgIcon.Eye });
 
         if (UserState.CanHaveManyActiveTake || !HaveAnyTakenOrders)
         {
             myAssignedOrdersMenuItems.Add(new ContextMenuItem { Text = takeOrderText, CommandName = "TakeOrder", Icon = SvgIcon.Hand });
             myDepartmentOrdersMenuItems.Add(new ContextMenuItem { Text = takeOrderText, CommandName = "TakeOrder", Icon = SvgIcon.Hand });
+        }
+
+        if (myAssignedOrdersMenuItems.Count == 0)
+        {
+            myAssignedOrdersMenuItems.Add(new ContextMenuItem { Text = Localizer["NoActionsAvailable"], CommandName = "NoActionsAvailable", Icon = SvgIcon.CancelOutline });
+        }
+        if (myTakenWorkOrdersMenuItems.Count == 0)
+        {
+            myTakenWorkOrdersMenuItems.Add(new ContextMenuItem { Text = Localizer["NoActionsAvailable"], CommandName = "NoActionsAvailable", Icon = SvgIcon.CancelOutline });
+        }
+        if (myDepartmentOrdersMenuItems.Count == 0)
+        {
+            myDepartmentOrdersMenuItems.Add(new ContextMenuItem { Text = Localizer["NoActionsAvailable"], CommandName = "NoActionsAvailable", Icon = SvgIcon.CancelOutline });
         }
     }
 

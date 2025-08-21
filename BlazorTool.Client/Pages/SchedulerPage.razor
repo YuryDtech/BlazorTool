@@ -325,7 +325,7 @@
     </WindowActions>
     <WindowContent>
         <AppointmentEditor Appointment="@CurrentAppointment"
-                           isEditable=true
+                           isEditable=@(UserState.HasPermission(PermissionType.WO_Edit) || (CurrentAppointment.AppointmentId ==0 && UserState.HasPermission(PermissionType.WO_Add)))
                            ListPersons="@PersonsNames.Where(c=>c != "All").ToList()"
                            currentUser="@currentUser"
                            OnComponentClosing="@RefreshData"
@@ -339,7 +339,7 @@
         <WindowAction Name="Close" OnClick="@CancelEditing" />
     </WindowActions>
     <WindowContent>
-        <WorkOrderComponent WorkOrder="@CurrentOrder" />
+        <WorkOrderComponent WorkOrder="@CurrentOrder" isEditable=@UserState.HasPermission(PermissionType.WO_Edit)/>
     </WindowContent>
 </TelerikWindow>
 
@@ -549,6 +549,8 @@
     // ==== DragAndDrop from Grid to Scheduler ====
     private async Task GridRowDrop(GridRowDropEventArgs<WorkOrder> args)
     {
+        if (!UserState.HasPermission(PermissionType.WO_Edit)) return;
+
         if (args.DestinationComponentId == "Scheduler1" && SchedulerRef != null)
         {
             var slot = SchedulerRef.GetTimeSlotFromDropIndex(args.DestinationIndex);
@@ -1018,10 +1020,15 @@
     {
         _clickedSlotContext = slotContext;
         _clickedAppointment = null;
-        MenuItems = new List<ContextMenuItem>
+        MenuItems = new List<ContextMenuItem>();
+        if (UserState.HasPermission(PermissionType.WO_Add))
         {
-            new ContextMenuItem { Text = @Localizer["Scheduler_AddNew"], Value = "Add", Icon = SvgIcon.Plus }
-        };
+            MenuItems.Add(new ContextMenuItem { Text = @Localizer["Scheduler_AddNew"], Value = "Add", Icon = SvgIcon.Plus });
+        }
+        else
+        {
+            MenuItems.Add(new ContextMenuItem { Text = @Localizer["NoActionsAvailable"], Value = "NoActionsAvailable", Icon = SvgIcon.CancelOutline });
+        }
         await ContextMenuRef?.ShowAsync(e.ClientX, e.ClientY)!;
     }
 
@@ -1031,10 +1038,19 @@
         _clickedSlotContext = null;
         MenuItems = new List<ContextMenuItem>
         {
-            new ContextMenuItem { Text = @Localizer["Scheduler_Open"], Value = "Open", Icon = SvgIcon.FolderOpen },
-            new ContextMenuItem { Text = @Localizer["Scheduler_Remove"], Value = "Remove", Icon = SvgIcon.Trash },
-            new ContextMenuItem { Text = @Localizer["Scheduler_Duplicate"], Value = "Duplicate", Icon = SvgIcon.Copy }
+            new ContextMenuItem { Text = @Localizer["Scheduler_Open"], Value = "Open", Icon = SvgIcon.FolderOpen }            
         };
+
+        if (UserState.HasPermission(PermissionType.WO_Add))
+        {
+            new ContextMenuItem { Text = @Localizer["Scheduler_Duplicate"], Value = "Duplicate", Icon = SvgIcon.Copy };
+        }
+
+        if (UserState.HasPermission(PermissionType.WO_Edit))
+        {
+            new ContextMenuItem { Text = @Localizer["Scheduler_Remove"], Value = "Remove", Icon = SvgIcon.Trash };
+        }
+
         await ContextMenuRef?.ShowAsync(e.ClientX, e.ClientY)!;
     }
 
