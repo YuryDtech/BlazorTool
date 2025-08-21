@@ -27,9 +27,21 @@
         <div class="activity-list-body">
             @foreach (var activity in activities)
             {
-
                 var personIds = activity.ActPersons.Split('#').Where(x=>!string.IsNullOrWhiteSpace(x));
-                var persons = personIds.Select(id => ApiClient.GetPersonByIDCached(int.Parse(id))).ToList();
+                List<Person> persons = new List<Person>();
+                foreach(var personId in personIds)
+                {
+                    if (!int.TryParse(personId, out int id))
+                    {
+                        Console.WriteLine($"Invalid person ID: {personId}");
+                    }
+                    var person = ApiClient.GetPersonByIDCached(int.Parse(personId));
+                    if (person == null)
+                        persons.Add(new Person { Name = "userId="+  personId, PersonId = id});
+                    else
+                        persons.Add(person);
+                }
+
                 <ActivityDisplay ActivityItem="activity" Persons="@persons" isEditable="@isEditable" OnClick="JoinActivityClickAsync" />
             }
         </div>

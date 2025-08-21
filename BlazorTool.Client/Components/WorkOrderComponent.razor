@@ -381,9 +381,7 @@
     {
         isNewWorkOrder = WorkOrder?.WorkOrderID == 0;
         ListDevices = await apiService.GetAllDevicesCachedAsync();
-        ListCategories =  apiService.GetWOCategories();
         ListLevels =  apiService.GetWOLevels();
-        ListReasons = apiService.GetWOReasons();
         ListDepartments =  apiService.GetWODepartments();
         StateColor = await apiService.GetStateColor(WorkOrder?.WorkOrderID);
         if (isNewWorkOrder) {
@@ -393,7 +391,17 @@
 
         takePersons = ParseTakePersons(WorkOrder?.TakePersons);
         selectedDevice = ListDevices?.FirstOrDefault(d => d.MachineID == WorkOrder?.MachineID);
-
+        if (selectedDevice != null && selectedDevice.CategoryID != null)
+        {
+            ListReasons = apiService.GetWOReasonsByDeviceCategory(selectedDevice.CategoryID ?? 0);
+            ListCategories = apiService.GetWOCategoriesByDeviceCategory(selectedDevice.CategoryID ?? 0);
+        }
+        else
+        {
+            ListReasons = apiService.GetWOReasons();
+            ListCategories =  apiService.GetWOCategories();
+        }
+        
         if (ListPersons == null )
         {
             ListPersons = new List<string>();
@@ -533,6 +541,8 @@
             WorkOrder.DeviceCategory = device.DeviceCategory;
             WorkOrder.DeviceCategoryID = device.CategoryID;
             WorkOrder.MachineID = device.MachineID;
+            ListReasons = apiService.GetWOReasonsByDeviceCategory(selectedDevice.CategoryID ?? 0);
+            ListCategories = apiService.GetWOCategoriesByDeviceCategory(selectedDevice.CategoryID ?? 0);
             // await OnStateChanged.InvokeAsync();
             DeviceAlarm = string.Empty;
         }else

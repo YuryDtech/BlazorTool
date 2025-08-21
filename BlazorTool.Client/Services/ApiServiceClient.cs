@@ -1038,6 +1038,14 @@ namespace BlazorTool.Client.Services
                 .ToList();
         }
 
+        public List<WODict> GetWOCategoriesByDeviceCategory(int devCategoryId)
+        {
+            return (GetWODictionariesCached()).Where(d => d.ListType == (int)WOListTypeEnum.Category &&
+            (d.MachineCategoryID == devCategoryId) || d.MachineCategoryID == null)
+                .Distinct()
+                .ToList();
+        }
+
         public List<WODict> GetWOStates()
         {            
             return (GetWODictionariesCached()).Where(d => d.ListType == (int)WOListTypeEnum.State)
@@ -1055,6 +1063,14 @@ namespace BlazorTool.Client.Services
         public List<WODict> GetWOReasons()
         {
             return (GetWODictionariesCached()).Where(d => d.ListType == (int)WOListTypeEnum.Reason)
+                .Distinct()
+                .ToList();
+        }
+
+        public List<WODict> GetWOReasonsByDeviceCategory(int devCategoryId)
+        {
+            return (GetWODictionariesCached()).Where(d => d.ListType == (int)WOListTypeEnum.Reason
+            && (d.MachineCategoryID == devCategoryId || d.MachineCategoryID == null))
                 .Distinct()
                 .ToList();
         }
@@ -1413,7 +1429,19 @@ namespace BlazorTool.Client.Services
                 .Distinct()
                 .ToList();
         }
-        
+
+        public async Task<List<WODict>> GetActCategoriesByDeviceCategory(int deviceCategoryId)
+        {
+            if (_actDictCache == null || _actDictCache.Count == 0)
+            {
+                _actDictCache = await GetActDictionaries(_userState.PersonID, _userState.LangCode);
+            }
+            return (GetActDictionariesCached()).Where(d => d.ListType == (int)WOListTypeEnum.Category && 
+            (d.MachineCategoryID == deviceCategoryId) || d.MachineCategoryID == null)
+                .Distinct()
+                .ToList();
+        }
+
         #endregion
     }
 }

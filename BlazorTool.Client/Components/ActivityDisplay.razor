@@ -15,7 +15,7 @@
                  +
                 </button>
             }
-            @String.Join(", ", Persons?.Select(p => p.Name).ToList() ?? new List<string>())
+            -> @String.Join(", ", Persons?.Select(p => p.Name).ToList() ?? new List<string>())
         </div>
         <span class="activity-date" title="@Localizer["ActivityDisplay_DateAdded"]">@ActivityItem.AddDate.ToString("dd.MM.yyyy HH:mm")</span>
     </div>
