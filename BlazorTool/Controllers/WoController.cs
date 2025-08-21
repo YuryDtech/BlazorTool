@@ -41,7 +41,6 @@ namespace BlazorTool.Controllers
 
                 var response = await client.GetAsync(url); 
                 response.EnsureSuccessStatusCode();
-
                 var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<WorkOrder>>();
 
                 var data = wrapper?.Data ?? new List<WorkOrder>();

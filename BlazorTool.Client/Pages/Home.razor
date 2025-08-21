@@ -408,7 +408,7 @@
 
             if (UserState.IsAuthenticated)
             {
-                allOrders = await ApiClient.GetWorkOrdersAsync();
+                allOrders = await ApiClient.GetWorkOrdersAsync(personID: UserState.PersonID);
                 allOrders = FilterWorkOrders(allOrders);
                 await ApiClient.GetWODictionaries(UserState.PersonID, UserState.LangCode);
                 allDepartments = ApiClient.GetWODepartments().Select(d => d.Name).ToList();

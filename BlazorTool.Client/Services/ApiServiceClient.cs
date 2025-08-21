@@ -150,7 +150,8 @@ namespace BlazorTool.Client.Services
                 lang = _userState.LangCode;
             }
             qp.Add($"Lang={Uri.EscapeDataString(lang)}");
-            if (personID.HasValue) qp.Add($"PersonID={personID.Value}");
+            if (personID == null || !personID.HasValue) personID = _userState.PersonID;
+            qp.Add($"PersonID={personID.Value}");
             if (isPlan.HasValue) qp.Add($"IsPlan={isPlan.Value}");
             if (isWithPerson.HasValue) qp.Add($"IsWithPerson={isWithPerson.Value}");
 
