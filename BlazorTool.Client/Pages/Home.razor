@@ -529,9 +529,11 @@
         string addActivityText = Localizer["WorkOrder_AddActivity"];
         string takeOrderText = Localizer["TakeOrder"];
         string assignToMyselfText = Localizer["AssignToMyself"];
-        myAssignedOrdersMenuItems = new List<ContextMenuItem>();
-        myTakenWorkOrdersMenuItems = new List<ContextMenuItem>();
-        myDepartmentOrdersMenuItems = new List<ContextMenuItem>();
+        string openMenuText = Localizer["Scheduler_Open"];
+        myAssignedOrdersMenuItems = new List<ContextMenuItem>() { new ContextMenuItem { Text = openMenuText, CommandName = "OpenOrder", Icon = SvgIcon.FileAscx }};
+        myTakenWorkOrdersMenuItems = new List<ContextMenuItem>() { new ContextMenuItem { Text = openMenuText, CommandName = "OpenOrder", Icon = SvgIcon.FileAscx }};
+        myDepartmentOrdersMenuItems = new List<ContextMenuItem>() { new ContextMenuItem { Text = openMenuText, CommandName = "OpenOrder", Icon = SvgIcon.FileAscx }};
+
 
         if (UserState.HasPermission(PermissionType.AcT_Add))
         {

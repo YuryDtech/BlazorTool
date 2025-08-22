@@ -5,7 +5,7 @@
 {
     <div class="activity-row">
         <span class="activity-category" title="@Localizer["ActivityDisplay_Category"]">@ActivityItem.ActCategory</span>
-        <span class="activity-description" title="@Localizer["ActivityDisplay_Description"]">@ActivityItem.Description</span>
+        <span class=@(isExternalWindow ? "activity-description-external" : "activity-description") title="@Localizer["ActivityDisplay_Description"]">@((MarkupString)Markdig.Markdown.ToHtml(ActivityItem.Description ?? ""))</span>
         <span class="activity-workload" title="@Localizer["ActivityDisplay_WorkLoad"]">@ActivityItem.WorkLoad.ToString("F2") @Localizer["ActivityDisplay_HoursAbbreviation"]</span>
         <span class="activity-workers" title="@Localizer["ActivityDisplay_Workers"]">@ActivityItem.Workers</span>
         <div class="activity-persons" title="@Localizer["ActivityDisplay_AssignedPersons"]">
@@ -23,6 +23,7 @@
 
 
 @code {
+
     [Parameter]
     public Activity? ActivityItem { get; set; }
     [Parameter]
@@ -31,4 +32,6 @@
     public bool isEditable { get; set; } = false;   
     [Parameter]
     public EventCallback<int> OnClick { get; set; }
+    [Parameter]
+    public bool isExternalWindow { get; set; } =false;
 }

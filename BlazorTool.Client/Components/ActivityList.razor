@@ -4,8 +4,17 @@
 @inject IStringLocalizer<Resources.UIStrings> Localizer
 
 <div class="activity-list-container">
-    <h5>@Localizer["ActivityList_ActivitiesForWorkOrder"] @WorkOrderId.    (@Localizer["ActivityList_TotalWorkload"] @activities?.Sum(x=>x.WorkLoad).ToString("F2") @Localizer["ActivityList_HoursAbbreviation"])</h5>
-
+    @if(!isExternalWindow)
+    {
+        <div style="display:flex; align-items: center; justify-content: space-between;">
+            <div style="display:inline-flex">
+                <h5>@Localizer["ActivityList_ActivitiesForWorkOrder"] @WorkOrderId.    (@Localizer["ActivityList_TotalWorkload"] @activities?.Sum(x=>x.WorkLoad).ToString("F2") @Localizer["ActivityList_HoursAbbreviation"])</h5>
+            </div>
+            <div style="display:inline-flex;">
+                <TelerikButton Icon="@SvgIcon.Fullscreen" Size="lg" Title=@Localizer["ShowActivities"] OnClick="ShowActivities"></TelerikButton>
+            </div>
+        </div>
+    }
     @if (activities == null)
     {
         <p><em>@Localizer["ActivityList_LoadingActivities"]</em></p>
@@ -24,7 +33,7 @@
             <span class="activity-persons">@Localizer["ActivityList_Assigned"]</span>
             <span class="activity-date">@Localizer["ActivityList_Date"]</span>
         </div>
-        <div class="activity-list-body">
+        <div class="@bodyListClass">
             @foreach (var activity in activities)
             {
                 var personIds = activity.ActPersons.Split('#').Where(x=>!string.IsNullOrWhiteSpace(x));
@@ -42,7 +51,7 @@
                         persons.Add(person);
                 }
 
-                <ActivityDisplay ActivityItem="activity" Persons="@persons" isEditable="@isEditable" OnClick="JoinActivityClickAsync" />
+                <ActivityDisplay ActivityItem="activity" Persons="@persons" isEditable="@isEditable" OnClick="JoinActivityClickAsync" isExternalWindow="@isExternalWindow"/>
             }
         </div>
     }
@@ -58,10 +67,19 @@
             <JoinToActivityForm ActivityID="@activityId" OnActivityAdded="HandleActivityAdded" />
         </WindowContent>
     </TelerikWindow>
+
+    <TelerikWindow @bind-Visible="ShowActivitiesWindows" Modal="true" Width="70%" CloseOnOverlayClick="true">
+        <WindowTitle>
+            <strong>@Localizer["ActivityList_ActivitiesForWorkOrder"] @WorkOrderId.    (@Localizer["ActivityList_TotalWorkload"] @activities?.Sum(x => x.WorkLoad).ToString("F2") @Localizer["ActivityList_HoursAbbreviation"])</strong>
+        </WindowTitle>
+        <WindowActions>
+            <WindowAction Name="Close" />
+        </WindowActions>
+        <WindowContent>
+            <ActivityList WorkOrderId="@WorkOrderId" isEditable="@isEditable" isExternalWindow = "true"></ActivityList>
+        </WindowContent>
+    </TelerikWindow>
 </div>
-
-
-
 
 @code {
 
@@ -69,10 +87,13 @@
     public int WorkOrderId { get; set; }
     [Parameter]
     public bool isEditable { get; set; } = false;
+    [Parameter]
+    public bool isExternalWindow { get; set; } = false;
 
     private List<Activity>? activities;
-
+    private string bodyListClass = "activity-list-body";
     private bool IsWindowVisible { get; set; } = false;
+    private bool ShowActivitiesWindows { get; set; } = false;
 
     private int activityId = 0;
 
@@ -85,6 +106,7 @@
     {
         if (WorkOrderId > 0)
         {
+            bodyListClass = isExternalWindow ? "activity-list-body-external" : "activity-list-body";
             activities = null;
             StateHasChanged();
             activities = await ApiClient.GetActivitiesByWO(WorkOrderId);
@@ -115,5 +137,10 @@
             Console.WriteLine("Failed to join activity.");
             IsWindowVisible = false;
         }
+    }
+
+    private void ShowActivities()
+    {
+        ShowActivitiesWindows = true;
     }
 }

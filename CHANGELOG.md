@@ -1,4 +1,7 @@
 ## 2025-08-21
+### Features
+* Implemented user permission checks across components to control UI element visibility and functionality based on user roles.
+
 ### Fixed / Improvements
 * Fixed a bug where `person_Take_Date` was always null when taking a work order.
 * Added a function to retrieve WorkOrder categories and reasons by device ID and used it when creating/editing work orders; applied the same for Activity categories.

@@ -4,6 +4,8 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     background-color: #fff;
+    max-height: 93vh;
+    overflow-block:auto;
 }
 
 .activity-list-header {
@@ -24,6 +26,9 @@
 
 .activity-list-body {
     max-height: 400px;
+    overflow-y: auto;
+}
+.activity-list-body-external {
     overflow-y: auto;
 }
 

@@ -1618,6 +1618,15 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show activities in window.
+        /// </summary>
+        public static string ShowActivities {
+            get {
+                return ResourceManager.GetString("ShowActivities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hide.
         /// </summary>
         public static string Spoiler_Hide {

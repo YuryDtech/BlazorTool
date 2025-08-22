@@ -1,4 +1,7 @@
 ## 2025-08-21
+### Nowe Funkcje
+* Zaimplementowano kompleksowe sprawdzanie uprawnień użytkownika w komponentach, aby kontrolować widoczność elementów interfejsu użytkownika i funkcjonalność w oparciu o role użytkowników.
+
 ### Naprawiono / Ulepszenia
 * Naprawiono błąd, w którym pole `person_Take_Date` było zawsze puste podczas przyjmowania zlecenia.
 * Dodano funkcję pobierania listy kategorii i przyczyn WorkOrder na podstawie ID urządzenia oraz użyto jej przy tworzeniu/edycji zleceń i kategorii aktywności.

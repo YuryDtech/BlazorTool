@@ -29,6 +29,14 @@
 .activity-description {
     flex-basis: 40%;
     color: #333;
+    max-height: 12rem;
+    overflow: auto !important;
+}
+.activity-description-external {
+    flex-basis: 40%;
+    color: #333;
+    max-height: 28rem;
+    overflow: auto !important;
 }
 
 .activity-workload {

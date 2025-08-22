@@ -781,4 +781,7 @@
   <data name="Home_WorkOrdersWithPerson" xml:space="preserve">
     <value>Zlecenia z moimi aktywnościami</value>
   </data>
+  <data name="ShowActivities" xml:space="preserve">
+    <value>Pokaż aktywności w oknie</value>
+  </data>
 </root>

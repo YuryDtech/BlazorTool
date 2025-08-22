@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
         <ProjectReference Include="..\BlazorTool.Client\BlazorTool.Client.csproj" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.0" />
         <PackageReference Include="Nerdbank.GitVersioning" Version="3.7.115">
@@ -21,9 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="appsettings.json">
+    <None Include="appsettings.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="wwwroot\app.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
