@@ -112,7 +112,7 @@
             activities = await ApiClient.GetActivitiesByWO(WorkOrderId);
             if (activities != null)
             {
-                activities.Sort((x, y) => x.AddDate.CompareTo(y.AddDate));
+                activities.Sort((x, y) => y.AddDate.CompareTo(x.AddDate));
             }
             StateHasChanged();
         }
