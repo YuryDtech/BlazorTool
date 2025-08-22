@@ -961,6 +961,15 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No data loaded.
+        /// </summary>
+        public static string NoData {
+            get {
+                return ResourceManager.GetString("NoData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clear.
         /// </summary>
         public static string OrdersPage_Clear {
@@ -1110,6 +1119,168 @@ namespace BlazorTool.Client.Resources {
         public static string PartCount {
             get {
                 return ResourceManager.GetString("PartCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Activity.
+        /// </summary>
+        public static string Permission_AcT_Add {
+            get {
+                return ResourceManager.GetString("Permission_AcT_Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Activity.
+        /// </summary>
+        public static string Permission_AcT_Del {
+            get {
+                return ResourceManager.GetString("Permission_AcT_Del", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Activity Description.
+        /// </summary>
+        public static string Permission_AcT_Edit_Description {
+            get {
+                return ResourceManager.GetString("Permission_AcT_Edit_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Device.
+        /// </summary>
+        public static string Permission_MD_Add {
+            get {
+                return ResourceManager.GetString("Permission_MD_Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Force Cycle.
+        /// </summary>
+        public static string Permission_MD_Add_ForceCycle {
+            get {
+                return ResourceManager.GetString("Permission_MD_Add_ForceCycle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Device.
+        /// </summary>
+        public static string Permission_MD_Edit {
+            get {
+                return ResourceManager.GetString("Permission_MD_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Device Warranty.
+        /// </summary>
+        public static string Permission_MD_Edit_Warranty {
+            get {
+                return ResourceManager.GetString("Permission_MD_Edit_Warranty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Part.
+        /// </summary>
+        public static string Permission_ParT_Add {
+            get {
+                return ResourceManager.GetString("Permission_ParT_Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit State.
+        /// </summary>
+        public static string Permission_ParT_Edit_State {
+            get {
+                return ResourceManager.GetString("Permission_ParT_Edit_State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Give Part.
+        /// </summary>
+        public static string Permission_ParT_Give {
+            get {
+                return ResourceManager.GetString("Permission_ParT_Give", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Order Part.
+        /// </summary>
+        public static string Permission_ParT_WO_Order {
+            get {
+                return ResourceManager.GetString("Permission_ParT_WO_Order", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Take Order.
+        /// </summary>
+        public static string Permission_ParT_WO_take {
+            get {
+                return ResourceManager.GetString("Permission_ParT_WO_take", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Order.
+        /// </summary>
+        public static string Permission_WO_Add {
+            get {
+                return ResourceManager.GetString("Permission_WO_Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close Order.
+        /// </summary>
+        public static string Permission_WO_Close {
+            get {
+                return ResourceManager.GetString("Permission_WO_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Order.
+        /// </summary>
+        public static string Permission_WO_Del {
+            get {
+                return ResourceManager.GetString("Permission_WO_Del", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Order.
+        /// </summary>
+        public static string Permission_WO_Edit {
+            get {
+                return ResourceManager.GetString("Permission_WO_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Order Description.
+        /// </summary>
+        public static string Permission_WO_Edit_Description {
+            get {
+                return ResourceManager.GetString("Permission_WO_Edit_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set Assigned Person.
+        /// </summary>
+        public static string Permission_WO_SET_AssignedPerson {
+            get {
+                return ResourceManager.GetString("Permission_WO_SET_AssignedPerson", resourceCulture);
             }
         }
         
@@ -1686,6 +1857,78 @@ namespace BlazorTool.Client.Resources {
         public static string TakePersons {
             get {
                 return ResourceManager.GetString("TakePersons", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User information.
+        /// </summary>
+        public static string UserInfo {
+            get {
+                return ResourceManager.GetString("UserInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can Have Many Active Orders.
+        /// </summary>
+        public static string UserProfile_CanHaveManyActiveTake {
+            get {
+                return ResourceManager.GetString("UserProfile_CanHaveManyActiveTake", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Authenticated.
+        /// </summary>
+        public static string UserProfile_IsAuthenticated {
+            get {
+                return ResourceManager.GetString("UserProfile_IsAuthenticated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language Code.
+        /// </summary>
+        public static string UserProfile_LangCode {
+            get {
+                return ResourceManager.GetString("UserProfile_LangCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Person ID.
+        /// </summary>
+        public static string UserProfile_PersonID {
+            get {
+                return ResourceManager.GetString("UserProfile_PersonID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rights Matrix.
+        /// </summary>
+        public static string UserProfile_RightMatrix {
+            get {
+                return ResourceManager.GetString("UserProfile_RightMatrix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Original Colors.
+        /// </summary>
+        public static string UserProfile_UseOriginalColors {
+            get {
+                return ResourceManager.GetString("UserProfile_UseOriginalColors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User Name.
+        /// </summary>
+        public static string UserProfile_UserName {
+            get {
+                return ResourceManager.GetString("UserProfile_UserName", resourceCulture);
             }
         }
         

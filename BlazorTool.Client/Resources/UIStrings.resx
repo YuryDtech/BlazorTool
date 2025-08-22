@@ -627,6 +627,7 @@
   </data>
   <data name="WOCategory" xml:space="preserve">
     <value>Category</value>
+    <comment>category</comment>
   </data>
   <data name="WOState" xml:space="preserve">
     <value>State</value>
@@ -787,5 +788,87 @@
   </data>
   <data name="ShowActivities" xml:space="preserve">
     <value>Show activities in window</value>
+  </data>
+  <data name="UserProfile_UserName" xml:space="preserve">
+    <value>User Name</value>
+  </data>
+  <data name="UserProfile_LangCode" xml:space="preserve">
+    <value>Language Code</value>
+  </data>
+  <data name="UserProfile_PersonID" xml:space="preserve">
+    <value>Person ID</value>
+  </data>
+  <data name="UserProfile_IsAuthenticated" xml:space="preserve">
+    <value>Is Authenticated</value>
+  </data>
+  <data name="UserProfile_RightMatrix" xml:space="preserve">
+    <value>Rights Matrix</value>
+  </data>
+  <data name="UserProfile_UseOriginalColors" xml:space="preserve">
+    <value>Use Original Colors</value>
+  </data>
+  <data name="UserProfile_CanHaveManyActiveTake" xml:space="preserve">
+    <value>Can Have Many Active Orders</value>
+  </data>
+  <data name="Permission_WO_Add" xml:space="preserve">
+    <value>Add Order</value>
+  </data>
+  <data name="Permission_WO_Edit" xml:space="preserve">
+    <value>Edit Order</value>
+  </data>
+  <data name="Permission_WO_Edit_Description" xml:space="preserve">
+    <value>Edit Order Description</value>
+  </data>
+  <data name="Permission_WO_Del" xml:space="preserve">
+    <value>Delete Order</value>
+  </data>
+  <data name="Permission_WO_Close" xml:space="preserve">
+    <value>Close Order</value>
+  </data>
+  <data name="Permission_AcT_Add" xml:space="preserve">
+    <value>Add Activity</value>
+  </data>
+  <data name="Permission_AcT_Del" xml:space="preserve">
+    <value>Delete Activity</value>
+  </data>
+  <data name="Permission_AcT_Edit_Description" xml:space="preserve">
+    <value>Edit Activity Description</value>
+  </data>
+  <data name="Permission_ParT_WO_take" xml:space="preserve">
+    <value>Take Order</value>
+  </data>
+  <data name="Permission_ParT_WO_Order" xml:space="preserve">
+    <value>Order Part</value>
+  </data>
+  <data name="Permission_ParT_Edit_State" xml:space="preserve">
+    <value>Edit State</value>
+  </data>
+  <data name="Permission_WO_SET_AssignedPerson" xml:space="preserve">
+    <value>Set Assigned Person</value>
+  </data>
+  <data name="Permission_ParT_Give" xml:space="preserve">
+    <value>Give Part</value>
+  </data>
+  <data name="Permission_MD_Add" xml:space="preserve">
+    <value>Add Device</value>
+  </data>
+  <data name="Permission_MD_Edit" xml:space="preserve">
+    <value>Edit Device</value>
+  </data>
+  <data name="Permission_MD_Edit_Warranty" xml:space="preserve">
+    <value>Edit Device Warranty</value>
+  </data>
+  <data name="Permission_ParT_Add" xml:space="preserve">
+    <value>Add Part</value>
+  </data>
+  <data name="Permission_MD_Add_ForceCycle" xml:space="preserve">
+    <value>Add Force Cycle</value>
+  </data>
+  <data name="UserInfo" xml:space="preserve">
+    <value>User information</value>
+    <comment>User information</comment>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>No data loaded</value>
   </data>
 </root>

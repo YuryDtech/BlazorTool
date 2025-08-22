@@ -1,5 +1,6 @@
 ﻿@page "/settings"
 @using BlazorTool.Client.Services
+@using BlazorTool.Client.Components
 @inject ApiServiceClient apiService
 @inject NavigationManager Navigation
 @inject UserState UserState
@@ -69,6 +70,10 @@
     }
 </div>
 
+<div class="container mt-4">
+    <UserProfileDisplay UserState="@UserState" DisplayNames="@UserProfileDisplayNames" />
+</div>
+
 @code{
 
     protected string? ApiAddress { get; set; }
@@ -83,6 +88,8 @@
     private string oldApiAddress = "";
     private bool needRestart = false;
 
+    private Dictionary<string, string> UserProfileDisplayNames = new Dictionary<string, string>();
+
     protected override async Task OnInitializedAsync()
     {
         if (!UserState.IsAuthenticated)
@@ -91,6 +98,8 @@
             Navigation.NavigateTo("/login");
             return;
         }
+
+        GetUserProfilenames();
         currentUser = UserState.UserName ?? "unknown user";
         isAdmin = UserState.UserName == "MES" || UserState.UserName?.ToLower() == "admin";
         Logger.LogInformation($"Current user: {currentUser}, Is Admin: {isAdmin}");
@@ -99,6 +108,28 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    private void GetUserProfilenames()
+    {
+        UserProfileDisplayNames = new Dictionary<string, string>
+    {
+        { nameof(UserState.UserName), Localizer["UserProfile_UserName"] },
+        { nameof(UserState.LangCode), Localizer["UserProfile_LangCode"] },
+        { nameof(UserState.PersonID), Localizer["UserProfile_PersonID"] },
+        { nameof(UserState.IsAuthenticated), Localizer["UserProfile_IsAuthenticated"] },
+        { nameof(UserState.RightMatrix), Localizer["UserProfile_RightMatrix"] },
+        { nameof(UserState.UseOriginalColors), Localizer["UserProfile_UseOriginalColors"] },
+        { nameof(UserState.CanHaveManyActiveTake), Localizer["CanHaveManyTakenOrders"]  },
+        { "WO_Add", Localizer["Permission_WO_Add"] },
+        { "WO_Edit", Localizer["Permission_WO_Edit"] },
+        { "WO_Edit_Description", Localizer["Permission_WO_Edit_Description"] },
+        { "WO_Del", Localizer["Permission_WO_Del"] },
+        { "WO_Close", Localizer["Permission_WO_Close"] },
+        { "AcT_Add", Localizer["Permission_AcT_Add"] },
+        { "AcT_Del", Localizer["Permission_AcT_Del"] },
+        { "AcT_Edit_Description", Localizer["Permission_AcT_Edit_Description"] },
+        { "WO_SET_AssignedPerson", Localizer["Permission_WO_SET_AssignedPerson"] }
+    };
+    }
     protected async Task LoadSettingsAsync()
     {
         if (isAdmin)

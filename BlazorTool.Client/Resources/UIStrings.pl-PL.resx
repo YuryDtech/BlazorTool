@@ -784,4 +784,85 @@
   <data name="ShowActivities" xml:space="preserve">
     <value>Pokaż aktywności w oknie</value>
   </data>
+  <data name="UserProfile_UserName" xml:space="preserve">
+    <value>Nazwa użytkownika</value>
+  </data>
+  <data name="UserProfile_LangCode" xml:space="preserve">
+    <value>Kod języka</value>
+  </data>
+  <data name="UserProfile_PersonID" xml:space="preserve">
+    <value>ID osoby</value>
+  </data>
+  <data name="UserProfile_IsAuthenticated" xml:space="preserve">
+    <value>Uwierzytelniony</value>
+  </data>
+  <data name="UserProfile_RightMatrix" xml:space="preserve">
+    <value>Matryca praw</value>
+  </data>
+  <data name="UserProfile_UseOriginalColors" xml:space="preserve">
+    <value>Użyj oryginalnych kolorów</value>
+  </data>
+  <data name="UserProfile_CanHaveManyActiveTake" xml:space="preserve">
+    <value>Może mieć wiele aktywnych zleceń</value>
+  </data>
+  <data name="Permission_WO_Add" xml:space="preserve">
+    <value>Dodaj zlecenie</value>
+  </data>
+  <data name="Permission_WO_Edit" xml:space="preserve">
+    <value>Edytuj zlecenie</value>
+  </data>
+  <data name="Permission_WO_Edit_Description" xml:space="preserve">
+    <value>Edytuj opis zlecenia</value>
+  </data>
+  <data name="Permission_WO_Del" xml:space="preserve">
+    <value>Usuń zlecenie</value>
+  </data>
+  <data name="Permission_WO_Close" xml:space="preserve">
+    <value>Zamknij zlecenie</value>
+  </data>
+  <data name="Permission_AcT_Add" xml:space="preserve">
+    <value>Dodaj aktywność</value>
+  </data>
+  <data name="Permission_AcT_Del" xml:space="preserve">
+    <value>Usuń aktywność</value>
+  </data>
+  <data name="Permission_AcT_Edit_Description" xml:space="preserve">
+    <value>Edytuj opis aktywności</value>
+  </data>
+  <data name="Permission_ParT_WO_take" xml:space="preserve">
+    <value>Przyjmij zlecenie</value>
+  </data>
+  <data name="Permission_ParT_WO_Order" xml:space="preserve">
+    <value>Zamów część</value>
+  </data>
+  <data name="Permission_ParT_Edit_State" xml:space="preserve">
+    <value>Edytuj stan</value>
+  </data>
+  <data name="Permission_WO_SET_AssignedPerson" xml:space="preserve">
+    <value>Ustaw przypisaną osobę</value>
+  </data>
+  <data name="Permission_ParT_Give" xml:space="preserve">
+    <value>Przekaż część</value>
+  </data>
+  <data name="Permission_MD_Add" xml:space="preserve">
+    <value>Dodaj urządzenie</value>
+  </data>
+  <data name="Permission_MD_Edit" xml:space="preserve">
+    <value>Edytuj urządzenie</value>
+  </data>
+  <data name="Permission_MD_Edit_Warranty" xml:space="preserve">
+    <value>Edytuj gwarancję urządzenia</value>
+  </data>
+  <data name="Permission_ParT_Add" xml:space="preserve">
+    <value>Dodaj część</value>
+  </data>
+  <data name="Permission_MD_Add_ForceCycle" xml:space="preserve">
+    <value>Dodaj wymuszony cykl</value>
+  </data>
+  <data name="UserInfo" xml:space="preserve">
+    <value>Informacje o użytkowniku</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>Brak załadowanych danych</value>
+  </data>
 </root>
