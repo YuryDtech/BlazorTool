@@ -243,13 +243,13 @@
         </CardHeader>
         <CardBody>
             <div class="stats-grid">
-                <div class="stat-item" @onclick="ToggleActivities">
+                <div class="stat-item" @onclick="ToggleActivities" style="cursor: pointer;">
                     <div class="stat-number">@(WorkOrder.ActCount ?? 0)</div>
                     <div class="stat-label">@Localizer[nameof(WorkOrder.ActCount)]</div>
                 </div>
-                <div class="stat-item">
+                <div class="stat-item" @onclick="ToggleFiles" style="cursor: pointer;">
                     <div class="stat-number">@(WorkOrder.FileCount ?? 0)</div>
-                        <div class="stat-label">@Localizer[nameof(WorkOrder.FileCount)]</div>
+                    <div class="stat-label">@Localizer[nameof(WorkOrder.FileCount)]</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">@(WorkOrder.PartCount ?? 0)</div>
@@ -286,6 +286,10 @@
                 @if (showActivities)
                 {
                     <ActivityList @ref="activityListComponent" WorkOrderId="WorkOrder.WorkOrderID" isEditable="@isEditable" />
+                }
+                else if (showFiles)
+                {
+                    <WorkOrderFilesDisplay WorkOrderId="WorkOrder.WorkOrderID" />
                 }
             </div>
 
@@ -360,6 +364,7 @@
     private string ReasonAlarm = string.Empty;
     private string DatesAlarm = string.Empty;
     private bool showActivities = false;
+    private bool showFiles = false;
     private bool IsAddActivityWindowVisible { get; set; } = false;
     private bool isNewWorkOrder = false;  
     private List<Device>? ListDevices { get; set; } = new List<Device>();
@@ -555,6 +560,19 @@
     private void ToggleActivities()
     {
         showActivities = !showActivities;
+        if (showActivities) // Если активности показываются, скрываем файлы
+        {
+            showFiles = false;
+        }
+    }
+
+    private void ToggleFiles()
+    {
+        showFiles = !showFiles;
+        if (showFiles) // Если файлы показываются, скрываем активности
+        {
+            showActivities = false;
+        }
     }
 
     private void OnCategoryChanged(int newValue)

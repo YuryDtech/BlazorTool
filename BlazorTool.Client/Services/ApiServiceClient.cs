@@ -414,8 +414,11 @@ namespace BlazorTool.Client.Services
                 Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrderFileAsync: Invalid WorkOrderDataID: {workOrderDataId}");
                 return new SingleResponse<WorkOrderFileData> { IsValid = false, Errors = new List<string> { "Invalid WorkOrderDataID." } };
             }
-
-            var url = $"wo/getfile?WorkOrderDataID={workOrderDataId}&Width={width}&Height={height}";
+            string size = string.Empty;
+            if (width > 1 || height > 1) {
+                size = $"&Width ={width}&Height={height}";
+            }
+            var url = $"wo/getfile?WorkOrderDataID={workOrderDataId}{size}";
             try
             {
                 var response = await _http.GetFromJsonAsync<SingleResponse<WorkOrderFileData>>(url);
