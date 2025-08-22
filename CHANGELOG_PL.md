@@ -1,3 +1,14 @@
+## 2025-08-22
+### Nowe Funkcje
+* Dodano metodę pobierania plików zlecenia pracy (model `WorkOrderFile`, `ApiServiceClient.GetWorkOrderFilesAsync`, `WoController.GetFiles`).
+* Dodano wyświetlanie informacji o użytkowniku na stronie Ustawień.
+* Ulepszono wyświetlanie aktywności i funkcje interfejsu użytkownika.
+
+### Naprawiono / Ulepszenia
+* Zaktualizowano `ApiServiceClient` i `WoController` do używania `ApiResponse<WorkOrderFile>`.
+* Zmieniono sortowanie listy aktywności na malejące.
+* Naprawiono automatyczne zapisywanie rozmiarów paneli na stronie głównej.
+
 ## 2025-08-21
 ### Nowe Funkcje
 * Zaimplementowano kompleksowe sprawdzanie uprawnień użytkownika w komponentach, aby kontrolować widoczność elementów interfejsu użytkownika i funkcjonalność w oparciu o role użytkowników.

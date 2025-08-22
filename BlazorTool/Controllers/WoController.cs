@@ -159,6 +159,73 @@ namespace BlazorTool.Controllers
             }
         }
 
+        [HttpGet("getfiles")]
+        public async Task<IActionResult> GetFiles([FromQuery] int WorkOrderID)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
+                string url = $"wo/getfiles?WorkOrderID={WorkOrderID}";
+                var response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<WorkOrderFile>>();
+                if (apiResponse == null || !apiResponse.IsValid)
+                {
+                    var errors = apiResponse?.Errors ?? new List<string> { "Unknown error occurred." };
+                    return NotFound(new ApiResponse<WorkOrderFile>
+                    {
+                        Data = new List<WorkOrderFile>(),
+                        IsValid = false,
+                        Errors = errors
+                    });
+                }
+                return Ok(apiResponse);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"WOController --> Error in GetFiles: {ex.Message}");
+                return StatusCode(500, new ApiResponse<WorkOrderFile>
+                {
+                    Data = new List<WorkOrderFile>(),
+                    IsValid = false,
+                    Errors = new List<string> { ex.Message }
+                });
+            }
+        }
+
+        [HttpGet("getfile")]
+        public async Task<IActionResult> GetFile([FromQuery] int WorkOrderDataID, [FromQuery] int Width, [FromQuery] int Height)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient("ExternalApiBearerAuthClient");
+                string url = $"wo/getfile?WorkOrderDataID={WorkOrderDataID}&Width={Width}&Height={Height}";
+                var response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                var apiResponse = await response.Content.ReadFromJsonAsync<SingleResponse<WorkOrderFileData>>();
+                if (apiResponse == null || !apiResponse.IsValid)
+                {
+                    var errors = apiResponse?.Errors ?? new List<string> { "Unknown error occurred." };
+                    return NotFound(new SingleResponse<WorkOrderFileData>
+                    {
+                        IsValid = false,
+                        Errors = errors
+                    });
+                }
+                return Ok(apiResponse);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"WOController --> Error in GetFile: {ex.Message}");
+                return StatusCode(500, new SingleResponse<WorkOrderFileData>
+                {
+                    Data = null,
+                    IsValid = false,
+                    Errors = new List<string> { ex.Message }
+                });
+            }
+        }
+
         // POST api/<WoController>
         [HttpPost]
         public void Post([FromBody] string value)

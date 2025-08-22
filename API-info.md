@@ -64,7 +64,25 @@ Here's a breakdown of each endpoint:
 
 ---
 
-### 7. `api/v1/settings/get`
+### 7. `api/v1/wo/getfiles`
+
+*   **HTTP Method:** `GET`
+*   **Server-Side Controller:** `BlazorTool/Controllers/WoController.cs`
+*   **Authorization Type (for External API calls):** Bearer Token (uses `ExternalApiBearerAuthClient`). **Token required.**
+*   **Note:** The BlazorTool server uses the Bearer token (obtained from the client's request) to authorize its call to the external API for work order files data.
+
+---
+
+### 8. `api/v1/wo/getfile`
+
+*   **HTTP Method:** `GET`
+*   **Server-Side Controller:** `BlazorTool/Controllers/WoController.cs`
+*   **Authorization Type (for External API calls):** Bearer Token (uses `ExternalApiBearerAuthClient`). **Token required.**
+*   **Note:** The BlazorTool server uses the Bearer token (obtained from the client's request) to authorize its call to the external API for a single work order file data.
+
+---
+
+### 9. `api/v1/settings/get`
 
 *   **HTTP Method:** `GET`
 *   **Server-Side Controller:** `BlazorTool/Controllers/SettingsController.cs`
@@ -72,7 +90,7 @@ Here's a breakdown of each endpoint:
 
 ---
 
-### 8. `api/v1/settings/set`
+### 10. `api/v1/settings/set`
 
 *   **HTTP Method:** `POST`
 *   **Server-Side Controller:** `BlazorTool/Controllers/SettingsController.cs`
@@ -80,7 +98,7 @@ Here's a breakdown of each endpoint:
 
 ---
 
-### 9. `api/v1/settings/check`
+### 11. `api/v1/settings/check`
 
 *   **HTTP Method:** `POST`
 *   **Server-Side Controller:** `BlazorTool/Controllers/SettingsController.cs`

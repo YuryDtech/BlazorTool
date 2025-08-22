@@ -1,3 +1,15 @@
+## 2025-08-22
+### Features
+* Added method to retrieve a single work order file (`WorkOrderFileData` model, `ApiServiceClient.GetWorkOrderFileAsync`, `WoController.GetFile`).
+* Added method to retrieve work order files (`WorkOrderFile` model, `ApiServiceClient.GetWorkOrderFilesAsync`, `WoController.GetFiles`).
+* Added user information display on the Settings page.
+* Enhanced activity display and user interface features.
+
+### Fixed / Improvements
+* Updated `ApiServiceClient` and `WoController` to use `ApiResponse<WorkOrderFile>`.
+* Changed activity list sorting to descending.
+* Fixed auto-saving of pane sizes on the Home page.
+
 ## 2025-08-21
 ### Features
 * Implemented user permission checks across components to control UI element visibility and functionality based on user roles.

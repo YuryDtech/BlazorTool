@@ -370,6 +370,77 @@ namespace BlazorTool.Client.Services
                 return orders.FirstOrDefault();
             }
         }
+
+        public async Task<ApiResponse<WorkOrderFile>> GetWorkOrderFilesAsync(int workOrderId)
+        {
+            if (workOrderId <= 0)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrderFilesAsync: Invalid WorkOrderID: {workOrderId}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrderFilesAsync: Invalid WorkOrderID: {workOrderId}");
+                return new ApiResponse<WorkOrderFile> { IsValid = false, Errors = new List<string> { "Invalid WorkOrderID." } };
+            }
+
+            var url = $"wo/getfiles?WorkOrderID={workOrderId}";
+            try
+            {
+                var response = await _http.GetFromJsonAsync<ApiResponse<WorkOrderFile>>(url);
+                if (response == null)
+                {
+                    Console.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrderFilesAsync: Empty response from API for {url}");
+                    Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrderFilesAsync: Empty response from API for {url}");
+                    return new ApiResponse<WorkOrderFile> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
+                }
+                return response;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new ApiResponse<WorkOrderFile> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new ApiResponse<WorkOrderFile> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+            }
+        }
+
+        public async Task<SingleResponse<WorkOrderFileData>> GetWorkOrderFileAsync(int workOrderDataId, int width, int height)
+        {
+            if (workOrderDataId <= 0)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrderFileAsync: Invalid WorkOrderDataID: {workOrderDataId}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrderFileAsync: Invalid WorkOrderDataID: {workOrderDataId}");
+                return new SingleResponse<WorkOrderFileData> { IsValid = false, Errors = new List<string> { "Invalid WorkOrderDataID." } };
+            }
+
+            var url = $"wo/getfile?WorkOrderDataID={workOrderDataId}&Width={width}&Height={height}";
+            try
+            {
+                var response = await _http.GetFromJsonAsync<SingleResponse<WorkOrderFileData>>(url);
+                if (response == null)
+                {
+                    Console.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrderFileAsync: Empty response from API for {url}");
+                    Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrderFileAsync: Empty response from API for {url}");
+                    return new SingleResponse<WorkOrderFileData> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
+                }
+                return response;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new SingleResponse<WorkOrderFileData> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new SingleResponse<WorkOrderFileData> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+            }
+        }
+
         public async Task<WorkOrderInfo?> GetWOInfo(int workOrderID)
         {
             if (workOrderID < 0) return null;
@@ -638,7 +709,7 @@ namespace BlazorTool.Client.Services
                     var updatedResponse = await GetWorkOrdersAsync( workOrderID: apiResponse.Data.WorkOrderID); //TODO add userstate.lang
                     if (updatedResponse != null && updatedResponse.Count != 0)
                     {
-                        Debug.WriteLine("[{_userState.UserName}] = = = = = = Work order updated successfully from API. ID: " + updatedResponse.First().WorkOrderID);
+                        Debug.WriteLine($"[{_userState.UserName}] = = = = = = Work order updated successfully from API. ID: " + updatedResponse.First().WorkOrderID);
                         apiResponse.Data = updatedResponse.First();
                         UpdateWorkOrderInCache(apiResponse.Data);
                     } else
