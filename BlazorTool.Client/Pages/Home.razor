@@ -15,14 +15,14 @@
 <BlazorTool.Client.Components.CheckSession ApiService="@ApiClient" UserState="@UserState" />
 
 <div class="main-page-root-container">
-
+        
 <TelerikSplitter Class="home-splitter" Width="100%" Height="100%" Orientation="SplitterOrientation.Vertical">
     <SplitterPanes>
             
         <TelerikLoaderContainer  Visible="@isDataLoading" Text="@Localizer["Scheduler_LoadingOrders"]" Size="@Telerik.Blazor.ThemeConstants.Loader.Size.Large">
         </TelerikLoaderContainer>
 
-        <SplitterPane Min="@minPanelSize" @bind-Size="@assignedPaneSize" Collapsible="false">
+        <SplitterPane Min="@minPanelSize" Size="@(assignedCollapsed ? minPanelSize : assignedPaneSize)" SizeChanged="@OnPane1SizeChanged" Collapsible="false">
         <div class="orders-grid-container">
 
                 <div class="order-header d-flex align-items-center">
@@ -61,7 +61,7 @@
                         </div>
         </SplitterPane>
 
-            <SplitterPane Min="@minPanelSize" @bind-Size="@takenPaneSize" Collapsible="false">
+        <SplitterPane Min="@minPanelSize" Size="@(takenCollapsed ? minPanelSize : takenPaneSize)" SizeChanged="@OnPane2SizeChanged" Collapsible="false">
         <div class="orders-grid-container">
                         <div class="order-header d-flex align-items-center">
                             <span class="collapse-toggle" @onclick="@(() => ToggleSpoiler(nameof(takenPaneSize)))">
@@ -94,7 +94,7 @@
                         </div>
         </SplitterPane>
 
-            <SplitterPane Min="@minPanelSize" @bind-Size="@deptPaneSize" Collapsible="false">
+        <SplitterPane Min="@minPanelSize" Size="@(deptCollapsed ? minPanelSize : deptPaneSize)" SizeChanged="@OnPane3SizeChanged" Collapsible="false">
         <div class="orders-grid-container">
                 <div class="order-header d-flex align-items-center">
                         <span class="collapse-toggle" @onclick="@(() => ToggleSpoiler(nameof(deptPaneSize)))">
@@ -135,10 +135,10 @@
                         </div>
         </SplitterPane>
 
-            <SplitterPane Min="@minPanelSize" @bind-Size="@workOrdersWithPersonPaneSize" Collapsible="false">
+        <SplitterPane Min="@minPanelSize" Size="@(workOrdersWithPersonCollapsed ? minPanelSize : withPersonPaneSize)" SizeChanged="@OnPane4SizeChanged" Collapsible="false">
         <div class="orders-grid-container">
                 <div class="order-header d-flex align-items-center">
-                        <span class="collapse-toggle" @onclick="@(() => ToggleSpoiler(nameof(workOrdersWithPersonPaneSize)))">
+                        <span class="collapse-toggle" @onclick="@(() => ToggleSpoiler(nameof(withPersonPaneSize)))">
                                 @if(workOrdersWithPersonCollapsed)
                                 {
                                         <TelerikButton Icon="@SvgIcon.Plus" Rounded="sm" Size="sm"></TelerikButton>
@@ -213,7 +213,7 @@
     private string assignedPaneSize;
     private string takenPaneSize;
     private string deptPaneSize;
-    private string workOrdersWithPersonPaneSize;
+    private string withPersonPaneSize;
     private string minPanelSize = "40px";
 
     private List<WorkOrder> myAssignedOrders = new List<WorkOrder>();
@@ -224,6 +224,7 @@
     private OrdersGrid AssignedGrid;
     private OrdersGrid DepsGrid;
     private OrdersGrid WithPersonGrid;
+    private SplitterPane assignedPane;
     private Guid takenGridKey = Guid.NewGuid();
     private Guid assignedGridKey = Guid.NewGuid();
     private Guid depsGridKey = Guid.NewGuid();
@@ -258,7 +259,7 @@
         const string assignedPane = nameof(assignedPaneSize);
         const string takenPane = nameof(takenPaneSize);
         const string deptPane = nameof(deptPaneSize);
-        const string workOrdersWithPersonPane = nameof(workOrdersWithPersonPaneSize);
+        const string workOrdersWithPersonPane = nameof(withPersonPaneSize);
 
         if (string.IsNullOrEmpty(pane)) return;
         switch (pane)
@@ -281,12 +282,43 @@
         _saveStateTimer?.Change(SaveStateDelay, Timeout.Infinite);
     }
 
+    #region Panes size changed
+    private void OnPane1SizeChanged(string size)
+    {     
+        assignedPaneSize = size;
+        AddSizesToCache();
+        _saveStateTimer?.Change(SaveStateDelay, Timeout.Infinite);
+    }
+
+    private void OnPane2SizeChanged(string size)
+    {
+        takenPaneSize = size;
+        AddSizesToCache();
+        _saveStateTimer?.Change(SaveStateDelay, Timeout.Infinite);
+    }
+
+    private void OnPane3SizeChanged(string size)
+    {
+        deptPaneSize = size;
+        AddSizesToCache();
+        _saveStateTimer?.Change(SaveStateDelay, Timeout.Infinite);
+    }
+
+    private void OnPane4SizeChanged(string size)
+    {
+        withPersonPaneSize = size;
+        AddSizesToCache();
+        _saveStateTimer?.Change(SaveStateDelay, Timeout.Infinite);
+    }
+
+    #endregion panes sizes changes
+
     private void AddSizesToCache()
     {
         if (!assignedCollapsed) _sectionStates.AssignedPaneSize = assignedPaneSize;
         if (!takenCollapsed) _sectionStates.TakenPaneSize = takenPaneSize;
         if (!deptCollapsed) _sectionStates.DeptPaneSize = deptPaneSize;
-        if (!workOrdersWithPersonCollapsed) _sectionStates.WorkOrdersWithPersonPaneSize = workOrdersWithPersonPaneSize;
+        if (!workOrdersWithPersonCollapsed) _sectionStates.WorkOrdersWithPersonPaneSize = withPersonPaneSize;
     }
 
     private void ToggleAssigned()
@@ -350,8 +382,8 @@
         // Сохраняем текущий размер перед сворачиванием
         if (!workOrdersWithPersonCollapsed)
         {
-            _sectionStates.WorkOrdersWithPersonPaneSize = workOrdersWithPersonPaneSize;
-            workOrdersWithPersonPaneSize = minPanelSize;
+            _sectionStates.WorkOrdersWithPersonPaneSize = withPersonPaneSize;
+            withPersonPaneSize = minPanelSize;
         }
 
         workOrdersWithPersonCollapsed = !workOrdersWithPersonCollapsed;
@@ -360,7 +392,7 @@
         // Восстанавливаем размер при разворачивании
         if (!workOrdersWithPersonCollapsed && !string.IsNullOrEmpty(_sectionStates.WorkOrdersWithPersonPaneSize))
         {
-            workOrdersWithPersonPaneSize = _sectionStates.WorkOrdersWithPersonPaneSize;
+            withPersonPaneSize = _sectionStates.WorkOrdersWithPersonPaneSize;
         }
     }
 
@@ -387,12 +419,12 @@
         if (!string.IsNullOrEmpty(_sectionStates.DeptPaneSize))
             deptPaneSize = _sectionStates.DeptPaneSize;
         if (!string.IsNullOrEmpty(_sectionStates.WorkOrdersWithPersonPaneSize))
-            workOrdersWithPersonPaneSize = _sectionStates.WorkOrdersWithPersonPaneSize;
+            withPersonPaneSize = _sectionStates.WorkOrdersWithPersonPaneSize;
 
         if (assignedCollapsed) assignedPaneSize = minPanelSize;
         if (takenCollapsed) takenPaneSize = minPanelSize;
         if (deptCollapsed) deptPaneSize = minPanelSize;
-        if (workOrdersWithPersonCollapsed) workOrdersWithPersonPaneSize = minPanelSize;
+        if (workOrdersWithPersonCollapsed) withPersonPaneSize = minPanelSize;
     }
     #endregion spoilers
 
