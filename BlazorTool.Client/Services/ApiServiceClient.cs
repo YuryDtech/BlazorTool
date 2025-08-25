@@ -30,6 +30,10 @@ namespace BlazorTool.Client.Services
         private Dictionary<int, ApiResponse<WorkOrderFile>> _workOrderFilesCache = new Dictionary<int, ApiResponse<WorkOrderFile>>();
         private Dictionary<string, SingleResponse<WorkOrderFileData>> _workOrderFileCache = new Dictionary<string, SingleResponse<WorkOrderFileData>>();
 
+        private Dictionary<string, ApiResponse<DeviceStatus>> _deviceStatusCache = new Dictionary<string, ApiResponse<DeviceStatus>>();
+        private Dictionary<string, ApiResponse<DeviceImage>> _deviceImageCache = new Dictionary<string, ApiResponse<DeviceImage>>();
+        private Dictionary<string, ApiResponse<DeviceDict>> _deviceDictCache = new Dictionary<string, ApiResponse<DeviceDict>>();
+
         public ApiServiceClient(HttpClient http, UserState userState)
         {
             _http = http;
@@ -1048,6 +1052,306 @@ namespace BlazorTool.Client.Services
         public string GetDeviceNameByOrder(WorkOrder order)
         {
             return _devicesCache.FirstOrDefault(d => d.MachineID == order.MachineID)?.AssetNo ?? string.Empty;
+        }
+
+        public async Task<ApiResponse<DeviceDetailProperty>> GetDeviceDetailAsync(int deviceID, string? lang = null)
+        {
+            var qp = new List<string>();
+            if (string.IsNullOrWhiteSpace(lang))
+            {
+                lang = _userState.LangCode;
+            }
+            qp.Add($"DeviceID={deviceID}");
+            qp.Add($"Lang={Uri.EscapeDataString(lang)}");
+
+            var url = "device/getdetail?" + string.Join("&", qp);
+
+            try
+            {
+                var wrapper = await _http.GetFromJsonAsync<ApiResponse<DeviceDetailProperty>>(url);
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = API response-> DeviceDetailProperty.Count: " + wrapper?.Data.Count.ToString());
+                return wrapper ?? new ApiResponse<DeviceDetailProperty> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new ApiResponse<DeviceDetailProperty> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new ApiResponse<DeviceDetailProperty> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+            }
+        }
+
+        public async Task<ApiResponse<DeviceState>> GetDeviceStateAsync(int machineID, string? lang = null)
+        {
+            var qp = new List<string>();
+            if (string.IsNullOrWhiteSpace(lang))
+            {
+                lang = _userState.LangCode;
+            }
+            qp.Add($"MachineID={machineID}");
+            qp.Add($"Lang={Uri.EscapeDataString(lang)}");
+
+            var url = "device/getstate?" + string.Join("&", qp);
+
+            try
+            {
+                var wrapper = await _http.GetFromJsonAsync<ApiResponse<DeviceState>>(url);
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = API response-> DeviceState.Count: " + wrapper?.Data.Count.ToString());
+                return wrapper ?? new ApiResponse<DeviceState> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new ApiResponse<DeviceState> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new ApiResponse<DeviceState> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+            }
+        }
+
+        public async Task<ApiResponse<DeviceStatus>> GetDeviceStatusAsync(string? lang = null)
+        {
+            if (string.IsNullOrWhiteSpace(lang))
+            {
+                lang = _userState.LangCode;
+            }
+
+            if (_deviceStatusCache.TryGetValue(lang, out var cachedResponse))
+            {
+                Console.WriteLine($"[{_userState.UserName}] Device status for lang {lang} found in cache.");
+                Debug.WriteLine($"[{_userState.UserName}] Device status for lang {lang} found in cache.");
+                return cachedResponse;
+            }
+
+            var url = $"device/getstatus?Lang={Uri.EscapeDataString(lang)}";
+
+            try
+            {
+                var wrapper = await _http.GetFromJsonAsync<ApiResponse<DeviceStatus>>(url);
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = API response-> DeviceStatus.Count: " + wrapper?.Data.Count.ToString());
+                if (wrapper != null && wrapper.IsValid)
+                {
+                    _deviceStatusCache[lang] = wrapper;
+                }
+                return wrapper ?? new ApiResponse<DeviceStatus> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new ApiResponse<DeviceStatus> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new ApiResponse<DeviceStatus> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+            }
+        }
+
+        public async Task<ApiResponse<Device>> GetSingleDeviceAsync(int machineID, string? lang = null)
+        {
+            var qp = new List<string>();
+            if (string.IsNullOrWhiteSpace(lang))
+            {
+                lang = _userState.LangCode;
+            }
+            qp.Add($"MachineID={machineID}");
+            qp.Add($"Lang={Uri.EscapeDataString(lang)}");
+
+            var url = "device/get?" + string.Join("&", qp);
+
+            try
+            {
+                var wrapper = await _http.GetFromJsonAsync<ApiResponse<Device>>(url);
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = API response-> Single Device: " + wrapper?.Data.FirstOrDefault()?.AssetNo);
+                return wrapper ?? new ApiResponse<Device> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new ApiResponse<Device> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new ApiResponse<Device> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+            }
+        }
+
+        public async Task<ApiResponse<DeviceImage>> GetDeviceImageAsync(int deviceID, int? width = null, int? height = null)
+        {
+            var cacheKey = $"{deviceID}-{width}-{height}";
+
+            if (_deviceImageCache.TryGetValue(cacheKey, out var cachedResponse))
+            {
+                Console.WriteLine($"[{_userState.UserName}] Device image for {cacheKey} found in cache.");
+                Debug.WriteLine($"[{_userState.UserName}] Device image for {cacheKey} found in cache.");
+                return cachedResponse;
+            }
+
+            var qp = new List<string>();
+            qp.Add($"DeviceID={deviceID}");
+            if (width.HasValue) qp.Add($"Width={width.Value}");
+            if (height.HasValue) qp.Add($"Height={height.Value}");
+
+            var url = "device/GetImage?" + string.Join("&", qp);
+
+            try
+            {
+                var wrapper = await _http.GetFromJsonAsync<ApiResponse<DeviceImage>>(url);
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = API response-> DeviceImage for {deviceID}");
+                if (wrapper != null && wrapper.IsValid)
+                {
+                    _deviceImageCache[cacheKey] = wrapper;
+                }
+                return wrapper ?? new ApiResponse<DeviceImage> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new ApiResponse<DeviceImage> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new ApiResponse<DeviceImage> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+            }
+        }
+
+        public async Task<ApiResponse<DeviceDict>> GetDeviceDictionariesAsync(int personID, string? lang = null)
+        {
+            if (personID <= 0)
+            {
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
+                Debug.WriteLine($"[{_userState.UserName}] = = = = = = Invalid PersonID: {personID}");
+                return new ApiResponse<DeviceDict> { IsValid = false, Errors = new List<string> { "Invalid PersonID." } };
+            }
+
+            if (string.IsNullOrWhiteSpace(lang))
+            {
+                lang = _userState.LangCode;
+            }
+
+            var cacheKey = $"{personID}-{lang}";
+
+            if (_deviceDictCache.TryGetValue(cacheKey, out var cachedResponse))
+            {
+                Console.WriteLine($"[{_userState.UserName}] Device dictionaries for {cacheKey} found in cache.");
+                Debug.WriteLine($"[{_userState.UserName}] Device dictionaries for {cacheKey} found in cache.");
+                return cachedResponse;
+            }
+
+            var qp = new List<string>();
+            qp.Add($"PersonID={personID}");
+            qp.Add($"Lang={Uri.EscapeDataString(lang)}");
+
+            var url = "device/getdict?" + string.Join("&", qp);
+
+            try
+            {
+                var wrapper = await _http.GetFromJsonAsync<ApiResponse<DeviceDict>>(url);
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = API response-> DeviceDict.Count: " + wrapper?.Data.Count.ToString());
+                if (wrapper != null && wrapper.IsValid)
+                {
+                    _deviceDictCache[cacheKey] = wrapper;
+                }
+                return wrapper ?? new ApiResponse<DeviceDict> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
+                return new ApiResponse<DeviceDict> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
+                return new ApiResponse<DeviceDict> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+            }
+        }
+
+        public async Task<FullDeviceInfo?> GetFullDeviceInfoAsync(int deviceID, string? lang = null)
+        {
+            if (string.IsNullOrWhiteSpace(lang))
+            {
+                lang = _userState.LangCode;
+            }
+
+            var deviceResponse = await GetSingleDeviceAsync(deviceID, lang);
+            if (!deviceResponse.IsValid || deviceResponse.Data == null || !deviceResponse.Data.Any())
+            {
+                Console.WriteLine($"[{_userState.UserName}] Failed to get basic device info for DeviceID: {deviceID}");
+                Debug.WriteLine($"[{_userState.UserName}] Failed to get basic device info for DeviceID: {deviceID}");
+                return null;
+            }
+
+            var fullDeviceInfo = new FullDeviceInfo
+            {
+                MachineID = deviceResponse.Data.First().MachineID,
+                AssetNo = deviceResponse.Data.First().AssetNo,
+                AssetNoShort = deviceResponse.Data.First().AssetNoShort,
+                DeviceCategory = deviceResponse.Data.First().DeviceCategory,
+                Type = deviceResponse.Data.First().Type,
+                SerialNo = deviceResponse.Data.First().SerialNo,
+                StateID = deviceResponse.Data.First().StateID,
+                CategoryID = deviceResponse.Data.First().CategoryID,
+                DocumentationPath = deviceResponse.Data.First().DocumentationPath,
+                Location = deviceResponse.Data.First().Location,
+                LocationRequired = deviceResponse.Data.First().LocationRequired,
+                LocationName = deviceResponse.Data.First().LocationName,
+                Place = deviceResponse.Data.First().Place,
+                IsCritical = deviceResponse.Data.First().IsCritical,
+                SetName = deviceResponse.Data.First().SetName,
+                SetID = deviceResponse.Data.First().SetID,
+                Active = deviceResponse.Data.First().Active,
+                Cycle = deviceResponse.Data.First().Cycle,
+                Owner = deviceResponse.Data.First().Owner
+            };
+
+            // Get details
+            var detailsResponse = await GetDeviceDetailAsync(deviceID, lang);
+            if (detailsResponse.IsValid && detailsResponse.Data != null)
+            {
+                fullDeviceInfo.Details = detailsResponse.Data;
+            }
+
+            // Get state
+            var stateResponse = await GetDeviceStateAsync(deviceID, lang);
+            if (stateResponse.IsValid && stateResponse.Data != null && stateResponse.Data.Any())
+            {
+                fullDeviceInfo.State = stateResponse.Data.First();
+            }
+
+            // Get status
+            var statusResponse = await GetDeviceStatusAsync(lang);
+            if (statusResponse.IsValid && statusResponse.Data != null)
+            {
+                fullDeviceInfo.Statuses = statusResponse.Data.Where(s => s.DeviceID == deviceID).ToList();
+            }
+
+            // Get image
+            var imageResponse = await GetDeviceImageAsync(deviceID);
+            if (imageResponse.IsValid && imageResponse.Data != null)
+            {
+                fullDeviceInfo.Images = imageResponse.Data;
+            }
+
+            return fullDeviceInfo;
         }
         #endregion
 

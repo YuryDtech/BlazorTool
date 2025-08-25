@@ -888,6 +888,7 @@
   </data>
   <data name="NavMenu_Devices" xml:space="preserve">
     <value>Devices</value>
+  </data>
   <data name="WorkOrderFiles_Title" xml:space="preserve">
     <value>Work Order Files</value>
   </data>

@@ -882,6 +882,7 @@
   </data>
   <data name="NavMenu_Devices" xml:space="preserve">
     <value>Urządzenia</value>
+  </data>
   <data name="WorkOrderFiles_Title" xml:space="preserve">
     <value>Pliki zlecenia</value>
   </data>

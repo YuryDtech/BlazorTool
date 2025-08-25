@@ -1,5 +1,8 @@
 ## 2025-08-25
 ### Nowe Funkcje
+* Zaimplementowano kompleksowe funkcje zarządzania urządzeniami, w tym nowe metody klienta API (`GetDeviceDetailAsync`, `GetDeviceStateAsync`, `GetDeviceStatusAsync`, `GetSingleDeviceAsync`, `GetDeviceImageAsync`, `GetDeviceDictionariesAsync`, `GetFullDeviceInfoAsync`), nowe kontrolery po stronie serwera (`GetDetail`, `GetState`, `GetStatus`, `Get`, `GetImage`, `GetDict`) oraz nowe modele danych (`DeviceDetailProperty.cs`, `DeviceDict.cs`, `DeviceImage.cs`, `DeviceState.cs`, `DeviceStatus.cs`, `FullDeviceInfo.cs`).
+* Ulepszono stronę Urządzeń, dodając domyślny `PageSize` równy 30 dla Telerik Grid.
+* Dodano wpisy lokalizacyjne "NavMenu_Devices" dla języka angielskiego i polskiego.
 * Dodano buforowanie dla plików zleceń pracy (`ApiServiceClient.GetWorkOrderFilesAsync`, `ApiServiceClient.GetWorkOrderFileAsync`) oraz publiczną metodę do unieważniania tych buforów (`ApiServiceClient.InvalidateWorkOrderFilesCache`).
 
 ## 2025-08-22

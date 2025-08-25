@@ -1,3 +1,9 @@
+## 2025-08-25
+### Features
+* Implemented comprehensive device management features, including new API client methods (`GetDeviceDetailAsync`, `GetDeviceStateAsync`, `GetDeviceStatusAsync`, `GetSingleDeviceAsync`, `GetDeviceImageAsync`, `GetDeviceDictionariesAsync`, `GetFullDeviceInfoAsync`), new server-side controllers (`GetDetail`, `GetState`, `GetStatus`, `Get`, `GetImage`, `GetDict`), and new data models (`DeviceDetailProperty.cs`, `DeviceDict.cs`, `DeviceImage.cs`, `DeviceState.cs`, `DeviceStatus.cs`, `FullDeviceInfo.cs`).
+* Enhanced Devices Page with a default `PageSize` of 30 for the Telerik Grid.
+* Added "NavMenu_Devices" localization entries for English and Polish.
+
 ## 2025-08-22
 ### Features
 * Added caching for work order files (`ApiServiceClient.GetWorkOrderFilesAsync`, `ApiServiceClient.GetWorkOrderFileAsync`) and a public method to invalidate these caches (`ApiServiceClient.InvalidateWorkOrderFilesCache`).
