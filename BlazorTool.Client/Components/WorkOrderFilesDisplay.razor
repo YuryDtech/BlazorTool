@@ -1,16 +1,18 @@
 @using BlazorTool.Client.Models
+@using Microsoft.Extensions.Localization
 @inject BlazorTool.Client.Services.ApiServiceClient ApiServiceClient
 @inject ILogger<WorkOrderFilesDisplay> Logger
+@inject IStringLocalizer<Resources.UIStrings> Localizer
 
-<h3>Файлы наряда</h3>
+<h3>@Localizer["WorkOrderFiles_Title"]</h3>
 
 @if (WorkOrderFiles == null)
 {
-    <p><em>Загрузка файлов...</em></p>
+    <p><em>@Localizer["WorkOrderFiles_LoadingFiles"]...</em></p>
 }
 else if (!WorkOrderFiles.Any())
 {
-    <p><em>Нет прикрепленных файлов.</em></p>
+    <p><em>@Localizer["WorkOrderFiles_NoAttachedFiles"].</em></p>
 }
 else
 {
@@ -28,7 +30,7 @@ else
                         }
                         else
                         {
-                            <span class="text-muted">Загрузка миниатюры...</span>
+                            <span class="text-muted">@Localizer["WorkOrderFiles_LoadingThumbnail"]...</span>
                         }
                     </div>
                 }
@@ -45,7 +47,7 @@ else
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">@CurrentFileName</h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" @onclick="CloseModal" aria-label="@Localizer["WorkOrderFiles_Close"]"></button>
                 </div>
                 <div class="modal-body text-center">
                     @if (!string.IsNullOrEmpty(FullSizeImageData))
@@ -54,11 +56,11 @@ else
                     }
                     else
                     {
-                        <p>Загрузка полноразмерного изображения...</p>
+                        <p>@Localizer["WorkOrderFiles_LoadingFullSizeImage"]...</p>
                     }
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Закрыть</button>
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">@Localizer["WorkOrderFiles_Close"]</button>
                 </div>
             </div>
         </div>
@@ -95,13 +97,13 @@ else
             }
             else
             {
-                Logger.LogError("Ошибка при загрузке списка файлов: {Errors}", string.Join(", ", response.Errors ?? new List<string>()));
+                Logger.LogError(Localizer["WorkOrderFiles_ErrorLoadingList"] + ": {Errors}", string.Join(", ", response.Errors ?? new List<string>()));
                 WorkOrderFiles = new List<WorkOrderFile>();
             }
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Непредвиденная ошибка при загрузке списка файлов для WorkOrderId {WorkOrderId}", WorkOrderId);
+            Logger.LogError(ex, Localizer["WorkOrderFiles_UnexpectedErrorLoadingList"] + " {WorkOrderId}", WorkOrderId);
             WorkOrderFiles = new List<WorkOrderFile>();
         }
     }
@@ -125,13 +127,13 @@ else
                     }
                     else
                     {
-                        Logger.LogWarning("Не удалось загрузить миниатюру для файла {FileName} (ID: {FileId}): {Errors}",
+                        Logger.LogWarning(Localizer["WorkOrderFiles_FailedToLoadThumbnail"] + " {FileName} (ID: {FileId}): {Errors}",
                             file.File_Name, file.WorkOrderDataID, string.Join(", ", response.Errors ?? new List<string>()));
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(ex, "Ошибка при загрузке миниатюры для файла {FileName} (ID: {FileId})", file.File_Name, file.WorkOrderDataID);
+                    Logger.LogError(ex, Localizer["WorkOrderFiles_ErrorLoadingThumbnail"] + " {FileName} (ID: {FileId})", file.File_Name, file.WorkOrderDataID);
                 }
             }
         }
@@ -156,14 +158,14 @@ else
                 }
                 else
                 {
-                    Logger.LogWarning("Не удалось загрузить полноразмерное изображение для файла {FileName} (ID: {FileId}): {Errors}",
+                    Logger.LogWarning(Localizer["WorkOrderFiles_FailedToLoadFullSizeImage"] + " {FileName} (ID: {FileId}): {Errors}",
                         file.File_Name, file.WorkOrderDataID, string.Join(", ", response.Errors ?? new List<string>()));
                     FullSizeImageData = ""; // Устанавливаем пустую строку, чтобы показать, что загрузка завершилась неудачно
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Ошибка при загрузке полноразмерного изображения для файла {FileName} (ID: {FileId})", file.File_Name, file.WorkOrderDataID);
+                Logger.LogError(ex, Localizer["WorkOrderFiles_ErrorLoadingFullSizeImage"] + " {FileName} (ID: {FileId})", file.File_Name, file.WorkOrderDataID);
                 FullSizeImageData = "";
             }
             StateHasChanged(); 
@@ -171,7 +173,7 @@ else
         else
         {
             // TODO: Обработка других типов файлов (например, скачивание)
-            Logger.LogInformation("Клик по файлу не-изображению: {FileName}", file.File_Name);
+            Logger.LogInformation(Localizer["WorkOrderFiles_NonImageFileClick"] + ": {FileName}", file.File_Name);
         }
     }
 

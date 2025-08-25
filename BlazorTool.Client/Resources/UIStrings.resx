@@ -871,4 +871,43 @@
   <data name="NoData" xml:space="preserve">
     <value>No data loaded</value>
   </data>
+  <data name="WorkOrderFiles_Title" xml:space="preserve">
+    <value>Work Order Files</value>
+  </data>
+  <data name="WorkOrderFiles_LoadingFiles" xml:space="preserve">
+    <value>Loading files</value>
+  </data>
+  <data name="WorkOrderFiles_NoAttachedFiles" xml:space="preserve">
+    <value>No attached files</value>
+  </data>
+  <data name="WorkOrderFiles_LoadingThumbnail" xml:space="preserve">
+    <value>Loading thumbnail</value>
+  </data>
+  <data name="WorkOrderFiles_LoadingFullSizeImage" xml:space="preserve">
+    <value>Loading full-size image</value>
+  </data>
+  <data name="WorkOrderFiles_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="WorkOrderFiles_ErrorLoadingList" xml:space="preserve">
+    <value>Error loading file list</value>
+  </data>
+  <data name="WorkOrderFiles_UnexpectedErrorLoadingList" xml:space="preserve">
+    <value>Unexpected error loading file list for WorkOrderId</value>
+  </data>
+  <data name="WorkOrderFiles_FailedToLoadThumbnail" xml:space="preserve">
+    <value>Failed to load thumbnail for file</value>
+  </data>
+  <data name="WorkOrderFiles_ErrorLoadingThumbnail" xml:space="preserve">
+    <value>Error loading thumbnail for file</value>
+  </data>
+  <data name="WorkOrderFiles_FailedToLoadFullSizeImage" xml:space="preserve">
+    <value>Failed to load full-size image for file</value>
+  </data>
+  <data name="WorkOrderFiles_ErrorLoadingFullSizeImage" xml:space="preserve">
+    <value>Error loading full-size image for file</value>
+  </data>
+  <data name="WorkOrderFiles_NonImageFileClick" xml:space="preserve">
+    <value>Non-image file click</value>
+  </data>
 </root>

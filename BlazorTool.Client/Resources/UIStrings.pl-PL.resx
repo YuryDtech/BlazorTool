@@ -865,4 +865,43 @@
   <data name="NoData" xml:space="preserve">
     <value>Brak załadowanych danych</value>
   </data>
+  <data name="WorkOrderFiles_Title" xml:space="preserve">
+    <value>Pliki zlecenia</value>
+  </data>
+  <data name="WorkOrderFiles_LoadingFiles" xml:space="preserve">
+    <value>Ładowanie plików</value>
+  </data>
+  <data name="WorkOrderFiles_NoAttachedFiles" xml:space="preserve">
+    <value>Brak załączonych plików</value>
+  </data>
+  <data name="WorkOrderFiles_LoadingThumbnail" xml:space="preserve">
+    <value>Ładowanie miniatury</value>
+  </data>
+  <data name="WorkOrderFiles_LoadingFullSizeImage" xml:space="preserve">
+    <value>Ładowanie pełnowymiarowego obrazu</value>
+  </data>
+  <data name="WorkOrderFiles_Close" xml:space="preserve">
+    <value>Zamknij</value>
+  </data>
+  <data name="WorkOrderFiles_ErrorLoadingList" xml:space="preserve">
+    <value>Błąd ładowania listy plików</value>
+  </data>
+  <data name="WorkOrderFiles_UnexpectedErrorLoadingList" xml:space="preserve">
+    <value>Nieoczekiwany błąd podczas ładowania listy plików dla WorkOrderId</value>
+  </data>
+  <data name="WorkOrderFiles_FailedToLoadThumbnail" xml:space="preserve">
+    <value>Nie udało się załadować miniatury dla pliku</value>
+  </data>
+  <data name="WorkOrderFiles_ErrorLoadingThumbnail" xml:space="preserve">
+    <value>Błąd podczas ładowania miniatury dla pliku</value>
+  </data>
+  <data name="WorkOrderFiles_FailedToLoadFullSizeImage" xml:space="preserve">
+    <value>Nie udało się załadować pełnowymiarowego obrazu dla pliku</value>
+  </data>
+  <data name="WorkOrderFiles_ErrorLoadingFullSizeImage" xml:space="preserve">
+    <value>Błąd podczas ładowania pełnowymiarowego obrazu dla pliku</value>
+  </data>
+  <data name="WorkOrderFiles_NonImageFileClick" xml:space="preserve">
+    <value>Kliknięcie pliku niebędącego obrazem</value>
+  </data>
 </root>
