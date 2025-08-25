@@ -27,6 +27,8 @@ namespace BlazorTool.Client.Services
         private List<WODict> _dictCache = new List<WODict>();
         private List<WODict> _actDictCache = new List<WODict>();
         private List<Person> _personsCache = new List<Person>();
+        private Dictionary<int, ApiResponse<WorkOrderFile>> _workOrderFilesCache = new Dictionary<int, ApiResponse<WorkOrderFile>>();
+        private Dictionary<string, SingleResponse<WorkOrderFileData>> _workOrderFileCache = new Dictionary<string, SingleResponse<WorkOrderFileData>>();
 
         public ApiServiceClient(HttpClient http, UserState userState)
         {
@@ -307,6 +309,17 @@ namespace BlazorTool.Client.Services
                 Debug.WriteLine($"[{_userState.UserName}] Work orders cache for device {deviceId} invalidated.");
             }
         }
+
+        /// <summary>
+        /// Clears the entire work order files cache.
+        /// </summary>
+        public void InvalidateWorkOrderFilesCache()
+        {
+            _workOrderFilesCache.Clear();
+            _workOrderFileCache.Clear();
+            Console.WriteLine($"[{_userState.UserName}] Work order files cache invalidated.");
+            Debug.WriteLine($"[{_userState.UserName}] Work order files cache invalidated.");
+        }
         #endregion
 
         
@@ -380,6 +393,14 @@ namespace BlazorTool.Client.Services
                 return new ApiResponse<WorkOrderFile> { IsValid = false, Errors = new List<string> { "Invalid WorkOrderID." } };
             }
 
+            // Check cache first
+            if (_workOrderFilesCache.TryGetValue(workOrderId, out var cachedResponse))
+            {
+                Console.WriteLine($"[{_userState.UserName}] Work order files for WO {workOrderId} found in cache.");
+                Debug.WriteLine($"[{_userState.UserName}] Work order files for WO {workOrderId} found in cache.");
+                return cachedResponse;
+            }
+
             var url = $"wo/getfiles?WorkOrderID={workOrderId}";
             try
             {
@@ -390,6 +411,8 @@ namespace BlazorTool.Client.Services
                     Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrderFilesAsync: Empty response from API for {url}");
                     return new ApiResponse<WorkOrderFile> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
                 }
+                // Cache the result
+                _workOrderFilesCache[workOrderId] = response;
                 return response;
             }
             catch (HttpRequestException ex)
@@ -415,8 +438,18 @@ namespace BlazorTool.Client.Services
                 return new SingleResponse<WorkOrderFileData> { IsValid = false, Errors = new List<string> { "Invalid WorkOrderDataID." } };
             }
             string size = string.Empty;
-            if (width > 1 || height > 1) {
-                size = $"&Width ={width}&Height={height}";
+            if (width > 1 || height > 1)
+            {
+                size = $"&Width={width}&Height={height}";
+            }
+            var cacheKey = $"{workOrderDataId}-{width}-{height}";
+
+            // Check cache first
+            if (_workOrderFileCache.TryGetValue(cacheKey, out var cachedResponse))
+            {
+                Console.WriteLine($"[{_userState.UserName}] Work order file for {cacheKey} found in cache.");
+                Debug.WriteLine($"[{_userState.UserName}] Work order file for {cacheKey} found in cache.");
+                return cachedResponse;
             }
             var url = $"wo/getfile?WorkOrderDataID={workOrderDataId}{size}";
             try
@@ -428,6 +461,8 @@ namespace BlazorTool.Client.Services
                     Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient.GetWorkOrderFileAsync: Empty response from API for {url}");
                     return new SingleResponse<WorkOrderFileData> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
                 }
+                // Cache the result
+                _workOrderFileCache[cacheKey] = response;
                 return response;
             }
             catch (HttpRequestException ex)

@@ -1,3 +1,7 @@
+## 2025-08-25
+### Nowe Funkcje
+* Dodano buforowanie dla plików zleceń pracy (`ApiServiceClient.GetWorkOrderFilesAsync`, `ApiServiceClient.GetWorkOrderFileAsync`) oraz publiczną metodę do unieważniania tych buforów (`ApiServiceClient.InvalidateWorkOrderFilesCache`).
+
 ## 2025-08-22
 ### Nowe Funkcje
 * Dodano metodę pobierania plików zlecenia pracy (model `WorkOrderFile`, `ApiServiceClient.GetWorkOrderFilesAsync`, `WoController.GetFiles`).

@@ -37,7 +37,7 @@ else
     </div>
 }
 
-@* Модальное окно для полноразмерного изображения *@
+
 @if (ShowModal)
 {
     <div class="modal fade show d-block" tabindex="-1" role="dialog">
@@ -73,7 +73,6 @@ else
     private List<WorkOrderFile>? WorkOrderFiles { get; set; }
     private Dictionary<int, string> FileThumbnails { get; set; } = new Dictionary<int, string>();
 
-    // Состояние для модального окна
     private bool ShowModal { get; set; }
     private string? CurrentFileName { get; set; }
     private string? CurrentFileExtension { get; set; }
@@ -117,12 +116,12 @@ else
             {
                 try
                 {
-                    // Загружаем миниатюру с размерами 100x100
+                    // 100x100
                     var response = await ApiServiceClient.GetWorkOrderFileAsync(file.WorkOrderDataID, 100, 100);
                     if (response.IsValid && response.Data != null && !string.IsNullOrEmpty(response.Data.Data))
                     {
                         FileThumbnails[file.WorkOrderDataID] = response.Data.Data;
-                        StateHasChanged(); // Обновляем UI после загрузки миниатюры
+                        StateHasChanged();
                     }
                     else
                     {
@@ -144,14 +143,13 @@ else
         {
             CurrentFileName = file.File_Name;
             CurrentFileExtension = file.Extension;
-            FullSizeImageData = null; // Сбрасываем предыдущее изображение
+            FullSizeImageData = null;
             ShowModal = true;
             StateHasChanged();
 
             try
             {
-                // Загружаем полноразмерное изображение без указания размеров
-                var response = await ApiServiceClient.GetWorkOrderFileAsync(file.WorkOrderDataID, 0, 0); // Передаем 0,0 для получения полного размера
+                var response = await ApiServiceClient.GetWorkOrderFileAsync(file.WorkOrderDataID, 0, 0);
                 if (response.IsValid && response.Data != null && !string.IsNullOrEmpty(response.Data.Data))
                 {
                     FullSizeImageData = response.Data.Data;
@@ -166,9 +164,9 @@ else
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Ошибка при загрузке полноразмерного изображения для файла {FileName} (ID: {FileId})", file.File_Name, file.WorkOrderDataID);
-                FullSizeImageData = ""; // Устанавливаем пустую строку в случае ошибки
+                FullSizeImageData = "";
             }
-            StateHasChanged(); // Обновляем UI после загрузки полноразмерного изображения
+            StateHasChanged(); 
         }
         else
         {

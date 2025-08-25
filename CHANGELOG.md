@@ -1,5 +1,9 @@
 ## 2025-08-22
 ### Features
+* Added caching for work order files (`ApiServiceClient.GetWorkOrderFilesAsync`, `ApiServiceClient.GetWorkOrderFileAsync`) and a public method to invalidate these caches (`ApiServiceClient.InvalidateWorkOrderFilesCache`).
+
+## 2025-08-22
+### Features
 * Added method to retrieve a single work order file (`WorkOrderFileData` model, `ApiServiceClient.GetWorkOrderFileAsync`, `WoController.GetFile`).
 * Added method to retrieve work order files (`WorkOrderFile` model, `ApiServiceClient.GetWorkOrderFilesAsync`, `WoController.GetFiles`).
 * Added user information display on the Settings page.
