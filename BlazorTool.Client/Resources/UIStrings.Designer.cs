@@ -682,6 +682,285 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No device selected..
+        /// </summary>
+        public static string DeviceDetails_NoDeviceSelected {
+            get {
+                return ResourceManager.GetString("DeviceDetails_NoDeviceSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device Details.
+        /// </summary>
+        public static string DeviceDetails_Title {
+            get {
+                return ResourceManager.GetString("DeviceDetails_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category.
+        /// </summary>
+        public static string DeviceDisplay_Category {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changed:.
+        /// </summary>
+        public static string DeviceDisplay_Changed {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Changed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Critical.
+        /// </summary>
+        public static string DeviceDisplay_Critical {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Critical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to d.
+        /// </summary>
+        public static string DeviceDisplay_DaysAbbr {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_DaysAbbr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Detail.
+        /// </summary>
+        public static string DeviceDisplay_Detail {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Detail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device.
+        /// </summary>
+        public static string DeviceDisplay_Device {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Device", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device Details.
+        /// </summary>
+        public static string DeviceDisplay_DeviceDetails {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_DeviceDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device Images.
+        /// </summary>
+        public static string DeviceDisplay_DeviceImages {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_DeviceImages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device State.
+        /// </summary>
+        public static string DeviceDisplay_DeviceState {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_DeviceState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device Statuses.
+        /// </summary>
+        public static string DeviceDisplay_DeviceStatuses {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_DeviceStatuses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Documentation.
+        /// </summary>
+        public static string DeviceDisplay_Documentation {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Documentation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duration:.
+        /// </summary>
+        public static string DeviceDisplay_Duration {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Duration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to load device information.
+        /// </summary>
+        public static string DeviceDisplay_ErrorLoadingInfo {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_ErrorLoadingInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General Information.
+        /// </summary>
+        public static string DeviceDisplay_GeneralInfo {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_GeneralInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to h.
+        /// </summary>
+        public static string DeviceDisplay_HoursAbbr {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_HoursAbbr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device Image.
+        /// </summary>
+        public static string DeviceDisplay_ImageModalTitle {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_ImageModalTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading device information....
+        /// </summary>
+        public static string DeviceDisplay_LoadingInfo {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_LoadingInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location.
+        /// </summary>
+        public static string DeviceDisplay_Location {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Location", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to min.
+        /// </summary>
+        public static string DeviceDisplay_MinutesAbbr {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_MinutesAbbr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not specified.
+        /// </summary>
+        public static string DeviceDisplay_NotSpecified {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_NotSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open documentation.
+        /// </summary>
+        public static string DeviceDisplay_OpenDocumentation {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_OpenDocumentation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Owner.
+        /// </summary>
+        public static string DeviceDisplay_Owner {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Owner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Place.
+        /// </summary>
+        public static string DeviceDisplay_Place {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Place", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Property.
+        /// </summary>
+        public static string DeviceDisplay_Property {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Property", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Serial Number.
+        /// </summary>
+        public static string DeviceDisplay_SerialNo {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_SerialNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set.
+        /// </summary>
+        public static string DeviceDisplay_Set {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Set", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string DeviceDisplay_Status {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string DeviceDisplay_Type {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string DeviceDisplay_Value {
+            get {
+                return ResourceManager.GetString("DeviceDisplay_Value", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Devices.
         /// </summary>
         public static string DevicesPage_Title {
@@ -2415,6 +2694,15 @@ namespace BlazorTool.Client.Resources {
         public static string WorkOrderFiles_LoadingFullSizeImage {
             get {
                 return ResourceManager.GetString("WorkOrderFiles_LoadingFullSizeImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading image.
+        /// </summary>
+        public static string WorkOrderFiles_LoadingImage {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_LoadingImage", resourceCulture);
             }
         }
         

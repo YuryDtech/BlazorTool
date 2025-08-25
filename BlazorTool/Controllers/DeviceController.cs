@@ -210,10 +210,10 @@ namespace BlazorTool.Controllers
                 var response = await client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<DeviceImage>>();
+                var wrapper = await response.Content.ReadFromJsonAsync<SingleResponse<DeviceImage>>();
                 return Ok(new
                 {
-                    data = wrapper?.Data ?? new List<DeviceImage>(),
+                    data = wrapper?.Data ?? new DeviceImage(),
                     isValid = true,
                     errors = Array.Empty<string>()
                 });

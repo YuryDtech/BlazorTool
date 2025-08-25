@@ -1,17 +1,19 @@
 @using BlazorTool.Client.Models
+@using BlazorTool.Client.Resources
 @using BlazorTool.Client.Services
 @inject ApiServiceClient ApiService
 @inject UserState UserState
+@inject IStringLocalizer<UIStrings> Loc
 
 <div class="device-display-container">
     <TelerikLoaderContainer Visible="@_isLoading" Template="@LoaderTemplate">
     </TelerikLoaderContainer>
         @if (_deviceInfo == null)
         {
-            <div class="error-message">
+            @* <div class="error-message">
                 <TelerikSvgIcon Icon="@SvgIcon.ExclamationCircle" Size="@ThemeConstants.SvgIcon.Size.Large"></TelerikSvgIcon>
-                <p>Не удалось загрузить информацию об устройстве</p>
-            </div>
+                @* <p>@Loc["DeviceDisplay_ErrorLoadingInfo"]</p> 
+            </div> *@
         }
         else
         {
@@ -26,7 +28,7 @@
                     {
                         <div class="critical-badge">
                             <TelerikSvgIcon Icon="@SvgIcon.WarningTriangle" Size="@ThemeConstants.SvgIcon.Size.Small"></TelerikSvgIcon>
-                            <span>Критическое</span>
+                            <span>@Loc["DeviceDisplay_Critical"]</span>
                         </div>
                     }
                 </div>
@@ -48,52 +50,52 @@
                         <CardHeader>
                             <div class="card-header-with-icon">
                                 <TelerikSvgIcon Icon="@SvgIcon.InfoCircle" Size="@ThemeConstants.SvgIcon.Size.Medium"></TelerikSvgIcon>
-                                <h3>Общая информация</h3>
+                                <h3>@Loc["DeviceDisplay_GeneralInfo"]</h3>
                             </div>
                         </CardHeader>
                         <CardBody>
                             <div class="info-grid">
                                 <div class="info-item">
-                                    <label>Категория</label>
+                                    <label>@Loc["DeviceDisplay_Category"]</label>
                                     <span>@_deviceInfo.DeviceCategory</span>
                                 </div>
                                 <div class="info-item">
-                                    <label>Серийный номер</label>
+                                    <label>@Loc["DeviceDisplay_SerialNo"]</label>
                                     <span>@_deviceInfo.SerialNo</span>
                                 </div>
                                 <div class="info-item">
-                                    <label>Расположение</label>
-                                    <span>@(_deviceInfo.LocationName ?? "Не указано")</span>
+                                    <label>@Loc["DeviceDisplay_Location"]</label>
+                                    <span>@(_deviceInfo.LocationName ?? Loc["DeviceDisplay_NotSpecified"])</span>
                                 </div>
                                 @if (!string.IsNullOrEmpty(_deviceInfo.Place))
                                 {
                                     <div class="info-item">
-                                        <label>Место</label>
+                                        <label>@Loc["DeviceDisplay_Place"]</label>
                                         <span>@_deviceInfo.Place</span>
                                     </div>
                                 }
                                 @if (!string.IsNullOrEmpty(_deviceInfo.Owner))
                                 {
                                     <div class="info-item">
-                                        <label>Владелец</label>
+                                        <label>@Loc["DeviceDisplay_Owner"]</label>
                                         <span>@_deviceInfo.Owner</span>
                                     </div>
                                 }
                                 @if (!string.IsNullOrEmpty(_deviceInfo.SetName))
                                 {
                                     <div class="info-item">
-                                        <label>Набор</label>
+                                        <label>@Loc["DeviceDisplay_Set"]</label>
                                         <span>@_deviceInfo.SetName</span>
                                     </div>
                                 }
                                 @if (!string.IsNullOrEmpty(_deviceInfo.DocumentationPath))
                                 {
                                     <div class="info-item full-width">
-                                        <label>Документация</label>
+                                        <label>@Loc["DeviceDisplay_Documentation"]</label>
                                         <TelerikButton OnClick="@(() => OpenDocumentation(_deviceInfo.DocumentationPath))" 
                                                      Icon="@SvgIcon.FileData" 
                                                      Class="doc-button">
-                                            Открыть документацию
+                                            @Loc["DeviceDisplay_OpenDocumentation"]
                                         </TelerikButton>
                                     </div>
                                 }
@@ -108,7 +110,7 @@
                             <CardHeader>
                                 <div class="card-header-with-icon">
                                     <TelerikSvgIcon Icon="@SvgIcon.Clock" Size="@ThemeConstants.SvgIcon.Size.Medium"></TelerikSvgIcon>
-                                    <h3>Состояние устройства</h3>
+                                    <h3>@Loc["DeviceDisplay_DeviceState"]</h3>
                                 </div>
                             </CardHeader>
                             <CardBody>
@@ -116,13 +118,13 @@
                                     <div class="state-main">
                                         <div class="state-name">@_deviceInfo.State.StateName</div>
                                         <div class="state-duration">
-                                            Продолжительность: @FormatDuration(_deviceInfo.State.StateTime)
+                                            @Loc["DeviceDisplay_Duration"] @FormatDuration(_deviceInfo.State.StateTime)
                                         </div>
                                     </div>
                                     @if (_deviceInfo.State.ChangeTime.HasValue)
                                     {
                                         <div class="state-change-time">
-                                            Изменено: @_deviceInfo.State.ChangeTime.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss")
+                                            @Loc["DeviceDisplay_Changed"] @_deviceInfo.State.ChangeTime.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss")
                                         </div>
                                     }
                                 </div>
@@ -134,13 +136,16 @@
                 <!-- Right Column -->
                 <div class="right-column">
                     <!-- Device Images -->
-                    @if (_deviceInfo.Images != null && _deviceInfo.Images.Any(i => !string.IsNullOrEmpty(i.Image)))
+                @if (!_isImageLoading)
+                {                   
+                
+                @if (_deviceInfo.Images != null && _deviceInfo.Images.Any(i => !string.IsNullOrEmpty(i.Image)))
                     {
                         <TelerikCard Class="images-card">
                             <CardHeader>
                                 <div class="card-header-with-icon">
                                     <TelerikSvgIcon Icon="@SvgIcon.Image" Size="@ThemeConstants.SvgIcon.Size.Medium"></TelerikSvgIcon>
-                                    <h3>Изображения устройства</h3>
+                                    <h3>@Loc["DeviceDisplay_DeviceImages"]</h3>
                                 </div>
                             </CardHeader>
                             <CardBody>
@@ -156,9 +161,17 @@
                                     }
                                 </div>
                             </CardBody>
-                        </TelerikCard>
+                    </TelerikCard>
+                }else
+                {
+                        <div>No images</div>
                     }
-                </div>
+
+                }else
+                {
+                    <div>@Loc["WorkOrderFiles_LoadingImage"]</div>
+                }
+            </div>
             </div>
 
             <!-- Full Width Sections -->
@@ -170,7 +183,7 @@
                         <CardHeader>
                             <div class="card-header-with-icon">
                                 <TelerikSvgIcon Icon="@SvgIcon.ListUnordered" Size="@ThemeConstants.SvgIcon.Size.Medium"></TelerikSvgIcon>
-                                <h3>Детали устройства</h3>
+                                <h3>@Loc["DeviceDisplay_DeviceDetails"]</h3>
                             </div>
                         </CardHeader>
                         <CardBody>
@@ -181,13 +194,13 @@
                                        Sortable="true" 
                                        FilterMode="GridFilterMode.FilterRow">
                                 <GridColumns>
-                                    <GridColumn Field="@nameof(DeviceDetailProperty.PropertyName)" Title="Свойство" Width="300px">
+                                    <GridColumn Field="@nameof(DeviceDetailProperty.PropertyName)" Title="@Loc["DeviceDisplay_Property"]" Width="300px">
                                         <Template>
                                             @{var item = context as DeviceDetailProperty;}
                                             <strong>@item.PropertyName</strong>
                                         </Template>
                                     </GridColumn>
-                                    <GridColumn Field="@nameof(DeviceDetailProperty.PropertyValue)" Title="Значение">
+                                    <GridColumn Field="@nameof(DeviceDetailProperty.PropertyValue)" Title="@Loc["DeviceDisplay_Value"]">
                                         <Template>
                                             @{
                                                 var item = context as DeviceDetailProperty;
@@ -195,7 +208,7 @@
                                             <span class="property-value">@item.PropertyValue</span>
                                         </Template>
                                     </GridColumn>
-                                    <GridColumn Field="@nameof(DeviceDetailProperty.PropertyType)" Title="Тип" Width="150px">
+                                    <GridColumn Field="@nameof(DeviceDetailProperty.PropertyType)" Title="@Loc["DeviceDisplay_Type"]" Width="150px">
                                         <Template>
                                             @{
                                                 var item = context as DeviceDetailProperty;
@@ -216,24 +229,27 @@
                         <CardHeader>
                             <div class="card-header-with-icon">
                                 <TelerikSvgIcon Icon="@SvgIcon.Gear" Size="@ThemeConstants.SvgIcon.Size.Medium"></TelerikSvgIcon>
-                                <h3>Статусы устройства</h3>
+                                <h3>@Loc["DeviceDisplay_DeviceStatuses"]</h3>
                             </div>
                         </CardHeader>
-                        @* <CardBody>
+                        <CardBody>
                             <TelerikGrid Data="@_deviceInfo.Statuses" 
                                        Height="400px" 
                                        Pageable="true" 
                                        PageSize="10" 
                                        Sortable="true">
                                 <GridColumns>
-                                    <GridColumn Field="@nameof(DeviceStatus.DeviceName)" Title="Устройство" Width="200px"></GridColumn>
-                                    <GridColumn Field="@nameof(DeviceStatus.Detail)" Title="Деталь"></GridColumn>
-                                    <GridColumn Field="@nameof(DeviceStatus.Color)" Title="Статус" Width="120px">
+                                    <GridColumn Field="@nameof(DeviceStatus.DeviceName)" Title="@Loc["DeviceDisplay_Device"]" Width="200px"></GridColumn>
+                                    <GridColumn Field="@nameof(DeviceStatus.Detail)" Title="@Loc["DeviceDisplay_Detail"]"></GridColumn>
+                                    <GridColumn Field="@nameof(DeviceStatus.Color)" Title="@Loc["DeviceDisplay_Status"]" Width="120px">
                                         <Template>
-                                            <div class="status-indicator" style="background-color: @context.Color;">
-                                                @if (!string.IsNullOrEmpty(context.Icon))
+                                        @{
+                                            var item = context as DeviceStatus;
+                                        }
+                                        <div class="status-indicator" style="background-color: @item.Color;">
+                                            @if (!string.IsNullOrEmpty(item.Icon))
                                                 {
-                                                    <img src="data:image/png;base64,@context.Icon" alt="Icon" class="status-icon" />
+                                                <img src="data:image/png;base64,@item.Icon" alt="Icon" class="status-icon" />
                                                 }
                                             </div>
                                         </Template>
@@ -241,7 +257,7 @@
                                     <GridColumn Field="@nameof(DeviceStatus.Type)" Title="Тип" Width="100px"></GridColumn>
                                 </GridColumns>
                             </TelerikGrid>
-                        </CardBody> *@
+                        </CardBody>
                     </TelerikCard>
                 }
             </div>
@@ -250,12 +266,18 @@
 </div>
 
 <!-- Image Modal -->
-<TelerikWindow @bind-Visible="@_showImageModal" Modal="true" Class="image-modal">
-    <WindowTitle>Изображение устройства</WindowTitle>
+<TelerikWindow @bind-Visible="@_showImageModal" Modal="true" Class="image-modal" CloseOnOverlayClick="true" >
+    <WindowTitle>@Loc["DeviceDisplay_ImageModalTitle"]</WindowTitle>
     <WindowContent>
         @if (!string.IsNullOrEmpty(_selectedImage))
         {
-            <img src="data:image/png;base64,@_selectedImage" alt="Device Image" class="modal-image" />
+            @if (!_isFullImageLoading)
+            {
+                <img src="data:image/png;base64,@_selectedImage" alt="Device Image" class="modal-image" />
+            }else
+            {
+                <div>@Loc["WorkOrderFiles_LoadingFullSizeImage"]</div>
+            }
         }
     </WindowContent>
     <WindowActions>
@@ -271,11 +293,15 @@
     private bool _isLoading = true;
     private bool _showImageModal = false;
     private string? _selectedImage;
-
+    private bool _isImageLoading = false;
+    private bool _isFullImageLoading = false;
+    private int ImgHeight = 300;
+    private int ImgWidth = 300;
+    private bool isFullImgLoaded = false;
     private RenderFragment LoaderTemplate => __builder => {
         <div class="loader-wrapper">
             <TelerikLoader Type="@LoaderType.ConvergingSpinner" Size="large"></TelerikLoader>
-            <p class="loading-text">Загрузка информации об устройстве...</p>
+            <p class="loading-text">@Loc["DeviceDisplay_LoadingInfo"]</p>
         </div>
     };
 
@@ -284,9 +310,12 @@
         if (DeviceID <= 0) return;
 
         _isLoading = true;
+        _isImageLoading = true;
         try
         {
             _deviceInfo = await ApiService.GetFullDeviceInfoAsync(DeviceID, UserState.LangCode);
+            _isLoading = false;
+            await LoadImages(ImgWidth, ImgHeight);
         }
         catch (Exception ex)
         {
@@ -296,13 +325,29 @@
         finally
         {
             _isLoading = false;
+            _isImageLoading = false;
         }
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+    }
+
+    private async Task<DeviceImage> LoadImages(int? width = null, int? height = null)
+    {
+        var imageResponse = await ApiService.GetDeviceImageAsync(DeviceID, width, height);
+        if (imageResponse.IsValid && imageResponse.Data != null)
+        {
+            _deviceInfo?.Images?.Clear();
+            _deviceInfo?.Images?.Add(imageResponse.Data);
+        }
+        return imageResponse.Data;
+    }
     private string GetStatusClass()
     {
         if (_deviceInfo?.State == null) return "status-unknown";
-        
+
         return _deviceInfo.State.StateID switch
         {
             1 => "status-running",
@@ -316,28 +361,33 @@
     private string FormatDuration(int minutes)
     {
         if (minutes < 60)
-            return $"{minutes} мин";
-        
+            return $"{minutes} {Loc["DeviceDisplay_MinutesAbbr"]}";
+
         var hours = minutes / 60;
         var remainingMinutes = minutes % 60;
-        
+
         if (hours < 24)
-            return $"{hours} ч {remainingMinutes} мин";
-        
+            return $"{hours} {Loc["DeviceDisplay_HoursAbbr"]} {remainingMinutes} {Loc["DeviceDisplay_MinutesAbbr"]}";
+
         var days = hours / 24;
         var remainingHours = hours % 24;
-        
-        return $"{days} д {remainingHours} ч {remainingMinutes} мин";
+
+        return $"{days} {Loc["DeviceDisplay_DaysAbbr"]} {remainingHours} {Loc["DeviceDisplay_HoursAbbr"]} {remainingMinutes} {Loc["DeviceDisplay_MinutesAbbr"]}";
     }
 
     private void OpenDocumentation(string? path)
     {
-        
+
     }
 
-    private void OpenImageModal(string? image)
+    private async Task OpenImageModal(string? image)
     {
+        if (isFullImgLoaded) return;
+        _isFullImageLoading = true;
         _selectedImage = image;
         _showImageModal = true;
+        _selectedImage = (await LoadImages()).Image;
+        _isFullImageLoading = false;
+        isFullImgLoaded = true;
     }
 }

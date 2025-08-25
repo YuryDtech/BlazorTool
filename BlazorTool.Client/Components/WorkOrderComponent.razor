@@ -62,7 +62,7 @@
                         <label>@Localizer[nameof(WorkOrder.WODesc)]:</label>
                         <div class="control-wrapper">
                             <TelerikTextArea @bind-Value="@WorkOrder.WODesc"
-                                             ReadOnly="@(isEditable == false || UserState.HasPermission(PermissionType.WO_Edit_Description))"
+                                             ReadOnly="@(isEditable == false || (!UserState.HasPermission(PermissionType.WO_Edit_Description) && !isNewWorkOrder))"
                                              Size="sm"
                                              Rows="6"
                                              ResizeMode="@TextAreaResizeMode.Vertical"

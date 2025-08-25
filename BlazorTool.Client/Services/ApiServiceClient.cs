@@ -31,7 +31,7 @@ namespace BlazorTool.Client.Services
         private Dictionary<string, SingleResponse<WorkOrderFileData>> _workOrderFileCache = new Dictionary<string, SingleResponse<WorkOrderFileData>>();
 
         private Dictionary<string, ApiResponse<DeviceStatus>> _deviceStatusCache = new Dictionary<string, ApiResponse<DeviceStatus>>();
-        private Dictionary<string, ApiResponse<DeviceImage>> _deviceImageCache = new Dictionary<string, ApiResponse<DeviceImage>>();
+        private Dictionary<string, SingleResponse<DeviceImage>> _deviceImageCache = new Dictionary<string, SingleResponse<DeviceImage>>();
         private Dictionary<string, ApiResponse<DeviceDict>> _deviceDictCache = new Dictionary<string, ApiResponse<DeviceDict>>();
 
         public ApiServiceClient(HttpClient http, UserState userState)
@@ -1190,7 +1190,7 @@ namespace BlazorTool.Client.Services
             }
         }
 
-        public async Task<ApiResponse<DeviceImage>> GetDeviceImageAsync(int deviceID, int? width = null, int? height = null)
+        public async Task<SingleResponse<DeviceImage>> GetDeviceImageAsync(int deviceID, int? width = null, int? height = null)
         {
             var cacheKey = $"{deviceID}-{width}-{height}";
 
@@ -1210,25 +1210,25 @@ namespace BlazorTool.Client.Services
 
             try
             {
-                var wrapper = await _http.GetFromJsonAsync<ApiResponse<DeviceImage>>(url);
+                var wrapper = await _http.GetFromJsonAsync<SingleResponse<DeviceImage>>(url);
                 Console.WriteLine($"[{_userState.UserName}] = = = = = = = API response-> DeviceImage for {deviceID}");
                 if (wrapper != null && wrapper.IsValid)
                 {
                     _deviceImageCache[cacheKey] = wrapper;
                 }
-                return wrapper ?? new ApiResponse<DeviceImage> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
+                return wrapper ?? new SingleResponse<DeviceImage> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
             }
             catch (HttpRequestException ex)
             {
                 Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
-                return new ApiResponse<DeviceImage> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+                return new SingleResponse<DeviceImage> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
                 Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
-                return new ApiResponse<DeviceImage> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+                return new SingleResponse<DeviceImage> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
             }
         }
 
@@ -1285,7 +1285,7 @@ namespace BlazorTool.Client.Services
             }
         }
 
-        public async Task<FullDeviceInfo?> GetFullDeviceInfoAsync(int deviceID, string? lang = null)
+        public async Task<FullDeviceInfo?> GetFullDeviceInfoAsync(int deviceID, string? lang = null, bool skipImageLoad = true)
         {
             if (string.IsNullOrWhiteSpace(lang))
             {
@@ -1345,10 +1345,13 @@ namespace BlazorTool.Client.Services
             }
 
             // Get image
-            var imageResponse = await GetDeviceImageAsync(deviceID);
-            if (imageResponse.IsValid && imageResponse.Data != null)
+            if (!skipImageLoad)
             {
-                fullDeviceInfo.Images = imageResponse.Data;
+                var imageResponse = await GetDeviceImageAsync(deviceID);
+                if (imageResponse.IsValid && imageResponse.Data != null)
+                {
+                    fullDeviceInfo.Images.Add(imageResponse.Data);
+                }
             }
 
             return fullDeviceInfo;
@@ -1454,8 +1457,8 @@ namespace BlazorTool.Client.Services
 
         public List<WODict> GetWOCategoriesByDeviceCategory(int devCategoryId)
         {
-            return (GetWODictionariesCached()).Where(d => d.ListType == (int)WOListTypeEnum.Category &&
-            (d.MachineCategoryID == devCategoryId) || d.MachineCategoryID == null)
+            return (GetWODictionariesCached()).Where(d => d.ListType == (int)WOListTypeEnum.Category 
+            && (d.MachineCategoryID == devCategoryId) || d.MachineCategoryID == null)
                 .Distinct()
                 .ToList();
         }

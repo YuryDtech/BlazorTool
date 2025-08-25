@@ -146,6 +146,11 @@
     gap: 20px;
 }
 
+::deep .images-card {
+    height: fit-content;
+    align-self: start;
+}
+
 .full-width-sections {
     display: flex;
     flex-direction: column;
@@ -160,10 +165,9 @@
     overflow: hidden;
 }
 
-.k-card-header {
-    background: #f8f9fa;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 16px 20px;
+::deep .k-card-header {
+    
+    padding-block: 0.6rem !important;
 }
 
 .card-header-with-icon {
@@ -225,7 +229,7 @@
 }
 
 .state-main {
-    margin-bottom: 16px;
+    margin-bottom: 10px;
 }
 
 .state-name {
@@ -236,7 +240,7 @@
 }
 
 .state-duration {
-    font-size: 16px;
+    font-size: 14px;
     color: #666;
     font-weight: 500;
 }
@@ -244,7 +248,7 @@
 .state-change-time {
     font-size: 14px;
     color: #999;
-    padding: 12px;
+    padding: 2px;
     background: #f8f9fa;
     border-radius: 8px;
 }
@@ -254,6 +258,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 16px;
+    max-height: 300px;
 }
 
 .image-item {

@@ -898,6 +898,9 @@
   <data name="WorkOrderFiles_LoadingFullSizeImage" xml:space="preserve">
     <value>Ładowanie pełnowymiarowego obrazu</value>
   </data>
+  <data name="WorkOrderFiles_LoadingImage" xml:space="preserve">
+    <value>Ładowanie obrazu</value>
+  </data>
   <data name="WorkOrderFiles_Close" xml:space="preserve">
     <value>Zamknij</value>
   </data>
@@ -931,5 +934,92 @@
   </data>
   <data name="DeviceDetails_NoDeviceSelected" xml:space="preserve">
     <value>Nie wybrano urządzenia.</value>
+  </data>
+  <data name="DeviceDisplay_ErrorLoadingInfo" xml:space="preserve">
+    <value>Nie udało się załadować informacji o urządzeniu</value>
+  </data>
+  <data name="DeviceDisplay_Critical" xml:space="preserve">
+    <value>Krytyczne</value>
+  </data>
+  <data name="DeviceDisplay_GeneralInfo" xml:space="preserve">
+    <value>Ogólne informacje</value>
+  </data>
+  <data name="DeviceDisplay_Category" xml:space="preserve">
+    <value>Kategoria</value>
+  </data>
+  <data name="DeviceDisplay_SerialNo" xml:space="preserve">
+    <value>Numer seryjny</value>
+  </data>
+  <data name="DeviceDisplay_Location" xml:space="preserve">
+    <value>Lokalizacja</value>
+  </data>
+  <data name="DeviceDisplay_NotSpecified" xml:space="preserve">
+    <value>Nie określono</value>
+  </data>
+  <data name="DeviceDisplay_Place" xml:space="preserve">
+    <value>Miejsce</value>
+  </data>
+  <data name="DeviceDisplay_Owner" xml:space="preserve">
+    <value>Właściciel</value>
+  </data>
+  <data name="DeviceDisplay_Set" xml:space="preserve">
+    <value>Zestaw</value>
+  </data>
+  <data name="DeviceDisplay_Documentation" xml:space="preserve">
+    <value>Dokumentacja</value>
+  </data>
+  <data name="DeviceDisplay_OpenDocumentation" xml:space="preserve">
+    <value>Otwórz dokumentację</value>
+  </data>
+  <data name="DeviceDisplay_DeviceState" xml:space="preserve">
+    <value>Stan urządzenia</value>
+  </data>
+  <data name="DeviceDisplay_Duration" xml:space="preserve">
+    <value>Czas trwania:</value>
+  </data>
+  <data name="DeviceDisplay_MinutesAbbr" xml:space="preserve">
+    <value>min</value>
+  </data>
+  <data name="DeviceDisplay_HoursAbbr" xml:space="preserve">
+    <value>godz</value>
+  </data>
+  <data name="DeviceDisplay_DaysAbbr" xml:space="preserve">
+    <value>d</value>
+  </data>
+  <data name="DeviceDisplay_Changed" xml:space="preserve">
+    <value>Zmieniono:</value>
+  </data>
+  <data name="DeviceDisplay_DeviceImages" xml:space="preserve">
+    <value>Obrazy urządzenia</value>
+  </data>
+  <data name="DeviceDisplay_DeviceDetails" xml:space="preserve">
+    <value>Szczegóły urządzenia</value>
+  </data>
+  <data name="DeviceDisplay_Property" xml:space="preserve">
+    <value>Właściwość</value>
+  </data>
+  <data name="DeviceDisplay_Value" xml:space="preserve">
+    <value>Wartość</value>
+  </data>
+  <data name="DeviceDisplay_Type" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="DeviceDisplay_DeviceStatuses" xml:space="preserve">
+    <value>Statusy urządzenia</value>
+  </data>
+  <data name="DeviceDisplay_Device" xml:space="preserve">
+    <value>Urządzenie</value>
+  </data>
+  <data name="DeviceDisplay_Detail" xml:space="preserve">
+    <value>Szczegół</value>
+  </data>
+  <data name="DeviceDisplay_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="DeviceDisplay_ImageModalTitle" xml:space="preserve">
+    <value>Obraz urządzenia</value>
+  </data>
+  <data name="DeviceDisplay_LoadingInfo" xml:space="preserve">
+    <value>Ładowanie informacji o urządzeniu...</value>
   </data>
 </root>

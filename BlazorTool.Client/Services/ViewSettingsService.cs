@@ -50,7 +50,8 @@ namespace BlazorTool.Client.Services
             {"Home-Taken", "home-taken-orders-grid" },
             {"Home-Department", "home-department-orders-grid" },
             {"Home-SectionStates", "home-section-collapse-states" },
-            {"Home-WorkOrdersWithPerson", "home-work-orders-with-person-grid" }
+            {"Home-WorkOrdersWithPerson", "home-work-orders-with-person-grid" },
+            { "DevicesPage", "devices-grid-settings" }
         };
 
         public async Task ClearAsync()

@@ -6,6 +6,7 @@
 @using Telerik.Blazor
 @inject ApiServiceClient ApiService
 @inject IStringLocalizer<Resources.UIStrings> Localizer
+@inject ViewSettingsService ViewSettingsService
 
 <h3>@Localizer["DevicesPage_Title"]</h3>
 
@@ -22,7 +23,9 @@ else
                  FilterMode="@GridFilterMode.FilterMenu"
                  Resizable="true"
                  Height="calc(100vh - 200px)"
-                 OnRowClick="@OnRowClickHandler">
+                 OnRowClick="@OnRowClickHandler"
+                 OnStateChanged="@(async (GridStateEventArgs<Device> args) => { _viewSettings.GridState = args.GridState; await SaveStateAsync(); })"
+                 @ref=@devicesGrid>
         <GridColumns>
             <GridColumn Field="@nameof(Device.MachineID)" Title="@Localizer["WorkOrder_ID"]" Width="100px" />
             <GridColumn Field="@nameof(Device.AssetNo)" Title="@Localizer["AssetNo"]" />
@@ -37,11 +40,12 @@ else
 
 <TelerikWindow @bind-Visible="@_showDeviceWindow"
                Modal="true"
-               Width="800px"
-               Height="600px"
+               MaxHeight="95vh"
                Centered="true"
                Draggable="true"
-               Resizable="true">
+               Resizable="true"
+               ThemeColor="@ThemeConstants.Window.ThemeColor.Dark"
+               CloseOnOverlayClick="true">
     <WindowTitle>
         @Localizer["DeviceDetails_Title"]
     </WindowTitle>
@@ -55,16 +59,41 @@ else
             <p>@Localizer["DeviceDetails_NoDeviceSelected"]</p>
         }
     </WindowContent>
+    <WindowActions>
+        <WindowAction Name="Close" />
+    </WindowActions>
 </TelerikWindow>
 
 @code {
     private List<Device>? _devices;
     private int? _selectedDeviceId;
     private bool _showDeviceWindow = false;
+    private string ViewSettingsKey = ViewSettingsService.SettingsKeys["DevicesPage"];
+    private ViewSettings<Device> _viewSettings;
+    private TelerikGrid<Device> devicesGrid;
+    private bool hasInitialized = false;
 
     protected override async Task OnInitializedAsync()
     {
-        _devices = await ApiService.GetAllDevicesCachedAsync();
+            _devices = await ApiService.GetAllDevicesCachedAsync();        
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !hasInitialized)
+        {
+            hasInitialized = true;
+            _viewSettings = await ViewSettingsService.LoadSettingsAsync<Device>(ViewSettingsKey);
+            if (devicesGrid != null)
+            {
+                await devicesGrid.SetStateAsync(_viewSettings.GridState);
+            }
+        }
+    }
+
+    private async Task SaveStateAsync()
+    {
+        await ViewSettingsService.SaveSettingsAsync(ViewSettingsKey, _viewSettings);
     }
 
     private void OnRowClickHandler(GridRowClickEventArgs args)
