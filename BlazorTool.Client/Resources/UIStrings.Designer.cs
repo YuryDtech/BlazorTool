@@ -2284,6 +2284,123 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string WorkOrderFiles_Close {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error loading full-size image for file.
+        /// </summary>
+        public static string WorkOrderFiles_ErrorLoadingFullSizeImage {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_ErrorLoadingFullSizeImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error loading file list.
+        /// </summary>
+        public static string WorkOrderFiles_ErrorLoadingList {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_ErrorLoadingList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error loading thumbnail for file.
+        /// </summary>
+        public static string WorkOrderFiles_ErrorLoadingThumbnail {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_ErrorLoadingThumbnail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to load full-size image for file.
+        /// </summary>
+        public static string WorkOrderFiles_FailedToLoadFullSizeImage {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_FailedToLoadFullSizeImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to load thumbnail for file.
+        /// </summary>
+        public static string WorkOrderFiles_FailedToLoadThumbnail {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_FailedToLoadThumbnail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading files.
+        /// </summary>
+        public static string WorkOrderFiles_LoadingFiles {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_LoadingFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading full-size image.
+        /// </summary>
+        public static string WorkOrderFiles_LoadingFullSizeImage {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_LoadingFullSizeImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading thumbnail.
+        /// </summary>
+        public static string WorkOrderFiles_LoadingThumbnail {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_LoadingThumbnail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No attached files.
+        /// </summary>
+        public static string WorkOrderFiles_NoAttachedFiles {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_NoAttachedFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Non-image file click.
+        /// </summary>
+        public static string WorkOrderFiles_NonImageFileClick {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_NonImageFileClick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Work Order Files.
+        /// </summary>
+        public static string WorkOrderFiles_Title {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected error loading file list for WorkOrderId.
+        /// </summary>
+        public static string WorkOrderFiles_UnexpectedErrorLoadingList {
+            get {
+                return ResourceManager.GetString("WorkOrderFiles_UnexpectedErrorLoadingList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Order ID.
         /// </summary>
         public static string WorkOrderID {
