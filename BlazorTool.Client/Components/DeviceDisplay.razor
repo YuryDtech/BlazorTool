@@ -1,0 +1,343 @@
+@using BlazorTool.Client.Models
+@using BlazorTool.Client.Services
+@inject ApiServiceClient ApiService
+@inject UserState UserState
+
+<div class="device-display-container">
+    <TelerikLoaderContainer Visible="@_isLoading" Template="@LoaderTemplate">
+    </TelerikLoaderContainer>
+        @if (_deviceInfo == null)
+        {
+            <div class="error-message">
+                <TelerikSvgIcon Icon="@SvgIcon.ExclamationCircle" Size="@ThemeConstants.SvgIcon.Size.Large"></TelerikSvgIcon>
+                <p>Не удалось загрузить информацию об устройстве</p>
+            </div>
+        }
+        else
+        {
+            <!-- Header Section -->
+            <div class="device-header">
+                <div class="device-header-content">
+                    <div class="device-title-section">
+                        <h1 class="device-title">@_deviceInfo.AssetNo</h1>
+                        <p class="device-subtitle">@_deviceInfo.Type</p>
+                    </div>
+                    @if (_deviceInfo.IsCritical == true)
+                    {
+                        <div class="critical-badge">
+                            <TelerikSvgIcon Icon="@SvgIcon.WarningTriangle" Size="@ThemeConstants.SvgIcon.Size.Small"></TelerikSvgIcon>
+                            <span>Критическое</span>
+                        </div>
+                    }
+                </div>
+                <div class="device-status-indicator @GetStatusClass()">
+                    <span class="status-dot"></span>
+                    @if (_deviceInfo.State != null)
+                    {
+                        <span>@_deviceInfo.State.StateName</span>
+                    }
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="device-content-grid">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <!-- General Information Card -->
+                    <TelerikCard Class="info-card">
+                        <CardHeader>
+                            <div class="card-header-with-icon">
+                                <TelerikSvgIcon Icon="@SvgIcon.InfoCircle" Size="@ThemeConstants.SvgIcon.Size.Medium"></TelerikSvgIcon>
+                                <h3>Общая информация</h3>
+                            </div>
+                        </CardHeader>
+                        <CardBody>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Категория</label>
+                                    <span>@_deviceInfo.DeviceCategory</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Серийный номер</label>
+                                    <span>@_deviceInfo.SerialNo</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Расположение</label>
+                                    <span>@(_deviceInfo.LocationName ?? "Не указано")</span>
+                                </div>
+                                @if (!string.IsNullOrEmpty(_deviceInfo.Place))
+                                {
+                                    <div class="info-item">
+                                        <label>Место</label>
+                                        <span>@_deviceInfo.Place</span>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(_deviceInfo.Owner))
+                                {
+                                    <div class="info-item">
+                                        <label>Владелец</label>
+                                        <span>@_deviceInfo.Owner</span>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(_deviceInfo.SetName))
+                                {
+                                    <div class="info-item">
+                                        <label>Набор</label>
+                                        <span>@_deviceInfo.SetName</span>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(_deviceInfo.DocumentationPath))
+                                {
+                                    <div class="info-item full-width">
+                                        <label>Документация</label>
+                                        <TelerikButton OnClick="@(() => OpenDocumentation(_deviceInfo.DocumentationPath))" 
+                                                     Icon="@SvgIcon.FileData" 
+                                                     Class="doc-button">
+                                            Открыть документацию
+                                        </TelerikButton>
+                                    </div>
+                                }
+                            </div>
+                        </CardBody>
+                    </TelerikCard>
+
+                    <!-- State Information Card -->
+                    @if (_deviceInfo.State != null)
+                    {
+                        <TelerikCard Class="state-card">
+                            <CardHeader>
+                                <div class="card-header-with-icon">
+                                    <TelerikSvgIcon Icon="@SvgIcon.Clock" Size="@ThemeConstants.SvgIcon.Size.Medium"></TelerikSvgIcon>
+                                    <h3>Состояние устройства</h3>
+                                </div>
+                            </CardHeader>
+                            <CardBody>
+                                <div class="state-info">
+                                    <div class="state-main">
+                                        <div class="state-name">@_deviceInfo.State.StateName</div>
+                                        <div class="state-duration">
+                                            Продолжительность: @FormatDuration(_deviceInfo.State.StateTime)
+                                        </div>
+                                    </div>
+                                    @if (_deviceInfo.State.ChangeTime.HasValue)
+                                    {
+                                        <div class="state-change-time">
+                                            Изменено: @_deviceInfo.State.ChangeTime.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss")
+                                        </div>
+                                    }
+                                </div>
+                            </CardBody>
+                        </TelerikCard>
+                    }
+                </div>
+
+                <!-- Right Column -->
+                <div class="right-column">
+                    <!-- Device Images -->
+                    @if (_deviceInfo.Images != null && _deviceInfo.Images.Any(i => !string.IsNullOrEmpty(i.Image)))
+                    {
+                        <TelerikCard Class="images-card">
+                            <CardHeader>
+                                <div class="card-header-with-icon">
+                                    <TelerikSvgIcon Icon="@SvgIcon.Image" Size="@ThemeConstants.SvgIcon.Size.Medium"></TelerikSvgIcon>
+                                    <h3>Изображения устройства</h3>
+                                </div>
+                            </CardHeader>
+                            <CardBody>
+                                <div class="images-gallery">
+                                    @foreach (var image in _deviceInfo.Images.Where(i => !string.IsNullOrEmpty(i.Image)))
+                                    {
+                                        <div class="image-item" @onclick="@(() => OpenImageModal(image.Image))">
+                                            <img src="data:image/png;base64,@image.Image" alt="Device Image" />
+                                            <div class="image-overlay">
+                                                <TelerikSvgIcon Icon="@SvgIcon.ZoomIn" Size="@ThemeConstants.SvgIcon.Size.Medium"></TelerikSvgIcon>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </CardBody>
+                        </TelerikCard>
+                    }
+                </div>
+            </div>
+
+            <!-- Full Width Sections -->
+            <div class="full-width-sections">
+                <!-- Device Details -->
+                @if (_deviceInfo.Details != null && _deviceInfo.Details.Any())
+                {
+                    <TelerikCard Class="details-card">
+                        <CardHeader>
+                            <div class="card-header-with-icon">
+                                <TelerikSvgIcon Icon="@SvgIcon.ListUnordered" Size="@ThemeConstants.SvgIcon.Size.Medium"></TelerikSvgIcon>
+                                <h3>Детали устройства</h3>
+                            </div>
+                        </CardHeader>
+                        <CardBody>
+                            <TelerikGrid Data="@_deviceInfo.Details.OrderBy(d => d.DisplayIndex)" 
+                                       Height="400px" 
+                                       Pageable="true" 
+                                       PageSize="10" 
+                                       Sortable="true" 
+                                       FilterMode="GridFilterMode.FilterRow">
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(DeviceDetailProperty.PropertyName)" Title="Свойство" Width="300px">
+                                        <Template>
+                                            @{var item = context as DeviceDetailProperty;}
+                                            <strong>@item.PropertyName</strong>
+                                        </Template>
+                                    </GridColumn>
+                                    <GridColumn Field="@nameof(DeviceDetailProperty.PropertyValue)" Title="Значение">
+                                        <Template>
+                                            @{
+                                                var item = context as DeviceDetailProperty;
+                                            }
+                                            <span class="property-value">@item.PropertyValue</span>
+                                        </Template>
+                                    </GridColumn>
+                                    <GridColumn Field="@nameof(DeviceDetailProperty.PropertyType)" Title="Тип" Width="150px">
+                                        <Template>
+                                            @{
+                                                var item = context as DeviceDetailProperty;
+                                            }
+                                            <span class="property-type-badge">@item.PropertyType</span>
+                                        </Template>
+                                    </GridColumn>
+                                </GridColumns>
+                            </TelerikGrid>
+                        </CardBody>
+                    </TelerikCard>
+                }
+
+                <!-- Device Statuses -->
+                @if (_deviceInfo.Statuses != null && _deviceInfo.Statuses.Any())
+                {
+                    <TelerikCard Class="statuses-card">
+                        <CardHeader>
+                            <div class="card-header-with-icon">
+                                <TelerikSvgIcon Icon="@SvgIcon.Gear" Size="@ThemeConstants.SvgIcon.Size.Medium"></TelerikSvgIcon>
+                                <h3>Статусы устройства</h3>
+                            </div>
+                        </CardHeader>
+                        @* <CardBody>
+                            <TelerikGrid Data="@_deviceInfo.Statuses" 
+                                       Height="400px" 
+                                       Pageable="true" 
+                                       PageSize="10" 
+                                       Sortable="true">
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(DeviceStatus.DeviceName)" Title="Устройство" Width="200px"></GridColumn>
+                                    <GridColumn Field="@nameof(DeviceStatus.Detail)" Title="Деталь"></GridColumn>
+                                    <GridColumn Field="@nameof(DeviceStatus.Color)" Title="Статус" Width="120px">
+                                        <Template>
+                                            <div class="status-indicator" style="background-color: @context.Color;">
+                                                @if (!string.IsNullOrEmpty(context.Icon))
+                                                {
+                                                    <img src="data:image/png;base64,@context.Icon" alt="Icon" class="status-icon" />
+                                                }
+                                            </div>
+                                        </Template>
+                                    </GridColumn>
+                                    <GridColumn Field="@nameof(DeviceStatus.Type)" Title="Тип" Width="100px"></GridColumn>
+                                </GridColumns>
+                            </TelerikGrid>
+                        </CardBody> *@
+                    </TelerikCard>
+                }
+            </div>
+        }
+   
+</div>
+
+<!-- Image Modal -->
+<TelerikWindow @bind-Visible="@_showImageModal" Modal="true" Class="image-modal">
+    <WindowTitle>Изображение устройства</WindowTitle>
+    <WindowContent>
+        @if (!string.IsNullOrEmpty(_selectedImage))
+        {
+            <img src="data:image/png;base64,@_selectedImage" alt="Device Image" class="modal-image" />
+        }
+    </WindowContent>
+    <WindowActions>
+        <WindowAction Name="Close" />
+    </WindowActions>
+</TelerikWindow>
+
+@code {
+    [Parameter]
+    public int DeviceID { get; set; }
+
+    private FullDeviceInfo? _deviceInfo;
+    private bool _isLoading = true;
+    private bool _showImageModal = false;
+    private string? _selectedImage;
+
+    private RenderFragment LoaderTemplate => __builder => {
+        <div class="loader-wrapper">
+            <TelerikLoader Type="@LoaderType.ConvergingSpinner" Size="large"></TelerikLoader>
+            <p class="loading-text">Загрузка информации об устройстве...</p>
+        </div>
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (DeviceID <= 0) return;
+
+        _isLoading = true;
+        try
+        {
+            _deviceInfo = await ApiService.GetFullDeviceInfoAsync(DeviceID, UserState.LangCode);
+        }
+        catch (Exception ex)
+        {
+            // Log error if logging is available
+            _deviceInfo = null;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private string GetStatusClass()
+    {
+        if (_deviceInfo?.State == null) return "status-unknown";
+        
+        return _deviceInfo.State.StateID switch
+        {
+            1 => "status-running",
+            2 => "status-stopped",
+            3 => "status-warning",
+            4 => "status-error",
+            _ => "status-unknown"
+        };
+    }
+
+    private string FormatDuration(int minutes)
+    {
+        if (minutes < 60)
+            return $"{minutes} мин";
+        
+        var hours = minutes / 60;
+        var remainingMinutes = minutes % 60;
+        
+        if (hours < 24)
+            return $"{hours} ч {remainingMinutes} мин";
+        
+        var days = hours / 24;
+        var remainingHours = hours % 24;
+        
+        return $"{days} д {remainingHours} ч {remainingMinutes} мин";
+    }
+
+    private void OpenDocumentation(string? path)
+    {
+        
+    }
+
+    private void OpenImageModal(string? image)
+    {
+        _selectedImage = image;
+        _showImageModal = true;
+    }
+}

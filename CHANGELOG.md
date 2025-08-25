@@ -3,6 +3,8 @@
 * Implemented comprehensive device management features, including new API client methods (`GetDeviceDetailAsync`, `GetDeviceStateAsync`, `GetDeviceStatusAsync`, `GetSingleDeviceAsync`, `GetDeviceImageAsync`, `GetDeviceDictionariesAsync`, `GetFullDeviceInfoAsync`), new server-side controllers (`GetDetail`, `GetState`, `GetStatus`, `Get`, `GetImage`, `GetDict`), and new data models (`DeviceDetailProperty.cs`, `DeviceDict.cs`, `DeviceImage.cs`, `DeviceState.cs`, `DeviceStatus.cs`, `FullDeviceInfo.cs`).
 * Enhanced Devices Page with a default `PageSize` of 30 for the Telerik Grid.
 * Added "NavMenu_Devices" localization entries for English and Polish.
+* Introduced new `DeviceDisplay` component and its associated CSS for improved device information presentation.
+* Updated `DevicesPage.razor` to integrate the new `DeviceDisplay` component and enhance device-related UI.
 
 ## 2025-08-22
 ### Features

@@ -1158,7 +1158,7 @@ namespace BlazorTool.Client.Services
             }
         }
 
-        public async Task<ApiResponse<Device>> GetSingleDeviceAsync(int machineID, string? lang = null)
+        public async Task<SingleResponse<Device>> GetSingleDeviceAsync(int machineID, string? lang = null)
         {
             var qp = new List<string>();
             if (string.IsNullOrWhiteSpace(lang))
@@ -1172,21 +1172,21 @@ namespace BlazorTool.Client.Services
 
             try
             {
-                var wrapper = await _http.GetFromJsonAsync<ApiResponse<Device>>(url);
-                Console.WriteLine($"[{_userState.UserName}] = = = = = = = API response-> Single Device: " + wrapper?.Data.FirstOrDefault()?.AssetNo);
-                return wrapper ?? new ApiResponse<Device> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
+                var wrapper = await _http.GetFromJsonAsync<SingleResponse<Device>>(url);
+                Console.WriteLine($"[{_userState.UserName}] = = = = = = = API response-> Single Device: " + wrapper?.Data?.AssetNo);
+                return wrapper ?? new SingleResponse<Device> { IsValid = false, Errors = new List<string> { "Empty response from API." } };
             }
             catch (HttpRequestException ex)
             {
                 Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
                 Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: HTTP Request error during GET to {url}: {ex.Message}");
-                return new ApiResponse<Device> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
+                return new SingleResponse<Device> { IsValid = false, Errors = new List<string> { $"Network error: {ex.Message}" } };
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
                 Debug.WriteLine($"[{_userState.UserName}] ApiServiceClient: Unexpected error during GET to {url}: {ex.Message}");
-                return new ApiResponse<Device> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
+                return new SingleResponse<Device> { IsValid = false, Errors = new List<string> { $"An unexpected error occurred: {ex.Message}" } };
             }
         }
 
@@ -1293,7 +1293,7 @@ namespace BlazorTool.Client.Services
             }
 
             var deviceResponse = await GetSingleDeviceAsync(deviceID, lang);
-            if (!deviceResponse.IsValid || deviceResponse.Data == null || !deviceResponse.Data.Any())
+            if (!deviceResponse.IsValid || deviceResponse.Data == null)
             {
                 Console.WriteLine($"[{_userState.UserName}] Failed to get basic device info for DeviceID: {deviceID}");
                 Debug.WriteLine($"[{_userState.UserName}] Failed to get basic device info for DeviceID: {deviceID}");
@@ -1302,25 +1302,25 @@ namespace BlazorTool.Client.Services
 
             var fullDeviceInfo = new FullDeviceInfo
             {
-                MachineID = deviceResponse.Data.First().MachineID,
-                AssetNo = deviceResponse.Data.First().AssetNo,
-                AssetNoShort = deviceResponse.Data.First().AssetNoShort,
-                DeviceCategory = deviceResponse.Data.First().DeviceCategory,
-                Type = deviceResponse.Data.First().Type,
-                SerialNo = deviceResponse.Data.First().SerialNo,
-                StateID = deviceResponse.Data.First().StateID,
-                CategoryID = deviceResponse.Data.First().CategoryID,
-                DocumentationPath = deviceResponse.Data.First().DocumentationPath,
-                Location = deviceResponse.Data.First().Location,
-                LocationRequired = deviceResponse.Data.First().LocationRequired,
-                LocationName = deviceResponse.Data.First().LocationName,
-                Place = deviceResponse.Data.First().Place,
-                IsCritical = deviceResponse.Data.First().IsCritical,
-                SetName = deviceResponse.Data.First().SetName,
-                SetID = deviceResponse.Data.First().SetID,
-                Active = deviceResponse.Data.First().Active,
-                Cycle = deviceResponse.Data.First().Cycle,
-                Owner = deviceResponse.Data.First().Owner
+                MachineID = deviceResponse.Data.MachineID,
+                AssetNo = deviceResponse.Data.AssetNo,
+                AssetNoShort = deviceResponse.Data.AssetNoShort,
+                DeviceCategory = deviceResponse.Data.DeviceCategory,
+                Type = deviceResponse.Data.Type,
+                SerialNo = deviceResponse.Data.SerialNo,
+                StateID = deviceResponse.Data.StateID,
+                CategoryID = deviceResponse.Data.CategoryID,
+                DocumentationPath = deviceResponse.Data.DocumentationPath,
+                Location = deviceResponse.Data.Location,
+                LocationRequired = deviceResponse.Data.LocationRequired,
+                LocationName = deviceResponse.Data.LocationName,
+                Place = deviceResponse.Data.Place,
+                IsCritical = deviceResponse.Data.IsCritical,
+                SetName = deviceResponse.Data.SetName,
+                SetID = deviceResponse.Data.SetID,
+                Active = deviceResponse.Data.Active,
+                Cycle = deviceResponse.Data.Cycle,
+                Owner = deviceResponse.Data.Owner
             };
 
             // Get details

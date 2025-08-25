@@ -922,4 +922,14 @@
   <data name="WorkOrderFiles_NonImageFileClick" xml:space="preserve">
     <value>Kliknięcie pliku niebędącego obrazem</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="BackToList" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="DeviceDetails_Title" xml:space="preserve">
+    <value>Szczegóły urządzenia</value>
+  </data>
+  <data name="DeviceDetails_NoDeviceSelected" xml:space="preserve">
+    <value>Nie wybrano urządzenia.</value>
+  </data>
 </root>

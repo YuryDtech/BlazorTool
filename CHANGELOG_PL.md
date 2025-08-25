@@ -3,6 +3,11 @@
 * Zaimplementowano kompleksowe funkcje zarządzania urządzeniami, w tym nowe metody klienta API (`GetDeviceDetailAsync`, `GetDeviceStateAsync`, `GetDeviceStatusAsync`, `GetSingleDeviceAsync`, `GetDeviceImageAsync`, `GetDeviceDictionariesAsync`, `GetFullDeviceInfoAsync`), nowe kontrolery po stronie serwera (`GetDetail`, `GetState`, `GetStatus`, `Get`, `GetImage`, `GetDict`) oraz nowe modele danych (`DeviceDetailProperty.cs`, `DeviceDict.cs`, `DeviceImage.cs`, `DeviceState.cs`, `DeviceStatus.cs`, `FullDeviceInfo.cs`).
 * Ulepszono stronę Urządzeń, dodając domyślny `PageSize` równy 30 dla Telerik Grid.
 * Dodano wpisy lokalizacyjne "NavMenu_Devices" dla języka angielskiego i polskiego.
+* Wprowadzono nowy komponent `DeviceDisplay` i powiązany z nim CSS dla ulepszonej prezentacji informacji o urządzeniach.
+* Zaktualizowano `DevicesPage.razor` w celu integracji nowego komponentu `DeviceDisplay` i ulepszenia interfejsu użytkownika związanego z urządzeniami.
+
+## 2025-08-22
+### Nowe Funkcje
 * Dodano buforowanie dla plików zleceń pracy (`ApiServiceClient.GetWorkOrderFilesAsync`, `ApiServiceClient.GetWorkOrderFileAsync`) oraz publiczną metodę do unieważniania tych buforów (`ApiServiceClient.InvalidateWorkOrderFilesCache`).
 
 ## 2025-08-22
@@ -42,7 +47,7 @@
 ## 2025-08-18
 ### Ulepszenia UI/UX
 * Dodano możliwość zwijania sekcji siatek na stronie głównej (Assigned, Taken, Department)
-* Dodano przyciski "+"/"-" w nagłówkach siatek
+* Dodano przyciski "+"/ "-" w nagłówkach siatek
 * Dodano filtrowanie wielokrotnego wyboru na stronach Orders i Scheduler
 
 ### Lokalizacja

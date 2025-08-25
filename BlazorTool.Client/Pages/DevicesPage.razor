@@ -21,7 +21,8 @@ else
                  Sortable="true"
                  FilterMode="@GridFilterMode.FilterMenu"
                  Resizable="true"
-                 Height="calc(100vh - 200px)">
+                 Height="calc(100vh - 200px)"
+                 OnRowClick="@OnRowClickHandler">
         <GridColumns>
             <GridColumn Field="@nameof(Device.MachineID)" Title="@Localizer["WorkOrder_ID"]" Width="100px" />
             <GridColumn Field="@nameof(Device.AssetNo)" Title="@Localizer["AssetNo"]" />
@@ -34,11 +35,45 @@ else
     </TelerikGrid>
 }
 
+<TelerikWindow @bind-Visible="@_showDeviceWindow"
+               Modal="true"
+               Width="800px"
+               Height="600px"
+               Centered="true"
+               Draggable="true"
+               Resizable="true">
+    <WindowTitle>
+        @Localizer["DeviceDetails_Title"]
+    </WindowTitle>
+    <WindowContent>
+        @if (_selectedDeviceId.HasValue)
+        {
+            <BlazorTool.Client.Components.DeviceDisplay DeviceID="@_selectedDeviceId.Value" />
+        }
+        else
+        {
+            <p>@Localizer["DeviceDetails_NoDeviceSelected"]</p>
+        }
+    </WindowContent>
+</TelerikWindow>
+
 @code {
-    private List<Device> _devices;
+    private List<Device>? _devices;
+    private int? _selectedDeviceId;
+    private bool _showDeviceWindow = false;
 
     protected override async Task OnInitializedAsync()
     {
         _devices = await ApiService.GetAllDevicesCachedAsync();
+    }
+
+    private void OnRowClickHandler(GridRowClickEventArgs args)
+    {
+        var clickedDevice = args.Item as Device;
+        if (clickedDevice != null)
+        {
+            _selectedDeviceId = clickedDevice.MachineID;
+            _showDeviceWindow = true;
+        }
     }
 }

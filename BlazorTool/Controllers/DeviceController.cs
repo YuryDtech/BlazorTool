@@ -172,10 +172,10 @@ namespace BlazorTool.Controllers
                 var response = await client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var wrapper = await response.Content.ReadFromJsonAsync<ApiResponse<Device>>();
+                var wrapper = await response.Content.ReadFromJsonAsync<SingleResponse<Device>>();
                 return Ok(new
                 {
-                    data = wrapper?.Data ?? new List<Device>(),
+                    data = wrapper?.Data ?? new Device(),
                     isValid = true,
                     errors = Array.Empty<string>()
                 });
@@ -184,7 +184,7 @@ namespace BlazorTool.Controllers
             {
                 return StatusCode(500, new
                 {
-                    data = Array.Empty<Device>(),
+                    data = new Device(),
                     isValid = false,
                     errors = new[] { ex.Message }
                 });

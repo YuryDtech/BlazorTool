@@ -448,6 +448,15 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Back to list.
+        /// </summary>
+        public static string BackToList {
+            get {
+                return ResourceManager.GetString("BackToList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You can  take multiple orders at the same time.
         /// </summary>
         public static string CanHaveManyTakenOrders {
@@ -610,11 +619,47 @@ namespace BlazorTool.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Location.
+        /// </summary>
+        public static string Device_LocationName {
+            get {
+                return ResourceManager.GetString("Device_LocationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Device.
         /// </summary>
         public static string Device_Name {
             get {
                 return ResourceManager.GetString("Device_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Owner.
+        /// </summary>
+        public static string Device_Owner {
+            get {
+                return ResourceManager.GetString("Device_Owner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Serial No..
+        /// </summary>
+        public static string Device_SerialNo {
+            get {
+                return ResourceManager.GetString("Device_SerialNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string Device_Type {
+            get {
+                return ResourceManager.GetString("Device_Type", resourceCulture);
             }
         }
         
@@ -633,6 +678,15 @@ namespace BlazorTool.Client.Resources {
         public static string DeviceCategoryID {
             get {
                 return ResourceManager.GetString("DeviceCategoryID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Devices.
+        /// </summary>
+        public static string DevicesPage_Title {
+            get {
+                return ResourceManager.GetString("DevicesPage_Title", resourceCulture);
             }
         }
         
@@ -903,6 +957,15 @@ namespace BlazorTool.Client.Resources {
         public static string MoveToDepartment {
             get {
                 return ResourceManager.GetString("MoveToDepartment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Devices.
+        /// </summary>
+        public static string NavMenu_Devices {
+            get {
+                return ResourceManager.GetString("NavMenu_Devices", resourceCulture);
             }
         }
         
