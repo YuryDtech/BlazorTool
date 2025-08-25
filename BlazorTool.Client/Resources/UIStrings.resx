@@ -871,4 +871,22 @@
   <data name="NoData" xml:space="preserve">
     <value>No data loaded</value>
   </data>
+  <data name="DevicesPage_Title" xml:space="preserve">
+    <value>Devices</value>
+  </data>
+  <data name="Device_Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Device_SerialNo" xml:space="preserve">
+    <value>Serial No.</value>
+  </data>
+  <data name="Device_LocationName" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Device_Owner" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="NavMenu_Devices" xml:space="preserve">
+    <value>Devices</value>
+  </data>
 </root>

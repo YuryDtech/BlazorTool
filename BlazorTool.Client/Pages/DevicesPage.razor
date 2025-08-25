@@ -1,0 +1,43 @@
+@page "/devices"
+
+@using BlazorTool.Client.Models
+@using BlazorTool.Client.Services
+@using Telerik.Blazor.Components
+@using Telerik.Blazor
+@inject ApiServiceClient ApiService
+@inject IStringLocalizer<Resources.UIStrings> Localizer
+
+<h3>@Localizer["DevicesPage_Title"]</h3>
+
+@if (_devices == null)
+{
+    <TelerikLoaderContainer Visible="true" Text="@Localizer["OrdersPage_LoadingDevicesList"]"></TelerikLoaderContainer>
+}
+else
+{
+    <TelerikGrid Data="@_devices"
+                 Pageable="true"
+                 Sortable="true"
+                 FilterMode="@GridFilterMode.FilterMenu"
+                 Resizable="true"
+                 Height="calc(100vh - 200px)">
+        <GridColumns>
+            <GridColumn Field="@nameof(Device.MachineID)" Title="@Localizer["WorkOrder_ID"]" Width="100px" />
+            <GridColumn Field="@nameof(Device.AssetNo)" Title="@Localizer["AssetNo"]" />
+            <GridColumn Field="@nameof(Device.DeviceCategory)" Title="@Localizer["DeviceCategory"]" />
+            <GridColumn Field="@nameof(Device.Type)" Title="@Localizer["Device_Type"]" />
+            <GridColumn Field="@nameof(Device.SerialNo)" Title="@Localizer["Device_SerialNo"]" />
+            <GridColumn Field="@nameof(Device.LocationName)" Title="@Localizer["Device_LocationName"]" />
+            <GridColumn Field="@nameof(Device.Owner)" Title="@Localizer["Device_Owner"]" />
+        </GridColumns>
+    </TelerikGrid>
+}
+
+@code {
+    private List<Device> _devices;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _devices = await ApiService.GetAllDevicesCachedAsync();
+    }
+}
